@@ -1,0 +1,310 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > <<GameModule.adoc#top,Module>> > <<PieceWindow.adoc#top,Game Piece Palette>> > *Game Piece*#
+
+'''''
+
+* <<#GamePiece,Game Piece>> +
+* <<#TraitOrder,Trait Ordering and YOU>> +
+** <<#DrawOrder,Draw Order and Traits>> +
+** <<#OtherTraits,Traits That Control Other Traits>> +
+** <<#TraitOrderKeyCommands,Key Commands and Traits>> +
+* <<#Advanced,Advanced Trait Ordering>> +
+* <<#Traits,List of Piece Traits>> +
+
+[#GamePiece]
+=== Game Piece
+
+A Game Piece, sometimes simply referred to as a piece, is any counter, marker, or card used in a game.
+Game Pieces in VASSAL are highly customizable and can have quite complex behavior.
+They are defined by adding <<#Traits,Traits>> to a basic piece in the Piece Definer window shown at right.
+A list of available Traits appears to the left, and a list of Traits currently in use by the piece you're defining appears at the right.
+Add a Trait by selecting it in the list of available traits and clicking the 'Add' button.
+Remove a Trait by selecting it and clicking the 'Remove' button.
+
+As you define your Piece, it will appear at the top of the window.
+You can select the Piece and type commands for it or right-click to bring up its context menu to test it as you go.
+
+Once added to your Piece, a Trait's properties can be edited by selecting the Trait and clicking the Properties button, or by double-clicking on the Trait in the list.
+
+While editing a Piece, a number of keyboard shortcuts are available, including _Alt+Right_ to jump to the list of your Piece's current traits, _Alt+Left_ to jump to the list of available traits, and _Space_ as a substitute for double-clicking a Trait in either list. Typing a character in either list will jump to the next entry that starts with the typed character.
+
+When a Piece is drawn, the Traits are drawn _in order_, beginning with the <<BasicPiece.adoc#top,Basic Piece>> and continuing downward.
+The order of Traits can be important.
+For example the image in a Layer trait may obscure the Basic Piece or other Layers before it in the list of Traits.
+
+For highly specialized pieces, you may supply your own custom Java classes.
+The Java class must implement the GamePiece interface and most commonly extends the Decorator class.
+First, add the Java .class file to the module file using a Zip utility (remember to preserve the package structure: e.g.
+the class should go in a subdirectory within the Zip that is named for its package). Then hit the "Import" button and enter the fully-qualified name of the class (if the package name is "PathsOfGlory" and the class name is "CustomPieceMover" then enter "PathsOfGlory.CustomPieceMover"). The Trait corresponding to your class will appear in the list of available Traits and you may add it normally.
+See the Coding Tutorial for more details.
+
+image:images/GamePiece.png[]
+
+'''''
+
+[#TraitOrder]
+=== Trait Ordering and YOU
+
+Although you can probably make it a reasonable way into designing your first VASSAL module by just loading <<#Traits,Traits>> into a piece in whatever order they occur to you, _eventually_ as your mastery grows, and you begin to think of more and more ambitious ways to improve your game and module there may well come a time when your traits will seem to be interacting oddly with each other.
+Perhaps the trait you expected to be hidden by the Mask trait you just added isn't disappearing? Or parts of the piece you set up to be rotatable aren't rotating? Or parts that you set up _not_ to rotate _are_ rotating? Or maybe the Trigger Actions you are sending aren't being resolved in the order you expected they would?
+
+Well it turns out that the interactions between different traits within the same piece are substantially affected by the _order_ those traits appear in the Game Piece's trait list! This section will walk you through the relationships between traits, provide you with some basic "rules of thumb" for ordering your traits, and then end with a comprehensive trait ordering guide that should be a regular touchstone even when you've become a VASSAL master!
+
+[#DrawOrder]
+==== Draw Order and Traits
+
+[cols=",",]
+|===
+|_Most_ <<#Traits,Traits>> which draw something are drawn starting from the <<BasicPiece.adoc#top,Basic Piece>> and proceeding downwards, meaning that the last Layer (or Text Label, etc.) in the list will be drawn overtop everything else.
+However, there are two exceptions: Area of Effect traits, and any Layer with the _Underneath when highlighted?_ option when the piece is currently selected.
+In both of these cases, the "exception" traits (Area-of-Effect or Draw-Underneath) are drawn _before_ the Basic Piece.
+If more than one of these exceptions exists in a single piece, then the first to draw will be the _lowest_ trait in the list, then the next lowest, etc. -- the opposite of the normal order, and all before the Basic Piece.
+
+The chart at right illustrates the draw order for a sample set of piece traits.
+The two exception traits are drawn first (in bottom up order), followed by everything else (in top-down order). Changing the order of the traits in this piece would change the order in which they were drawn.
+For example if the _Text Label_ trait were moved up to the position directly underneath the Basic Piece, then it would be drawn right after the Basic Piece.
+|image:images/GamePieceDrawOrder.png[] +
+|===
+
+[#OtherTraits]
+==== Traits That Control Other Traits
+
+[cols=",",]
+|===
+|Some <<#Traits,Traits>>, such as _Can Rotate_, _Mask_, and _Restrict Commands_ are designed to directly control and affect other traits (without the use of Key Commands). These traits will _only_ affect traits which appear _above_ them in the list of traits after taking prototypes into account.
+Conversely, each trait can only be affected/controlled/modified by traits which appear _below_ them in the list of traits.
+You must think about each trait, how it affects the Game Piece, and whether it should affect, or be affected by other traits of the Game Piece.
+The chart at right provides some general guidance for an ordering that will frequently be the best, but it is not exhaustive -- there will be special cases where you will want to deviate from it.
+
+*Example 1:* if you want a _Text Label_ to Rotate, then the _Text Label_ trait must be above the _Can Rotate_ trait.
+If you _don't_ want your Text Labels to rotate, then they must be _below_ the _Can Rotate_ trait.
+
+*Example 2:* if you want the most of the visible information on your card or piece to be hidden from other players when the card is "flipped over" to its back side by a _Mask_ trait, then all of its Layers (and any Text Labels, plus any traits that create Menu options and/or Key Commands that you don't want to be available to other players while the card is hidden) need to be _above_ the _Mask_ trait.
+But if there's some particular graphic Layer or Text Label that you want to be drawn even when the card is flipped over, then you'd put those traits _below_ the _Mask_ trait.
+
+*Example 3:* _Restrict Commands_ traits should almost always go at the very bottom of the list of traits, so that they will be able to hide/disable the traits that they specify.
+|image:images/GamePieceTraitOrder.png[] +
+|===
+
+[#TraitOrderKeyCommands]
+==== Key Commands and Traits
+
+[width="100%",cols="50%,50%",]
+|===
+a|
+When a Keystroke Command or a Named Command (Collectively known as _Key Commands_) is received by a Game Piece, the <<#Traits,Traits>> are visited in a particular order to see if they listen for that Key Command, and if they do have an entry for that Key Command the appropriate part of the Trait activates.
+When a Key Command arrives at a Game Piece, its behaviour is identical regardless of the "origin" of that Key Command.
+The Key Command could have come from the player pressing a real keyboard shortcut, from the player selecting the corresponding right-click context menu command, from a Global Key Command arriving from a completely different Game Piece or from the Toolbar, from an Action Button, or from a Trigger Action trait within the piece.
+
+The order Traits _within_ the piece are visited is as follows:
+
+. First any traits _except for_ Trigger Action and Report Action traits are visited.
+This happens starting at the bottom of the list and proceeding up toward the <<BasicPiece.adoc#top,Basic Piece>> trait.
+. Then, once every trait that isn't a Trigger Action or Report Action trait has been visited, we then visit those traits, this time starting at the _top_ of the list just beneath the Basic Piece trait and proceeding towards the bottom.
+
+|image:images/GamePieceOrder.png[] +
+|===
+
+[#Advanced]
+=== Advanced Trait Ordering
+
+[cols="a,a",]
+|===
+|**Traits**
+
+(in recommended order they should normally appear in a piece)|**Ordering Notes**
+
+|Basic Piece|(Basic Piece will always be at the top)
+|Layer _(Rotatable)_ +
+Text Label _(Rotatable)_
+|Drawing Layers that will rotate should be *_above_* the Can Rotate and/or Can Pivot.
+
+|Can Rotate +
+Can Pivot +
+Mat Cargo
+|Can Rotate belongs below any drawing trait that it should rotate, but *_above_* any Can Pivot trait.
+
+Mat Cargo similarly belongs _below_ any drawing trait that it should cause to maintain relative facing.
+
+|Movement Trail +
+Layer +
+Mark When Moved +
+Text Label +
+Area of Effect
+|These drawing traits all belong *_above_* Non-Rectangular, and *_above_* Masking/Restricting Traits (see red box below). Optionally they could also move *_above_* Can Rotate if you want them to rotate/pivot; in this position they will *_not_* rotate or pivot.
+Traits will draw in order from the Basic Piece on down, meaning the very last drawing trait in the list will be "drawn on top of" everything else, and so forth.
+
+|Non-Rectangular
+|Non-Rectangular belongs *_below_* all drawable traits - otherwise their bounding box regions will be selectable even if transparent.
+
+|Delete +
+Replace With Other
+|These delete the piece & stop any further processing.
+Keep them *_above_* anything that needs doing first.
+
+NOTE: Be aware that any Trigger Action on the same Key Command as a deleting trait will never get to execute -- you will need to use a forking/chaining Trigger Action sequence to be sure any Trigger Action traits you need to have run before a deleting trait are executed.
+
+|Send to Location +
+Move Fixed Distance +
+Return to Deck +
+Place Marker +
+Clone
+|Movement and Piece-Placement traits normally belong *_above_* any Masking/Restricting traits (i.e.
+Mask, Invisible, Restrict Access, Restrict Commands).
+
+|Play Sound +
+Action Button +
+Global Hotkey +
+Global Key Command
+|"Communication" and Key Command initiating traits normally belong *_above_* Masking/Restricting traits (i.e.
+Mask, Invisible, Restrict Access, Restrict Commands).
+
+|Trigger Action
+|Trigger Action traits should normally be grouped *_above_* Report Action traits so that any changes to properties they trigger are resolved before the Report Action reports on them.
+(They should also normally appear *_above_* any Mask & Restrict Commands).
+
+|Report Action
+|Report Action traits should be grouped *_below_* Trigger Action traits (so that they report results after the Triggers process).
+
+|Set Global Property +
+Spreadsheet +
+Property Sheet +
+Dynamic Property
+|Property traits can have their values read faster (so that Vassal runs slightly faster) the *_lower_* they are in the trait list.
+However, you'll normally want the "setter" actions of e.g.
+Dynamic Properties and Set Global Property to remain *_above_* any Mask, Invisible, Restrict Access, and Restrict Commands traits that could affect them.
+
+|Mask +
+Invisible +
+Restrict Access +
+Restrict Commands
+|Masking/Restricting traits belong *_below_* any traits that they need to be able to hide, restrict, and protect.
+
+Mask belongs *_above_* Invisible.
+
+|Does not stack
+|Does Not Stack functions correctly anywhere in the trait list but _runs slightly faster near the bottom._
+
+|Calculated Property +
+Marker +
+Translatable Message +
+Mat
+|Calculated Property, Marker, Mat, and Translatable Message function properly anywhere, but they _run slightly faster near the bottom_.
+
+|**Free Floating Traits**
+|**(Proper Order Varies)**
+
+|Prototype
+|The proper location for a Prototype... *_depends_* on what's in the Prototype! Note that you may sometimes decide that you need to split up large/complex Prototypes so that "the part that needs to go on top can go on top" and "the part that needs to go down below can go down below".
+
+|Sub-Menu +
+Menu Separator
+|Menu-building traits should go wherever you need them for building the right kinds of right-click context menus.
+Note, however, that Sub-Menu traits must always go *_below_* the traits that it should be grouping into a menu.
+|===
+
+'''''
+
+[#Traits]
+=== List of Piece Traits
+
+[%autowidth]
+[cols=",",]
+|===
+|Trait| Description
+
+|<<ActionButton.adoc#top,Action Button>> | Create a clickable button on a piece that issues a Key Command when clicked.
+
+|<<AreaOfEffect.adoc#top,Area Of Effect>> | Display a shaded area around a piece.
+
+|<<Attachment.adoc#top,Attachment>>| Create groups of 'Attached' counters that can easily interact with each other.
+
+| <<BasicName.adoc#top,Basic Name>> | Specify a primary name for a piece that overrides the Basic Piece name.
+
+| <<BasicPiece.adoc#top,Basic Piece>> | Set the Base name and image for a piece.
+
+|<<BorderOutline.adoc#top,Border Outline>>| Specify a colored border around a piece that will appear under specified conditions.
+
+|<<CalculatedProperty.adoc#top,Calculated Property>> | Create a named Property whose value is calculated by a formula.
+
+|<<Pivot.adoc#top,Can Pivot>> | Allows a piece to be rotated around an off-center position.
+
+|<<Rotate.adoc#top,Can Rotate>> | Allows a piece to be rotated around its center.
+
+|<<Clone.adoc#top,Clone>> | Creates a duplicate of a piece.
+
+|<<Comment.adoc#top,Comment>> | Creates a comment line in the Piece Definer display.
+
+|<<Delete.adoc#top,Delete>> | Deletes the piece from the current game.
+
+|<<NonStacking.adoc#top,Does not stack>> | Provides options to limit stacking, selection and movement of a piece.
+
+|<<Deselect.adoc#top,Deselect>> | Remove a piece, or all pieces, from the current piece selection.
+
+| <<DynamicProperty.adoc#top,Dynamic Property>> | Create a named Property that can be changed.
+
+|<<GlobalHotKey.adoc#top,Global Hotkey>> | Issue a <<Concepts.adoc#hotkeys,Hotkey>> to activate game <<Concepts.adoc#components,Components>>.
+
+|<<GlobalKeyCommand.adoc#top,Global Key Command>> | Issue a <<Concepts.adoc#keycommands,Key Command>> to activate multiple pieces.
+
+|<<Hideable.adoc#top,Invisible>> | Hide a piece from other players by making it invisible.
+
+|<<Layer.adoc#top,Layer>> | Add additional images to a piece that can be turned on and off.
+
+|<<MarkMoved.adoc#top,Mark When Moved>> | Automatically highlight a piece whenever it moves.
+
+|<<PropertyMarker.adoc#top,Marker>> | Add a named Property with a fixed value.
+
+|<<Mask.adoc#top,Mask>> | Hide the identity of a piece from other players.
+
+|<<Mat.adoc#top,Mat>> | Create a piece that can carry other pieces around on it.
+
+|<<MatCargo.adoc#top,Mat Cargo>> | Create a pieces that can be carried on a Mat.
+
+|<<MenuSeparator.adoc#top,Menu Separator>> | Add a separator to the drop-down menu that is generated when you right-click on a piece.
+
+|<<Translate.adoc#top,Move fixed distance>> | Move a piece a set distance on aMap from its starting point.
+
+|<<MovementTrail.adoc#top,Movement Trail>> | Show a visible history of piece movements.
+
+|<<MultiLocationCommand.adoc#top,Multi-location Command>> | Generate multiple menu commands based on Map Zone or Region names.
+
+| <<NonRectangular.adoc#top,Non-Rectangular>> | Specifiy a non-rectangular shape for a piece that will be used as the selection border.
+
+|<<Marker.adoc#top,Place Marker>> | Place a newly created piece.
+
+|<<PlaySound.adoc#top,Play Sound>> | Play a sound.
+
+|<<PropertySheet.adoc#top,Property Sheet>> | Maintain a set of independent values for a piece.
+
+|<<UsePrototype.adoc#top,Prototype>> | Include traits from a pre-defined template piece.
+
+|<<Replace.adoc#top,Replace with Other>> | Replace a piece with a new, different piece.
+
+|<<ReportChanges.adoc#top,Report Action>> | Display a message in the Chat Window when a Key Command is seen.
+
+|<<ReturnToDeck.adoc#top,Return to Deck>> | Move a piece into a deck.
+
+|<<RestrictCommands.adoc#top,Restrict Commands>> | Dynamically restrict traits from being activated by right-click menu commands or from other traits or Global Key Commands.
+
+|<<RestrictedAccess.adoc#top,Restricted Access>> | Restrict access to a piece to specified users.
+
+|<<SendToLocation.adoc#top,Send to Location>> | Send a piece to another location.
+
+|<<SetGlobalProperty.adoc#top,Set Global Property>> | Set a value in a Global property.
+
+|<<SetPieceProperty.adoc#top,Set Piece Property>> | Set a value in a Dynamic Property in selected pieces.
+
+|<<Spreadsheet.adoc#top,Spreadsheet>> | Maintain a spreadsheet of values in a piece.
+
+|<<SubMenu.adoc#top,Sub-Menu>> | Organise right-click Menu Commands into a sub-menu.
+
+|<<Label.adoc#top,Text Label>> | Display text on a piece.
+
+|<<TranslatableMessage.adoc#top,Translatable Message>> | Specify a text message that can be translated and displayed in the players' local language.
+
+|<<TriggerAction.adoc#top,Trigger Action>>| Specify a sequence of Key Commands that can be issued in order.
+
+|===

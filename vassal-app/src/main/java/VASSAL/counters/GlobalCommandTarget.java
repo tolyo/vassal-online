@@ -1,0 +1,530 @@
+/*
+ *
+ * Copyright (c) 2020 by Vassal Development Team
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License (LGPL) as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, copies are available
+ * at http://www.opensource.org.
+ */
+package VASSAL.counters;
+
+import VASSAL.build.AutoConfigurable;
+import VASSAL.build.module.map.MassKeyCommand;
+import VASSAL.configure.Configurer;
+import VASSAL.configure.ConfigurerFactory;
+import VASSAL.configure.GlobalCommandTargetConfigurer;
+import VASSAL.script.expression.Expression;
+import VASSAL.script.expression.FormattedStringExpression;
+import VASSAL.search.SearchTarget;
+import VASSAL.tools.NamedKeyStroke;
+import VASSAL.tools.SequenceEncoder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * GlobalCommandTarget configures and stores the "Fast Match" parameters of Global Key Commands, allowing certain
+ * simple filters to be "pre-matched" without having to initiate the (relatively slower) BeanShell filters.
+ */
+public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
+
+  protected static final char ENCODE_DELIMITER = '|';
+
+  protected GKCtype gkcType = GKCtype.MAP;  // What flavor of GKC (Module, Map, Deck, Piece)
+
+  protected boolean fastMatchLocation = false; // True if we are doing Fast Match by location (else other values in this block unused)
+  protected Target targetType = Target.MAP;    // Type of location Fast Match we are doing
+  protected FormattedStringExpression targetMap;              // Specified Map (for MAP, ZONE, LOCATION, XY types)
+  protected FormattedStringExpression targetBoard;            // Specified Board (for XY type)
+  protected FormattedStringExpression targetZone;             // Specified Zone (for ZONE type)
+  protected FormattedStringExpression targetLocation;         // Specified Location (for LOCATION type)
+  protected FormattedStringExpression targetDeck;             // Specified Deck (for DECK type)
+  protected FormattedStringExpression targetX;                // Specified X (for XY type)
+  protected FormattedStringExpression targetY;                // Specified Y (for XY type)
+  protected FormattedStringExpression targetAttachment;       // Specified Attachment Name (for CURATTCH type)
+  protected FormattedStringExpression targetAttachmentId;     // Specified Basic Name or Index (for CURATTCH type)
+
+  protected boolean fastMatchProperty = false; // True if we're doing a Fast Match by property value (else next two values ignored)
+  protected FormattedStringExpression targetProperty;         // Name/Key of Fast Match property
+  protected FormattedStringExpression targetValue;            // Value to match for that property
+  protected CompareMode targetCompare;         // Comparison mode
+
+  private GamePiece curPiece; // Reference piece for "current <place>". NOT encoded into the module, only set and used at time of command execution.
+
+  @Override
+  public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
+    return new GlobalCommandTargetConfigurer(key, name, ((MassKeyCommand) c).getTarget());
+  }
+
+  /**
+   * Specifies the type of GKC being configured (affects which Target options are allowed)
+   */
+  public enum GKCtype {
+    COUNTER, /** {@link CounterGlobalKeyCommand} */
+    MAP,     /** {@link VASSAL.build.module.map.MassKeyCommand} */
+    MODULE,  /** {@link VASSAL.build.module.GlobalKeyCommand} */
+    DECK     // {@link VASSAL.build.module.map.DeckGlobalKeyCommand}
+  }
+
+  /**
+   * Comparison Modes for property match
+   */
+  public enum CompareMode {
+    EQUALS("=="),
+    NOT_EQUALS("!="),
+    GREATER(">"),
+    GREATER_EQUALS(">="),
+    LESS("<"),
+    LESS_EQUALS("<="),
+    MATCH("=~"),
+    NOT_MATCH("!~");
+
+    String symbol;
+
+    CompareMode(String symbol) {
+      this.symbol = symbol;
+    }
+
+    public String getSymbol() {
+      return symbol;
+    }
+
+    public static CompareMode whichSymbol(String symbol) {
+      for (final CompareMode mode : GlobalCommandTarget.CompareMode.values()) {
+        if (mode.getSymbol().equals(symbol)) {
+          return mode;
+        }
+      }
+      return EQUALS;
+    }
+
+    public static String[] getSymbols() {
+      return Arrays.stream(values())
+        .map(GlobalCommandTarget.CompareMode::getSymbol)
+        .toArray(String[]::new);
+    }
+  }
+
+  /**
+   * Specifies the kind of target matching
+   */
+  public enum Target {
+    CURSTACK,  // Current stack or deck (of issuing piece or deck)
+    CURMAP,    // Current map           (of issuing piece)
+    CURZONE,   // Current zone          (of issuing piece)
+    CURLOC,    // Current location      (of issuing piece)
+    MAP,       // Specified map
+    ZONE,      // Specified zone
+    LOCATION,  // Specified location name
+    XY,        // Specified X/Y position
+    DECK,      // Specified Deck
+    CURMAT,    // Current mat (either this piece is the mat, or this piece is on the mat: matches mat & all cargo)
+    CURATTACH; // Pieces we are attached to w/ an Attachment trait
+
+    /**
+     * @return true if our match is relative to an issuing piece or deck
+     */
+    public boolean isCurrent() {
+      return (this == CURSTACK) || (this == CURMAP) || (this == CURZONE) || (this == CURLOC) || (this == CURMAT) || (this == CURATTACH);
+    }
+
+    /**
+     * @return Localizable key corresponding to target value
+     */
+    public String toTranslatedString() {
+      return "Editor.GlobalKeyCommand.target_" + name().toLowerCase();  //NON-NLS
+    }
+
+    /**
+     * @return Internal keys for all target types
+     */
+    public static String[] getKeys() {
+      return Arrays.stream(values())
+        .map(GlobalCommandTarget.Target::name)
+        .toArray(String[]::new);
+    }
+
+    /**
+     * @return Localization keys for all target types
+     */
+    public static String[] geti18nKeys() {
+      return Arrays.stream(values())
+        .map(GlobalCommandTarget.Target::toTranslatedString)
+        .toArray(String[]::new);
+    }
+  }
+
+  public GlobalCommandTarget() {
+    this(GKCtype.MAP);
+  }
+
+  public GlobalCommandTarget(GKCtype gkc) {
+    setGKCtype(gkc);
+
+    // Can't just let this shit be null => ANGRY ENCODER IS ANGRY!!!
+    targetMap          = new FormattedStringExpression("");
+    targetBoard        = new FormattedStringExpression("");
+    targetZone         = new FormattedStringExpression("");
+    targetLocation     = new FormattedStringExpression("");
+    targetDeck         = new FormattedStringExpression("");
+    targetProperty     = new FormattedStringExpression("");
+    targetValue        = new FormattedStringExpression("");
+    targetX            = new FormattedStringExpression("0");
+    targetY            = new FormattedStringExpression("0");
+    targetAttachment   = new FormattedStringExpression("");
+    targetAttachmentId = new FormattedStringExpression("");
+    targetCompare      = CompareMode.EQUALS;
+  }
+
+  public GlobalCommandTarget(String s) {
+    decode(s);
+  }
+
+  public GlobalCommandTarget(GlobalCommandTarget gc) {
+    this(gc.encode());
+  }
+
+  /**
+   * Encoder for the part of GlobalCommandTarget that gets stored in the module
+   * @return Fast Match parameters encoded in string form
+   */
+  public String encode() {
+    final SequenceEncoder se = new SequenceEncoder(ENCODE_DELIMITER);
+    se.append(gkcType.name())
+      .append(fastMatchLocation)
+      .append(targetType.name())
+      .append(targetMap.getExpression())
+      .append(targetBoard.getExpression())
+      .append(targetZone.getExpression())
+      .append(targetLocation.getExpression())
+      .append(targetX.getExpression())
+      .append(targetY.getExpression())
+      .append(targetDeck.getExpression())
+      .append(fastMatchProperty)
+      .append(targetProperty.getExpression())
+      .append(targetValue.getExpression())
+      .append(targetCompare.name())
+      .append(targetAttachment.getExpression())
+      .append(targetAttachmentId.getExpression());
+
+    return se.getValue();
+  }
+
+  /**
+   * Decoder for loading GlobalCommandTarget from the module XML
+   * @param code String to decode into our fields.
+   */
+  public void decode(String code) {
+    final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ENCODE_DELIMITER);
+    final String source = sd.nextToken("");
+    gkcType = source.isEmpty() ? GKCtype.MAP : GKCtype.valueOf(source);
+    fastMatchLocation = sd.nextBoolean(false);
+    final String type = sd.nextToken(Target.MAP.name());
+    targetType = type.isEmpty() ? Target.MAP : Target.valueOf(type);
+    targetMap = new FormattedStringExpression(sd.nextToken(""));
+    targetBoard = new FormattedStringExpression(sd.nextToken(""));
+    targetZone = new FormattedStringExpression(sd.nextToken(""));
+    targetLocation = new FormattedStringExpression(sd.nextToken(""));
+    targetX = new FormattedStringExpression(sd.nextToken("0"));
+    targetY = new FormattedStringExpression(sd.nextToken("0"));
+    targetDeck = new FormattedStringExpression(sd.nextToken(""));
+    fastMatchProperty = sd.nextBoolean(false);
+    targetProperty = new FormattedStringExpression(sd.nextToken(""));
+    targetValue = new FormattedStringExpression(sd.nextToken(""));
+    final String compare = sd.nextToken(CompareMode.EQUALS.name());
+    targetCompare = compare.isEmpty() ? CompareMode.EQUALS : CompareMode.valueOf(compare);
+    targetAttachment = new FormattedStringExpression(sd.nextToken(""));
+    targetAttachmentId = new FormattedStringExpression(sd.nextToken(""));
+  }
+
+  /**
+   * Compares two GlobalCommandTargets
+   * @param o GlobalCommandTarget to compare to this one
+   * @return true if their meaningful parts are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (! (o instanceof GlobalCommandTarget)) return false;
+    final GlobalCommandTarget t = (GlobalCommandTarget) o;
+    return encode().equals(t.encode());
+  }
+
+  @Override
+  public int hashCode() {
+    return encode().hashCode();
+  }
+
+  /**
+   * @return a list of the item's string/expression fields if any (for search)
+   */
+  @Override
+  public List<String> getExpressionList() {
+    final List<String> expList = new ArrayList<>();
+
+    if (fastMatchLocation) {
+      if ((targetType == Target.MAP) || (targetType == Target.ZONE) || (targetType == Target.LOCATION) || (targetType == Target.XY)) {
+        expList.add(targetMap.getExpression());
+      }
+      if (targetType == Target.XY) {
+        expList.add(targetBoard.getExpression());
+        expList.add(targetX.getExpression());
+        expList.add(targetY.getExpression());
+      }
+      else if (targetType == Target.ZONE) {
+        expList.add(targetZone.getExpression());
+      }
+      else if (targetType == Target.LOCATION) {
+        expList.add(targetLocation.getExpression());
+      }
+      else if (targetType == Target.DECK) {
+        expList.add(targetDeck.getExpression());
+      }
+      // Target attachment may be blank, indicating all attachments
+      else if (targetType == Target.CURATTACH && !targetAttachment.getExpression().isBlank()) {
+        expList.add(targetAttachment.getExpression());
+        expList.add(targetAttachmentId.getExpression());
+      }
+    }
+
+    if (fastMatchProperty) {
+      expList.add(targetProperty.getExpression());
+      expList.add(targetValue.getExpression());
+    }
+
+    return expList;
+  }
+
+  /**
+   * @return a list of any Message Format strings referenced in the item, if any (for search)
+   */
+  @Override
+  public List<String> getFormattedStringList() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the item, if any (for search)
+   */
+  @Override
+  public List<String> getMenuTextList() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * @return a list of any Named KeyStrokes referenced in the item, if any (for search)
+   */
+  @Override
+  public List<NamedKeyStroke> getNamedKeyStrokeList() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * @return a list of any Property Names referenced in the item, if any (for search)
+   */
+  @Override
+  public List<String> getPropertyList() {
+    final List<String> l = new ArrayList<>();
+    if (fastMatchProperty) {
+      l.add(targetProperty.getExpression());
+    }
+    return l;
+  }
+
+  // Welcome to Getters-and-Setters HELL!
+
+  public GKCtype getGKCtype() {
+    return gkcType;
+  }
+
+  public void setGKCtype(GKCtype gkcType) {
+    this.gkcType = gkcType;
+  }
+
+  public boolean isFastMatchLocation() {
+    return fastMatchLocation;
+  }
+
+  public void setFastMatchLocation(boolean fastMatchLocation) {
+    this.fastMatchLocation = fastMatchLocation;
+  }
+
+  public boolean isFastMatchProperty() {
+    return fastMatchProperty;
+  }
+
+  public void setFastMatchProperty(boolean fastMatchProperty) {
+    this.fastMatchProperty = fastMatchProperty;
+  }
+
+  public Target getTargetType() {
+    return targetType;
+  }
+
+  public void setTargetType(Target targetType) {
+    this.targetType = targetType;
+  }
+
+  public void setTargetType(String targetType) {
+    this.targetType = Target.valueOf(targetType);
+  }
+
+  public FormattedStringExpression getTargetMap() {
+    return targetMap;
+  }
+
+  public void setTargetMap(FormattedStringExpression targetMap) {
+    this.targetMap = targetMap;
+  }
+
+  public void setTargetMap(String targetMap) {
+    this.targetMap = new FormattedStringExpression(targetMap);
+  }
+
+  public FormattedStringExpression getTargetBoard() {
+    return targetBoard;
+  }
+
+  public void setTargetBoard(FormattedStringExpression targetBoard) {
+    this.targetBoard = targetBoard;
+  }
+
+  public void setTargetBoard(String targetBoard) {
+    this.targetBoard = new FormattedStringExpression(targetBoard);
+  }
+
+  public FormattedStringExpression getTargetZone() {
+    return targetZone;
+  }
+
+  public void setTargetZone(FormattedStringExpression targetZone) {
+    this.targetZone = targetZone;
+  }
+
+  public void setTargetZone(String targetZone) {
+    this.targetZone = new FormattedStringExpression(targetZone);
+  }
+
+  public FormattedStringExpression getTargetLocation() {
+    return targetLocation;
+  }
+
+  public void setTargetLocation(FormattedStringExpression targetLocation) {
+    this.targetLocation = targetLocation;
+  }
+
+  public void setTargetLocation(String targetLocation) {
+    this.targetLocation = new FormattedStringExpression(targetLocation);
+  }
+
+
+  public FormattedStringExpression getTargetDeck() {
+    return targetDeck;
+  }
+
+  public void setTargetDeck(FormattedStringExpression targetDeck) {
+    this.targetDeck = targetDeck;
+  }
+
+  public void setTargetDeck(String targetDeck) {
+    this.targetDeck = new FormattedStringExpression(targetDeck);
+  }
+
+  public FormattedStringExpression getTargetProperty() {
+    return targetProperty;
+  }
+
+  public void setTargetProperty(FormattedStringExpression targetProperty) {
+    this.targetProperty = targetProperty;
+  }
+
+  public void setTargetProperty(String targetProperty) {
+    this.targetProperty = new FormattedStringExpression(targetProperty);
+  }
+
+  public FormattedStringExpression getTargetValue() {
+    return targetValue;
+  }
+
+  public void setTargetValue(FormattedStringExpression targetValue) {
+    this.targetValue = targetValue;
+  }
+
+  public void setTargetValue(String targetValue) {
+    this.targetValue = new FormattedStringExpression(targetValue);
+  }
+
+  public CompareMode getTargetCompare() {
+    return targetCompare;
+  }
+
+  public void setTargetCompare(CompareMode targetCompare) {
+    this.targetCompare = targetCompare;
+  }
+
+  public void setTargetCompare(String targetCompare) {
+    this.targetCompare = CompareMode.valueOf(targetCompare);
+  }
+
+  public Expression getTargetX() {
+    return targetX;
+  }
+
+  public void setTargetX(FormattedStringExpression targetX) {
+    this.targetX = targetX;
+  }
+  public void setTargetX(String targetX) {
+    this.targetX = new FormattedStringExpression(targetX);
+  }
+  public void setTargetX(int targetX) {
+    this.targetX = new FormattedStringExpression(Integer.toString(targetX));
+  }
+
+  public Expression getTargetY() {
+    return targetY;
+  }
+
+  public void setTargetY(FormattedStringExpression targetY) {
+    this.targetY = targetY;
+  }
+  public void setTargetY(String targetY) {
+    this.targetY = new FormattedStringExpression(targetY);
+  }
+  public void setTargetY(int targetY) {
+    this.targetY = new FormattedStringExpression(Integer.toString(targetY));
+  }
+
+  public FormattedStringExpression getTargetAttachment() {
+    return targetAttachment;
+  }
+
+  public void setTargetAttachment(String targetAttachment) {
+    this.targetAttachment = new FormattedStringExpression(targetAttachment);
+  }
+
+  public FormattedStringExpression getTargetAttachmentId() {
+    return targetAttachmentId;
+  }
+
+  public void setTargetAttachmentId(String targetAttachmentId) {
+    this.targetAttachmentId = new FormattedStringExpression(targetAttachmentId);
+  }
+
+  public void setCurPiece(GamePiece curPiece) {
+    this.curPiece = curPiece;
+  }
+
+  public GamePiece getCurPiece() {
+    return curPiece;
+  }
+}

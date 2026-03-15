@@ -1,0 +1,23 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > *Module Extension*#
+
+'''''
+
+=== Module Extension
+
+A Module Extension defines optional additional components to a Module.
+Each extension is defined in its own file separate from the main Module file. Extensions are managed from the Module Library window. When the module is loaded to play a game, all its active extensions will be loaded as well.
+
+To install an extension, right-click (Mac users: Command-click) on the module in the Module Library window, choose 'Add Extension' and select the downloaded extension. The extension is automatically activated.
+
+If a module has already been configured with one or more extensions, the Module Library will show a twisty (">") in the left margin next to the module name.  The extension may be Deactivated or re-Activated by opening the twisty, right-clicking on the extension file name (.vmdx) and selecting the appropriate option.
+
+When a module is edited, only the module  is loaded. To edit an extension, open the twisty and right-click on the extension file name (.vmdx) and select "Edit extension".
+
+In order to create a new extension, right-click on the module and select "New Extension".
+
+Editing a Module Extension is done exactly like editing a Module, by adding and modifying components in the Configuration Window.
+The only difference is that you cannot delete or modify components of the main Module while editing an extension.
+Any components in an extension will always be added after those related components in the main Module.

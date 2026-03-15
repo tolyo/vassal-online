@@ -1,0 +1,46 @@
+<differences>
+    <!--
+        documentation at https://www.mojohaus.org/clirr-maven-plugin/examples/ignored-differences.html
+    -->
+
+    <difference>
+        <!-- It is okay to add classes to the set of superclasses -->
+        <className>**</className>
+        <differenceType>5000</differenceType>
+        <to>**</to>
+    </difference>
+    <difference>
+        <!-- It is okay to add methods to an interface-->
+        <className>**</className>
+        <differenceType>7012</differenceType>
+        <method>*</method>
+    </difference>
+    <difference>
+        <!-- It is okay to add abstract methods to an abstract class -->
+        <className>**</className>
+        <differenceType>7013</differenceType>
+        <method>*</method>
+    </difference>
+
+    <!-- 3.7.13 -->
+    <difference>
+        <className>VASSAL/build/module/properties/ScenarioPropertiesOptionTab</className>
+        <differenceType>6001</differenceType>
+        <field>alignLabelsRight</field>
+        <justification>Field is obsolete and no code will have sub-classed this class</justification>
+    </difference>
+    <difference>
+        <className>VASSAL/build/module/properties/ScenarioPropertiesOptionTab</className>
+        <differenceType>6004</differenceType>
+        <field>uiPanel</field>
+        <from>VASSAL.configure.ComponentConfigPanel</from>
+        <to>javax.swing.JPanel</to>
+        <justification>No code will have sub-classed this class</justification>
+    </difference>
+    <difference>
+        <className>VASSAL/build/module/properties/ScenarioPropertiesOptionTab</className>
+        <differenceType>6006</differenceType>
+        <field>uiPanel</field>
+        <justification>No code will have sub-classed this class</justification>
+    </difference>
+</differences>

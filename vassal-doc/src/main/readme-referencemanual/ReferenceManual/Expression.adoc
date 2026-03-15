@@ -1,0 +1,290 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > <<GameModule.adoc#top,Module>> > *Expressions*#
+
+'''''
+
+=== Expressions
+
+image:images/Expression.png[]
+
+Any field within the Vassal Editor that is followed by a Calculator icon image:images/calculator.png[] allows the entry of an Expression.
+Expressions are essentially an in-line <<CalculatedProperty.adoc#top,Calculated Property>>, re-evaluated every time VASSAL needs to know their value.
+There are two main flavors of Expression: <<#beanshell,BeanShell Expressions>> which are identified by being surrounded by curly braces {}, and <<#simple,Simple Expressions>> which are not.
+
+<<PropertyMatchExpression.adoc#top,Property Match Expressions>> select which pieces to operate on by checking properties, e.g., in a <<GlobalKeyCommand.adoc#top,Global Key Command>>.
+
+The <<ExpressionBuilder.adoc#top,Expression Builder>> makes building expressions from available properties, operations, and methods a bit more convenient.
+
+NOTE: Beanshell expressions should not be confused with "old style" <<#simple,Simple Expressions>>, which have a different syntax and are far more limited.
+
+
+[#beanshell]
+==== BeanShell Expressions
+
+BeanShell Expressions (named after the software package which implements them in Vassal) allow you to use arbitrarily complex formulae to define the value returned.
+BeanShell Expressions can be identified by their surrounding curly braces {}. The BeanShell processor is an accurate implementation of the Java programming language and BeanShell Expressions consist of Java language components.
+You can use any introductory Java tutorial to learn more about the syntax of BeanShell Expressions.
+The basic components are as follows:
+
+[width="100%", cols="^14%a,20%,33%a,33%a",options="header",]
+|===
+|Type |Options |Examples |Notes
+|*Numbers* |  |{35} |Vassal works with whole numbers.
+It stores decimal numbers as strings.
+
+|*Strings* |  |{"German"} |A String literal, or text message, must be enclosed in "" quotation marks
+
+|*Comments*| | /* Check not flipped */| Comments can be included in-line in an expression in any break between elements. .e.g. +
+
+`{AmmoAP > 0 /* Check AP Ammo */}`
+
+Adding comments to expression does not affect performance in any way.
+
+|*Properties* |  |{Nation} +
+{LocationName} +
+{CurrentMap} +
+{playerName} |VASSAL interprets any word not enclosed in "" as a <<Properties.adoc#top,Property>> name.
+
+Can refer by name to <<GlobalProperties.adoc#top,Global Properties>>, <<PropertyMarker.adoc#top,Marker>> and <<DynamicProperty.adoc#top,Dynamic Properties>> of pieces, and properties <<Properties.adoc#top,exposed by traits>>. The current value of the property will be used.
+
+|*Substitution* |$..$ |{"$Nation$"} +
+{$Attack$} |Property names enclosed by $..$ symbols immediately substitute the property value, based on the piece or component issuing the command.
+
+Should only be used in <<PropertyMatchExpression.adoc#top,Property Match Expressions>> to use properties from the issuing piece rather than target piece.
+
+|*Arithmetic* |+ Add +
+- Subtract +
+* Multiply +
+/ Divide +
+% Modulo |{(CurrentHP + 2) * (Damage - Resistance)} +
+{FirstName + "-" + Surname} +
+{Height * 10} +
+{width / 5} +
+{Level % 10} |Using the + operator on two String will concatenate (join) them.
+If the values on both sides of the + look like whole numbers, Vassal will attempt to add them.
+
+Parentheses can be used to organize operations and/or override the ordinary order of operations.
+
+|*Comparison* |> Greater than +
+< Less than +
+>= Not less than +
+\<= Not greater than +
+== Equals +
+!= Not Equals +
+=~ Regular Expression +
+!~ Negated Regular Expression |{height > 10 } +
+{width < Level} +
+{Total >= HitPoints} +
+{breadth \<= maxbreadth} +
+{Nation == "Germany"} +
+{Army != "Allied"} +
+{Type =~ "A\|B\|C"} +
+{Type !~ "A\|B\|C"}|Comparison operators come in handy for <<PropertyMatchExpression.adoc#top,Property Match Expressions>> and also with the ? (ternary) operator.
+
+Parentheses can be used to organize operations and/or override the ordinary order of operations.
+
+For more examples and information about <<ExpressionRegular.adoc#top,Regular Expressions>> see the dedicated RE page.
+|*Logical* |&& Logical AND +
+\|\| Logical OR +
+! Logical NOT +
+() Grouping |{Nation=="Germany" && Type == "Unit"} +
+{Nation == "Germany" \|\| Type == "Unit"} +
+{Nation == "Germany" && Type == "Unit"} +
+{!isInUse} +
+{A==B && (C == 1 \|\| D == 2)} |Comparison operators are used primarily in <<PropertyMatchExpression.adoc#top,Property Match Expressions>> and also in the If function.
+|*Ternary* |_Expr_ *?* _IfTrue_ *:* _IfFalse_ |{ (Nation=="Germany") ? "Axis" : "Allies" } +
+{ (Nation == "Germany") ? 5 : 2 } +
+{ States.contains(CurrentZone) ? 1 : 0 } +
+{ IsRandom() ? "Heads" : "Tails" } +
+{A == B ? C : D} |The Ternary or "?" operator can be thought of as posing a yes/no question: if the expression before the ? symbol evaluates as "true", then the value of the expression as a whole is equal to the middle ("if true") part of the expression; otherwise (initial part is false), the result is the right ("if false") side.
+|*Math* |Math.abs +
+Math.min +
+Math.max + |{Math.abs(Number - 5)} +
+{Math.min(Health, Armor)} +
+{Math.max(3, Random(6))} + |*Math.abs()* Returns the absolute value of the numeric property _value1_.
+
+*Math.min()* Returns the smaller of two numeric values.
+
+*Math.max()* Returns the larger of two numeric values.
+
+|*Property* |GetProperty +
+GetString +
+
+GetAttachProperty +
+GetMapProperty +
+GetZoneProperty +
+
+
+|{GetProperty("Nation"+myNation)} +
+{GetString("HowManyDogs")} +
+{GetAttachProperty("MyCrewMembers", "Health", 2) +
+{GetAttachProperty("MyCrewMembers", "Health", "Unit2") +
+{GetAttachProperty("MyCrewMembers", "Health", "{Str > 0}") +
+{GetMapProperty("Owner",CurrentMap)} +
+{GetZoneProperty("Militia","Georgia")} +
+{GetZoneProperty("Modifier",OldZone,OldMap)} +
+
+|All *GetProperty()* family functions return the value of a named property.
+The name of the property can be constructed from an expression.
+
+See the <<ExpressionProperty.adoc#top,Property Functions>> page for full details.
+
+|*Random* |Random +
+IsRandom() |{Random(6)} +
+{Random(AttackPower,AttackPower * 2)} +
+{IsRandom()} +
+{IsRandom(75)} + |*Random(value1)* returns a random number between 1 and _value1_.
+
+*Random(value1,value2)* returns a random number between _value1_ and _value2_.
+
+*IsRandom()* returns "true" 50% of the time.
+
+*IsRandom(percent)* returns "true" the specified percent of the time.
+|*String Methods* |length +
+contains +
+isEmpty +
+startsWith +
+endsWith +
+matches +
+indexOf +
+lastIndexOf +
+substring +
+substring +
+replace +
+trim +
+toLowerCase +
+toUpperCase +
+toString
+
+|{ LocationName.length() } +
+{ States.contains("Arkansas") } +
+{ CurrentMap.isEmpty() }
+{ OwnerString.startsWith("Axis") } +
+{ MaybeQuestion.endsWith("?") } +
+{ String.matches("[^abc]") } +
+{ WhereIsTheColon.indexOf(":") } +
+{ MaybeLotsOfDivs.lastIndexOf("div") } +
+{ CurrentZone.substring(5) } +
+{ PlayerName.substring(1,5) } +
+{ GetProperty("XX").replace("A","YY") } +
+{ Name.trim() } +
+{ Name.toUpperCase() } +
+{ Name.toLowerCase() } +
+{ AttackValue.toString() }
+
+|See the <<ExpressionString.adoc#top,String Function>> page for examples and more information about String Functions.
+
+|*Sum and Count* |SumStack +
+CountStack +
+
+SumMat +
+CountMat +
+
+SumAttach +
+CountAttach +
+MaxAttach +
+MinAttach +
+
+SumMap +
+CountMap +
+
+SumLocation +
+CountLocation +
+
+SumZone +
+CountZone +
+
+SumRange +
+SumRangePX +
+CountRange +
+CountRangePx +
+
+Sum +
+Count +
+|{SumStack("Attack")} +
+{CountStack("Russian")} +
+
+{SumMat("AttackFactor")} +
+{CountMat("Followers")} +
+
+{SumAttach("MyMinions", "Ammo")} +
+{CountAttach("MyMinions", "{ Ammo > 0 }")} +
+{MaxAttach("MyMinions", "Strength")} +
+{MinAttach("MyMinions", "Health")} +
+
+{SumLocation("Strength")} +
+{CountLocation("Strength", "ReinforcementPool", "MainMap")} +
+
+{SumZone("Strength")} +
+{CountZone("Zone1", "Map2", "{Size > 2}") +
+
+{Sum("Strength", "{Owner=\"me\"}"} +
+{Count("{Owner=\"me\"}"}
+
+
+|There is an extensive range of Sum and Count functions to count pieces and to sum properties attached to pieces. See the <<ExpressionSumCount.adoc#top,Sum and Count Functions>> page for more details on choosing and using these Functions.
+
+|*Range* |
+Range +
+RangePx +
+|
+Range(0, 0) +
+RangePx(oldX, oldY) +
+Range("MyAttachment") +
+RangePx("Attack") +
+Range(0, 0, gp_x, gp_y) +
+RangePx(oldX, oldY, newX, newY) +
+Range(0, 0, gp_x, gp_y, "Main") +
+RangePx(oldX, oldY, newX, newY, "Battle") + |
+Range functions calculate the range in pixels, or in grid units (hexes, squares) between 2 locations. See the <<ExpressionRange.adoc#top,Range Functions>> page for more details on choosing and using these Functions.
+
+|*Alert* |Alert + |{Alert("Adding 1 to HP")} + |*Alert* displays a message in a popup dialog box, to the currently active player only.
+If a message needs to be shown to _all_ players, the recommended method is to send something to the Chat Log, e.g.,
+with a <<ReportChanges.adoc#top,Report Action>> trait or other <<MessageFormat.adoc#top,Message Format>> field.
+
+|*Sleep* | Sleep(ms)|{Sleep(500)} + |*Sleep* causes the screen to refresh and then pauses all screen updates for the number of milliseconds specified. The example will 'sleep' for a 1/2 second.
+
+|*Audit*
+| Audit(text) +
+Audit(text, options) +
+Audit(text, expression) +
+Audit(text, expression, options)
+|
+{Audit("In Trigger 1"} +
+{Audit("Text to Chat only", "CS")} +
+{Audit("Oops", "{Turn == \"X1\"}") +
+{Audit("Oops", "{Turn == \"X1\"}", "C")
+
+|*Audit* writes a message (text) to the errorlog and/or the Chat Window. +
+
+*text* is the message to write.
+
+*expression* is a fully quoted beanshell expression (with double quotes escaped) that must be true for the text to be written or displayed.
+
+*options* can be any combination of the following: +
+
+* F - Include full audit of the current expression  +
+* C - Display text in Chat Window +
+* S - Suppress logging to errorLog
+
+|===
+
+[#simple]
+==== Simple Expressions
+
+Simple expressions--expressions not surrounded by braces--exist to provide compatibility with earlier versions of Vassal that only implemented a much simpler version of Expressions.
+Simple Expressions are far more limited than BeanShell Expressions, only allowing the substitution of property values into a pre-determined string.
+If you are learning VASSAL for the first time, you should mostly concentrate on learning the more powerful BeanShell Expressions.
+
+[cols=",,",]
+|===
+|A Simple Integer Expression: |image:images/SimpleExpression1.png[] |A whole number.
+In general, Vassal does not support decimal numbers, except when stored and used as Strings.
+|A basic Simple String Expression: |image:images/SimpleExpression2.png[] |A String in a Simple Expression does not need quotation marks.
+|A more complex example: |image:images/SimpleExpression3.png[] |The string $Nation$ will be replaced by the value of the Nation property.
+You can use multiple $...$ strings in an expression ($Nation$-$Division$), but CANNOT nest them ($Nation$Count$$).
+|===
+
+*SEE ALSO:* <<Properties.adoc#top,Properties>>

@@ -1,0 +1,442 @@
+/*
+ *
+ * Copyright (c) 2000-2003 by Rodney Kinney
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License (LGPL) as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, copies are available
+ * at http://www.opensource.org.
+ */
+package VASSAL.counters;
+
+import VASSAL.build.GameModule;
+import VASSAL.build.module.Map;
+import VASSAL.build.module.documentation.HelpFile;
+import VASSAL.build.module.map.DrawPile;
+import VASSAL.command.Command;
+import VASSAL.command.NullCommand;
+import VASSAL.configure.BooleanConfigurer;
+import VASSAL.configure.DeckSelectionConfigurer;
+import VASSAL.configure.NamedHotKeyConfigurer;
+import VASSAL.configure.StringConfigurer;
+import VASSAL.i18n.PieceI18nData;
+import VASSAL.i18n.Resources;
+import VASSAL.i18n.TranslatablePiece;
+import VASSAL.script.expression.AuditTrail;
+import VASSAL.script.expression.AuditableException;
+import VASSAL.tools.FormattedString;
+import VASSAL.tools.NamedKeyStroke;
+import VASSAL.tools.ScrollPane;
+import VASSAL.tools.SequenceEncoder;
+import VASSAL.tools.swing.SwingUtils;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * GamePiece trait that returns a piece to a {@link DrawPile}
+ */
+public class ReturnToDeck extends Decorator implements TranslatablePiece {
+  public static final String ID = "return;"; // NON-NLS
+  public static final int RtDversion = 2;
+  protected String deckId;
+  protected String returnCommand;
+  protected String selectDeckPrompt = Resources.getString("Editor.ReturnToDeck.select_destination");
+  protected NamedKeyStroke returnKey;
+  protected DrawPile deck;
+
+  protected KeyCommand[] commands;
+  protected KeyCommand myCommand;
+
+  protected String description = "";
+
+  protected String deckName;
+
+  protected boolean deckSelect = true;
+  protected FormattedString deckExpression = new FormattedString("");
+
+  public ReturnToDeck() {
+    this(ID + Resources.getString("Editor.ReturnToDeck.default_command") + ";R;", null); // NON-NLS
+  }
+
+  public ReturnToDeck(String type, GamePiece inner) {
+    mySetType(type);
+    setInner(inner);
+  }
+
+  @Override
+  protected KeyCommand[] myGetKeyCommands() {
+    if (commands == null) {
+      myCommand = new KeyCommand(returnCommand, returnKey, getOutermost(this), this);
+      if (returnCommand.length() > 0 && returnKey != null && !returnKey.isNull()) {
+        commands =
+            new KeyCommand[]{myCommand};
+      }
+      else {
+        commands = KeyCommand.NONE;
+      }
+    }
+
+    // Disable Return To Deck on Mats carrying cargo
+    final Mat mat = (Mat) getDecorator(getOutermost(this), Mat.class);
+    myCommand.setEnabled(mat == null || mat.getCargoCount() == 0);
+
+    return commands;
+  }
+
+  @Override
+  public String myGetState() {
+    return "";
+  }
+
+  @Override
+  public void mySetType(String s) {
+    if (s.startsWith(ID)) {
+      s = s.substring(ID.length());
+      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(s, ';');
+      returnCommand = st.nextToken();
+      returnKey = st.nextNamedKeyStroke(null);
+      deckId = st.nextToken("");
+      selectDeckPrompt = st.nextToken(selectDeckPrompt);
+      description = st.nextToken("");
+
+      final int version = st.nextInt(0);
+      if (version < 2) {
+        //BR// if loading an "old ID" format trait, create values needed for new format.
+        //BE// deckId is deckName
+        deckSelect = (deckId == null || deckId.isEmpty());
+        deckExpression.setFormat(deckId);
+      }
+      else {
+        deckSelect = st.nextBoolean(true);
+        deckExpression.setFormat(st.nextToken(""));
+      }
+    }
+  }
+
+  @Override
+  public String myGetType() {
+    final SequenceEncoder se = new SequenceEncoder(';');
+    return ID + se.append(returnCommand).append(returnKey).append(deckId).append(selectDeckPrompt).append(description).append(RtDversion).append(deckSelect).append(deckExpression.getFormat()).getValue();
+  }
+
+  @Override
+  public Command myKeyEvent(KeyStroke stroke) {
+    myGetKeyCommands();
+    Command comm = null;
+    if (myCommand.matches(stroke)) {
+      final DrawPile pile;
+
+      if (deckSelect) {
+        pile = promptForDrawPile();
+        if (pile == null) {
+          return null;  // No Deck selected, just do nothing
+        }
+      }
+      else {
+        final AuditTrail audit = AuditTrail.create(this, deckExpression, Resources.getString("Editor.ReturnToDeck.deck_name"));
+        final String evalName = deckExpression.getText(getOutermost(this), this, audit);
+        pile = DrawPile.findDrawPile(evalName);
+
+        // Can only return if we can find the Deck and it's on a map
+        if (pile == null || pile.getMap() == null) {
+          reportDataError(this, "Deck Not Found for Return-to-Deck trait: " + evalName, deckExpression.getFormat(), new AuditableException(this, audit));
+          return null;
+        }
+      }
+
+      final Map preMap = getMap();
+      final Point prePos = getPosition();
+
+      // Prepare the piece for move, writing "old location" properties and unlinking from any deck
+      comm = prepareMove(new NullCommand(), false);
+
+      // Move the piece to its new deck
+      comm = comm.append(pile.addToContents(getOutermost(this)));
+
+      // If this piece is also loaded cargo, remove it from its mat
+      final MatCargo cargo = (MatCargo) getDecorator(getOutermost(this), MatCargo.class);
+      if (cargo != null && cargo.getMat() != null) {
+        comm = comm.append(cargo.makeClearMatCommand());
+      }
+
+      final Map m = pile.getMap();
+
+      // Post move actions -- apply any afterburner apply-on-move key (but only if the piece was actually moved)
+      comm = finishMove(comm, (m != null && m.getMoveKey() != null && (m != preMap || !getPosition().equals(prePos))), false, false);
+
+      if (m != null) {
+        m.repaint();
+      }
+    }
+    return comm;
+  }
+
+  @Override
+  public Rectangle boundingBox() {
+    return piece.boundingBox();
+  }
+
+  @Override
+  public void draw(Graphics g, int x, int y, Component obs, double zoom) {
+    piece.draw(g, x, y, obs, zoom);
+  }
+
+  @Override
+  public String getName() {
+    return piece.getName();
+  }
+
+  @Override
+  public Shape getShape() {
+    return piece.getShape();
+  }
+
+  private DrawPile promptForDrawPile() {
+    final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+    d.setTitle(getInnermost(this).getName()); //$NON-NLS-1$
+    d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
+
+    class AvailableDeck {
+      private final DrawPile pile;
+
+      public AvailableDeck(DrawPile pile) {
+        this.pile = pile;
+      }
+
+      @Override
+      public String toString() {
+        return pile.getConfigureName();
+      }
+    }
+
+    final List<DrawPile> piles =
+      GameModule.getGameModule().getAllDescendantComponentsOf(DrawPile.class);
+
+    if (piles.isEmpty()) {
+      reportDataError(this, "No decks in module."); // NON-NLS
+      return null;
+    }
+
+    final AvailableDeck[] decks = new AvailableDeck[piles.size()];
+    int i = 0;
+    for (final DrawPile p : piles)
+      decks[i++] = new AvailableDeck(p);
+
+    final JList<AvailableDeck> list = new JList<>(decks);
+    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    final JLabel prompt = new JLabel(selectDeckPrompt);
+    prompt.setAlignmentX(0.5f);
+    d.add(prompt); //$NON-NLS-1$
+    d.add(new ScrollPane(list));
+
+    final Box box = Box.createHorizontalBox();
+    box.setAlignmentX(0.5F);
+
+    final JButton okButton = new JButton(Resources.getString(Resources.OK));
+    okButton.addActionListener(e -> {
+      final AvailableDeck selection = list.getSelectedValue();
+      if (selection != null)
+        deck = selection.pile;
+      d.dispose();
+    });
+    box.add(okButton);
+
+    final JButton cancelButton = new JButton(Resources.getString(Resources.CANCEL));
+    cancelButton.addActionListener(e -> d.dispose());
+    box.add(cancelButton);
+
+    d.add(box);
+
+    // Default actions for Enter/ESC
+    SwingUtils.setDefaultButtons(d.getRootPane(), okButton, cancelButton);
+
+    d.pack();
+    d.setLocationRelativeTo(d.getOwner());
+    d.setVisible(true);
+    // don't cache -- ask again next time
+    final DrawPile pile = deck;
+    deck = null;
+    return pile;
+  }
+
+  @Override
+  public void mySetState(String newState) {
+  }
+
+  @Override
+  public PieceEditor getEditor() {
+    return new Ed(this);
+  }
+
+  @Override
+  public String getDescription() {
+    String s = buildDescription("Editor.ReturnToDeck.trait_description", deckSelect ? "" : deckExpression.getFormat(), description);
+    s += getCommandDesc(returnCommand, returnKey);
+    return s;
+  }
+
+  @Override
+  public String getBaseDescription() {
+    return Resources.getString("Editor.ReturnToDeck.trait_description");
+  }
+
+  @Override
+  public String getDescriptionField() {
+    return description;
+  }
+
+  @Override
+  public HelpFile getHelpFile() {
+    return HelpFile.getReferenceManualPage("ReturnToDeck.html"); // NON-NLS
+  }
+
+  @Override
+  public PieceI18nData getI18nData() {
+    return getI18nData(returnCommand, Resources.getString("Editor.ReturnToDeck.return_to_deck_command"));
+  }
+
+  @Override
+  @SuppressWarnings("PMD.SimplifyBooleanReturns")
+  public boolean testEquals(Object o) {
+    if (! (o instanceof ReturnToDeck)) return false;
+    final ReturnToDeck c = (ReturnToDeck) o;
+    if (! Objects.equals(returnCommand, c.returnCommand)) return false;
+    if (! Objects.equals(returnKey, c.returnKey)) return false;
+    if (! Objects.equals(deckExpression, c.deckExpression)) return false;
+    if (! Objects.equals(deckSelect, c.deckSelect)) return false;
+    if (! Objects.equals(deckId, c.deckId)) return false;
+    return Objects.equals(selectDeckPrompt, c.selectDeckPrompt);
+  }
+
+  private static class Ed implements PieceEditor {
+    private final StringConfigurer menuName;
+    private final NamedHotKeyConfigurer menuKey;
+    private final TraitConfigPanel controls;
+    private final String deckId;
+    private final JLabel promptLabel;
+    private final StringConfigurer promptText;
+    private final BooleanConfigurer prompt;
+    private final JLabel selectLabel;
+    private final StringConfigurer description;
+    private final DeckSelectionConfigurer deckExp;
+
+
+    public Ed(ReturnToDeck p) {
+      controls = new TraitConfigPanel();
+      deckId = p.deckId;
+
+      description = new StringConfigurer(p.description);
+      description.setHintKey("Editor.description_hint");
+      controls.add("Editor.description_label", description);
+
+      menuName = new StringConfigurer(p.returnCommand);
+      menuName.setHintKey("Editor.menu_command_hint");
+      controls.add("Editor.menu_command", menuName);
+
+      menuKey = new NamedHotKeyConfigurer(p.returnKey);
+      controls.add("Editor.keyboard_command", menuKey);
+
+      prompt = new BooleanConfigurer(p.deckSelect);
+      prompt.addPropertyChangeListener(e -> updateVisibility());
+      controls.add("Editor.ReturnToDeck.choose_destination_deck_at_game_time", prompt);
+
+      selectLabel = new JLabel(Resources.getString("Editor.ReturnToDeck.deck_name"));
+      deckExp = new DeckSelectionConfigurer(p.deckExpression.getFormat(), p);
+      controls.add(selectLabel);
+      controls.add(deckExp.getControls(), "split 2"); //NON-NLS
+
+      promptLabel = new JLabel(Resources.getString("Editor.ReturnToDeck.prompt_for_destination_deck"));
+      promptText = new StringConfigurer(p.selectDeckPrompt);
+      controls.add(promptLabel, promptText);
+
+      updateVisibility();
+    }
+
+    private void updateVisibility() {
+      promptLabel.setVisible(prompt.getValueBoolean());
+      promptText.getControls().setVisible(prompt.getValueBoolean());
+      deckExp.getControls().setVisible(!prompt.getValueBoolean());
+      selectLabel.setVisible(!prompt.getValueBoolean());
+      repack(controls);
+    }
+
+    @Override
+    public Component getControls() {
+      return controls;
+    }
+
+    @Override
+    public String getState() {
+      return "";
+    }
+
+    @Override
+    public String getType() {
+      final SequenceEncoder se = new SequenceEncoder(';');
+      se.append(menuName.getValueString())
+        .append(menuKey.getValueString())
+        .append(deckId)
+        .append(promptText.getValueString())
+        .append(description.getValueString())
+        .append(RtDversion)
+        .append(prompt.getValueBoolean())
+        .append(deckExp.getValueString());
+      return ID + se.getValue();
+    }
+  }
+
+  /**
+   * @return a list of any Property Names referenced in the Decorator, if any (for search)
+   */
+  @Override
+  public List<String> getPropertyList() {
+    return List.of(deckExpression.getFormat());
+  }
+
+  /**
+   * @return a list of any Named KeyStrokes referenced in the Decorator, if any (for search)
+   */
+  @Override
+  public List<NamedKeyStroke> getNamedKeyStrokeList() {
+    return Collections.singletonList(returnKey);
+  }
+
+  /**
+   * @return a list of any Menu Text strings referenced in the Decorator, if any (for search)
+   */
+  @Override
+  public List<String> getMenuTextList() {
+    return List.of(returnCommand);
+  }
+
+  /**
+   * @return a list of any Message Format strings referenced in the Decorator, if any (for search)
+   */
+  @Override
+  public List<String> getFormattedStringList() {
+    return List.of(selectDeckPrompt);
+  }
+}

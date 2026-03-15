@@ -1,0 +1,244 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > <<Tools.adoc#top,Tools>> > *Preferences*#
+
+'''''
+
+=== Preferences
+The VASSAL Preferences dialog allows you to configure VASSAL for your system and to personalize various options to suit your needs.
+
+The number of tabs displayed will depend on the module you are using at the time (for example a module without
+a <<TurnTracker#top,Turn Tracker>> won't display a Turn Tracker tab). You will find the preferences sorted under the following tabs:
+
+* <<#General,*General*>> - Common preferences.
+* <<#Compatibility,*Compatibility*>> - Platform-specific troubleshooting and very old modules.
+* <<#Personal,*Personal*>> - Your username and password for multiplayer games.
+* <<#Sounds,*Sounds*>> - Sound file mappings.
+* <<#Server,*Server*>> - Which server to connect to for online play.
+* <<#ChatWindow,*Chat Window*>> - Fonts and colors for the <<ChatLog#top,Chat Log>>
+* <<#TurnCounter,*Turn Counter*>> - <<TurnTracker#top,Turn Tracker>> display configuration.
+* <<#Converter,*Converter*>> - Module converter settings.
+* <<#Tiler,*Tiler*>> - Image tiler settings.
+
+Modules can also define their own preference that will appear on module specific tabs.
+[#General]
+==== General Preferences
+The _General_ tab includes common preferences for configuring VASSAL's user interface.
+
+[width="100%",cols="50%a,50%a",]
+|===
+|
+
+*Language:*:: Sets the language that VASSAL will use, when localized translations are available. When none are available for a language, VASSAL will default to English.
+
+*Override default font size (0 = default; restart required):*:: Sets the default font size to use for text in menus and buttons.
+
+*Remember main window size between sessions:*:: When checked, Vassal will save the size of the main window between different sessions.
+
+*Ask "Wizard" questions at startup*:*:: If checked, VASSAL modules will use "wizard-style" introductory screens when starting a new game. If unchecked, the main menu will appear when starting a new module, and the _New Game_, _Load Game_, etc. options from the _File_ menu can be used to start a new game.
+
+*Generate audit trails in errorlog for 'Bad Data in Module' errors:*:: By default, 'Bad Data in Module' errors only generate a brief error message in the Chat Window and the error log. Checking this option will cause a detailed report to be written to the errorlog. Details will include the component or trait that generated the error and if it involved a Beanshell expression, then details of the values of any properties referenced in the Expression.
++
+NOTE: This option is intended for debugging only and can degrade the performance of a module.
+
+*Ask to ensure logging when starting or loading a new game:*:: If you are playing by email (PBEM), you will usually want to start a log file when you begin playing a new module or load a saved game, thus ensuring that you log all your actions into a .VLOG file which can be sent to your opponent. Checking this preference will provide a reminder prompt in these situations.
+
+*Ask to ensure logging after a replay:*:: Checking this option will produce a reminder prompt to start recording a logfile when you finish playing through a .VLOG replay, e.g., from your PBEM opponent.
+
+*Prompt for log/save file comments:*:: Checking this option will prompt you for comments whenever you save a game or begin a log file. From VASSAL 3.5 onward, these comments will be displayed in the chat log whenever the save or log file is loaded.
+
+*Auto-report moves:*:: Use the Map defined Move Report to automatically report the movement of pieces during play.
+
+*Opponents can unmask my pieces:*:: Allows your opponent to unmask pieces that you have masked.
+
+*Use combined application window (requires restart):*:: Check this option to have the first Map#top,Map>> in each module open as part of the same window
+that includes the ChatLog#top,Chat Log>> and main module menu. If unchecked, all Maps will have their own windows.
+
+[#JVMmaxheap]
+*JVM maximum heap (in MB):*:: This sets the maximum size (in megabytes) of the heap that Java uses to manage memory for the VASSAL applications. The two times you should consider increasing this value are: (1) if you receive an Out of Memory exception, and (2) you notice that map tiles are taking a really long time to paint. If either of these two things happens, try bumping it up by increments of 256 -- it is uncommon enough to need to adjust it at all, and, e.g., 768 is often fine. 1024 handles even most very large modules, and we've rarely encountered a module in 20 years that needed more than 2048. Note that increasing this number in situations where it is not needed will end up disincentivizing Java from managing memory as tightly -- so don't increase this to massive numbers "just because you can". The module may overwrite this setting with a higher value and will log a warning if it does so.
+
+NOTE: changing this value will have no effect until the next time you start the module in the VASSAL Player or Editor. This applies even if the module itself overwrites the setting.
+
+*Mouse Drag Threshold:*:: When VASSAL is distinguishing a mouse "click" from a mouse "drag", this is the minimum distance in pixels that the mouse must be moved (with a button pressed) in order to be considered a "drag". Smaller values will allow more sensitive drag detection, but can result in "clicks" being misinterpreted as drags. Larger numbers mean a piece will have to be dragged further before it begins "dragging".
+
+NOTE: Pieces can be dragged to a position "inside" the drag threshold by first dragging them outside and then dragging them back (can be all in the same drag).
+
+*Center on opponents' moves:*:: If checked, whenever an opponent makes a move (either online or while replaying a PBEM log file), VASSAL will ensure that the position is visible on the screen, recentering if necessary. This is generally desirable behavior, but in online games where multiple players make moves simultaneously it can be annoying, and thus the ability to turn it off is provided.
+
+NOTE: Previous versions of VASSAL had a feature which let the value of this preference be forced by a module's settings. This seemed to create problems, so it was removed as of VASSAL 3.4, and now this player preference is always available in every module.
+
+*Reverse left-to-right order of pieces in Stack Viewer:*:: When checked, the normal left-to-right ordering of pieces in the Mouse-over Stack Viewer is reversed.
+
+*Show when pieces have been marked as moved (if module supports):*:: When checked, and if the module supports showing a special graphic for pieces that have been marked as moved, then the graphic will be displayed. If not selected, the graphic will not be shown, but pieces will still be _marked_ as moved (their _Moved_ property will be set to true) when they are moved.
+
+NOTE: Earlier versions of VASSAL sometimes offered a different preference which prevented pieces from even being _marked_ as moved. This ended up creating various kinds of mystifying behavior for both players and designers, and has therefore been replaced with this display preference. Note that a _module designer_ can still set whether pieces are even marked when moved in the first place, by setting the proper <<Map.adoc#MarkMoved, Map setting>> in the editor.
+
+*Recenter Sensitivity (% of edge/center distance):*:: Adjusts the sensitivity when VASSAL decides whether to recenter the screen on an action. Larger numbers will produce more recentering.
+
+*Scroll increment (pixels):*:: Sets the increment, in mapboard pixels, by which the map scrolls when using its scrollbars.
+
+*Use arrow keys to scroll:*:: If checked, the arrow keys will be mapped to scroll the currently focused <<Map#top, Map>> window.
+
+*Disable automatic stack display - use configured control key (Ctrl+Space) instead:*:: If checked, <<Map#StackViewer, Mouseover Stack Viewers>> do not pop up automatically when holding the mouse over a piece or stack. Instead, the viewer appears only when _Ctrl+SPACE_ is then pressed.
+
+*Delay before automatic stack display (ms):*:: Sets the number of milliseconds that the mouse must be held above a piece or stack to activate a <<Map#StackViewer, Mouseover Stack Viewer>>.
+
+*Disable animation of map flares:*:: When checked, the Map Flares are displayed with a static image instead of an animated target image.
+
+*Delay scrolling when dragging at map edge (ms):*:: Sets the number of milliseconds of delay before scrolling the map when dragging a piece near to the edge of the view. The normal default is 200, but a module designer can change the default for the module by defining a Global Property named _Map.defaultEdgeScrollDelay_.
+
+*Distance from edge of map to begin scrolling (when dragging):*:: Sets how close in pixels to the edge of a Map the cursor must be before scrolling is initiated. The normal default is 60, but a module designer can change the default for the module by defining a Global Property named _Map.defaultEdgeScrollZone_.
+
+*Edge scroll rate (pixels per millisecond):*:: Sets the rate (in pixels per millisecond) map will scroll when dragging a piece at its edge. The normal default is 0.5, but a module designer can change the default for the module by defining a Global Property named _Map.defaultEdgeScrollRate_.
+
+|image:images/Preferences.png[]
+
+|===
+[#Compatibility]
+Compatibility preferences are useful for troubleshooting certain rare platform-specific bugs, or to maintain compatibility with older modules.
+
+==== Compatibility
+[width="100%",cols="50%a,^50%",]
+|===
+|
+
+*Disable OpenGL FBOs (Recommended for Apple Silicon):*:: If you are having poor graphics performance (slow scrolling, e.g.) on a Mac, and particularly on a non-Intel, Apple Silicon Mac (e.g., M1, M2, etc.), go to Vassal's preferences and check the box for Disable OpenGL FBOs.
+
+NOTE: This preference will only appear on Mac systems.
+
+*Disable DirectX D3D pipeline? (Can resolve some graphics glitching issues)*: This option is worth a try if you are experiencing "tearing" in your maps while running on Windows. If this option doesn't help, or if you are not running on Windows, please refer to https://vassalengine.org/wiki/Troubleshooting_Common_Problems[additional steps to try] on the VASSAL wiki.
+
+*Override native drag-and-drop image (if image missing or too dim when dragging counters):*:: When dragging pieces on a map, the intended behavior involves semi-transparent images of the pieces being dragged. On some Windows machines these images don't appear, or large images may be "too faded out" -- in that case, select this option for an alternate drag image.
+
+*Use Classic Move Fixed Distance trait move batching:*:: The <<Translate#top,Move Fixed Distance>> trait changed in VASSAL 3.3 to correct several old bugs. Part of the fix involved changing some behaviors of the trait when firing off multiple versions of the trait with a <<TriggerAction#top,Trigger Action>> trait. Check this box to use the old trait behavior with modules that depend on the old unintended behavior (in other words, if the bug was actually a "feature" for your module).
+
+NOTE: Use of this preference is *strongly* discouraged unless you have an old module that depends on it.
+
+*Warn when using Legacy Load Continuation:*:: If checked, then you will get a warning if you select the legacy 'Load continuation' menu option. Check this if you use this option regularly, understand the consequences and do not need to be warned.
+
+*Moving stacks should pick up non-moving pieces:*:: If you move a piece onto another piece and then move it again without deselecting, the default behavior is that it will not "pick up" that intermediate piece. Check this box to cause intermediate pieces to be picked up.
+
+| image:images/PreferencesCompatibility.png[]
+
+Example of Image Tearing
+image:images/ImageTearing.png[]
+
+|===
+[#Personal]
+
+==== Personal
+The _Personal_ section of the preferences allows you to set your _username_ and _password_ to be used in logging into multiplayer games, both online _server_ games and e-mail based _PBEM_ games. You can also enter some personal information to be displayed to other players in multiplayer "rooms".
+
+NOTE: Your password secures your place in a multiplayer game, preventing anyone else from taking your position and/or looking at your private cards or maps. This means that if you lose your password it can be difficult to recover your position in a game, much to your (and everyone else in the game's) chagrin.
+
+If you are changing computers but cannot remember your password, you will first need to "retire" from your
+side on the computer that has the password recorded on it (switch to observer status, and then save the game). This will create a clean copy of the game without your side being locked - you can then join the game on your new system using whatever new username and password you like.
+[width="100%",cols="50%a,^50%",]
+|===
+|
+
+*Name:*:: Your name as you wish to appear in multiplayer games.
+
+*Password:*:: Your password which will secure your side and prevent anyone else from viewing your private cards and maps.
+
+NOTE: Choose a good password. If another player uses the same password as you, they will gain access to the same _Side_ you are playing.
+
+*Personal Info:*:: Optional additional info displayed for other players in multiplayer rooms.
+
+
+|image:images/PreferencesPersonal.png[]
+
+|===
+[#Sounds]
+==== Sounds
+Configure sounds options.
+[width="100%",cols="50%a,50%",]
+|===
+|*Send Wake-up:*:: Configure the "Wake-up" sound that is played when another player sends you a "Wake-up" in an on-line room.
+
+*Mute server "Wake Up" sounds:*:: Mute any "Wake-up" sounds being generated by other players when in an on-line room.
+
+*Mute module sounds:*:: Mute all sounds generate by _Play Sound_ traits and components in the module.
+
+
+|image:images/PreferencesSounds.png[]
+
+|===
+[#Server]
+==== Server
+The _Server_ tab lets you pick which server you will use to connect to online games.
+[width="100%",cols="50%a,50%",]
+|===
+|
+|image:images/PreferencesServer.png[]
+
+|===
+[#ChatWindow]
+==== Chat Window
+The _Chat Window_ tab lets you configure the font and colors for the <<ChatLog#top,Chat Log>>.
+[width="100%",cols="50%a,50%",]
+|===
+|
+
+*Chat Window Font:*:: Allows you to choose the style and size of the font displayed in the Chat log.
+
+*Game messages (#1 - standard messages and "\|"):*:: Configures the color used for normal game messages. The module designer can cause this color to be used for a <<ReportChanges#top,Report Action>> trait or other <<MessageFormat#top,Message Format>> by putting the character `\|` as the very first character in the message.
+
+*Game Messages (#2 - first character "!"):*:: Configures the #2 color for game messages. The module designer can cause this color to be used for a <<ReportChanges#top,Report Action>> trait or other <<MessageFormat#top,Message Format>> by putting the character `!` as the very first character in the message.
+
+*Game Messages (#3 - first character "?"):*:: Configures the #3 color for game messages. The module designer can cause this color to be used for a <<ReportChanges#top,Report Action>> trait or other <<MessageFormat#top,Message Format>> by putting the character `?` as the very first character in the message.
+
+*Game Messages (#4 - first character "~")*:*:: Configures the #4 color for game messages. The module designer can cause this color to be used for a <<ReportChanges#top,Report Action>> trait or other <<MessageFormat#top,Message Format>> by putting the character `~` as the very first character in the message.
+
+*Game Messages (#5 - first character "`"):*:: Configures the #5 color for game messages. The module designer can cause this color to be used for a <<ReportChanges#top,Report Action>> trait or other <<MessageFormat#top,Message Format>> by putting the character ``` as the very first character in the message.
+
+*System Messages:*:: Configures the color used to display messages from the VASSAL system in the Chat Log.
+
+*My text messages:*:: Configures the color used to display messages that you type into the Chat Log.
+
+*Others' text messages:*:: Configures the color used to display message that other players type into the Chat Log.
+
+|image:images/PreferencesChat.png[]
+
+|===
+[#TurnCounter]
+==== Turn Counter
+If your module contains a <<TurnTracker#top,Turn Counter>>, this tab will let you configure preferences about its appearance.
+
+[width="100%",cols="50%a,^50%",]
+|===
+|
+
+*Font size:*:: Sets the size of the font used in the Turn Counter.
+
+*Bold:*:: Controls whether the Turn Counter uses bold text.
+
+*Dock into toolbar:*:: Controls whether the Turn Counter begins docked to the <<Toolbar#top,Toolbar>>.
+|image:images/PreferencesTurn.png[]
+|===
+
+[#Converter]
+==== Converter
+The _Converter_ tab lets you set the preferences for the module converter. This tab is available only in the Module Manager.
+
+[width="100%",cols="50%a,50%",]
+|===
+|
+
+*JVM maximum heap (in MB):*:: Sets the maximum memory available to the module converter. If conversion fails, try setting the max heap higher.
+|image:images/PreferencesConverter.png[]
+|===
+
+[#Tiler]
+==== Tiler
+The _Tiler_ tab lets you set the preferences for the image tiler. This tab is available only in the Module Manager.
+
+[width="100%",cols="50%a,50%",]
+|===
+|
+
+*JVM maximum heap (in MB):*:: Sets the maximum memory available to the image tiler. If tiling fails, try setting the max heap higher.
+|image:images/PreferencesTiler.png[]
+|===
+

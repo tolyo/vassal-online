@@ -1,0 +1,1246 @@
+/*
+ *
+ * Copyright (c) 2005-2020 by Rodney Kinney, Brian Reynolds
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License (LGPL) as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, copies are available
+ * at http://www.opensource.org.
+ */
+package VASSAL.counters;
+
+import VASSAL.build.BadDataReport;
+import VASSAL.build.GameModule;
+import VASSAL.build.module.Chatter;
+import VASSAL.build.module.GlobalOptions;
+import VASSAL.build.module.Map;
+import VASSAL.build.module.map.DrawPile;
+import VASSAL.build.module.properties.PropertySource;
+import VASSAL.command.Command;
+import VASSAL.command.NullCommand;
+import VASSAL.configure.GlobalCommandTargetConfigurer;
+import VASSAL.configure.Parameter;
+import VASSAL.configure.PropertyExpression;
+import VASSAL.i18n.Resources;
+import VASSAL.script.expression.AuditTrail;
+import VASSAL.script.expression.Auditable;
+import VASSAL.script.expression.Expression;
+import VASSAL.script.expression.FormattedStringExpression;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.FormattedString;
+import VASSAL.tools.NamedKeyStroke;
+import VASSAL.tools.RecursionLimitException;
+import VASSAL.tools.RecursionLimiter;
+import VASSAL.tools.RecursionLimiter.Loopable;
+import org.apache.commons.lang3.math.NumberUtils;
+
+import javax.swing.KeyStroke;
+
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+/**
+ * The heart of all the different forms of Global Key Command, GlobalCommand handles sending a key command to
+ * multiple pieces, potentially on multiple maps, as long as they match its filtering condition.
+ *
+ * The various forms of Global Key Command that use GlobalCommand are:
+ * {@link VASSAL.build.module.GlobalKeyCommand} - Global Key Commands from a Module window
+ * {@link VASSAL.build.module.StartupGlobalKeyCommand} - Startup Global Key Commands from a Module
+ * {@link VASSAL.build.module.map.MassKeyCommand} - Global Key Commands from a specific Map window
+ * {@link VASSAL.build.module.map.DeckGlobalKeyCommand} - Global Key Commands from a Deck
+ * {@link CounterGlobalKeyCommand} - Global Key Command from a Game Piece
+ *
+ * Other important classes:
+ * {@link GlobalCommandTarget}           - "Fast Match" parameters
+ * {@link GlobalCommandTargetConfigurer} - configurer for "Fast Match" parameters
+ */
+public class GlobalCommand implements Auditable {
+  protected KeyStroke keyStroke;        // Key Command we will issue
+  protected boolean reportSingle;       // If true, we temporarily disable Report traits in any receiving pieces
+  protected boolean suppressSounds;     // If true, we temporarily disable Play Sound traits in any receiving pieces
+  protected int selectFromDeck = -1;    // selectFromDeck = -1 means process all cards in Deck; > 0 means select that many cards from the Deck
+  protected String selectFromDeckExpression = "-1"; // selectFromDeck = -1 means process all cards in Deck; Otherwise an expression evaluating to # of cards to pick from deck
+  protected FormattedString reportFormat = new FormattedString(); // Report to display before sending the command
+  protected Loopable owner;             // For preventing infinite loops
+  protected PropertySource source;      // Context for resolving properties (i.e. for our report message)
+  protected GlobalCommandTarget target; // This holds all of the "Fast Match" information
+  protected List<Parameter> parameters; // A list of parameters (DP names and values) to set in matching pieces
+
+  private String fastProperty = "";     // Used during property Fast Match to hold *evaluated* expressions
+  private String fastValue = "";        // Used during property Fast Match to hold *evaluated* expressions
+  private boolean fastIsNumber = false; // Used during property Fast Match to remember if value is numeric
+  private double fastNumber = 0;        // Used during property Fast Match to hold evaluated numerical value
+  private Pattern fastPattern;          // Fast Match regex pattern
+  private Integer fastRange;            // Set by Counter GKC if the Range option is enabled as this will greatly limit the selected counters
+
+  private static final Pattern fastCheckNumber = Pattern.compile("(\\+-)?\\d+(\\.\\d+)?");  //match a number with optional +/- and decimal.
+
+  public GlobalCommand(Loopable l) {
+    this (l, null);
+  }
+
+  public GlobalCommand(Loopable l, PropertySource p) {
+    owner = l;
+    source = p;
+  }
+
+  @Override
+  public String getComponentTypeName() {
+    return "Global Command";
+  }
+
+  @Override
+  public String getComponentName() {
+    return owner.getComponentTypeName();
+  }
+
+  public void setPropertySource(PropertySource ps) {
+    source = ps;
+  }
+
+  public PropertySource getPropertySource() {
+    return source;
+  }
+
+  public void setKeyStroke(KeyStroke keyStroke) {
+    this.keyStroke = keyStroke;
+  }
+
+  public void setKeyStroke(NamedKeyStroke keyStroke) {
+    this.keyStroke = keyStroke.getKeyStroke();
+  }
+
+  public void setReportFormat(String format) {
+    this.reportFormat.setFormat(format);
+  }
+
+  public KeyStroke getKeyStroke() {
+    return keyStroke;
+  }
+
+  public String getReportFormat() {
+    return reportFormat.getFormat();
+  }
+
+  public boolean isReportSingle() {
+    return reportSingle;
+  }
+
+  public void setReportSingle(boolean reportSingle) {
+    this.reportSingle = reportSingle;
+  }
+
+  public boolean isSuppressSounds() {
+    return suppressSounds;
+  }
+
+  public void setSuppressSounds(boolean suppressSounds) {
+    this.suppressSounds = suppressSounds;
+  }
+
+  public void setTarget(GlobalCommandTarget target) {
+    this.target = target;
+  }
+
+  public void setRange(Integer fastRange) {
+    this.fastRange = fastRange;
+  }
+
+  public List<Parameter> getParameters() {
+    return parameters;
+  }
+
+  public void setParameters(List<Parameter> parameters) {
+    this.parameters = parameters;
+  }
+
+  /**
+   * Allows subclasses like GlobalAttach to operate with no key command to send
+   *
+   * @return true if we should short-circuit (abort) the search if we have no key command to send
+   */
+  public boolean isAbortIfNoCommand() {
+    return true;
+  }
+
+  public GlobalCommandTarget getTarget() {
+    return target;
+  }
+
+  /**
+   * Check the Property Fast Match for a given gamePiece
+   * @param gamePiece the game piece
+   * @return true if piece matches
+   */
+  private boolean passesPropertyFastMatch(GamePiece gamePiece) {
+    if (!target.fastMatchProperty || fastProperty.isEmpty()) return true;
+
+    final Object prop = gamePiece.getProperty(fastProperty);
+    final String value = (prop == null) ? null : prop.toString();
+
+    // Intentionally favors the default "Equals" as first to process
+    switch (target.targetCompare) {
+    case EQUALS:
+      return fastValue.equals(value);
+    case NOT_EQUALS:
+      return !fastValue.equals(value);
+    }
+
+    // The non-equals-y ones have to deal with null
+    if (prop == null || value == null) {
+      return false;
+    }
+
+    switch (target.targetCompare) {
+    case MATCH:
+      return fastPattern.matcher(value).matches();
+    case NOT_MATCH:
+      return !fastPattern.matcher(value).matches();
+    }
+
+    // Lexical comparisons for strings
+    if (!fastIsNumber || !isNumeric(value)) {
+      switch (target.targetCompare) {
+      case GREATER_EQUALS:
+        return value.compareTo(fastValue) >= 0;
+      case GREATER:
+        return value.compareTo(fastValue) > 0;
+      case LESS_EQUALS:
+        return value.compareTo(fastValue) <= 0;
+      case LESS:
+        return value.compareTo(fastValue) < 0;
+      }
+    }
+
+    // Numerical comparisons for numbers
+    final double num = Double.parseDouble(value);
+
+    switch (target.targetCompare) {
+    case GREATER_EQUALS:
+      return num >= fastNumber;
+    case GREATER:
+      return num > fastNumber;
+    case LESS_EQUALS:
+      return num <= fastNumber;
+    case LESS:
+      return num < fastNumber;
+    }
+
+    return false; // Never gets here, but checkStyle doesn't understand that.
+  }
+
+  /**
+   * Need a super-fast (i.e. not dependent on exception-throwing) plan for detecting valid numbers
+   * @param s string to check
+   * @return true if a value number
+   */
+  private boolean isNumeric(String s) {
+    return fastCheckNumber.matcher(s).matches(); //match a number with optional +/- and decimal.
+  }
+
+  /**
+   * Apply the key command to all pieces that pass the given filter and our Fast Match {@link GlobalCommandTarget} parameters on all the given maps
+   *
+   * @param maps Array of Maps
+   * @param filter Filter to apply (created e.g. with {@link PropertyExpression#getFilter}
+   * @param fastMatch Fast matching parameters, or null. {@link GlobalCommandTarget} and {@link VASSAL.configure.GlobalCommandTargetConfigurer}
+   * @return the corresponding {@link Command} that would reproduce all the things this GKC just did, on another client.
+   */
+  public Command apply(Map[] maps, PieceFilter filter, GlobalCommandTarget fastMatch) {
+    return apply(maps, filter, fastMatch, null);
+  }
+
+  /**
+   * Apply the key command to all pieces that pass the given filter and our Fast Match {@link GlobalCommandTarget} parameters on all the given maps
+   *
+   * @param maps Array of Maps
+   * @param filter Filter to apply (created e.g. with {@link PropertyExpression#getFilter}
+   * @param fastMatch Fast matching parameters, or null. {@link GlobalCommandTarget} and {@link VASSAL.configure.GlobalCommandTargetConfigurer}
+   * @param audit Audit trail of evaluation of the filter so far
+   * @return the corresponding {@link Command} that would reproduce all the things this GKC just did, on another client.
+   */
+  public Command apply(Map[] maps, PieceFilter filter, GlobalCommandTarget fastMatch, AuditTrail audit) {
+    Command command = new NullCommand(); // We will chronicle our exploits in this command, so that others may repeat them later.
+    setTarget((fastMatch != null) ? fastMatch : new GlobalCommandTarget()); // Set our Fast Match parameters
+
+    // WARNING! DeckGlobalKeyCommand does *not* use this version of apply.
+
+    try {
+      if (reportSingle) {
+        Map.setChangeReportingEnabled(false); // Disable individual reports, if specified
+      }
+
+      if (suppressSounds) {
+        GameModule.getGameModule().setSuppressSounds(true);
+      }
+
+      RecursionLimiter.startExecution(owner); // Trap infinite loops of Global Key Commands
+
+      // Send our report, if one is specified
+      final String reportText = reportFormat.getLocalizedText(source, owner, "Editor.report_format");
+      if (reportText.length() > 0) {
+        command = new Chatter.DisplayText(
+          GameModule.getGameModule().getChatter(), "* " + reportText); //NON-NLS
+        command.execute();
+      }
+
+      // If there actually isn't any key command to execute, we're normally finished here, having issued the report-if-any (exception is subclass like GlobalAttach, which is searching but not sending a key command)
+      if ((keyStroke == null) || ((keyStroke.getKeyCode() == 0) && (keyStroke.getModifiers() == 0))) {
+        if (isAbortIfNoCommand()) {
+          return command;
+        }
+      }
+
+      // These will hold the *evaluated results* of our various Fast Match expressions
+      String fastMap = "";
+      String fastBoard = "";
+      String fastZone = "";
+      String fastLocation = "";
+      String fastDeck = "";
+      String fastX = "";
+      String fastY = "";
+      String fastAttachment = "";
+      String fastAttachmentId = "";
+
+      // Context piece, if we are doing current-piece-relative fast-matching (may be null otherwise)
+      final GamePiece curPiece = target.getCurPiece();
+
+      // Map specified in a fastMatch location
+      Map targetFastMap = null;
+
+      // Evaluate all location-based expressions we will be using - these are evaluated w/r/t the SOURCE of the command, not target pieces.
+      if (target.fastMatchLocation) {
+        switch (target.targetType) {
+        case CURZONE:
+          fastZone = (curPiece != null) ? (String) curPiece.getProperty(BasicPiece.CURRENT_ZONE) : "";
+          break;
+        case CURLOC:
+          fastLocation = (curPiece != null) ? (String) curPiece.getProperty(BasicPiece.LOCATION_NAME) : "";
+          break;
+        case CURATTACH:
+          fastAttachment = target.targetAttachment.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.attachment_name");
+          fastAttachment = Expression.createExpression(fastAttachment).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.attachment_name");
+          fastAttachmentId = target.targetAttachmentId.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.attachment_id");
+          fastAttachmentId = Expression.createExpression(fastAttachmentId).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.attachment_id");
+          break;
+        case ZONE:
+          fastZone = target.targetZone.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.zone_name");
+          fastZone = Expression.createExpression(fastZone).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.zone_name");
+          break;
+        case DECK:
+          fastDeck = target.targetDeck.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.deck_name");
+          fastDeck = Expression.createExpression(fastDeck).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.deck_name");
+          break;
+        case LOCATION:
+          fastLocation = target.targetLocation.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.location_name");
+          fastLocation = Expression.createExpression(fastLocation).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.location_name");
+          break;
+        case XY:
+          fastBoard = target.targetLocation.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.board_name");
+          fastBoard = Expression.createExpression(fastBoard).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.board_name");
+          fastX = target.targetX.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.x_position");
+          fastX = Expression.createExpression(fastX).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.x_position");
+          fastY = target.targetY.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.y_position");
+          fastY = Expression.createExpression(fastY).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.y_position");
+          break;
+        }
+
+        if (!target.targetType.isCurrent()) {
+          fastMap = target.targetMap.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.map_name");
+          fastMap = Expression.createExpression(fastMap).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.map_name");
+          targetFastMap = Map.getMapById(fastMap);
+        }
+      }
+
+      // Determine how many pieces we select from decks
+      final String howManyFromDeck = getSelectFromDeckExpression();
+      // Shortcut -1 for "all"
+      if ("-1".equals(howManyFromDeck)) {
+        setSelectFromDeck(-1);
+      }
+      // Shortcut 0 for "none"
+      else if ("0".equals(howManyFromDeck)) {
+        setSelectFromDeck(0);
+      }
+      else {
+        // Everything else evaluates as an expression
+        final FormattedStringExpression deckExpression = new FormattedStringExpression(howManyFromDeck);
+        String deckVal = deckExpression.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.fixed_number_of_pieces");
+        deckVal = Expression.createExpression(deckVal).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.fixed_number_of_pieces");
+        int deckNum;
+        try {
+          deckNum = Integer.parseInt(deckVal);
+        }
+        catch (NumberFormatException e) {
+          deckNum = 0;
+        }
+        setSelectFromDeck(Math.max(0, deckNum)); // Make sure we don't evaluate to the magical -1
+      }
+
+      // Evaluate any property-based expressions we will be using - these are evaluated w/r/t the SOURCE of the command, not target pieces.
+      if (target.fastMatchProperty) {
+        fastProperty = target.targetProperty.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.property_name");
+        fastProperty = Expression.createExpression(fastProperty).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.property_name");
+        fastValue    = target.targetValue.tryEvaluate(source, owner, "Editor.GlobalKeyCommand.property_compare");
+        fastValue    = Expression.createExpression(fastValue).tryEvaluate(source, owner, "Editor.GlobalKeyCommand.property_compare");
+        if ((target.targetCompare == GlobalCommandTarget.CompareMode.EQUALS) ||
+            (target.targetCompare == GlobalCommandTarget.CompareMode.NOT_EQUALS)) {
+          fastIsNumber = false;
+          fastNumber   = 0;
+        }
+        else if ((target.targetCompare == GlobalCommandTarget.CompareMode.MATCH) ||
+                 (target.targetCompare == GlobalCommandTarget.CompareMode.NOT_MATCH)) {
+          try {
+            fastPattern = Pattern.compile(fastValue);
+          }
+          catch (PatternSyntaxException ex) {
+            ErrorDialog.dataWarning(new BadDataReport("Fast Match - syntax error in regex: ", target.targetValue.getExpression()));  //NON-NLS
+            fastPattern = Pattern.compile("bAdMoDuLeDaTa"); //NON-NLS // Give it "something" so it won't throw more exceptions later.
+          }
+          fastIsNumber = false;
+          fastNumber   = 0;
+        }
+        else {
+          fastIsNumber = isNumeric(fastValue);
+          fastNumber = fastIsNumber ? Double.parseDouble(fastValue) : 0;
+        }
+      }
+
+      // Piece Indexing (by position, LocationName and CurrentZone) is a new feature in 3.7.0 to help speed up
+      // GKC's using Location specific Fast Matches or Ranges.
+      // Using Piece Indexing causes the pieces that match a GKC to be presented in a different order than when
+      // not using Piece Indexing. This should (!) not be a problem in a properly designed module, however, it
+      // may cause some modules to behave differently where they have a dependency on the order that pieces are
+      // processed in a GKC. Piece Indexing can be disabled via a Global Option.
+      boolean usePieceIndexing = false;
+      if (GlobalOptions.getInstance() != null) {
+        usePieceIndexing = !GlobalOptions.getInstance().isDisableUsePieceIndexes();
+      }
+
+      // This dispatcher will eventually handle applying the Beanshell filter and actually issuing the command to any pieces that match
+      final GlobalCommandVisitor visitor = getVisitor(command, filter, keyStroke, audit, owner, getSelectFromDeck());
+      final DeckVisitorDispatcher dispatcher = new DeckVisitorDispatcher(visitor);
+
+      // Fastmatch lookups that use the IndexManager to return location based lists of units need to handle Deck Policy
+      // limits differently.
+      //
+      // Other types of GKC processing (property fastmatch or no fastmatch) always process Decks as a whole, scanning the
+      // individual units within them. This means the Deck Policy limits are checked at the Deck level.
+      //
+      // The Indexmanager does not know about Decks. It returns an unordered list of single pieces that may reside in
+      // different Decks (e.g. a Zone="X" lookup where multiple Decks reside in Zone X). Pieces for some of the lookups
+      // will NOT be in Deck order.
+      // The IndexedFastmatchDeckPolicyManager handles the Deck Policy limit checks for an arbitrary ordered list of units.
+      //
+      final IndexedFastmatchDeckPolicyManager indexedFastmatchDeckPolicyManager = new IndexedFastmatchDeckPolicyManager(this);
+
+      // Check any fast-match conditions in the order most likely to be fastest and return the fewest pieces to pass to the dispatcher for full testing
+      // 1. First check current Stack, Deck, mat or attachment or specified Deck as we can find these directly.
+      // 2. Specific or current location can be quickly found via the Qtree
+      // 3. Range lookups can be quickly found via the qtree
+      // 4. Current or specific Zone can be quickly found, but can return many counters, so lower priority
+      // 5. No Fast match
+
+      // If we're using "current stack or deck" then we simply iterate quickly through the members of the stack or deck that the current piece is in
+      if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.CURSTACK) {
+        if (curPiece != null) {
+          final Stack stack = curPiece.getParent();
+          List<GamePiece> pieces = null;
+          final int useFromDeck;
+
+          if (stack instanceof Deck) {
+            visitor.setSelectedCount(0);
+
+            // Not if deck isn't accessible to us
+            useFromDeck = ((Deck)stack).isAccessible() ? getSelectFromDeck() : 0;
+
+            if (useFromDeck != 0) {
+              pieces = ((Deck) stack).getOrderedPieces();
+            }
+          }
+          else {
+            useFromDeck = -1;
+
+            //BR// It is possible to set this search option on a nonstacking piece, in which case we just use the piece itself as the only possible target.
+            pieces = stack != null ? stack.asList() : List.of(curPiece);
+          }
+
+          if (useFromDeck != 0) {
+            for (final GamePiece gamePiece : pieces) {
+              // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+              if (!passesPropertyFastMatch(gamePiece)) {
+                continue;
+              }
+
+              // Anything else we send to dispatcher to apply BeanShell filter and issue the command if the piece matches
+              dispatcher.accept(gamePiece);
+
+              if ((useFromDeck > 0) && visitor.getSelectedCount() >= useFromDeck) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      // If we're using "specific deck", then we find that deck and iterate through it, checking fast property matches only
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.DECK) {
+        final DrawPile d = DrawPile.findDrawPile(fastDeck);
+        final int useFromDeck = getSelectFromDeck();
+        if ((d != null) && (useFromDeck != 0)) {
+          final Deck dk = d.getDeck();
+          if (dk != null) { // Needed! GKC toolbar buttons will attempt to send GKCs even if no game has ever been started. Whee!
+            if (dk.isAccessible()) {
+              final List<GamePiece> pieces = dk.getOrderedPieces();
+
+              visitor.setSelectedCount(0);
+              for (final GamePiece gamePiece : pieces) {
+                // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+                if (!passesPropertyFastMatch(gamePiece)) {
+                  continue;
+                }
+
+                // Anything else we send to dispatcher to apply BeanShell filter and issue the command if the piece matches
+                dispatcher.accept(gamePiece);
+
+                if ((useFromDeck > 0) && visitor.getSelectedCount() >= useFromDeck) {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      // If we're using "current mat", then we find either this piece (if it is a Mat), or a mat this pieces is on (if it is a MatCargo).
+      // We then iterate through the Mat itself (first) followed by each MatCargo piece.
+      // The DeckPolicyManager is not needed here, because pieces on a Mat cannot be in a Deck
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.CURMAT) {
+        if (curPiece instanceof Decorator) {
+          // First check if we are a mat
+          GamePiece matPiece = Decorator.getDecorator(Decorator.getOutermost(curPiece), Mat.class);
+          if (matPiece == null) {
+            // Otherwise check if we're a cargo that's currently ON a mat.
+            final MatCargo cargo = (MatCargo)Decorator.getDecorator(Decorator.getOutermost(curPiece), MatCargo.class);
+            if (cargo != null) {
+              matPiece = cargo.getMat();
+            }
+          }
+          if (matPiece != null) {
+            final Mat mat = (Mat)Decorator.getDecorator(matPiece, Mat.class);
+            final List<GamePiece> pieces = new ArrayList<>();
+            for (final GamePiece p : mat.getContents()) {
+              pieces.add(Decorator.getOutermost(p));
+            }
+            pieces.add(0, Decorator.getOutermost(matPiece));
+
+            for (final GamePiece gamePiece : pieces) {
+              // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+              if (!passesPropertyFastMatch(gamePiece)) {
+                continue;
+              }
+
+              // Anything else we send to dispatcher to apply BeanShell filter and issue the command if the piece matches
+              dispatcher.accept(gamePiece);
+            }
+          }
+        }
+      }
+      // If we're using "Current Attachments", make a list of all the pieces we're attached to and then process that
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.CURATTACH) {
+        if (curPiece instanceof Decorator) {
+          GamePiece piece = Decorator.getOutermost(curPiece);
+          final Set<GamePiece> pieces = new HashSet<>();  // Use Set to prevent duplication
+          while (piece instanceof Decorator) {
+            if (piece instanceof Attachment) {
+              checkForMatchingAttachments((Attachment) piece, fastAttachment, fastAttachmentId, pieces);
+            }
+            piece = ((Decorator) piece).getInner();
+          }
+
+          for (final GamePiece p : pieces) {
+            // Pieces that no longer have a map were probably deleted. We will speak no more of them.
+            if (p.getMap() == null) continue;
+
+            // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+            if (!passesPropertyFastMatch(p)) continue;
+
+            // Check for Deck Policy limits.
+            indexedFastmatchDeckPolicyManager.accept(p, dispatcher, visitor);
+          }
+        }
+      }
+
+      // If a specific X, Y target has been specified AND a valid target map, then we can go direct to the Qtree index to find those pieces
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.XY && targetFastMap != null && usePieceIndexing) {
+
+        int x = 0;
+        int y = 0;
+
+        try {
+          x = Integer.parseInt(fastX);
+        }
+        catch (NumberFormatException ignored) {
+          x = 0;
+        }
+
+        try {
+          y = Integer.parseInt(fastY);
+        }
+        catch (NumberFormatException ignored) {
+          y = 0;
+        }
+
+        // Process just the pieces at that exact location
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(targetFastMap, new Point(x, y))) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+        }
+      }
+
+      // If a specific LocationName target has been specified AND a valid target map, then we can go direct to the LocationName index to find those pieces
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.LOCATION && targetFastMap != null && !fastLocation.isEmpty() && usePieceIndexing)  {
+
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(targetFastMap, BasicPiece.LOCATION_NAME, fastLocation)) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+        }
+      }
+
+      // if Current Location has been specified (Counter GKC), we can go find the pieces directly from the Qtree index
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.CURLOC && curPiece != null && curPiece.getMap() != null && curPiece.getPosition() != null && usePieceIndexing) {
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(curPiece.getMap(), BasicPiece.LOCATION_NAME, (String) curPiece.getProperty(BasicPiece.LOCATION_NAME))) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+        }
+      }
+
+      // If a Range has been specified, quickly find the in-range pieces
+      else if (fastRange != null && curPiece != null && curPiece.getMap() != null && curPiece.getPosition() != null && usePieceIndexing) {
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(curPiece, fastRange)) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+        }
+      }
+
+      // If current Zone has been specified use the Zone index to find those pieces
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.CURZONE && curPiece != null && curPiece.getMap() != null && usePieceIndexing)  {
+        final String currentZone = (String) curPiece.getProperty(BasicPiece.CURRENT_ZONE);
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(curPiece.getMap(), BasicPiece.CURRENT_ZONE, currentZone)) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+        }
+      }
+      // If a specific Zone target has been specified AND a valid target map, then we can go direct to the Zone index to find those pieces
+      else if (target.fastMatchLocation && target.targetType == GlobalCommandTarget.Target.ZONE && targetFastMap != null && !fastZone.isEmpty() && usePieceIndexing)  {
+        for (final GamePiece piece : GameModule.getGameModule().getIndexManager().getPieces(targetFastMap, BasicPiece.CURRENT_ZONE, fastZone)) {
+
+          // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+          if (!passesPropertyFastMatch(piece)) continue;
+
+          // Check for Deck Policy limits.
+          indexedFastmatchDeckPolicyManager.accept(piece, dispatcher, visitor);
+
+        }
+      }
+
+      else {
+        // For most Global Key Commands we need to run through the larger lists of maps & pieces. Ideally the Fast Matches
+        // here will filter some of that out to improve performance, but we also want to do the best job possible for old
+        // modules that don't take advantage of Fast Match yet.
+
+        // Make a lists of pieces for each of the maps we're interested in. We need to do this in advance so that a
+        // piece doesn't potentially receive multiple GKCs if it is moved from one map to another.
+        final List<GamePiece[]> gkcMapPieces = new ArrayList<>();
+
+        // If a Counter GKC range limit has been specified, then it can only apply to the one map
+        // Just use the pieces in range as the base selection for the remaining comparisons.
+        if (fastRange != null && curPiece != null && curPiece.getMap() != null && curPiece.getPosition() != null && usePieceIndexing) {
+          gkcMapPieces.add(GameModule.getGameModule().getIndexManager().getPieces(curPiece, fastRange).toArray(new GamePiece[0]));
+        }
+
+        // No Range specified, grab all pieces with a bit of fastmatch filtering.
+        else {
+          for (final Map map : maps) {
+            // First check that this is a map we're even interested in
+            if (target.fastMatchLocation) {
+              // "Current Map" only cares about the map the issuing piece is on
+              if (target.targetType == GlobalCommandTarget.Target.CURMAP) {
+                if ((curPiece != null) && !map.equals(curPiece.getMap())) {
+                  continue;
+                }
+              }
+              // If a Fast Match Map is specified, only check that one.
+              else if (!target.targetType.isCurrent() && !fastMap.isEmpty() && !fastMap.equals(map.getConfigureName())) {
+                continue;
+              }
+            }
+            gkcMapPieces.add(map.getPieces());
+          }
+        }
+
+        // Now we go through all the pieces/stacks/decks pre-selected on each map from the previous step
+        for (final GamePiece[] everythingOnMap : gkcMapPieces) {
+          if (!target.fastMatchLocation) {
+            // If NOT doing Location fast-matching we do tighter loops (because perf is important during GKCs)
+            if (!target.fastMatchProperty) {
+              // This is the no-fast-matching-at-all version, with "minimum extra overhead" since it's already going to be slow.
+              for (final GamePiece pieceOrStack : everythingOnMap) {
+                dispatcher.accept(pieceOrStack);
+              }
+            }
+            else {
+              // This loop is WITH property Fast Match but WITHOUT location Fast Match
+              for (final GamePiece pieceOrStack : everythingOnMap) {
+                final List<GamePiece> pieceList;
+
+                // We may have an individual piece, or we may have a Stack (or Deck), in which case we need to traverse it.
+                if (pieceOrStack instanceof Deck) {
+                  final Deck deck = (Deck)pieceOrStack;
+                  final int useFromDeck = deck.isAccessible() ? getSelectFromDeck() : 0;
+                  if (useFromDeck != 0) {
+                    visitor.setSelectedCount(0);
+                    pieceList = deck.getOrderedPieces();
+
+                    // This will iterate through actual game pieces
+                    for (final GamePiece gamePiece : pieceList) {
+                      // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+                      if (!passesPropertyFastMatch(gamePiece)) {
+                        continue;
+                      }
+                      dispatcher.accept(gamePiece);
+
+                      if ((useFromDeck > 0) && visitor.getSelectedCount() >= useFromDeck) {
+                        break;
+                      }
+                    }
+                  }
+                }
+                else {
+                  if (pieceOrStack instanceof Stack) {
+                    pieceList = ((Stack) pieceOrStack).asList();
+                  }
+                  else {
+                    pieceList = Collections.singletonList(pieceOrStack); // Or if really just a single piece.
+                  }
+
+                  // This will iterate through actual game pieces
+                  for (final GamePiece gamePiece : pieceList) {
+                    // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+                    if (!passesPropertyFastMatch(gamePiece)) {
+                      continue;
+                    }
+                    dispatcher.accept(gamePiece);
+                  }
+                }
+              }
+            }
+          }
+          else {
+            // WITH Location Fast Matching we have some extra steps
+            for (final GamePiece pieceOrStack : everythingOnMap) {
+              List<GamePiece> pieceList;
+              final int useFromDeck;
+
+              // We may have an individual piece, or we may have a Stack (or Deck), in which case we need to traverse it.
+              if (pieceOrStack instanceof Stack) {
+                if (pieceOrStack instanceof Deck) {
+                  if (((Deck)pieceOrStack).isAccessible()) {
+                    useFromDeck = getSelectFromDeck();
+                    visitor.setSelectedCount(0);
+                  }
+                  else {
+                    useFromDeck = 0;
+                  }
+                }
+                else {
+                  useFromDeck = -1; // Not a deck, so accept all pieces
+                }
+                pieceList = ((Stack) pieceOrStack).asList();
+                if (pieceOrStack instanceof Deck) {
+                  pieceList = ((Deck) pieceOrStack).getOrderedPieces();
+                }
+              }
+              else {
+                pieceList = Collections.singletonList(pieceOrStack); // Or if really just a single piece.
+                useFromDeck = -1; // Not a deck, so no deck parameters
+              }
+
+              if (useFromDeck != 0) {
+                // This will iterate through actual game pieces
+                for (final GamePiece gamePiece : pieceList) {
+                  // If a property-based Fast Match is specified, we eliminate non-matchers of that first.
+                  if (!passesPropertyFastMatch(gamePiece)) {
+                    continue;
+                  }
+
+                  // These basic location filters are faster than equivalent filters in the Beanshell expression,
+                  // and avoid re-evaluating/re-loading the source property for every target piece.
+
+                  // Fast matches for Zone / Location
+                  switch (target.targetType) {
+                  case ZONE:
+                  case CURZONE:
+                    if (!fastZone.equals(gamePiece.getProperty(BasicPiece.CURRENT_ZONE))) {
+                      continue;
+                    }
+                    break;
+                  case LOCATION:
+                  case CURLOC:
+                    if (!fastLocation.equals(gamePiece.getProperty(BasicPiece.LOCATION_NAME))) {
+                      continue;
+                    }
+                    break;
+                  }
+
+                  // Fast Match of "exact XY position"
+                  if (target.targetType == GlobalCommandTarget.Target.XY) {
+                    if (!fastBoard.isEmpty() && !fastBoard.equals(gamePiece.getProperty(BasicPiece.CURRENT_BOARD))) {
+                      continue;
+                    }
+                    final Point pt = new Point(gamePiece.getPosition());
+                    if (!fastX.equals(Integer.toString((int) pt.getX())) || !fastY.equals(Integer.toString((int) pt.getY()))) {
+                      continue;
+                    }
+                  }
+
+                  // Passed all the "Fast Match" tests -- the dispatcher will apply the BeanShell filter and if that passes will issue the command to the piece
+                  dispatcher.accept(gamePiece);
+
+                  if ((useFromDeck > 0) && visitor.getSelectedCount() >= useFromDeck) {
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Repaint for anything that has been moved by our shenanigans
+      visitor.getTracker().repaint();
+
+      // Now we grab our (possibly massive) command, encompassing every single thing that has happened to every
+      // single piece affected by this command. This command can be sent to other clients involved in the same
+      // game to replicate all the stuff we just did.
+      command = visitor.getCommand();
+    }
+    catch (RecursionLimitException e) {
+      // It is very easy to construct a set of GKC commands that fire each other off infinitely. This catches those.
+      RecursionLimiter.infiniteLoop(e);
+    }
+    finally {
+      RecursionLimiter.endExecution();
+      if (reportSingle) {
+        Map.setChangeReportingEnabled(true); // Restore normal reporting behavior (if we'd disabled all individual reports)
+      }
+      if (suppressSounds) {
+        GameModule.getGameModule().setSuppressSounds(false);
+      }
+    }
+
+    return command; // Here, eat this tasty command!
+  }
+
+  /**
+   *
+   * @param attach          Attachment trait to test
+   * @param attachmentName  Optional Attachment name to check for match
+   * @param attachmentId    Optional Basic Name or Attachment Index to check for match
+   * @param pieces          List of matching pieces to update
+   */
+  protected void checkForMatchingAttachments(Attachment attach, String attachmentName, String attachmentId, Set<GamePiece> pieces) {
+    if (attachmentName.isBlank() || attachmentName.equals(attach.getAttachName())) {
+      final List<GamePiece> attachments = attach.getContents();
+      if (attachmentId.isBlank()) {
+        // No Basic Name or index specified, add all Attachments for this attachment name
+        pieces.addAll(attachments);
+      }
+      else {
+        // A specific Basic Name or Attachment Index has been requested
+        final int parse = NumberUtils.toInt(attachmentId);
+        if (parse > 0 && parse <= attachments.size()) {
+          // A valid Attachment index has been supplied, just return that entry
+          // NOTE: Attachment Indices start at 1!!!
+          pieces.add(attachments.get(parse - 1));
+        }
+        else {
+          // A Basic name has been specified, search through the attachments for matching Basic Names
+          for (final GamePiece p : attachments) {
+            if (attachmentId.equals(p.getProperty(BasicPiece.BASIC_NAME))) {
+              pieces.add(p);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * (Legacy - applies GKC without Fast Match)
+   * @param map a single map
+   * @param filter filter
+   * @return command
+   */
+  public Command apply(Map map, PieceFilter filter) {
+    return apply(new Map[]{map}, filter);
+  }
+
+  /**
+   * (Legacy - applies GKC without Fast Match)
+   * @param maps list of maps
+   * @param filter filter
+   * @return command
+   */
+  public Command apply(Map[] maps, PieceFilter filter) {
+    return apply(maps, filter, null);
+  }
+
+  /**
+   * Apply the key command on ONE SPECIFIC MAP to all pieces that pass the given filter and our Fast Match parameters.
+   * @param map a single map
+   * @param filter Filter to apply (created e.g. with {@link PropertyExpression#getFilter}
+   * @param fastMatch Fast matching parameters, or null. {@link GlobalCommandTarget} and {@link VASSAL.configure.GlobalCommandTargetConfigurer}
+   * @return the corresponding {@link Command} that would reproduce all the things this GKC just did, on another client.
+   */
+  public Command apply(Map map, PieceFilter filter, GlobalCommandTarget fastMatch) {
+    return apply(new Map[]{map}, filter, fastMatch);
+  }
+
+  public Command apply(Map map, PieceFilter filter, GlobalCommandTarget fastMatch, AuditTrail audit) {
+    return apply(new Map[]{map}, filter, fastMatch, audit);
+  }
+
+  protected GlobalCommandVisitor getVisitor(Command command, PieceFilter filter, KeyStroke keyStroke, AuditTrail audit, Auditable owner, int selectFromDeck) {
+    return new GlobalCommandVisitor(command, filter, keyStroke, audit, owner, selectFromDeck, this);
+  }
+
+  public int getSelectFromDeck() {
+    return selectFromDeck;
+  }
+
+  public String getSelectFromDeckExpression() {
+    return selectFromDeckExpression;
+  }
+
+  /**
+   * Set the number of pieces to select from a deck that the command will apply to.  A value lesser than 0 means to apply to all pieces in the deck
+   * @param selectFromDeck Number of pieces to select
+   */
+  public void setSelectFromDeckExpression(String selectFromDeck) {
+    selectFromDeckExpression = selectFromDeck;
+  }
+
+  /**
+   * Set the number of pieces to select from a deck that the command will apply to.  A value lesser than 0 means to apply to all pieces in the deck
+   * @param selectFromDeck Number of pieces to select
+   */
+  public void setSelectFromDeck(int selectFromDeck) {
+    this.selectFromDeck = selectFromDeck;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(keyStroke, reportFormat, reportSingle, selectFromDeckExpression, suppressSounds);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    final GlobalCommand other = (GlobalCommand) obj;
+    if (keyStroke == null) {
+      if (other.keyStroke != null)
+        return false;
+    }
+    else if (!keyStroke.equals(other.keyStroke))
+      return false;
+    if (reportFormat == null) {
+      if (other.reportFormat != null)
+        return false;
+    }
+    else if (!reportFormat.equals(other.reportFormat))
+      return false;
+    if (reportSingle != other.reportSingle)
+      return false;
+    if (suppressSounds != other.suppressSounds) return false;
+    if (!selectFromDeckExpression.equals(other.selectFromDeckExpression)) {
+      return false;
+    }
+
+    // Match any specific targeting information, depending on the targeting type. targetType must always match.
+    if (target.fastMatchLocation != other.target.fastMatchLocation) {
+      return false;
+    }
+    if (target.targetType != other.target.targetType) {
+      return false;
+    }
+    if (!target.targetType.isCurrent() && !target.targetMap.equals(other.target.targetMap)) {
+      return false;
+    }
+    if ((target.targetType == GlobalCommandTarget.Target.ZONE) && !target.targetZone.equals(other.target.targetZone)) {
+      return false;
+    }
+    if ((target.targetType == GlobalCommandTarget.Target.LOCATION) && !target.targetLocation.equals(other.target.targetLocation)) {
+      return false;
+    }
+    if ((target.targetType == GlobalCommandTarget.Target.XY) && (!target.targetBoard.equals(other.target.targetBoard) || ((!target.targetX.equals(other.target.targetX)) || (!target.targetY.equals(other.target.targetY))))) {
+      return false;
+    }
+
+    if (target.fastMatchProperty != other.target.fastMatchProperty) {
+      return false;
+    }
+
+    if (target.fastMatchProperty) {
+      if (!target.targetProperty.equals(other.target.targetProperty)) {
+        return false;
+      }
+      if (!target.targetValue.equals(other.target.targetValue)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * A class to manage the application of GKC's against multiple Decks by the Fast Match Code
+   * that uses Location indexes.
+   *
+   * Standard GKC process Scans a whole Deck at once and applys the Deck Limits once only.
+   *
+   * Location based fast-match by-passes the normal Deck processing and returns an unordered list of
+   * individual pieces that may reside in multiple Decks.
+   */
+  protected class IndexedFastmatchDeckPolicyManager {
+
+    /** Acceptance count limit for the GKC in progress */
+    private final int useFromDeck; // NOPMD
+    /** Map of DeckInfo objects, one for each Deck seen so far. */
+    private final java.util.Map<Deck, DeckInfo> applyCounts = new HashMap<>();
+
+    public IndexedFastmatchDeckPolicyManager(GlobalCommand globalCommand) {
+      useFromDeck = globalCommand.getSelectFromDeck();
+    }
+
+    /**
+     * If a piece resides in a Deck, check if the Deck acceptance limit has been reached for that particular Deck
+     * before running the piece through the dispatcher.
+     *
+     * @param piece       Piece to Check
+     * @param dispatcher  Dispatcher
+     * @param visitor     Visitor
+     */
+    public void accept(GamePiece piece, DeckVisitorDispatcher dispatcher, GlobalCommandVisitor visitor) {
+      final Stack s = piece.getParent();
+      if (s instanceof Deck) {
+        final Deck deck = (Deck) s;
+
+        // Piece is in a Deck, see how many matches we have already found from this Deck
+        final DeckInfo info = applyCounts.computeIfAbsent(deck, k -> new DeckInfo(k, getSelectFromDeck()));
+
+        // Limit reached? Don't test the piece
+        if (info.isLimitReached()) {
+          return;
+        }
+
+        // Record the current count for applications to this Deck
+        final int currentCount = visitor.getSelectedCount();
+
+        // Test the piece
+        dispatcher.accept(piece);
+
+        // If it matched, then update the count against the Deck, and update the Map entry
+        if (visitor.getSelectedCount() > currentCount) {
+          applyCounts.compute(deck, (k, v) -> info.increment());
+        }
+      }
+      else {
+        // Piece is not in a Deck, just handle as normal
+        dispatcher.accept(piece);
+      }
+
+    }
+
+    /**
+     * Class to track the acceptance count of pieces from multiple Decks
+     */
+
+    protected class DeckInfo {
+      // Use Limit for this Deck. -1 = unlimited, 0 = none, >0 = limit
+      private final int useLimit;
+
+      // Number of pieces accepted from this Deck so far
+      private int useCount;
+
+      public DeckInfo(Deck deck, int useLimit) {
+        this.useCount = 0;
+        // Never apply to a Deck that is innaccessible to us
+        this.useLimit = deck.isAccessible() ? useLimit : 0;
+      }
+
+      /**
+       * Has the acceptance limit been reached for this Deck?
+       *
+       * @return  true if no more pieces to be accepted from this Deck
+       */
+      public boolean isLimitReached() {
+        return useLimit >= 0 && useCount >= useLimit;
+      }
+
+      /**
+       * Increment the acceptance count for this Deck
+       * @return  The DeckInfo class for updating the Deck map
+       */
+      public DeckInfo increment() {
+        useCount++;
+        return this;
+      }
+    }
+
+  }
+
+  // Obsolete, kept for clirr reasons
+  protected class Visitor implements DeckVisitor {
+    private final Command command;
+    private final BoundsTracker tracker;
+    private final PieceFilter filter;
+    private final KeyStroke stroke;
+    private int selectedCount;
+    private final AuditTrail auditSoFar;
+
+    public Visitor(Command command, PieceFilter filter, KeyStroke stroke) {
+      this(command, filter, stroke, null);
+    }
+
+    public Visitor(Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit) {
+      this.command = command;
+      tracker = new BoundsTracker();
+      this.filter = filter;
+      this.stroke = stroke;
+      auditSoFar = audit;
+    }
+
+    public void setSelectedCount(int selectedCount) {
+      this.selectedCount = selectedCount;
+    }
+
+    public int getSelectedCount() {
+      return selectedCount;
+    }
+
+    @Override
+    public Object visitDeck(Deck d) {
+      if (!d.isAccessible()) {
+        return null;
+      }
+      if (getSelectFromDeck() != 0) {
+
+        // selectFromDeck = -1 means process all cards in Deck
+        // selectFromDeck > 0 means select that many cards from the Deck
+
+        // Ask for all cards to be drawn.
+        d.setDragCount(d.getPieceCount());
+
+        // Keep drawing until required select count met or all cards in Deck have been processed
+        selectedCount = 0;
+        for (final PieceIterator it = d.drawCards(); it.hasMoreElements() && (getSelectFromDeck() < 0 || getSelectFromDeck() > selectedCount);) {
+          apply(it.nextPiece(), true);
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public Object visitStack(Stack s) {
+      s.asList().forEach(this::apply);
+      return null;
+    }
+
+    @Override
+    public Object visitDefault(GamePiece p) {
+      apply(p);
+      return null;
+    }
+
+    private void apply(GamePiece p) {
+      apply(p, false);
+    }
+
+    private void apply(GamePiece p, boolean visitingDeck) {
+
+      /*
+        If an AuditTrail has been supplied for the evaulation history of the filter up to this point,
+        then clone it for applying to each individual piece.
+       */
+      AuditTrail audit = null;
+      if (auditSoFar != null) {
+        audit = new AuditTrail(auditSoFar);
+        audit.addMessage(Resources.getString("Audit.gkc_applied_to", p.getComponentName()));
+      }
+
+      if (filter == null || filter.accept(p, owner, audit)) {
+        if (visitingDeck) {
+          p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY after checking filter
+        }
+        tracker.addPiece(p);
+        p.setProperty(Properties.SNAPSHOT, ((PropertyExporter) p).getProperties());
+        command.append(p.keyEvent(stroke));
+        tracker.addPiece(p);
+        selectedCount++;
+      }
+      else {
+        if (visitingDeck) {
+          p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY
+        }
+      }
+    }
+
+    public Command getCommand() {
+      return command;
+    }
+
+    public BoundsTracker getTracker() {
+      return tracker;
+    }
+  }
+}

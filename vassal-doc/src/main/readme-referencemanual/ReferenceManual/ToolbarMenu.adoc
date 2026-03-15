@@ -1,0 +1,48 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > <<GameModule.adoc#top,Module>> > *Toolbar Menu*#
+
+'''''
+
+=== Toolbar Menu
+
+The Toolbar Menu component lets you group buttons from the <<Toolbar.adoc#top,Toolbar>> of the main <<GameModule.adoc#top,Module>> window or a <<Map.adoc#top,Map>> window into a drop-down menu.
+Each button named in this component will be removed from the Toolbar and instead appear as a menu item in the drop-down menu.
+
+NOTE: Buttons defined in a Map or any subcomponents of a Map can only be added to a Toolbar Menu defined on that Map. +
+Buttons defined in any other Components can only be added to a Toolbar Menu defined at the Module level.
+
+[width="100%",cols="50%a,^50%a",]
+|===
+|
+*Description:*:: A brief description for your own use.
+
+*Button text:*:: The text of the new button to be added to the <<Toolbar.adoc#top,Toolbar>>. Clicking the button will reveal the drop-down menu.
+
+*Tooltip text:*:: Tooltip text for the new <<Toolbar.adoc#top,Toolbar>> button.
+
+*Button Icon:*:: Icon for the new <<Toolbar.adoc#top,Toolbar>> button.
+
+*Hotkey:*:: <<NamedKeyCommand.adoc#top,Keystroke or Named Command>> for revealing the drop-down menu.
+
+**Toolbar button can be disabled by a property:**:: If this box is checked, you will be able to enable/disable the Toolbar Button by changing the value of a Global Property. See also: <<Toolbar.adoc#toolbarconfig, Toolbar Configuration>>
+
+**Global Property to disable this button when "true"**:: The name of a <<GlobalProperties.adoc#top,Global Property>> that will control when this Toolbar Button is enabled or disabled. If the property contains the string _true_,  the button will be disabled; if it contains any other value the button will be enabled.
+
+**Button Icon when disabled:**:: If you select an alternative icon here, then that icon will be used when the button is currently disabled. If you leave the icon empty, then the normal icon, if any, will stay in place. Any button text for the toolbar button will be greyed out when the button is disabled, regardless of your choice in this field.
+
+*Menu Entries:*:: Enter the exact _Button Text_ of the <<Toolbar.adoc#top,Toolbar>> buttons that you wish to move to the drop-down menu.
+The menu item will have the same text.
+If the button uses an icon, the menu item will also use it.
+The items moved to the drop-down menu will appear in the order they are listed.
+
+NOTE: You must use the _Button Text_ of the buttons, not a Hotkey _Named Command._
+|image:images/ToolbarMenuExample.png[]
+
+_Example of a Toolbar Menu with a submenu._
+
+image:images/ToolbarMenu.png[]
+
+_The corresponding Toolbar Menu configuration._
+|===

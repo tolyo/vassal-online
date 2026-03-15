@@ -1,0 +1,54 @@
+# JVM build outputs
+target/
+*.class
+
+# Maven release/plugin artifacts
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Gradle
+.gradle/
+
+# IDE/editor state
+.idea/
+.vscode/
+.metals/
+.bsp/
+.scala-build/
+.project
+.classpath
+.settings/
+*.iws
+*.iml
+*.ipr
+nbproject/private/
+.nb-gradle/
+
+# NetBeans output
+nbbuild/
+nbdist/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# JVM crash dumps
+hs_err_pid*
+replay_pid*
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# Local logs
+logs/

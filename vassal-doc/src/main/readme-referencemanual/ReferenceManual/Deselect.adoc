@@ -1,0 +1,31 @@
+== VASSAL Reference Manual
+[#top]
+
+[.small]#<<index.adoc#toc,Home>> > <<GameModule.adoc#top,Module>> > <<PieceWindow.adoc#top,Game Piece Palette>># [.small]#> <<GamePiece.adoc#top,Game Piece>># [.small]#> *Deselect*#
+
+'''''
+
+=== Deselect
+
+A <<GamePiece.adoc#top,Game Piece>> with this trait will have a command that causes the piece to be removed from any player selection (currently selected pieces, drag-selection, drag-and-drop grouping, etc.)
+
+[width="100%",cols="50%a,^50%a",]
+|===
+|
+*Description:*:: A short description of this trait for your own reference.
+
+*Menu Command:*:: Menu text for the _Deselect_ command for the right-click context menu. If left blank then no menu item will be displayed but the _Key Command_ can still be used.
+
+*Key command:*:: <<NamedKeyCommand.adoc#top,Keystroke or Named Command>> that will cause the piece to become deselected.
+
+*Remove piece from stack:*:: If checked, then when this trait is activated the piece will _also_ be removed from any Stack it is a part of. This can be useful in games that involve "dropping off and picking up" units from armies, because a <<Marker.adoc#top,Place Marker>> trait will normally add the new marker to the current stack.
+
+*Deselection type:*:: Choose whether you wish to deselect this piece, deselect all pieces, or select only this piece.
+
+|image:images/Deselect.png[]
+_Deselect this piece without removing it from its Stack when the *Deselect* menu command is selected, on receipt of the *Ctrl+K* Keystroke Command._
+|===
+
+
+'''''
+
