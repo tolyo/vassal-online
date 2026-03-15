@@ -18,19 +18,17 @@
 
 package VASSAL.tools.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
-
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
+import org.junit.jupiter.api.Test;
 
 public class RereadableInputStreamTest {
   @Test
@@ -41,9 +39,8 @@ public class RereadableInputStreamTest {
 
   @Test
   public void testReadInt() throws IOException {
-    final byte[] expected = new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7 };
-    final InputStream in =
-      new RereadableInputStream(new ByteArrayInputStream(expected));
+    final byte[] expected = new byte[] {0, 1, 2, 3, 4, 5, 6, 7};
+    final InputStream in = new RereadableInputStream(new ByteArrayInputStream(expected));
 
     for (int i = 0; i < expected.length; ++i) {
       assertEquals(expected[i], in.read());
@@ -54,9 +51,8 @@ public class RereadableInputStreamTest {
 
   @Test
   public void testReadBytes() throws IOException {
-    final byte[] expected = new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7 };
-    final InputStream in =
-      new RereadableInputStream(new ByteArrayInputStream(expected));
+    final byte[] expected = new byte[] {0, 1, 2, 3, 4, 5, 6, 7};
+    final InputStream in = new RereadableInputStream(new ByteArrayInputStream(expected));
 
     final byte[] actual = new byte[expected.length];
     final int count = in.read(actual);
@@ -73,9 +69,8 @@ public class RereadableInputStreamTest {
 
   @Test
   public void testMarkAndReset() throws IOException {
-    final byte[] expected = new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7 };
-    final InputStream in =
-      new RereadableInputStream(new ByteArrayInputStream(expected));
+    final byte[] expected = new byte[] {0, 1, 2, 3, 4, 5, 6, 7};
+    final InputStream in = new RereadableInputStream(new ByteArrayInputStream(expected));
 
     in.mark(4);
 

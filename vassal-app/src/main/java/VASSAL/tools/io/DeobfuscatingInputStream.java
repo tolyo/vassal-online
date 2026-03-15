@@ -26,9 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * A {@link FilterInputStream} which converts a file created with
- * {@link ObfuscatingOutputStream} back into plain text.
- * Additionally, plain text will be passed through unchanged.
+ * A {@link FilterInputStream} which converts a file created with {@link ObfuscatingOutputStream}
+ * back into plain text. Additionally, plain text will be passed through unchanged.
  *
  * @author Joel Uckelman
  * @since 3.2.0
@@ -46,10 +45,8 @@ public class DeobfuscatingInputStream extends FilterInputStream {
     readFully(in, header, header.length);
     if (new String(header, StandardCharsets.UTF_8).equals(ObfuscatingOutputStream.HEADER)) {
       this.in = new DeobfuscatingInputStreamImpl(in);
-    }
-    else {
-      final PushbackInputStream pin =
-        new PushbackInputStream(in, header.length);
+    } else {
+      final PushbackInputStream pin = new PushbackInputStream(in, header.length);
       pin.unread(header);
       this.in = pin;
     }
@@ -64,8 +61,7 @@ public class DeobfuscatingInputStream extends FilterInputStream {
    * @param len the number of bytes to read
    * @throws IOException if <code>len</code> bytes cannot be read
    */
-  private static int readFully(InputStream in, byte[] bytes, int len)
-                                                           throws IOException {
+  private static int readFully(InputStream in, byte[] bytes, int len) throws IOException {
     int count;
     int n = 0;
     while (n < len) {
@@ -99,55 +95,56 @@ public class DeobfuscatingInputStream extends FilterInputStream {
     @Override
     public int read() throws IOException {
       switch (readFully(in, pair, 2)) {
-      case  0:
-        return -1;
-      case  2:
-        return (((unhex(pair[0]) << 4) | unhex(pair[1])) ^ key) & 0xFF;
-      case  1:
-      default:
-        throw new IOException();
+        case 0:
+          return -1;
+        case 2:
+          return (((unhex(pair[0]) << 4) | unhex(pair[1])) ^ key) & 0xFF;
+        case 1:
+        default:
+          throw new IOException();
       }
     }
 
     private int unhex(int i) throws IOException {
       switch (i) {
-      // digits 0-9
-      case 0x30:
-      case 0x31:
-      case 0x32:
-      case 0x33:
-      case 0x34:
-      case 0x35:
-      case 0x36:
-      case 0x37:
-      case 0x38:
-      case 0x39:
-        return i - 0x30;
-      // digits A-F
-      case 0x41:
-      case 0x42:
-      case 0x43:
-      case 0x44:
-      case 0x45:
-      case 0x46:
-        return i - 0x37;
-      // digits a-f
-      case 0x61:
-      case 0x62:
-      case 0x63:
-      case 0x64:
-      case 0x65:
-      case 0x66:
-        return i - 0x57;
-      default:
-        throw new IOException(String.valueOf(i));
+        // digits 0-9
+        case 0x30:
+        case 0x31:
+        case 0x32:
+        case 0x33:
+        case 0x34:
+        case 0x35:
+        case 0x36:
+        case 0x37:
+        case 0x38:
+        case 0x39:
+          return i - 0x30;
+        // digits A-F
+        case 0x41:
+        case 0x42:
+        case 0x43:
+        case 0x44:
+        case 0x45:
+        case 0x46:
+          return i - 0x37;
+        // digits a-f
+        case 0x61:
+        case 0x62:
+        case 0x63:
+        case 0x64:
+        case 0x65:
+        case 0x66:
+          return i - 0x57;
+        default:
+          throw new IOException(String.valueOf(i));
       }
     }
   }
 
   public static void main(String[] args) throws IOException {
-    try (InputStream in = new DeobfuscatingInputStream(
-      args.length > 0 ? Files.newInputStream(Path.of(args[0])) : System.in)) {
+    try (InputStream in =
+        new DeobfuscatingInputStream(
+            args.length > 0 ? Files.newInputStream(Path.of(args[0])) : System.in)) {
       in.transferTo(System.out);
     }
 

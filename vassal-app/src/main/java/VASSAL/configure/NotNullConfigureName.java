@@ -17,13 +17,12 @@
  */
 package VASSAL.configure;
 
-import java.util.Objects;
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.i18n.Resources;
-/**
- * Requires that the object does not have null configurable name
- */
+import java.util.Objects;
+
+/** Requires that the object does not have null configurable name */
 public class NotNullConfigureName implements ValidityChecker {
   private final AbstractConfigurable target;
 
@@ -33,8 +32,13 @@ public class NotNullConfigureName implements ValidityChecker {
 
   @Override
   public void validate(Buildable b, ValidationReport report) {
-    if (b == target && ((target.getConfigureName() == null) || (target.getConfigureName().equals("")))) {
-      report.addWarning(Resources.getString("Editor.ValidationReportDialog.blank_name", ConfigureTree.getConfigureName(target.getClass()), target.getClass().getName()));
+    if (b == target
+        && ((target.getConfigureName() == null) || (target.getConfigureName().equals("")))) {
+      report.addWarning(
+          Resources.getString(
+              "Editor.ValidationReportDialog.blank_name",
+              ConfigureTree.getConfigureName(target.getClass()),
+              target.getClass().getName()));
     }
   }
 }

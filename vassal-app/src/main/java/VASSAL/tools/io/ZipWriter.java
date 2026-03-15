@@ -20,8 +20,8 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilterOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -42,7 +42,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipWriter implements Closeable {
   private final Path path;
   private final ZipOutputStream zout;
-  private final FileLock lock; //NOPMD
+  private final FileLock lock; // NOPMD
 
   public ZipWriter(File f) throws IOException {
     this(Objects.requireNonNull(f).toPath());
@@ -51,12 +51,12 @@ public class ZipWriter implements Closeable {
   public ZipWriter(Path p) throws IOException {
     path = Objects.requireNonNull(p);
 
-    final FileChannel fc = FileChannel.open(
-      path,
-      StandardOpenOption.WRITE,
-      StandardOpenOption.CREATE,
-      StandardOpenOption.TRUNCATE_EXISTING
-    );
+    final FileChannel fc =
+        FileChannel.open(
+            path,
+            StandardOpenOption.WRITE,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING);
 
     lock = fc.lock();
     zout = new ZipOutputStream(new BufferedOutputStream(Channels.newOutputStream(fc)));

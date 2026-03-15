@@ -19,39 +19,38 @@ package VASSAL.counters;
 
 /**
  * Defines ability of a player to access a GamePiece
- * @author rkinney
  *
+ * @author rkinney
  */
 public interface PieceAccess {
-  /**
-   * Return a String identifying the current player
-   */
+  /** Return a String identifying the current player */
   String getCurrentPlayerId();
+
   /**
-   * Return true if the current player can access this piece,
-   * given that the piece is owned by the player with the given id
+   * Return true if the current player can access this piece, given that the piece is owned by the
+   * player with the given id
    */
   boolean currentPlayerHasAccess(String ownerId);
 
-  /**
-   * Return true if the current player can take (or relinquish)
-   * control of this piece
-   */
+  /** Return true if the current player can take (or relinquish) control of this piece */
   boolean currentPlayerCanModify(String ownerId);
 
   /**
    * Global utility class to temporarily restrict access to all piece
-   * @author rkinney
    *
+   * @author rkinney
    */
   class GlobalAccess {
     private static boolean allHidden = false;
+
     public static void hideAll() {
       allHidden = true;
     }
+
     public static void revertAll() {
       allHidden = false;
     }
+
     public static boolean isHideAll() {
       return allHidden;
     }

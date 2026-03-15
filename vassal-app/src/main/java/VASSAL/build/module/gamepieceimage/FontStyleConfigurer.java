@@ -17,17 +17,15 @@
  */
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.Configurer;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Font;
 import java.awt.event.ItemListener;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import VASSAL.configure.Configurer;
-import VASSAL.tools.SequenceEncoder;
 
 public class FontStyleConfigurer extends Configurer {
 
@@ -50,7 +48,7 @@ public class FontStyleConfigurer extends Configurer {
 
   @Override
   public String getValueString() {
-    return ""; //NON-NLS
+    return ""; // NON-NLS
   }
 
   public Font getValueFont() {
@@ -74,7 +72,6 @@ public class FontStyleConfigurer extends Configurer {
 
       box.add(fontPanel);
       p.add(box);
-
     }
     buildFonts();
     return p;
@@ -94,13 +91,13 @@ public class FontStyleConfigurer extends Configurer {
     for (final String item : s) {
       fonts.addItem(item);
     }
-    fonts.setSelectedItem(value == null ? "Default" : ((FontStyle) value).getConfigureName()); //$NON-NLS-1$
+    fonts.setSelectedItem(
+        value == null ? "Default" : ((FontStyle) value).getConfigureName()); // $NON-NLS-1$
     fontPanel.add(fonts);
 
     final ItemListener l = evt -> updateValue();
 
     fonts.addItemListener(l);
-
   }
 
   protected void updateValue() {
@@ -115,7 +112,9 @@ public class FontStyleConfigurer extends Configurer {
 
   public static FontStyle decode(String s) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s, '|');
-    return new FontStyle(sd.nextToken("Default"), FontConfigurer.decode(sd.nextToken(""))); //$NON-NLS-1$ //$NON-NLS-2$
+    return new FontStyle(
+        sd.nextToken("Default"),
+        FontConfigurer.decode(sd.nextToken(""))); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   public static String encode(FontStyle f) {

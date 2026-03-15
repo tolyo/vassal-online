@@ -18,14 +18,6 @@
 
 package VASSAL.tools.imports;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.swing.JOptionPane;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.metadata.AbstractMetaData;
 import VASSAL.build.module.metadata.ImportMetaData;
@@ -43,10 +35,16 @@ import VASSAL.tools.imports.adc2.ADC2Module;
 import VASSAL.tools.imports.adc2.ADC2Utils;
 import VASSAL.tools.imports.adc2.MapBoard;
 import VASSAL.tools.imports.adc2.SymbolSet;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import javax.swing.JOptionPane;
 
 /**
- * Action for importing foreign modules into VASSAL.
- * To add more capabilities, see the static fields DESCRIPTIONS, EXTENSIONS, and IMPORTERS.
+ * Action for importing foreign modules into VASSAL. To add more capabilities, see the static fields
+ * DESCRIPTIONS, EXTENSIONS, and IMPORTERS.
  *
  * @author Michael Kiefte
  * @since 3.1.0
@@ -67,15 +65,11 @@ public final class ImportAction extends EditModuleAction {
    */
 
   private static final String[] EXTENSIONS = {
-    ADC2Utils.MODULE_EXTENSION,
-    ADC2Utils.MAP_EXTENSION,
-    ADC2Utils.SET_EXTENSION,
+    ADC2Utils.MODULE_EXTENSION, ADC2Utils.MAP_EXTENSION, ADC2Utils.SET_EXTENSION,
   };
 
   private static final String[] DESCRIPTIONS = {
-    ADC2Utils.MODULE_DESCRIPTION,
-    ADC2Utils.MAP_DESCRIPTION,
-    ADC2Utils.SET_DESCRIPTION,
+    ADC2Utils.MODULE_DESCRIPTION, ADC2Utils.MAP_DESCRIPTION, ADC2Utils.SET_DESCRIPTION,
   };
 
   /*
@@ -83,23 +77,25 @@ public final class ImportAction extends EditModuleAction {
    */
 
   private static final Class<?>[] IMPORTERS = {
-    ADC2Module.class,
-    MapBoard.class,
-    SymbolSet.class,
+    ADC2Module.class, MapBoard.class, SymbolSet.class,
   };
 
   public static FileChooser getFileChooser(Component c) {
-    final FileChooser chooser = FileChooser.createFileChooser(c,
-      (DirectoryConfigurer)
-        Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
+    final FileChooser chooser =
+        FileChooser.createFileChooser(
+            c, (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
 
     chooser.resetChoosableFileFilters();
     for (int i = IMPORTERS.length - 1; i >= 0; --i) {
-      chooser.addChoosableFileFilter(new ExtensionFileFilter(
-        DESCRIPTIONS[i] + " (*" + EXTENSIONS[i].toLowerCase()
-                        + ";*" + EXTENSIONS[i].toUpperCase() + ")",
-        new String[] {EXTENSIONS[i]})
-      );
+      chooser.addChoosableFileFilter(
+          new ExtensionFileFilter(
+              DESCRIPTIONS[i]
+                  + " (*"
+                  + EXTENSIONS[i].toLowerCase()
+                  + ";*"
+                  + EXTENSIONS[i].toUpperCase()
+                  + ")",
+              new String[] {EXTENSIONS[i]}));
     }
 
     return chooser;
@@ -122,12 +118,14 @@ public final class ImportAction extends EditModuleAction {
 
     for (final int index : indices) {
       try {
-        if (((Importer) (IMPORTERS[index].getDeclaredConstructor().newInstance())).isValidImportFile(f)) {
+        if (((Importer) (IMPORTERS[index].getDeclaredConstructor().newInstance()))
+            .isValidImportFile(f)) {
           return IMPORTERS[index];
         }
-      }
-      catch (IllegalAccessException | InvocationTargetException |
-             InstantiationException | NoSuchMethodException e) {
+      } catch (IllegalAccessException
+          | InvocationTargetException
+          | InstantiationException
+          | NoSuchMethodException e) {
         ErrorDialog.bug(e);
       }
     }
@@ -141,10 +139,15 @@ public final class ImportAction extends EditModuleAction {
 
     fc.resetChoosableFileFilters();
     for (int i = IMPORTERS.length - 1; i >= 0; --i) {
-      fc.addChoosableFileFilter(new ExtensionFileFilter(
-          DESCRIPTIONS[i] + " (*" + EXTENSIONS[i].toLowerCase() + ";*" + EXTENSIONS[i].toUpperCase() + ")",
-          new String[] {EXTENSIONS[i]})
-      );
+      fc.addChoosableFileFilter(
+          new ExtensionFileFilter(
+              DESCRIPTIONS[i]
+                  + " (*"
+                  + EXTENSIONS[i].toLowerCase()
+                  + ";*"
+                  + EXTENSIONS[i].toUpperCase()
+                  + ")",
+              new String[] {EXTENSIONS[i]}));
     }
 
     if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
@@ -161,7 +164,7 @@ public final class ImportAction extends EditModuleAction {
       throw new FileFormatException("Unrecognized file format");
     }
 
-    final GameModule module = new GameModule(new ArchiveWriter((String) null, ".vmod")); //NON-NLS
+    final GameModule module = new GameModule(new ArchiveWriter((String) null, ".vmod")); // NON-NLS
     GameModule.init(module);
 
     final Importer imp;
@@ -171,8 +174,10 @@ public final class ImportAction extends EditModuleAction {
       imp.writeToArchive();
     }
     // these should never happen
-    catch (IllegalAccessException | InvocationTargetException |
-           InstantiationException | NoSuchMethodException e) {
+    catch (IllegalAccessException
+        | InvocationTargetException
+        | InstantiationException
+        | NoSuchMethodException e) {
       ErrorDialog.bug(e);
     }
 
@@ -180,92 +185,90 @@ public final class ImportAction extends EditModuleAction {
     new ModuleEditorWindow(module).setVisible(true);
   }
 
-//  /**
-//   * Find case-insensitive, cross-platform match for a given Windows file. Will
-//   * ask the user if unable to locate the specified file.
-//   */
-//  public File getCaseInsensitiveFile(File f) {
-//    return getCaseInsensitiveFile(f, null, true, null);
-//  }
+  //  /**
+  //   * Find case-insensitive, cross-platform match for a given Windows file. Will
+  //   * ask the user if unable to locate the specified file.
+  //   */
+  //  public File getCaseInsensitiveFile(File f) {
+  //    return getCaseInsensitiveFile(f, null, true, null);
+  //  }
 
-//  public File getCaseInsensitiveFile(File f, boolean queryIfNotFound) {
-//    return getCaseInsensitiveFile(f, null, queryIfNotFound, null);
-//  }
+  //  public File getCaseInsensitiveFile(File f, boolean queryIfNotFound) {
+  //    return getCaseInsensitiveFile(f, null, queryIfNotFound, null);
+  //  }
 
-//  /**
-//   * Find case-insensitive, cross-platform match for a given Windows file. If unable
-//   * to find a match, will then search the directory of the second file for a match.
-//   * Will ask the user if still unable to locate the specified file.
-//   *
-//   * @param f    File to match with a Windows-specific file-name format.
-//   * @param base Another file whose directory to search for a match if unable to find otherwise.
-//   * @return     Local match
-//   */
-//  public File getCaseInsensitiveFile(File f, File base) {
-//    return getCaseInsensitiveFile(f, base, true, null);
-//  }
+  //  /**
+  //   * Find case-insensitive, cross-platform match for a given Windows file. If unable
+  //   * to find a match, will then search the directory of the second file for a match.
+  //   * Will ask the user if still unable to locate the specified file.
+  //   *
+  //   * @param f    File to match with a Windows-specific file-name format.
+  //   * @param base Another file whose directory to search for a match if unable to find otherwise.
+  //   * @return     Local match
+  //   */
+  //  public File getCaseInsensitiveFile(File f, File base) {
+  //    return getCaseInsensitiveFile(f, base, true, null);
+  //  }
 
-//  File getCaseInsensitiveFile(File f, File base, boolean queryIfNotFound) {
-//    return getCaseInsensitiveFile(f, base, queryIfNotFound, null);
-//  }
+  //  File getCaseInsensitiveFile(File f, File base, boolean queryIfNotFound) {
+  //    return getCaseInsensitiveFile(f, base, queryIfNotFound, null);
+  //  }
 
-//  /**
-//   * Find case-insensitive, cross-platform match for a given Windows file. If unable
-//   * to find a match, will then search the directory of the second file for a match.
-//   * If still unable to locate the specified file will ask the user to locate the file
-//   * using the specified file filter.
-//   *
-//   * @param f      File to match with a Windows-specific file-name format.
-//   * @param base   Another file whose directory to search for a match.
-//   * @param filter <code>FileFilter</code> to use when asking the user to locate the match.
-//   * @return       Local match
-//   */
-//  public File getCaseInsensitiveFile(File f, File base, FileFilter filter) {
-//    return getCaseInsensitiveFile(f, base, true, filter);
-//  }
+  //  /**
+  //   * Find case-insensitive, cross-platform match for a given Windows file. If unable
+  //   * to find a match, will then search the directory of the second file for a match.
+  //   * If still unable to locate the specified file will ask the user to locate the file
+  //   * using the specified file filter.
+  //   *
+  //   * @param f      File to match with a Windows-specific file-name format.
+  //   * @param base   Another file whose directory to search for a match.
+  //   * @param filter <code>FileFilter</code> to use when asking the user to locate the match.
+  //   * @return       Local match
+  //   */
+  //  public File getCaseInsensitiveFile(File f, File base, FileFilter filter) {
+  //    return getCaseInsensitiveFile(f, base, true, filter);
+  //  }
 
-//  /**
-//   * Find case-insensitive, cross-platform match for a given Windows file.
-//   * If unable to locate the specified file will ask the user to locate the file
-//   * using the specified file filter.
-//   *
-//   * @param f      File to match with a Windows-specific file-name format.
-//   * @param filter <code>FileFilter</code> to use when asking the user to locate the match.
-//   * @return       Local match
-//   */
-//  public File getCaseInsensitiveFile(File f, FileFilter filter) {
-//    return getCaseInsensitiveFile(f, null, true, filter);
-//  }
+  //  /**
+  //   * Find case-insensitive, cross-platform match for a given Windows file.
+  //   * If unable to locate the specified file will ask the user to locate the file
+  //   * using the specified file filter.
+  //   *
+  //   * @param f      File to match with a Windows-specific file-name format.
+  //   * @param filter <code>FileFilter</code> to use when asking the user to locate the match.
+  //   * @return       Local match
+  //   */
+  //  public File getCaseInsensitiveFile(File f, FileFilter filter) {
+  //    return getCaseInsensitiveFile(f, null, true, filter);
+  //  }
 
   /**
-   * Find case-insensitive, cross-platform match for a given file specified for a Windows directory structure.
+   * Find case-insensitive, cross-platform match for a given file specified for a Windows directory
+   * structure.
    *
-   * @param f                File to search for formatted for Windows. E.g., "C:Dir\File.txt". The method will first
-   *                         check to see if the file exists as formatted.  It will then search the path that this
-   *                         file is in if that exists.
-   * @param base             If unable to find the file, will look in the directory of <code>base</code> which
-   *                         be localised to the current OS. Typically this is some default directory to look
-   *                         for files. This must be a full file name -- not just the path.  The file name itself
-   *                         doesn't matter. In the case of importing files, if a base file requires another file,
-   *                         <code>base</code> is typically the base file under the assumption that the files on
-   *                         which it depends are found in the same directory.  If <code>base</code> is <code>null</code>,
-   *                         this will be skipped.
-   * @param queryIfNotFound  If the file still cannot be found, after searching <code>f</code> and <code>base</code>,
-   *                         should we ask the user to find it for us.
-   * @param filter           The <code>FileFilter</code> that the file dialog can use to locate the file. If this is <code>null</code>,
-   *                         then no filter is used.
-   * @return                 If it exists, the file itself, otherwise null.
+   * @param f File to search for formatted for Windows. E.g., "C:Dir\File.txt". The method will
+   *     first check to see if the file exists as formatted. It will then search the path that this
+   *     file is in if that exists.
+   * @param base If unable to find the file, will look in the directory of <code>base</code> which
+   *     be localised to the current OS. Typically this is some default directory to look for files.
+   *     This must be a full file name -- not just the path. The file name itself doesn't matter. In
+   *     the case of importing files, if a base file requires another file, <code>base</code> is
+   *     typically the base file under the assumption that the files on which it depends are found
+   *     in the same directory. If <code>base</code> is <code>null</code>, this will be skipped.
+   * @param queryIfNotFound If the file still cannot be found, after searching <code>f</code> and
+   *     <code>base</code>, should we ask the user to find it for us.
+   * @param filter The <code>FileFilter</code> that the file dialog can use to locate the file. If
+   *     this is <code>null</code>, then no filter is used.
+   * @return If it exists, the file itself, otherwise null.
    */
   /*
    * This needs to be here as it uses the action's file chooser.
    */
-  public File getCaseInsensitiveFile(File f, File base,
-      boolean queryIfNotFound, FileFilter filter) {
-    if (f.getPath().isEmpty())
-      return null;
+  public File getCaseInsensitiveFile(
+      File f, File base, boolean queryIfNotFound, FileFilter filter) {
+    if (f.getPath().isEmpty()) return null;
     // Easy case
-    if (f.isFile())
-      return f;
+    if (f.isFile()) return f;
 
     final String name = Importer.getFileName(f.getName());
 
@@ -275,8 +278,7 @@ public final class ImportAction extends EditModuleAction {
       final File[] peers = parent.listFiles();
       if (peers != null) {
         for (final File p : peers) {
-          if (p.getName().equalsIgnoreCase(name))
-            return p;
+          if (p.getName().equalsIgnoreCase(name)) return p;
         }
       }
     }
@@ -286,16 +288,18 @@ public final class ImportAction extends EditModuleAction {
       final File[] peers = base.getParentFile().listFiles();
       if (peers != null) {
         for (final File p : peers) {
-          if (p.getName().equalsIgnoreCase(name))
-            return p;
+          if (p.getName().equalsIgnoreCase(name)) return p;
         }
       }
     }
 
     // no luck so far.  Ask the user.
     if (queryIfNotFound) {
-      JOptionPane.showMessageDialog(comp, Resources.getString("Editor.ImportAction.unable", f.getPath()),
-          Resources.getString("Editor.ImportAction.warning"), JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(
+          comp,
+          Resources.getString("Editor.ImportAction.unable", f.getPath()),
+          Resources.getString("Editor.ImportAction.warning"),
+          JOptionPane.WARNING_MESSAGE);
 
       if (fc == null) {
         fc = getFileChooser(comp);
@@ -321,8 +325,7 @@ public final class ImportAction extends EditModuleAction {
         // not a recognized file
         return null;
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return null;
     }
     return new ImportMetaData();

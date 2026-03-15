@@ -22,8 +22,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A thread factory which creates daemon threads. Running daemon threads,
- * unlike regular threads, do not prevent the application from shutting down.
+ * A thread factory which creates daemon threads. Running daemon threads, unlike regular threads, do
+ * not prevent the application from shutting down.
  *
  * @since 3.2.0
  * @author Joel Uckelman

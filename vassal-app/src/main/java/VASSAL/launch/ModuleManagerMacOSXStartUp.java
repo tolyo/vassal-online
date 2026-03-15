@@ -29,14 +29,15 @@ public class ModuleManagerMacOSXStartUp extends MacOSXStartUp {
 
   protected void setupApplicationListeners() {
     final Desktop app = Desktop.getDesktop();
-    app.setOpenFileHandler(e -> {
-      final String filename = e.getFiles().get(0).toString();
-      if (filename.endsWith(".vmod")) { //NON-NLS
-        final LaunchRequest lr = new LaunchRequest();
-        lr.mode = LaunchRequest.Mode.LOAD;
-        lr.module = new File(filename);
-        ModuleManager.getInstance().execute(lr);
-      }
-    });
+    app.setOpenFileHandler(
+        e -> {
+          final String filename = e.getFiles().get(0).toString();
+          if (filename.endsWith(".vmod")) { // NON-NLS
+            final LaunchRequest lr = new LaunchRequest();
+            lr.mode = LaunchRequest.Mode.LOAD;
+            lr.module = new File(filename);
+            ModuleManager.getInstance().execute(lr);
+          }
+        });
   }
 }

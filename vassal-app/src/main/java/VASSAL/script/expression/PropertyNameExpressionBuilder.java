@@ -18,15 +18,14 @@
  */
 package VASSAL.script.expression;
 
-import javax.swing.JDialog;
-
 import VASSAL.configure.Configurer;
 import VASSAL.counters.EditablePiece;
+import javax.swing.JDialog;
 
 /**
  * A Builder for a field that can contain a property Name or a beanshell expression.
- * @author Brent
  *
+ * @author Brent
  */
 public class PropertyNameExpressionBuilder extends ExpressionBuilder {
   private static final long serialVersionUID = 1L;
@@ -40,17 +39,15 @@ public class PropertyNameExpressionBuilder extends ExpressionBuilder {
     expression.setValue((BeanShellExpression.convertProperty(target.getValueString())));
   }
 
-  /**
-   * Convert a property name to an equivalent Beanshell expression
-   */
+  /** Convert a property name to an equivalent Beanshell expression */
   @Override
   public String convert(String s) {
     return "{" + s + "}";
   }
 
   /**
-   * Save entered expression to the target.
-   * If a single property name has been entered, then return it as a simple name, not as an expression
+   * Save entered expression to the target. If a single property name has been entered, then return
+   * it as a simple name, not as an expression
    */
   @Override
   public void save() {
@@ -61,7 +58,9 @@ public class PropertyNameExpressionBuilder extends ExpressionBuilder {
       return;
     }
 
-    if (expr.startsWith("GetProperty(\"") && expr.endsWith("\")") && //NON-NLS
+    if (expr.startsWith("GetProperty(\"")
+        && expr.endsWith("\")")
+        && // NON-NLS
         (expr.length() - expr.replaceAll("\"", "").length()) == 2) {
       target.setValue(expr.substring(13, expr.length() - 2));
       dispose();
@@ -69,7 +68,5 @@ public class PropertyNameExpressionBuilder extends ExpressionBuilder {
     }
 
     super.save();
-
   }
-
 }

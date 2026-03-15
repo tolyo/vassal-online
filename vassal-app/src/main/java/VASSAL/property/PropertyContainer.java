@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Provides an interface for getting and setting {@link Property}s and
- * listening for changes to them.
+ * Provides an interface for getting and setting {@link Property}s and listening for changes to
+ * them.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -66,16 +66,14 @@ public interface PropertyContainer {
   void removePropertyListener(PropertyListener<Object> listener);
 
   /**
-   * Checks whether there are {@link PropertyListener}s for all changes
-   * to this container.
+   * Checks whether there are {@link PropertyListener}s for all changes to this container.
    *
    * @return {@code true} if there are listeners
    */
   boolean hasListeners();
 
   /**
-   * Returns a list of {@link PropertyListener}s listening to all changes
-   * to this container.
+   * Returns a list of {@link PropertyListener}s listening to all changes to this container.
    *
    * @return a list of listeners
    */
@@ -87,8 +85,7 @@ public interface PropertyContainer {
    * @param prop the {@link Property} to listen on
    * @param listener the listener to add
    */
-  <T> void addPropertyListener(Property<T> prop,
-                               PropertyListener<? super T> listener);
+  <T> void addPropertyListener(Property<T> prop, PropertyListener<? super T> listener);
 
   /**
    * Removes a listener for a specific {@link Property}.
@@ -96,12 +93,10 @@ public interface PropertyContainer {
    * @param prop the {@link Property} listened on
    * @param listener the listener to remove
    */
-  <T> void removePropertyListener(Property<T> prop,
-                                  PropertyListener<? super T> listener);
+  <T> void removePropertyListener(Property<T> prop, PropertyListener<? super T> listener);
 
   /**
-   * Returns a list of {@link PropertyListener}s listening to a given
-   * {@link Property}.
+   * Returns a list of {@link PropertyListener}s listening to a given {@link Property}.
    *
    * @param prop the {@link Property} listened on
    * @return a list of listeners
@@ -109,8 +104,7 @@ public interface PropertyContainer {
   <T> List<PropertyListener<? super T>> getPropertyListeners(Property<T> prop);
 
   /**
-   * Checks whether there are {@link PropertyListener}s for a given
-   * {@link Property}.
+   * Checks whether there are {@link PropertyListener}s for a given {@link Property}.
    *
    * @return {@code true} if there are listeners for the given property
    */

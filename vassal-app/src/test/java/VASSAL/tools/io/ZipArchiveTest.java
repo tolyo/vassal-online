@@ -17,22 +17,21 @@
 
 package VASSAL.tools.io;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Set;
-
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.apache.commons.io.IOUtils;
 
 public class ZipArchiveTest {
   private static final String OUT_DIR = "target/test-classes";
@@ -51,10 +50,7 @@ public class ZipArchiveTest {
   }
 
   private Path testArchivePath() {
-    return Path.of(
-      OUT_DIR,
-      getClass().getSimpleName() + "_" + name + ".zip"
-    );
+    return Path.of(OUT_DIR, getClass().getSimpleName() + "_" + name + ".zip");
   }
 
   @Test
@@ -68,7 +64,7 @@ public class ZipArchiveTest {
   @Test
   public void testGetFile() throws IOException {
     final Path p = testArchivePath();
-    try (ZipArchive z =  new ZipArchive(p.toFile())) {
+    try (ZipArchive z = new ZipArchive(p.toFile())) {
       assertEquals(p.toFile(), z.getFile());
     }
   }
@@ -88,23 +84,20 @@ public class ZipArchiveTest {
     try {
       z.getSize(name);
       fail("Expected FileNotFoundException");
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       // expected
     }
 
     try {
       z.getMTime(name);
       fail("Expected FileNotFoundException");
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       // expected
     }
 
     try (InputStream in = z.getInputStream(name)) {
       fail("Expected FileNotFoundException");
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       // expected
     }
   }
@@ -125,7 +118,7 @@ public class ZipArchiveTest {
     assertEquals(Files.size(extPath), z.getSize(name));
     assertTrue(z.getMTime(name) > 0);
     try (InputStream act_in = z.getInputStream(name);
-         InputStream exp_in = Files.newInputStream(extPath)) {
+        InputStream exp_in = Files.newInputStream(extPath)) {
       assertTrue(IOUtils.contentEquals(exp_in, act_in));
     }
   }
@@ -133,7 +126,7 @@ public class ZipArchiveTest {
   @Test
   public void testAddRemoveBytes() throws IOException {
     final String name = "bytes!";
-    final byte[] data = new byte[]{ 0, 42, 11 };
+    final byte[] data = new byte[] {0, 42, 11};
 
     final Path p = testArchivePath();
 
@@ -173,7 +166,7 @@ public class ZipArchiveTest {
   @Test
   public void testAddRemoveOutputStream() throws IOException {
     final String name = "bytes!";
-    final byte[] data = new byte[]{ 0, 42, 11 };
+    final byte[] data = new byte[] {0, 42, 11};
 
     final Path p = testArchivePath();
 
@@ -297,5 +290,4 @@ public class ZipArchiveTest {
       assertTrue(z.isClosed());
     }
   }
-
 }

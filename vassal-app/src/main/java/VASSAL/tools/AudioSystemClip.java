@@ -21,13 +21,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +46,7 @@ public class AudioSystemClip implements AudioClip {
       // try to get a Clip
       try {
         clip = AudioSystem.getClip();
-      }
-      catch (IllegalArgumentException | SecurityException | LineUnavailableException e) {
+      } catch (IllegalArgumentException | SecurityException | LineUnavailableException e) {
         throw new IOException(e);
       }
 
@@ -57,8 +54,7 @@ public class AudioSystemClip implements AudioClip {
       AudioInputStream ais = null;
       try {
         ais = AudioSystem.getAudioInputStream(in);
-      }
-      catch (UnsupportedAudioFileException e) {
+      } catch (UnsupportedAudioFileException e) {
         throw new IOException(e);
       }
 
@@ -67,8 +63,7 @@ public class AudioSystemClip implements AudioClip {
         AudioInputStream cais = null;
         try {
           cais = AudioSystem.getAudioInputStream(clip.getFormat(), a);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
           throw new IOException(e);
         }
 
@@ -76,20 +71,17 @@ public class AudioSystemClip implements AudioClip {
           try {
             clip.open(ca);
             return clip;
-          }
-          catch (IllegalArgumentException | SecurityException | LineUnavailableException e) {
+          } catch (IllegalArgumentException | SecurityException | LineUnavailableException e) {
             throw new IOException(e);
           }
         }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (clip != null) {
         try {
           clip.close();
-        }
-        catch (Exception e2) {
-          log.error("Error while closing clip {}", clip, e2); //NON-NLS
+        } catch (Exception e2) {
+          log.error("Error while closing clip {}", clip, e2); // NON-NLS
         }
       }
       throw e;

@@ -1,12 +1,10 @@
 package VASSAL.build.widget;
 
-import javax.swing.JScrollPane;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.configure.VisibilityCondition;
-
 import java.util.List;
+import javax.swing.JScrollPane;
 
 public class WidgetMap extends Map {
   /*
@@ -17,8 +15,7 @@ public class WidgetMap extends Map {
     if (show) {
       toolBar.setVisible(true);
       theMap.revalidate();
-    }
-    else {
+    } else {
       pieces.clear();
       boards.clear();
       if (!GameModule.getGameModule().isLoadOverSemaphore()) {
@@ -27,9 +24,7 @@ public class WidgetMap extends Map {
     }
   }
 
-  /**
-   * Widget maps are always undocked
-   */
+  /** Widget maps are always undocked */
   @Override
   public boolean shouldDockIntoMainWindow() {
     return false;
@@ -42,8 +37,7 @@ public class WidgetMap extends Map {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (List.of(USE_LAUNCH_BUTTON, BUTTON_NAME, ICON, HOTKEY).contains(name)) {
       return () -> false;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }

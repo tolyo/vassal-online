@@ -17,20 +17,16 @@
  */
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.Configurer;
 import java.awt.Component;
 import java.awt.Dimension;
-
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import VASSAL.configure.Configurer;
-
-/**
- * A Configurer that returns a String from among a list of possible values
- */
+/** A Configurer that returns a String from among a list of possible values */
 public class StringEnumConfigurer extends Configurer {
   protected String[] validValues;
   protected JComboBox<String> box;
@@ -49,15 +45,15 @@ public class StringEnumConfigurer extends Configurer {
       box = getComboBox();
       if (isValidValue(getValue())) {
         box.setSelectedItem(getValue());
-      }
-      else if (validValues.length > 0) {
+      } else if (validValues.length > 0) {
         box.setSelectedIndex(0);
       }
-      box.addActionListener(e -> {
-        noUpdate = true;
-        setValue(box.getSelectedItem());
-        noUpdate = false;
-      });
+      box.addActionListener(
+          e -> {
+            noUpdate = true;
+            setValue(box.getSelectedItem());
+            noUpdate = false;
+          });
       panel.add(box);
     }
     return panel;
@@ -65,8 +61,7 @@ public class StringEnumConfigurer extends Configurer {
 
   public JComboBox<String> getComboBox() {
     final JComboBox<String> b = new JComboBox<>(validValues);
-    b.setMaximumSize(new Dimension(b.getMaximumSize().width,
-                                   b.getPreferredSize().height));
+    b.setMaximumSize(new Dimension(b.getMaximumSize().width, b.getPreferredSize().height));
     return b;
   }
 
@@ -90,8 +85,7 @@ public class StringEnumConfigurer extends Configurer {
 
   @Override
   public void setValue(Object o) {
-    if (validValues == null
-        || isValidValue(o)) {
+    if (validValues == null || isValidValue(o)) {
       super.setValue(o);
       if (!noUpdate && box != null) {
         box.setSelectedItem(o);
@@ -112,10 +106,15 @@ public class StringEnumConfigurer extends Configurer {
   // move test code to manual unit test annotated with @Ignore
   public static void main(String[] args) {
     final JFrame f = new JFrame();
-    final StringEnumConfigurer c = new StringEnumConfigurer(null, "Pick one: ", new String[]{"one", "two", "three"}); //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-    c.addPropertyChangeListener(evt -> {
-      System.err.println(evt.getPropertyName() + " = " + evt.getNewValue()); //$NON-NLS-1$
-    });
+    final StringEnumConfigurer c =
+        new StringEnumConfigurer(
+            null,
+            "Pick one: ",
+            new String[] {"one", "two", "three"}); // $NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    c.addPropertyChangeListener(
+        evt -> {
+          System.err.println(evt.getPropertyName() + " = " + evt.getNewValue()); // $NON-NLS-1$
+        });
     f.add(c.getControls());
     f.pack();
     f.setVisible(true);

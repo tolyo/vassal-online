@@ -57,8 +57,7 @@ public class BrokenImageException extends ImageIOException {
     super(file, cause);
   }
 
-  public BrokenImageException(String filename, String message,
-                                               Throwable cause) {
+  public BrokenImageException(String filename, String message, Throwable cause) {
     super(filename, message, cause);
   }
 

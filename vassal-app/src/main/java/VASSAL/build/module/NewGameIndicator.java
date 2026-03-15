@@ -22,8 +22,8 @@ import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 
 /**
- * Provides information about whether a game was started from File->New Game
- * or loaded from a saved game
+ * Provides information about whether a game was started from File->New Game or loaded from a saved
+ * game
  */
 public class NewGameIndicator implements GameComponent, CommandEncoder {
   private final String command;
@@ -41,9 +41,8 @@ public class NewGameIndicator implements GameComponent, CommandEncoder {
   }
 
   /**
-   *
-   * @return true if the current game was started from the menu,
-   * false if it was loaded from a saved game or logfile.
+   * @return true if the current game was started from the menu, false if it was loaded from a saved
+   *     game or logfile.
    */
   public boolean isNewGame() {
     return isNewGame;
@@ -66,8 +65,7 @@ public class NewGameIndicator implements GameComponent, CommandEncoder {
 
   @Override
   public String encode(Command c) {
-    if (!(c instanceof MarkGameNotNew)
-      || ((MarkGameNotNew) c).indicator != this) {
+    if (!(c instanceof MarkGameNotNew) || ((MarkGameNotNew) c).indicator != this) {
       return null;
     }
 

@@ -24,9 +24,10 @@ import VASSAL.tools.image.LabelUtils;
 import VASSAL.tools.image.MultiResolutionRenderedImage;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.OpIcon;
-import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang3.ArrayUtils;
-
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
@@ -35,23 +36,22 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Allows a user to select from the images currently available in a module, or
- * to open a File Dialog to import a new image.
+ * Allows a user to select from the images currently available in a module, or to open a File Dialog
+ * to import a new image.
  *
- * Designed to be a drop-in replacement for {@link VASSAL.counters.ImagePicker},
- * except implemented as a proper Configurer.
+ * <p>Designed to be a drop-in replacement for {@link VASSAL.counters.ImagePicker}, except
+ * implemented as a proper Configurer.
  *
- * The value stored is the name of the image file (no pathname).
+ * <p>The value stored is the name of the image file (no pathname).
  */
 public class ImageSelector extends Configurer implements ItemListener {
 
-  private static final String NO_IMAGE = "(" + Resources.getString("Editor.ImagePicker.no_image") + ")";
+  private static final String NO_IMAGE =
+      "(" + Resources.getString("Editor.ImagePicker.no_image") + ")";
 
   private static final int DEFAULT_SIZE = 64;
 
@@ -90,7 +90,7 @@ public class ImageSelector extends Configurer implements ItemListener {
   }
 
   public ImageSelector() {
-    this (null, "", "", DEFAULT_SIZE, DEFAULT_SIZE);
+    this(null, "", "", DEFAULT_SIZE, DEFAULT_SIZE);
   }
 
   @Override
@@ -104,14 +104,12 @@ public class ImageSelector extends Configurer implements ItemListener {
       imageName = null;
       imageViewer.setIcon(getNoImageIcon());
       imageViewer.setPreferredSize(new Dimension(DEFAULT_SIZE, DEFAULT_SIZE));
-    }
-    else {
+    } else {
       if (s.equals(imageName)) {
         // We have to do this because we have no way of calling update on
         // any ImageOps which depend on this image.
         Op.clearCache();
-      }
-      else {
+      } else {
         imageName = s;
       }
 
@@ -125,8 +123,7 @@ public class ImageSelector extends Configurer implements ItemListener {
         icon.setOp(Op.scale(Op.load(s), newScale));
         imageScale.setText("(" + (int) (newScale * 100) + "%)");
         imageScale.setVisible(true);
-      }
-      else {
+      } else {
         imageScale.setVisible(false);
       }
 
@@ -138,8 +135,7 @@ public class ImageSelector extends Configurer implements ItemListener {
     select.setSelectedItem(s);
     if (s == null) {
       select.setSelectedIndex(0);
-    }
-    else if (!s.equals(select.getSelectedItem())) {
+    } else if (!s.equals(select.getSelectedItem())) {
       select.setSelectedItem(s + ".gif"); // NON-NLS
     }
     select.addItemListener(this);
@@ -164,10 +160,14 @@ public class ImageSelector extends Configurer implements ItemListener {
 
     final JButton addButton = new JButton(Resources.getString("Editor.imageSelector.add_image"));
     addButton.addActionListener(e -> pickImage());
-    final JButton clearButton = new JButton(Resources.getString("Editor.imageSelector.clear_image"));
+    final JButton clearButton =
+        new JButton(Resources.getString("Editor.imageSelector.clear_image"));
     clearButton.addActionListener(e -> clearImage());
 
-    select = new JComboBox<>(ArrayUtils.addFirst(GameModule.getGameModule().getDataArchive().getImageNames(), NO_IMAGE));
+    select =
+        new JComboBox<>(
+            ArrayUtils.addFirst(
+                GameModule.getGameModule().getDataArchive().getImageNames(), NO_IMAGE));
     select.setSelectedIndex(0);
     select.addItemListener(this);
 
@@ -194,10 +194,11 @@ public class ImageSelector extends Configurer implements ItemListener {
     if (fc.showOpenDialog(gm.getPlayerWindow()) == FileChooser.APPROVE_OPTION) {
       final String name = fc.getSelectedFile().getName();
       gm.getArchiveWriter().addImage(fc.getSelectedFile().getPath(), name);
-      select.setModel(new DefaultComboBoxModel<>(ArrayUtils.addFirst(gm.getDataArchive().getImageNames(), NO_IMAGE)));
+      select.setModel(
+          new DefaultComboBoxModel<>(
+              ArrayUtils.addFirst(gm.getDataArchive().getImageNames(), NO_IMAGE)));
       setValue(name);
-    }
-    else {
+    } else {
       setValue(null);
     }
   }
@@ -208,11 +209,10 @@ public class ImageSelector extends Configurer implements ItemListener {
 
   private Icon getNoImageIcon() {
     if (noImage == null) {
-      noImage = new ImageIcon(new MultiResolutionRenderedImage(
-        DEFAULT_SIZE,
-        DEFAULT_SIZE,
-        LabelUtils::noImageBoxImage
-      ));
+      noImage =
+          new ImageIcon(
+              new MultiResolutionRenderedImage(
+                  DEFAULT_SIZE, DEFAULT_SIZE, LabelUtils::noImageBoxImage));
     }
     return noImage;
   }

@@ -25,14 +25,11 @@ import VASSAL.counters.DynamicProperty;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.event.FocusListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
 public class DynamicKeyCommandConfigurer extends Configurer {
@@ -43,15 +40,15 @@ public class DynamicKeyCommandConfigurer extends Configurer {
   protected DynamicProperty target;
 
   public DynamicKeyCommandConfigurer(DynamicProperty target) {
-    super(target.getKey(), target.getKey(),
-      new DynamicProperty.DynamicKeyCommand(
-        "",
-        NamedKeyStroke.NULL_KEYSTROKE,
-        Decorator.getOutermost(target),
-        target,
-        new PropertySetter("", target)
-      )
-    );
+    super(
+        target.getKey(),
+        target.getKey(),
+        new DynamicProperty.DynamicKeyCommand(
+            "",
+            NamedKeyStroke.NULL_KEYSTROKE,
+            Decorator.getOutermost(target),
+            target,
+            new PropertySetter("", target)));
 
     commandConfig = new StringConfigurer("", "", 12);
     commandConfig.setHint(Resources.getString("Editor.menu_command_hint"));
@@ -61,10 +58,11 @@ public class DynamicKeyCommandConfigurer extends Configurer {
 
     commandConfig.addPropertyChangeListener(e -> updateValue());
     keyConfig.addPropertyChangeListener(e -> updateValue());
-    propChangeConfig.addPropertyChangeListener(e -> {
-      updateValue();
-      repack(commandConfig.getControls());
-    });
+    propChangeConfig.addPropertyChangeListener(
+        e -> {
+          updateValue();
+          repack(commandConfig.getControls());
+        });
     this.target = target;
   }
 
@@ -79,13 +77,15 @@ public class DynamicKeyCommandConfigurer extends Configurer {
   @Override
   public String getValueString() {
     final SequenceEncoder se = new SequenceEncoder(':');
-    se.append(commandConfig.getValueString()).append(keyConfig.getValueString()).append(propChangeConfig.getValueString());
+    se.append(commandConfig.getValueString())
+        .append(keyConfig.getValueString())
+        .append(propChangeConfig.getValueString());
     return se.getValue();
   }
 
   /**
-   * Freeze the Configurer from issuing PropertyChange Events.
-   * Ensure the subsidiary Configurers are quiet also.
+   * Freeze the Configurer from issuing PropertyChange Events. Ensure the subsidiary Configurers are
+   * quiet also.
    *
    * @param val true to freeze
    */
@@ -131,12 +131,22 @@ public class DynamicKeyCommandConfigurer extends Configurer {
 
   public void updateValue() {
     noUpdate = true;
-    setValue(new DynamicProperty.DynamicKeyCommand(commandConfig.getValueString(), keyConfig.getValueNamedKeyStroke(), target, target, propChangeConfig.getPropertyChanger()));
+    setValue(
+        new DynamicProperty.DynamicKeyCommand(
+            commandConfig.getValueString(),
+            keyConfig.getValueNamedKeyStroke(),
+            target,
+            target,
+            propChangeConfig.getPropertyChanger()));
     noUpdate = false;
   }
 
   protected void buildControls() {
-    controls = new JPanel(new MigLayout("ins panel," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3", "[]rel[][]rel[]")); // NON-NLS
+    controls =
+        new JPanel(
+            new MigLayout(
+                "ins panel," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3",
+                "[]rel[][]rel[]")); // NON-NLS
     controls.setBorder(BorderFactory.createEtchedBorder());
     JLabel label = new JLabel(Resources.getString("Editor.menu_command"));
     label.setLabelFor(commandConfig.getControls());

@@ -1,11 +1,11 @@
 package VASSAL.configure;
 
-import java.awt.Point;
-import org.junit.jupiter.api.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+
+import java.awt.Point;
+import org.junit.jupiter.api.Test;
 
 public class IntConfigurerTest {
 
@@ -21,7 +21,7 @@ public class IntConfigurerTest {
     // check gui builds
     config.getControls();
 
-    //Check basic functionality
+    // Check basic functionality
     assertThat(config.getKey(), is(equalTo(key)));
     assertThat(config.getName(), is(equalTo(name)));
     assertThat(config.getValue(), is(equalTo(value)));
@@ -36,9 +36,9 @@ public class IntConfigurerTest {
     config.setValue("52");
     assertThat(config.getIntValue(dflt), is(equalTo(52)));
 
-    // Setting value to rubbish will allow default value to be returned. [Why not fail quietly when trying to set???]
+    // Setting value to rubbish will allow default value to be returned. [Why not fail quietly when
+    // trying to set???]
     config.setValue(new Point(0, 0));
     assertThat(config.getIntValue(dflt), is(equalTo(dflt)));
-
   }
 }

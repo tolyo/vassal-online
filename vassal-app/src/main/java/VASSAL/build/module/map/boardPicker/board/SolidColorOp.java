@@ -16,6 +16,10 @@
  */
 package VASSAL.build.module.map.boardPicker.board;
 
+import VASSAL.tools.image.ImageUtils;
+import VASSAL.tools.imageop.AbstractTileOpImpl;
+import VASSAL.tools.imageop.AbstractTiledOpImpl;
+import VASSAL.tools.imageop.ImageOp;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -23,11 +27,6 @@ import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import VASSAL.tools.image.ImageUtils;
-import VASSAL.tools.imageop.AbstractTileOpImpl;
-import VASSAL.tools.imageop.AbstractTiledOpImpl;
-import VASSAL.tools.imageop.ImageOp;
 
 public class SolidColorOp extends AbstractTiledOpImpl {
   protected final Color color;
@@ -38,8 +37,8 @@ public class SolidColorOp extends AbstractTiledOpImpl {
 
     size = new Dimension(w, h);
     tileSize = new Dimension(256, 256);
-    numXTiles = (int) Math.ceil((double)size.width / tileSize.width);
-    numYTiles = (int) Math.ceil((double)size.height / tileSize.height);
+    numXTiles = (int) Math.ceil((double) size.width / tileSize.width);
+    numYTiles = (int) Math.ceil((double) size.height / tileSize.height);
     tiles = null;
 
     hash = Objects.hash(color, size);
@@ -61,9 +60,8 @@ public class SolidColorOp extends AbstractTiledOpImpl {
     }
 
     // create the destination tile
-    final BufferedImage dst = ImageUtils.createCompatibleImage(
-      dw, dh, color.getTransparency() != Color.OPAQUE
-    );
+    final BufferedImage dst =
+        ImageUtils.createCompatibleImage(dw, dh, color.getTransparency() != Color.OPAQUE);
 
     // fill with the color
     final Graphics g = dst.getGraphics();
@@ -74,12 +72,10 @@ public class SolidColorOp extends AbstractTiledOpImpl {
   }
 
   @Override
-  protected void fixTileSize() {
-  }
+  protected void fixTileSize() {}
 
   @Override
-  protected void fixSize() {
-  }
+  protected void fixSize() {}
 
   public Color getColor() {
     return color;
@@ -105,8 +101,7 @@ public class SolidColorOp extends AbstractTiledOpImpl {
         throw new IllegalArgumentException();
       }
 
-      if (tileX < 0 || tileX >= scop.getNumXTiles() ||
-          tileY < 0 || tileY >= scop.getNumYTiles()) {
+      if (tileX < 0 || tileX >= scop.getNumXTiles() || tileY < 0 || tileY >= scop.getNumYTiles()) {
         throw new IndexOutOfBoundsException();
       }
 
@@ -136,8 +131,7 @@ public class SolidColorOp extends AbstractTiledOpImpl {
     }
 
     @Override
-    protected void fixSize() {
-    }
+    protected void fixSize() {}
 
     @Override
     public boolean equals(Object o) {
@@ -145,9 +139,7 @@ public class SolidColorOp extends AbstractTiledOpImpl {
       if (o == null || o.getClass() != this.getClass()) return false;
 
       final TileOp op = (TileOp) o;
-      return size.equals(op.size) &&
-             color.equals(op.color) &&
-             sop.equals(op.sop);
+      return size.equals(op.size) && color.equals(op.color) && sop.equals(op.sop);
     }
 
     @Override
@@ -158,10 +150,16 @@ public class SolidColorOp extends AbstractTiledOpImpl {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-      return getClass().getName() +
-        "[sop=" + sop + //NON-NLS
-        ",color=" + color + //NON-NLS
-        ",size=" + size + "]"; //NON-NLS
+      return getClass().getName()
+          + "[sop="
+          + sop
+          + // NON-NLS
+          ",color="
+          + color
+          + // NON-NLS
+          ",size="
+          + size
+          + "]"; // NON-NLS
     }
   }
 
@@ -169,10 +167,9 @@ public class SolidColorOp extends AbstractTiledOpImpl {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || o.getClass() != this.getClass()) return false;
- 
+
     final SolidColorOp op = (SolidColorOp) o;
-    return color.equals(op.color) &&
-           size.equals(op.size);
+    return color.equals(op.color) && size.equals(op.size);
   }
 
   @Override
@@ -182,8 +179,12 @@ public class SolidColorOp extends AbstractTiledOpImpl {
 
   @Override
   public String toString() {
-    return getClass().getName() +
-      "[color=" + color + //NON-NLS
-      ",size=" + size + "]"; //NON-NLS
+    return getClass().getName()
+        + "[color="
+        + color
+        + // NON-NLS
+        ",size="
+        + size
+        + "]"; // NON-NLS
   }
 }

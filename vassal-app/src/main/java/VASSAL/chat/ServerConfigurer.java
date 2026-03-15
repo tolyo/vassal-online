@@ -17,13 +17,17 @@
  */
 package VASSAL.chat;
 
+import VASSAL.chat.node.OfficialNodeClientFactory;
+import VASSAL.chat.peer2peer.P2PClientFactory;
+import VASSAL.configure.Configurer;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.menu.MacOSXMenuManager;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -31,27 +35,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
-
 import net.miginfocom.swing.MigLayout;
-
-import VASSAL.chat.node.OfficialNodeClientFactory;
-import VASSAL.chat.peer2peer.P2PClientFactory;
-import VASSAL.configure.Configurer;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.menu.MacOSXMenuManager;
 
 /**
  * Specifies the server implementation in the Preferences
  *
  * @author rkinney
- *
  */
 public class ServerConfigurer extends Configurer {
-  private static final String CONNECTED = Resources.getString("Server.please_disconnect"); //$NON-NLS-1$
-  private static final String DISCONNECTED = Resources.getString("Server.select_server_type"); //$NON-NLS-1$
-  private static final String P2P_BUTTON = Resources.getString("Server.direct"); //$NON-NLS-1$
-  private static final String OFFICIAL_BUTTON = Resources.getString("Server.official"); //$NON-NLS-1$
-  private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
+  private static final String CONNECTED =
+      Resources.getString("Server.please_disconnect"); // $NON-NLS-1$
+  private static final String DISCONNECTED =
+      Resources.getString("Server.select_server_type"); // $NON-NLS-1$
+  private static final String P2P_BUTTON = Resources.getString("Server.direct"); // $NON-NLS-1$
+  private static final String OFFICIAL_BUTTON =
+      Resources.getString("Server.official"); // $NON-NLS-1$
+  private static final String ENCODING = "UTF-8"; // $NON-NLS-1$
   protected JComponent controls;
   private final HybridClient client;
   private JRadioButton officialButton;
@@ -62,9 +61,7 @@ public class ServerConfigurer extends Configurer {
     super(key, name, new Properties());
     this.client = client;
     client.addPropertyChangeListener(
-      ChatServerConnection.CONNECTED,
-      e -> enableControls(Boolean.TRUE.equals(e.getNewValue()))
-    );
+        ChatServerConnection.CONNECTED, e -> enableControls(Boolean.TRUE.equals(e.getNewValue())));
     getControls();
     setValue(buildLegacyProperties());
   }
@@ -74,28 +71,30 @@ public class ServerConfigurer extends Configurer {
     if (controls == null) {
       controls = new JPanel(new MigLayout());
       header = new JLabel(DISCONNECTED);
-      controls.add(header, "wrap"); //$NON-NLS-1$
+      controls.add(header, "wrap"); // $NON-NLS-1$
       final ButtonGroup group = new ButtonGroup();
 
       p2pButton = new JRadioButton(P2P_BUTTON);
-      p2pButton.addItemListener(e -> {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-          noUpdate = true;
-          setValue(buildPeerProperties());
-          noUpdate = false;
-        }
-      });
+      p2pButton.addItemListener(
+          e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+              noUpdate = true;
+              setValue(buildPeerProperties());
+              noUpdate = false;
+            }
+          });
       group.add(p2pButton);
-      controls.add(p2pButton, "wrap"); //$NON-NLS-1$
+      controls.add(p2pButton, "wrap"); // $NON-NLS-1$
 
       officialButton = new JRadioButton(OFFICIAL_BUTTON);
-      officialButton.addItemListener(e -> {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-          noUpdate = true;
-          setValue(buildLegacyProperties());
-          noUpdate = false;
-        }
-      });
+      officialButton.addItemListener(
+          e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+              noUpdate = true;
+              setValue(buildLegacyProperties());
+              noUpdate = false;
+            }
+          });
       controls.add(officialButton);
       group.add(officialButton);
     }
@@ -122,7 +121,7 @@ public class ServerConfigurer extends Configurer {
 
   @Override
   public String getValueString() {
-    String s = ""; //$NON-NLS-1$
+    String s = ""; // $NON-NLS-1$
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       final Properties p = (Properties) getValue();
@@ -143,11 +142,11 @@ public class ServerConfigurer extends Configurer {
     super.setValue(o);
     if (!noUpdate && o instanceof Properties && controls != null) {
       final Properties p = (Properties) o;
-      final String type = p.getProperty(ChatServerFactory.TYPE_KEY, OfficialNodeClientFactory.OFFICIAL_TYPE);
+      final String type =
+          p.getProperty(ChatServerFactory.TYPE_KEY, OfficialNodeClientFactory.OFFICIAL_TYPE);
       if (OfficialNodeClientFactory.OFFICIAL_TYPE.equals(type)) {
         officialButton.setSelected(true);
-      }
-      else if (P2PClientFactory.P2P_TYPE.equals(type)) {
+      } else if (P2PClientFactory.P2P_TYPE.equals(type)) {
         p2pButton.setSelected(true);
       }
     }
@@ -175,11 +174,13 @@ public class ServerConfigurer extends Configurer {
   }
 
   public static void main(String[] args) {
-    ChatServerFactory.register(OfficialNodeClientFactory.OFFICIAL_TYPE, new OfficialNodeClientFactory());
+    ChatServerFactory.register(
+        OfficialNodeClientFactory.OFFICIAL_TYPE, new OfficialNodeClientFactory());
     ChatServerFactory.register(P2PClientFactory.P2P_TYPE, new P2PClientFactory());
     new MacOSXMenuManager();
     final HybridClient c = new HybridClient();
-    final ServerConfigurer config = new ServerConfigurer("server", "server", c); //$NON-NLS-1$ //$NON-NLS-2$
+    final ServerConfigurer config =
+        new ServerConfigurer("server", "server", c); // $NON-NLS-1$ //$NON-NLS-2$
     final JFrame f = new JFrame();
     f.getContentPane().add(config.getControls());
     f.pack();

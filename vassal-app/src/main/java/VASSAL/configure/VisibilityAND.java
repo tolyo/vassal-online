@@ -18,7 +18,8 @@
 package VASSAL.configure;
 
 /**
- * Allow "Anding" two VisibilityCondition items together, dealing with the whole "null means visible" situation
+ * Allow "Anding" two VisibilityCondition items together, dealing with the whole "null means
+ * visible" situation
  */
 public class VisibilityAND implements VisibilityCondition {
   final VisibilityCondition and1;

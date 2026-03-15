@@ -26,7 +26,5 @@ public interface PieceEditor {
 
   String getState();
 
-  default void initCustomControls(JDialog dialog) {
-
-  }
+  default void initCustomControls(JDialog dialog) {}
 }

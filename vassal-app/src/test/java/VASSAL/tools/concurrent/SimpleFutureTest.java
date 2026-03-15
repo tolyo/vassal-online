@@ -18,14 +18,13 @@
 
 package VASSAL.tools.concurrent;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
-
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleFutureTest {
 
@@ -104,8 +103,7 @@ public class SimpleFutureTest {
   }
 
   @Test
-  public void testGetAfterSet()
-                              throws ExecutionException, InterruptedException {
+  public void testGetAfterSet() throws ExecutionException, InterruptedException {
     final SimpleFuture<Integer> f = new SimpleFuture<>();
     f.set(42);
     assertEquals(42, (int) f.get());
@@ -131,9 +129,8 @@ public class SimpleFutureTest {
   }
 
   @Test
-  public void testGetTimeoutAfterSet() throws ExecutionException,
-                                              InterruptedException,
-                                              TimeoutException {
+  public void testGetTimeoutAfterSet()
+      throws ExecutionException, InterruptedException, TimeoutException {
     final SimpleFuture<Integer> f = new SimpleFuture<>();
     f.set(42);
     assertEquals(42, (int) f.get(1, TimeUnit.NANOSECONDS));
@@ -146,7 +143,8 @@ public class SimpleFutureTest {
     final Exception ex = new Exception();
     f.setException(ex);
 
-    ExecutionException e = assertThrows(ExecutionException.class, () -> f.get(1, TimeUnit.NANOSECONDS));
+    ExecutionException e =
+        assertThrows(ExecutionException.class, () -> f.get(1, TimeUnit.NANOSECONDS));
     assertEquals(ex, e.getCause());
   }
 

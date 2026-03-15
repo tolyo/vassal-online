@@ -26,9 +26,7 @@ import java.util.List;
  * @author Joel Uckelman
  */
 public abstract class AbstractPropertyContainer implements PropertyContainer {
-  /**
-   * Creates an <code>AbstractPropertyContainer</code>.
-   */
+  /** Creates an <code>AbstractPropertyContainer</code>. */
   public AbstractPropertyContainer() {
     this(new ConcurrentPropertySupport());
   }
@@ -52,8 +50,7 @@ public abstract class AbstractPropertyContainer implements PropertyContainer {
 
   /** {@inheritDoc} */
   @Override
-  public <T> void addPropertyListener(Property<T> prop,
-                                      PropertyListener<? super T> l) {
+  public <T> void addPropertyListener(Property<T> prop, PropertyListener<? super T> l) {
     ps.addPropertyListener(prop, l);
   }
 
@@ -65,8 +62,7 @@ public abstract class AbstractPropertyContainer implements PropertyContainer {
 
   /** {@inheritDoc} */
   @Override
-  public <T> void removePropertyListener(Property<T> prop,
-                                         PropertyListener<? super T> l) {
+  public <T> void removePropertyListener(Property<T> prop, PropertyListener<? super T> l) {
     ps.removePropertyListener(prop, l);
   }
 
@@ -78,8 +74,7 @@ public abstract class AbstractPropertyContainer implements PropertyContainer {
 
   /** {@inheritDoc} */
   @Override
-  public <T> List<PropertyListener<? super T>>
-                                       getPropertyListeners(Property<T> prop) {
+  public <T> List<PropertyListener<? super T>> getPropertyListeners(Property<T> prop) {
     return ps.getPropertyListeners(prop);
   }
 

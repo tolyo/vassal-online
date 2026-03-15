@@ -21,18 +21,15 @@ import VASSAL.counters.DynamicProperty;
 import VASSAL.counters.TraitLayout;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
 public class DynamicKeyCommandListConfigurer extends Configurer implements ConfigurableList {
@@ -49,19 +46,20 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
   private JPanel controls;
   private JPanel configControls;
   private final List<ConfigurableListEntry> entries = new ArrayList<>();
-  private final boolean remote; // True if the Commands are to be executed on remote pieces (changes header text)
+  private final boolean
+      remote; // True if the Commands are to be executed on remote pieces (changes header text)
 
-  public DynamicKeyCommandListConfigurer(String key, String name,  DynamicProperty target, boolean remote) {
+  public DynamicKeyCommandListConfigurer(
+      String key, String name, DynamicProperty target, boolean remote) {
     super(key, name);
     setTarget(target);
     value = new ArrayList<>(0);
     this.remote = remote;
   }
 
-  public DynamicKeyCommandListConfigurer(String key, String name,  DynamicProperty target) {
+  public DynamicKeyCommandListConfigurer(String key, String name, DynamicProperty target) {
     this(key, name, target, false);
   }
-
 
   public boolean isRemote() {
     return remote;
@@ -131,7 +129,6 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
     setSelectedEntryIndex(pos + 1);
 
     updateControls();
-
   }
 
   @Override
@@ -157,7 +154,6 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
 
     // Refresh the view
     updateControls(pos + 1);
-
   }
 
   @Override
@@ -177,9 +173,7 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
 
     getListValue().remove(listPos);
     updateControls();
-
   }
-
 
   @Override
   public void selectEntry(ConfigurableListEntry entry) {
@@ -265,9 +259,15 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
       panel = new JPanel(new MigLayout(TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
       panel.setBorder(BorderFactory.createEtchedBorder());
 
-      controls = new JPanel(new MigLayout("hidemode 3,ins 2", "[grow,fill]", "[grow,fill]")); // NON-NLS
+      controls =
+          new JPanel(new MigLayout("hidemode 3,ins 2", "[grow,fill]", "[grow,fill]")); // NON-NLS
 
-      configControls = new JPanel(new MigLayout("hidemode 3," + ConfigurerLayout.STANDARD_INSETS_GAPY, "[grow 1,fill]rel[grow 1,fill]rel[]rel[grow 4,fill]rel[]", "[center]")); // NON-NLS
+      configControls =
+          new JPanel(
+              new MigLayout(
+                  "hidemode 3," + ConfigurerLayout.STANDARD_INSETS_GAPY,
+                  "[grow 1,fill]rel[grow 1,fill]rel[]rel[grow 4,fill]rel[]",
+                  "[center]")); // NON-NLS
 
       controls.add(configControls, "grow, aligny center"); // NON-NLS
       panel.add(controls, "grow"); // NON-NLS
@@ -305,9 +305,7 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
     entries.get(focus).requestFocus();
   }
 
-  /**
-   * Update visibility, enabled state as required
-   */
+  /** Update visibility, enabled state as required */
   private void updateControls() {
 
     configControls.setVisible(!getListValue().isEmpty());
@@ -325,36 +323,41 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
   private void updateListController() {
     getListController();
     controller.setCanMoveUp(getSelectedEntryIndex() > 0);
-    controller.setCanMoveDown(getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
+    controller.setCanMoveDown(
+        getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
   }
-
 
   private void buildHeader() {
 
     final JLabel commandHeader = new JLabel(Resources.getString("Editor.menu_command"));
-    final Font boldFont = new Font(commandHeader.getFont().getFontName(), Font.BOLD, commandHeader.getFont().getSize());
+    final Font boldFont =
+        new Font(
+            commandHeader.getFont().getFontName(), Font.BOLD, commandHeader.getFont().getSize());
     commandHeader.setFont(boldFont);
     configControls.add(commandHeader, "growx 0,alignx center"); // NON-NLS
 
-    final JLabel keyHeader  = new JLabel(Resources.getString("Editor.keyboard_command"));
+    final JLabel keyHeader = new JLabel(Resources.getString("Editor.keyboard_command"));
     keyHeader.setFont(boldFont);
     configControls.add(keyHeader, "growx 0,alignx center"); // NON-NLS
 
-    final JLabel typeLabel = new JLabel(Resources.getString("Editor.PropertyChangeConfigurer.type"));
+    final JLabel typeLabel =
+        new JLabel(Resources.getString("Editor.PropertyChangeConfigurer.type"));
     typeLabel.setFont(boldFont);
     configControls.add(typeLabel, "growx 0,alignx center"); // NON-NLS
 
-    final JLabel promptLabel = new JLabel(Resources.getString(isRemote() ? "Editor.PropertyChangeConfigurer.prompt_remote" : "Editor.PropertyChangeConfigurer.prompt"));
+    final JLabel promptLabel =
+        new JLabel(
+            Resources.getString(
+                isRemote()
+                    ? "Editor.PropertyChangeConfigurer.prompt_remote"
+                    : "Editor.PropertyChangeConfigurer.prompt"));
     promptLabel.setFont(boldFont);
     configControls.add(promptLabel, "growx 0,alignx center,wrap"); // NON-NLS
 
     configControls.setVisible(false);
-
   }
 
-  /**
-   * Append an Entry's controls to the bottom of the panel
-   */
+  /** Append an Entry's controls to the bottom of the panel */
   private void appendConfigControls(DKCEntry entry) {
     final DynamicKeyCommandConfigurer c = entry.getDkcConfigurer();
     getControls();
@@ -364,12 +367,9 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
     configControls.add(entry.getPromptPanel(), "growx"); // NON-NLS
     configControls.add(entry.getRemoveButton(), "growx 0,wrap"); // NON-NLS
     configControls.add(c.getValuesControls(), "skip 2,span 2,grow,wrap"); // NON-NLS
-
   }
 
-  /**
-   * Append an Entry's controls after the currently selected entry
-   */
+  /** Append an Entry's controls after the currently selected entry */
   private void insertConfigControls(DKCEntry entry, int listPos) {
 
     int controlPos = listPosToControlsPos(listPos);
@@ -381,12 +381,9 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
     configControls.add(entry.getPromptPanel(), "growx", controlPos++); // NON-NLS
     configControls.add(entry.getRemoveButton(), "growx 0,wrap", controlPos++); // NON-NLS
     configControls.add(c.getValuesControls(), "skip 2,span 2,grow,wrap", controlPos); // NON-NLS
-
   }
 
-  /**
-   * Remove an Entry's controls from the specified position
-   */
+  /** Remove an Entry's controls from the specified position */
   private void removeConfigControls(DKCEntry entry) {
     final DynamicKeyCommandConfigurer c = entry.getDkcConfigurer();
     getControls();
@@ -396,12 +393,9 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
     configControls.remove(entry.getPromptPanel());
     configControls.remove(entry.getRemoveButton());
     configControls.remove(c.getValuesControls());
-
   }
 
-  /**
-   * Find the position of the first control for the specified list Entry
-   */
+  /** Find the position of the first control for the specified list Entry */
   private int listPosToControlsPos(int listPos) {
     return HEADER_COMPONENT_COUNT + listPos * COMPONENT_COUNT;
   }
@@ -410,7 +404,6 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
   public void repack() {
     repack(panel);
   }
-
 
   private static class DKCEntry extends AbstractConfigurableListEntry {
 
@@ -473,7 +466,11 @@ public class DynamicKeyCommandListConfigurer extends Configurer implements Confi
 
     public JButton getShowHideValuesButton() {
       if (showHideValuesButton == null) {
-        showHideValuesButton = new NoInsetButton("edit-find", DEFAULT_ICON_SIZE, "Editor.PropertyChangeConfigurer.showHide_hint"); // NON-NLS
+        showHideValuesButton =
+            new NoInsetButton(
+                "edit-find",
+                DEFAULT_ICON_SIZE,
+                "Editor.PropertyChangeConfigurer.showHide_hint"); // NON-NLS
         showHideValuesButton.setVisible(false);
         showHideValuesButton.addActionListener(e -> showHideValues());
       }

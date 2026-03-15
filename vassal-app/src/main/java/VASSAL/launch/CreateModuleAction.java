@@ -17,16 +17,14 @@
  */
 package VASSAL.launch;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-
-import javax.swing.JFrame;
-
 import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ArchiveWriter;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import javax.swing.JFrame;
 
 public class CreateModuleAction extends GameModuleAction {
   private static final long serialVersionUID = 1L;
@@ -37,7 +35,7 @@ public class CreateModuleAction extends GameModuleAction {
 
   @Override
   public void performAction(ActionEvent e) throws IOException {
-    GameModule.init(new GameModule(new ArchiveWriter((String) null, ".vmod"))); //NON-NLS
+    GameModule.init(new GameModule(new ArchiveWriter((String) null, ".vmod"))); // NON-NLS
     final JFrame frame = GameModule.getGameModule().getPlayerWindow();
     frame.setVisible(true);
     final ModuleEditorWindow w = new ModuleEditorWindow(GameModule.getGameModule());

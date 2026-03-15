@@ -17,19 +17,19 @@
  */
 package VASSAL.command;
 
+import VASSAL.build.GameModule;
+import VASSAL.tools.version.VersionUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import VASSAL.build.GameModule;
-import VASSAL.tools.version.VersionUtils;
-
 /**
- * Evaluates properties of the GameModule and conditionally executes
- * another Command if all values are satisfied.
+ * Evaluates properties of the GameModule and conditionally executes another Command if all values
+ * are satisfied.
  */
 public class ConditionalCommand extends Command {
   private final Condition[] conditions;
+
   /** Command to execute if the condition is accepted */
   private final Command delegate;
 
@@ -61,10 +61,7 @@ public class ConditionalCommand extends Command {
     return conditions;
   }
 
-  /**
-   * The class representing a condition that must be satisfied if the
-   * Command is to be executed
-   */
+  /** The class representing a condition that must be satisfied if the Command is to be executed */
   public abstract static class Condition {
     public abstract boolean isSatisfied();
   }
@@ -72,8 +69,8 @@ public class ConditionalCommand extends Command {
   public static class Eq extends Condition {
     /** The property to be checked */
     private final String property;
-    /** To pass the check the value of the property
-     * must match one of these values. */
+
+    /** To pass the check the value of the property must match one of these values. */
     private final List<String> allowed;
 
     public Eq(String property, List<String> allowed) {
@@ -82,7 +79,7 @@ public class ConditionalCommand extends Command {
     }
 
     @Deprecated(since = "2020-10-26", forRemoval = true)
-    public Eq(String property, Vector<String> allowed) { //NOPMD
+    public Eq(String property, Vector<String> allowed) { // NOPMD
       this.property = property;
       this.allowed = allowed;
     }
@@ -97,8 +94,7 @@ public class ConditionalCommand extends Command {
 
     @Override
     public boolean isSatisfied() {
-      final String propertyValue =
-        GameModule.getGameModule().getAttributeValueString(property);
+      final String propertyValue = GameModule.getGameModule().getAttributeValueString(property);
       return allowed.contains(propertyValue);
     }
   }
@@ -137,11 +133,10 @@ public class ConditionalCommand extends Command {
       return value;
     }
 
-// FIXME: what versions are being compared here?
+    // FIXME: what versions are being compared here?
     @Override
     public boolean isSatisfied() {
-      final String propertyValue =
-        GameModule.getGameModule().getAttributeValueString(property);
+      final String propertyValue = GameModule.getGameModule().getAttributeValueString(property);
       return VersionUtils.compareVersions(propertyValue, value) < 0;
     }
   }
@@ -163,11 +158,10 @@ public class ConditionalCommand extends Command {
       return value;
     }
 
-// FIXME: what versions are being compared here?
+    // FIXME: what versions are being compared here?
     @Override
     public boolean isSatisfied() {
-      final String propertyValue =
-        GameModule.getGameModule().getAttributeValueString(property);
+      final String propertyValue = GameModule.getGameModule().getAttributeValueString(property);
       return VersionUtils.compareVersions(propertyValue, value) > 0;
     }
   }

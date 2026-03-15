@@ -20,18 +20,16 @@ package VASSAL.configure;
 import VASSAL.build.AbstractBuildable;
 import VASSAL.counters.DynamicProperty;
 import VASSAL.i18n.Resources;
-
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.Component;
+import java.awt.event.FocusListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.event.FocusListener;
+import net.miginfocom.swing.MigLayout;
 
 /**
- * A Configurer for the Parameter class
- * The value stored as the value in the Configurer is a Parameter Object
+ * A Configurer for the Parameter class The value stored as the value in the Configurer is a
+ * Parameter Object
  */
 public class ParameterConfigurer extends Configurer {
 
@@ -64,8 +62,8 @@ public class ParameterConfigurer extends Configurer {
   }
 
   /**
-   * Freeze the Configurer from issuing PropertyChange Events.
-   * Ensure the subsidiary Configurers are quiet also.
+   * Freeze the Configurer from issuing PropertyChange Events. Ensure the subsidiary Configurers are
+   * quiet also.
    *
    * @param val true to freeze
    */
@@ -115,7 +113,11 @@ public class ParameterConfigurer extends Configurer {
   }
 
   protected void buildControls() {
-    controls = new JPanel(new MigLayout("ins panel," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3", "[]rel[][]rel[]")); // NON-NLS
+    controls =
+        new JPanel(
+            new MigLayout(
+                "ins panel," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3",
+                "[]rel[][]rel[]")); // NON-NLS
     controls.setBorder(BorderFactory.createEtchedBorder());
 
     JLabel label = new JLabel(Resources.getString("Editor.property_name"));
@@ -127,7 +129,6 @@ public class ParameterConfigurer extends Configurer {
     label.setLabelFor(valueConfig.getControls());
     controls.add(label);
     controls.add(valueConfig.getControls(), "grow,wrap"); // NON-NLS
-
   }
 
   public Component getPropertyNameControls() {

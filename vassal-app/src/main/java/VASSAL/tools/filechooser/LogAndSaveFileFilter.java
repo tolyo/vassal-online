@@ -20,14 +20,14 @@ package VASSAL.tools.filechooser;
 import VASSAL.i18n.Resources;
 
 /**
- * A {@link FileFilter} for VASSAL logs and saved games. Used by file
- * choosers to filter out files which aren't logs or saved games.
+ * A {@link FileFilter} for VASSAL logs and saved games. Used by file choosers to filter out files
+ * which aren't logs or saved games.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public class LogAndSaveFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".vlog", ".vsav" }; //NON-NLS
+  public static final String[] types = {".vlog", ".vsav"}; // NON-NLS
 
   public LogAndSaveFileFilter() {
     super(Resources.getString("Editor.FileFilter.vassal_save"), types);

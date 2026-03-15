@@ -21,7 +21,6 @@ import java.io.File;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import org.apache.commons.lang3.SystemUtils;
 
 public class ArgEncoding {

@@ -17,30 +17,34 @@
  */
 package VASSAL.build.module;
 
+import java.awt.Component;
 import org.netbeans.spi.wizard.WizardController;
 
-import java.awt.Component;
-
 /**
- * Represents a step during the initialization of a game in which the player must specify some information See
- * {@link GameState #addGameSetupStep(SetupStep)}
+ * Represents a step during the initialization of a game in which the player must specify some
+ * information See {@link GameState #addGameSetupStep(SetupStep)}
  *
  * @author rkinney
  */
 public interface GameSetupStep {
-  /** @return true if this step needs no further information, false if the player should be prompted for more information */
+  /**
+   * @return true if this step needs no further information, false if the player should be prompted
+   *     for more information
+   */
   boolean isFinished();
 
   /** A human-understandable description of this step */
   String getStepTitle();
 
-  /** A GUI component that prompts the player for the needed information. If null, then no further information is needed */
+  /**
+   * A GUI component that prompts the player for the needed information. If null, then no further
+   * information is needed
+   */
   Component getControls();
 
   /** Apply the information gathered via the component to the game in progress */
   void finish();
 
   /** Tells the step who its wizard controller is */
-  default void setController(WizardController wc) {
-  }
+  default void setController(WizardController wc) {}
 }

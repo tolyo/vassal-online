@@ -20,14 +20,14 @@ package VASSAL.tools.filechooser;
 import VASSAL.i18n.Resources;
 
 /**
- * A {@link FileFilter} for VASSAL modules. Used by file choosers
- * to filter out files which aren't modules.
+ * A {@link FileFilter} for VASSAL modules. Used by file choosers to filter out files which aren't
+ * modules.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public class ModuleFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".vmod" }; //NON-NLS
+  public static final String[] types = {".vmod"}; // NON-NLS
 
   public ModuleFileFilter() {
     super(Resources.getString("Editor.FileFilter.modules"), types);

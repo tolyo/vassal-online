@@ -17,6 +17,17 @@
  */
 package VASSAL.launch;
 
+import VASSAL.Info;
+import VASSAL.configure.BooleanConfigurer;
+import VASSAL.configure.IntConfigurer;
+import VASSAL.configure.LongConfigurer;
+import VASSAL.i18n.Resources;
+import VASSAL.i18n.TranslateVassalWindow;
+import VASSAL.preferences.Prefs;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.lang.MemoryUtils;
+import VASSAL.tools.logging.LoggedOutputStream;
+import VASSAL.tools.menu.MacOSXMenuManager;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -35,54 +46,36 @@ import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-
 import javax.swing.SwingUtilities;
-
 import org.apache.commons.lang3.SystemUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.Info;
-import VASSAL.configure.BooleanConfigurer;
-import VASSAL.configure.IntConfigurer;
-import VASSAL.configure.LongConfigurer;
-import VASSAL.i18n.Resources;
-import VASSAL.i18n.TranslateVassalWindow;
-import VASSAL.preferences.Prefs;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.lang.MemoryUtils;
-import VASSAL.tools.logging.LoggedOutputStream;
-import VASSAL.tools.menu.MacOSXMenuManager;
-
 /**
- * Tracks recently-used modules and builds the main GUI window for
- * interacting with modules.
+ * Tracks recently-used modules and builds the main GUI window for interacting with modules.
  *
  * @author rodneykinney
  * @since 3.1.0
  */
 public class ModuleManager {
-  private static final Logger logger =
-    LoggerFactory.getLogger(ModuleManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(ModuleManager.class);
 
-  private static final String NEXT_VERSION_CHECK = "nextVersionCheck"; //NON-NLS
-  private static final String AUTO_VERSION_CHECK = "autoVersionCheck"; //NON-NLS
+  private static final String NEXT_VERSION_CHECK = "nextVersionCheck"; // NON-NLS
+  private static final String AUTO_VERSION_CHECK = "autoVersionCheck"; // NON-NLS
 
-  public static final String CONVERTER_MAXIMUM_HEAP = "converterMaximumHeap"; //$NON-NLS-1$
-  public static final String TILER_MAXIMUM_HEAP = "tilerMaximumHeap"; //$NON-NLS-1$
+  public static final String CONVERTER_MAXIMUM_HEAP = "converterMaximumHeap"; // $NON-NLS-1$
+  public static final String TILER_MAXIMUM_HEAP = "tilerMaximumHeap"; // $NON-NLS-1$
 
   @Deprecated(since = "2022-02-25", forRemoval = true)
-  public static final String MAXIMUM_HEAP = "maximumHeap"; //$NON-NLS-1$
+  public static final String MAXIMUM_HEAP = "maximumHeap"; // $NON-NLS-1$
 
   @Deprecated(since = "2020-10-21", forRemoval = true)
-  public static final String INITIAL_HEAP = "initialHeap"; //$NON-NLS-1$
+  public static final String INITIAL_HEAP = "initialHeap"; // $NON-NLS-1$
 
   private static FileLock acquireLock(FileChannel fc) throws IOException {
     try {
       return fc.lock();
-    }
-    catch (OverlappingFileLockException e) {
+    } catch (OverlappingFileLockException e) {
       throw new IOException(e);
     }
   }
@@ -90,8 +83,7 @@ public class ModuleManager {
   private static FileLock tryLock(FileChannel fc) throws IOException {
     try {
       return fc.tryLock();
-    }
-    catch (OverlappingFileLockException e) {
+    } catch (OverlappingFileLockException e) {
       throw new IOException(e);
     }
   }
@@ -102,38 +94,37 @@ public class ModuleManager {
 
     try {
       Info.setConfig(new StandardConfig());
-    }
-    catch (IOException e) {
-// FIXME: should be a dialog...
-      System.err.println("VASSAL: " + e.getMessage()); //NON-NLS
+    } catch (IOException e) {
+      // FIXME: should be a dialog...
+      System.err.println("VASSAL: " + e.getMessage()); // NON-NLS
       e.printStackTrace();
       System.exit(1);
     }
 
-// FIXME: We need to catch more exceptions in main() and then exit in
-// order to avoid situations where the main thread ends due to an uncaught
-// exception, but there are other threads still running, and so VASSAL
-// does not quit. For example, this can happen if an IllegalArgumentException
-// is thrown here...
+    // FIXME: We need to catch more exceptions in main() and then exit in
+    // order to avoid situations where the main thread ends due to an uncaught
+    // exception, but there are other threads still running, and so VASSAL
+    // does not quit. For example, this can happen if an IllegalArgumentException
+    // is thrown here...
 
     // parse command-line arguments
     LaunchRequest lr = null;
     try {
       lr = LaunchRequest.parseArgs(args);
-    }
-    catch (LaunchRequestException e) {
-// FIXME: should be a dialog...
-      System.err.println("VASSAL: " + e.getMessage()); //NON-NLS
+    } catch (LaunchRequestException e) {
+      // FIXME: should be a dialog...
+      System.err.println("VASSAL: " + e.getMessage()); // NON-NLS
       e.printStackTrace();
       System.exit(1);
     }
 
     if (lr.mode == LaunchRequest.Mode.TRANSLATE) {
       // show the translation window in translation mode
-      SwingUtilities.invokeLater(() -> {
-        // FIXME: does this window exit on close?
-        new TranslateVassalWindow(null).setVisible(true);
-      });
+      SwingUtilities.invokeLater(
+          () -> {
+            // FIXME: does this window exit on close?
+            new TranslateVassalWindow(null).setVisible(true);
+          });
       return;
     }
 
@@ -173,7 +164,9 @@ public class ModuleManager {
 
         // Note: We purposely keep lout open in the case where we are the
         // server, because closing lout will release the lock.
-        final FileChannel lout = FileChannel.open(lockfile.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        final FileChannel lout =
+            FileChannel.open(
+                lockfile.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         final FileLock lock = tryLock(lout);
 
         if (lock != null) {
@@ -182,15 +175,14 @@ public class ModuleManager {
           // Don't start a new Module Manager for update requests; update
           // requests are intended to be relayed to a Module Manager which
           // is already running.
-          if (lr.mode == LaunchRequest.Mode.UPDATE_MOD ||
-              lr.mode == LaunchRequest.Mode.UPDATE_EXT ||
-              lr.mode == LaunchRequest.Mode.UPDATE_GAME) {
+          if (lr.mode == LaunchRequest.Mode.UPDATE_MOD
+              || lr.mode == LaunchRequest.Mode.UPDATE_EXT
+              || lr.mode == LaunchRequest.Mode.UPDATE_GAME) {
             return;
           }
 
           // bind to an available port on the loopback device
-          final ServerSocket serverSocket =
-            new ServerSocket(0, 0, InetAddress.getByName(null));
+          final ServerSocket serverSocket = new ServerSocket(0, 0, InetAddress.getByName(null));
 
           // write the port number where we listen to the key file
           port = serverSocket.getLocalPort();
@@ -202,8 +194,7 @@ public class ModuleManager {
 
           // create a new Module Manager
           new ModuleManager(serverSocket, key, lout, lock);
-        }
-        else {
+        } else {
           // we do not have the lock, so we will be a request client
           lout.close();
 
@@ -214,10 +205,9 @@ public class ModuleManager {
           key = kraf.readLong();
         }
       }
-    }
-    catch (IOException e) {
-// FIXME: should be a dialog...
-      System.err.println("VASSAL: IO error"); //NON-NLS
+    } catch (IOException e) {
+      // FIXME: should be a dialog...
+      System.err.println("VASSAL: IO error"); // NON-NLS
       e.printStackTrace();
       System.exit(1);
     }
@@ -227,8 +217,8 @@ public class ModuleManager {
 
     // pass launch parameters on to the ModuleManager via the socket
     try (Socket clientSocket = new Socket((String) null, port);
-         ObjectOutputStream out = new ObjectOutputStream(
-           new BufferedOutputStream(clientSocket.getOutputStream()))) {
+        ObjectOutputStream out =
+            new ObjectOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()))) {
 
       out.writeObject(lr);
       out.flush();
@@ -236,14 +226,12 @@ public class ModuleManager {
       try (InputStream in = clientSocket.getInputStream()) {
         in.transferTo(System.err);
       }
-    }
-    catch (UnknownHostException e) {
-      logger.error("VASSAL: Unable to open socket for loopback device", e); //NON-NLS
+    } catch (UnknownHostException e) {
+      logger.error("VASSAL: Unable to open socket for loopback device", e); // NON-NLS
       System.exit(1);
-    }
-    catch (IOException e) {
-// FIXME: should be a dialog...
-      logger.error("VASSAL: Problem with socket on port {}", port, e); //NON-NLS
+    } catch (IOException e) {
+      // FIXME: should be a dialog...
+      logger.error("VASSAL: Problem with socket on port {}", port, e); // NON-NLS
       System.exit(1);
     }
   }
@@ -259,9 +247,8 @@ public class ModuleManager {
   private final FileChannel lout;
   private final FileLock lock;
 
-  public ModuleManager(ServerSocket serverSocket, long key,
-                       FileChannel lout, FileLock lock)
-                                                           throws IOException {
+  public ModuleManager(ServerSocket serverSocket, long key, FileChannel lout, FileLock lock)
+      throws IOException {
     if (instance != null) throw new IllegalStateException();
     instance = this;
 
@@ -275,8 +262,7 @@ public class ModuleManager {
     final File errorLog = Info.getErrorLogPath();
     Files.newOutputStream(errorLog.toPath()).close();
 
-    final StartUp start = SystemUtils.IS_OS_MAC ?
-      new ModuleManagerMacOSXStartUp() : new StartUp();
+    final StartUp start = SystemUtils.IS_OS_MAC ? new ModuleManagerMacOSXStartUp() : new StartUp();
 
     start.startErrorLog();
 
@@ -295,10 +281,9 @@ public class ModuleManager {
     SwingUtilities.invokeLater(this::launch);
 
     // ModuleManagerWindow.getInstance() != null now, so listen on the socket
-    final Thread socketListener = new Thread(
-      new ModuleManagerSocketListener(serverSocket, obj -> execute(obj)),
-      "socket listener"
-    );
+    final Thread socketListener =
+        new Thread(
+            new ModuleManagerSocketListener(serverSocket, obj -> execute(obj)), "socket listener");
     socketListener.setDaemon(true);
     socketListener.start();
 
@@ -310,16 +295,15 @@ public class ModuleManager {
 
   private void updateCheck(Prefs globalPrefs) {
     // determine when we should next check on the current version of VASSAL
-    final LongConfigurer nextVersionCheckConfig =
-      new LongConfigurer(NEXT_VERSION_CHECK, null, -1L);
+    final LongConfigurer nextVersionCheckConfig = new LongConfigurer(NEXT_VERSION_CHECK, null, -1L);
     globalPrefs.addOption(null, nextVersionCheckConfig);
 
-    final BooleanConfigurer autoVersionCheck = new BooleanConfigurer(
-      AUTO_VERSION_CHECK,
-      Resources.getString("GlobalOptions.auto_version_check"),  //$NON-NLS-1$
-      true
-    );
-    globalPrefs.addOption(Resources.getString("Prefs.general_tab"), autoVersionCheck); //NON-NLS
+    final BooleanConfigurer autoVersionCheck =
+        new BooleanConfigurer(
+            AUTO_VERSION_CHECK,
+            Resources.getString("GlobalOptions.auto_version_check"), // $NON-NLS-1$
+            true);
+    globalPrefs.addOption(Resources.getString("Prefs.general_tab"), autoVersionCheck); // NON-NLS
 
     if (!autoVersionCheck.getValueBoolean()) {
       return;
@@ -334,10 +318,8 @@ public class ModuleManager {
     if (nextVersionCheck == -1L) {
       // this was our first check; randomly check after 0-5 days to
       // to spread version checks evenly over a 5-day period
-      nextVersionCheck = System.currentTimeMillis() +
-                         (long) (Math.random() * 5 * 86400000);
-    }
-    else {
+      nextVersionCheck = System.currentTimeMillis() + (long) (Math.random() * 5 * 86400000);
+    } else {
       // check again in 5 days
       nextVersionCheck += 5 * 86400000;
     }
@@ -350,28 +332,26 @@ public class ModuleManager {
     physMemory = physMemory <= 0 ? 4096 : physMemory >> 20;
 
     // the maximum heap size for the tiler
-    final IntConfigurer maxHeapConf = new IntConfigurer(
-      TILER_MAXIMUM_HEAP,
-      Resources.getString("GlobalOptions.maximum_heap"),  //$NON-NLS-1$
-      (int)(3*physMemory/4)
-    );
+    final IntConfigurer maxHeapConf =
+        new IntConfigurer(
+            TILER_MAXIMUM_HEAP,
+            Resources.getString("GlobalOptions.maximum_heap"), // $NON-NLS-1$
+            (int) (3 * physMemory / 4));
     globalPrefs.addOption(
-      Resources.getString("Prefs.tiler_tab"), //NON-NLS
-      maxHeapConf
-    );
+        Resources.getString("Prefs.tiler_tab"), // NON-NLS
+        maxHeapConf);
   }
 
   private void converterHeapSetup(Prefs globalPrefs) {
     // the maximum heap size for the module converter
-    final IntConfigurer maxHeapConf = new IntConfigurer(
-      CONVERTER_MAXIMUM_HEAP,
-      Resources.getString("GlobalOptions.maximum_heap"),  //$NON-NLS-1$
-      512
-    );
+    final IntConfigurer maxHeapConf =
+        new IntConfigurer(
+            CONVERTER_MAXIMUM_HEAP,
+            Resources.getString("GlobalOptions.maximum_heap"), // $NON-NLS-1$
+            512);
     globalPrefs.addOption(
-      Resources.getString("Prefs.converter_tab"),  //NON-NLS
-      maxHeapConf
-    );
+        Resources.getString("Prefs.converter_tab"), // NON-NLS
+        maxHeapConf);
   }
 
   public void shutDown() throws IOException {
@@ -380,7 +360,7 @@ public class ModuleManager {
   }
 
   protected void launch() {
-    logger.info("Manager"); //NON-NLS
+    logger.info("Manager"); // NON-NLS
     final ModuleManagerWindow window = ModuleManagerWindow.getInstance();
     window.setVisible(true);
 
@@ -394,26 +374,23 @@ public class ModuleManager {
       final LaunchRequest lr = (LaunchRequest) req;
 
       if (lr.key != key) {
-// FIXME: translate
-        return "incorrect key"; //NON-NLS
+        // FIXME: translate
+        return "incorrect key"; // NON-NLS
       }
 
       final LaunchRequestHandler handler = new LaunchRequestHandler(lr);
       try {
         SwingUtilities.invokeAndWait(handler);
-      }
-      catch (InterruptedException e) {
-        return "interrupted";   // FIXME //NON-NLS
-      }
-      catch (InvocationTargetException e) {
+      } catch (InterruptedException e) {
+        return "interrupted"; // FIXME //NON-NLS
+      } catch (InvocationTargetException e) {
         ErrorDialog.bug(e);
         return null;
       }
 
       return handler.getResult();
-    }
-    else {
-      return "unrecognized command";  // FIXME //NON-NLS
+    } else {
+      return "unrecognized command"; // FIXME //NON-NLS
     }
   }
 }

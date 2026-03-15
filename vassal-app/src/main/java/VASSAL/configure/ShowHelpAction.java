@@ -19,20 +19,16 @@
 // FIXME: Why is this in configure instead of build.module.documentation?
 package VASSAL.configure;
 
-import java.awt.event.ActionEvent;
-import java.net.URL;
-
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.module.documentation.HelpWindow;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.BrowserSupport;
+import java.awt.event.ActionEvent;
+import java.net.URL;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 
-/**
- * Action that displays a {@link HelpWindow}
- */
+/** Action that displays a {@link HelpWindow} */
 public class ShowHelpAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -68,8 +64,7 @@ public class ShowHelpAction extends AbstractAction {
     if (contents != null) {
       if (helpWindow == null) {
         BrowserSupport.openURL(contents.toString());
-      }
-      else {
+      } else {
         helpWindow.update(contents);
         helpWindow.setVisible(true);
       }

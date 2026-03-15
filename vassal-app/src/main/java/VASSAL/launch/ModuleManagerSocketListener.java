@@ -16,6 +16,8 @@
  */
 package VASSAL.launch;
 
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.ThrowableUtils;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -25,16 +27,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.ThrowableUtils;
-
 public final class ModuleManagerSocketListener implements Runnable {
-  private static final Logger logger =
-    LoggerFactory.getLogger(ModuleManagerSocketListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(ModuleManagerSocketListener.class);
 
   private final ServerSocket serverSocket;
   private final Function<Object, String> execute;
@@ -56,8 +53,8 @@ public final class ModuleManagerSocketListener implements Runnable {
           clientSocket = serverSocket.accept();
           final String message;
 
-          try (ObjectInputStream in = new ObjectInputStream(
-            new BufferedInputStream(clientSocket.getInputStream()))) {
+          try (ObjectInputStream in =
+              new ObjectInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
 
             message = execute.apply(in.readObject());
           }
@@ -65,39 +62,32 @@ public final class ModuleManagerSocketListener implements Runnable {
 
           if (message == null || clientSocket.isClosed()) continue;
 
-          try (PrintStream out = new PrintStream(
-            new BufferedOutputStream(clientSocket.getOutputStream()), true, StandardCharsets.UTF_8)) {
+          try (PrintStream out =
+              new PrintStream(
+                  new BufferedOutputStream(clientSocket.getOutputStream()),
+                  true,
+                  StandardCharsets.UTF_8)) {
             out.println(message);
           }
-        }
-        catch (IOException e) {
-          ErrorDialog.showDetails(
-            e,
-            ThrowableUtils.getStackTrace(e),
-            "Error.socket_error"
-          );
-        }
-        catch (ClassNotFoundException e) {
+        } catch (IOException e) {
+          ErrorDialog.showDetails(e, ThrowableUtils.getStackTrace(e), "Error.socket_error");
+        } catch (ClassNotFoundException e) {
           ErrorDialog.bug(e);
-        }
-        finally {
+        } finally {
           if (clientSocket != null) {
             try {
               clientSocket.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
               logger.error("Error while closing client socket", e);
             }
           }
         }
       }
-    }
-    finally {
+    } finally {
       if (serverSocket != null) {
         try {
           serverSocket.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           logger.error("Error while closing server socket", e);
         }
       }

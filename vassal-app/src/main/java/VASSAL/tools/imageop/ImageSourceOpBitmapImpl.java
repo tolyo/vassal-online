@@ -18,31 +18,26 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.opcache.Op;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
 
-import VASSAL.tools.opcache.Op;
-
 /**
- * An {@link ImageOp} which uses a fixed image as its source.
- * <code>ImageSourceOp</code> holds a reference to the <code>Image</code>
- * it was constructed with in order to prevent it from being garbage
- * collected from the soft cache, since this op has no way of recreating
- * the source image.
+ * An {@link ImageOp} which uses a fixed image as its source. <code>ImageSourceOp</code> holds a
+ * reference to the <code>Image</code> it was constructed with in order to prevent it from being
+ * garbage collected from the soft cache, since this op has no way of recreating the source image.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class ImageSourceOpBitmapImpl extends AbstractTiledOpImpl
-                                     implements SourceOp {
+public class ImageSourceOpBitmapImpl extends AbstractTiledOpImpl implements SourceOp {
   private final BufferedImage image;
   private final int hash;
 
   /**
-   * Constructs an <code>ImageOp</code> which will hold and return
-   * the image it is constructed with.
+   * Constructs an <code>ImageOp</code> which will hold and return the image it is constructed with.
    *
    * @param image the source image
    * @throws IllegalArgumentException if <code>image == null</code>.

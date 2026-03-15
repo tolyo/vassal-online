@@ -24,11 +24,9 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**
- * VASSAL PropertyResourceBundle
- *  - Expose setParent()
+ * VASSAL PropertyResourceBundle - Expose setParent()
  *
  * @author Brent Easton
- *
  */
 public class VassalResourceBundle extends PropertyResourceBundle {
   /**
@@ -41,9 +39,7 @@ public class VassalResourceBundle extends PropertyResourceBundle {
     super(in);
   }
 
-  /**
-   * Expose the protected setParent() routine in the superclass as public.
-   */
+  /** Expose the protected setParent() routine in the superclass as public. */
   @Override
   public void setParent(ResourceBundle parent) {
     super.setParent(parent);

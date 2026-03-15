@@ -18,11 +18,10 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Image;
 import java.awt.image.AbstractMultiResolutionImage;
 import java.util.List;
-
-import VASSAL.tools.image.ImageUtils;
 
 public class OpMultiResolutionImage extends AbstractMultiResolutionImage {
   protected ImageOp sop;

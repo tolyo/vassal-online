@@ -17,15 +17,13 @@
  */
 package VASSAL.chat.node;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
-
 import VASSAL.chat.HybridClient;
 import VASSAL.chat.Room;
 import VASSAL.chat.ui.LockableRoomControls;
 import VASSAL.i18n.Resources;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
 
 public class LockableNodeRoomControls extends LockableRoomControls {
 
@@ -45,8 +43,7 @@ public class LockableNodeRoomControls extends LockableRoomControls {
     NodeClient c = null;
     if (client instanceof NodeClient) {
       c = (NodeClient) client;
-    }
-    else if (client instanceof HybridClient
+    } else if (client instanceof HybridClient
         && ((HybridClient) client).getDelegate() instanceof NodeClient) {
       c = (NodeClient) ((HybridClient) client).getDelegate();
     }
@@ -68,16 +65,13 @@ public class LockableNodeRoomControls extends LockableRoomControls {
       if (!((NodeRoom) existing).isLocked()) {
         client.setRoom(existing);
       }
-    }
-    else if (existing == null
-        && nodeClient != null) {
+    } else if (existing == null && nodeClient != null) {
       // If running hierarchical server, create new room and set myself as the owner
       final NodeRoom room = new NodeRoom(name);
       room.setOwner(nodeClient.getMyInfo().getId());
       client.setRoom(room);
       nodeClient.sendRoomInfo(room);
-    }
-    else {
+    } else {
       // Default behavior
       super.createRoom(name);
     }
@@ -90,10 +84,13 @@ public class LockableNodeRoomControls extends LockableRoomControls {
     private final NodeRoom target;
 
     public LockRoomAction(NodeRoom target, NodeClient client) {
-      super(target.isLocked() ? Resources.getString("Chat.unlock_room")
-                              : Resources.getString("Chat.lock_room"));
-      setEnabled(client.getMyInfo().getId().equals(target.getOwner()) &&
-                 !target.getName().equals(client.getDefaultRoomName()));
+      super(
+          target.isLocked()
+              ? Resources.getString("Chat.unlock_room")
+              : Resources.getString("Chat.lock_room"));
+      setEnabled(
+          client.getMyInfo().getId().equals(target.getOwner())
+              && !target.getName().equals(client.getDefaultRoomName()));
       this.target = target;
       this.client = client;
     }
@@ -103,5 +100,4 @@ public class LockableNodeRoomControls extends LockableRoomControls {
       client.lockRoom(target);
     }
   }
-
 }

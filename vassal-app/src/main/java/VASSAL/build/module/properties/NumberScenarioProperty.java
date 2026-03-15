@@ -7,7 +7,7 @@ import VASSAL.i18n.Resources;
 public class NumberScenarioProperty extends AbstractScenarioProperty {
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.NumberScenarioProperty.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.NumberScenarioProperty.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -21,15 +21,13 @@ public class NumberScenarioProperty extends AbstractScenarioProperty {
       if (value instanceof String) {
         try {
           value = Integer.parseInt((String) value);
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
           value = Integer.valueOf(0);
         }
       }
       initialValue = ((Integer) value).toString();
       property.setPropertyValue(initialValue);
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -40,8 +38,7 @@ public class NumberScenarioProperty extends AbstractScenarioProperty {
     int i;
     try {
       i = Integer.parseInt(getPropertyValue());
-    }
-    catch (Exception ignored) {
+    } catch (Exception ignored) {
       i = 0;
     }
     return new IntConfigurer("", "", i);

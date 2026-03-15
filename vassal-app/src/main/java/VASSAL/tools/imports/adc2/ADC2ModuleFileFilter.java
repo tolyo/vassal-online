@@ -27,7 +27,7 @@ import VASSAL.tools.filechooser.ExtensionFileFilter;
  * @since 3.1.0
  */
 public class ADC2ModuleFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".ops" };
+  public static final String[] types = {".ops"};
 
   public ADC2ModuleFileFilter() {
     super("ADC2 Game Modules", types);

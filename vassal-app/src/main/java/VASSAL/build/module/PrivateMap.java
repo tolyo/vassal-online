@@ -27,12 +27,6 @@ import VASSAL.configure.ValidationReport;
 import VASSAL.configure.ValidityChecker;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.menu.MenuManager;
-import org.apache.commons.lang3.ArrayUtils;
-
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.dnd.DropTarget;
@@ -42,55 +36,45 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * A Map that may be configured to be visible only a particular side.
- * If visible to all, the map will respond to key/mouse events
- * only from the player playing the assigned side
+ * A Map that may be configured to be visible only a particular side. If visible to all, the map
+ * will respond to key/mouse events only from the player playing the assigned side
  */
 public class PrivateMap extends Map {
   protected String[] owners = new String[0];
   protected boolean visibleToAll;
   protected Map surrogate;
 
-  public static final String VISIBLE = "visible"; //$NON-NLS-1$
-  public static final String SIDE = "side"; //$NON-NLS-1$
-  public static final String USE_BOARDS = "useBoards"; //$NON-NLS-1$
+  public static final String VISIBLE = "visible"; // $NON-NLS-1$
+  public static final String SIDE = "side"; // $NON-NLS-1$
+  public static final String USE_BOARDS = "useBoards"; // $NON-NLS-1$
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.addAll(
-      new String[]{
-        SIDE,
-        VISIBLE,
-        USE_BOARDS
-      },
-      super.getAttributeNames()
-    );
+    return ArrayUtils.addAll(new String[] {SIDE, VISIBLE, USE_BOARDS}, super.getAttributeNames());
   }
 
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.addAll(
-      new String[]{
-        Resources.getString("Editor.PrivateMap.belongs_to_one_side"),
-        Resources.getString("Editor.PrivateMap.visible_to_all_player"),
-        Resources.getString("Editor.PrivateMap.use_same_boards_as_this_map")
-      },
-      super.getAttributeDescriptions()
-    );
+        new String[] {
+          Resources.getString("Editor.PrivateMap.belongs_to_one_side"),
+          Resources.getString("Editor.PrivateMap.visible_to_all_player"),
+          Resources.getString("Editor.PrivateMap.use_same_boards_as_this_map")
+        },
+        super.getAttributeDescriptions());
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.addAll(
-      new Class<?>[]{
-        String[].class,
-        Boolean.class,
-        String.class
-      },
-      super.getAttributeTypes()
-    );
+        new Class<?>[] {String[].class, Boolean.class, String.class}, super.getAttributeTypes());
   }
 
   @Override
@@ -100,18 +84,15 @@ public class PrivateMap extends Map {
         value = Boolean.valueOf((String) value);
       }
       visibleToAll = (Boolean) value;
-    }
-    else if (SIDE.equals(key)) {
+    } else if (SIDE.equals(key)) {
       if (value instanceof String) {
         value = StringArrayConfigurer.stringToArray((String) value);
       }
       owners = (String[]) value;
-    }
-    else if (USE_BOARDS.equals(key)) {
+    } else if (USE_BOARDS.equals(key)) {
       if (value == null || (value instanceof String && ((String) value).isEmpty())) {
         surrogate = null;
-      }
-      else {
+      } else {
         for (final Map m : getMapList()) {
           if (m.getMapName().equals(value)) {
             surrogate = m;
@@ -119,8 +100,7 @@ public class PrivateMap extends Map {
           }
         }
       }
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -129,22 +109,19 @@ public class PrivateMap extends Map {
   public String getAttributeValueString(String key) {
     if (VISIBLE.equals(key)) {
       return String.valueOf(visibleToAll);
-    }
-    else if (SIDE.equals(key)) {
+    } else if (SIDE.equals(key)) {
       return StringArrayConfigurer.arrayToString(owners);
-    }
-    else if (USE_BOARDS.equals(key)) {
-      return surrogate == null ? null :
-          surrogate.getMapName();
-    }
-    else {
+    } else if (USE_BOARDS.equals(key)) {
+      return surrogate == null ? null : surrogate.getMapName();
+    } else {
       return super.getAttributeValueString(key);
     }
   }
 
   /**
-   * Yes this LOOKS exactly the same as the method it overrides, but confusingly Map and PrivateMap each have
-   * *different* View classes sharing the same name.
+   * Yes this LOOKS exactly the same as the method it overrides, but confusingly Map and PrivateMap
+   * each have *different* View classes sharing the same name.
+   *
    * @return the Swing component representing the private map
    */
   @Override
@@ -156,34 +133,32 @@ public class PrivateMap extends Map {
     return theMap;
   }
 
-
   @Override
   protected Window createParentFrame() {
     if (GlobalOptions.getInstance().isUseSingleWindow()) {
-      final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow()) {
-        private static final long serialVersionUID = 1L;
+      final JDialog d =
+          new JDialog(GameModule.getGameModule().getPlayerWindow()) {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void setVisible(boolean show) {
-          super.setVisible(show &&
-            (visibleToAll || isAccessibleTo(PlayerRoster.getMySide())));
-        }
-      };
+            @Override
+            public void setVisible(boolean show) {
+              super.setVisible(show && (visibleToAll || isAccessibleTo(PlayerRoster.getMySide())));
+            }
+          };
 
       d.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       d.setTitle(getDefaultWindowTitle());
       return d;
-    }
-    else {
-      final JFrame d = new JFrame() {
-        private static final long serialVersionUID = 1L;
+    } else {
+      final JFrame d =
+          new JFrame() {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void setVisible(boolean show) {
-          super.setVisible(show &&
-            (visibleToAll || isAccessibleTo(PlayerRoster.getMySide())));
-        }
-      };
+            @Override
+            public void setVisible(boolean show) {
+              super.setVisible(show && (visibleToAll || isAccessibleTo(PlayerRoster.getMySide())));
+            }
+          };
 
       d.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       d.setTitle(getDefaultWindowTitle());
@@ -195,12 +170,11 @@ public class PrivateMap extends Map {
   @Override
   public void sideChanged(String oldSide, String newSide) {
     super.sideChanged(oldSide, newSide);
-    ((View)getView()).disableListeners();
+    ((View) getView()).disableListeners();
     if (isAccessibleTo(newSide)) {
-      ((View)getView()).enableListeners();
-    }
-    else if (isVisibleTo(newSide)) {
-      ((View)getView()).enableMotionListeners();
+      ((View) getView()).enableListeners();
+    } else if (isVisibleTo(newSide)) {
+      ((View) getView()).enableMotionListeners();
     }
     getLaunchButton().setEnabled(isVisibleTo(PlayerRoster.getMySide()));
 
@@ -216,7 +190,9 @@ public class PrivateMap extends Map {
     return false;
   }
 
-  /** Return true if the player playing the given side can access this map
+  /**
+   * Return true if the player playing the given side can access this map
+   *
    * @see PlayerRoster
    */
   public boolean isAccessibleTo(String playerSide) {
@@ -237,11 +213,9 @@ public class PrivateMap extends Map {
     super.setup(show);
     if (!show) {
       ((View) theMap).disableListeners();
-    }
-    else if (isAccessibleTo(PlayerRoster.getMySide())) {
+    } else if (isAccessibleTo(PlayerRoster.getMySide())) {
       ((View) theMap).enableListeners();
-    }
-    else if (isVisibleTo(PlayerRoster.getMySide())) {
+    } else if (isVisibleTo(PlayerRoster.getMySide())) {
       ((View) theMap).enableMotionListeners();
     }
     getLaunchButton().setEnabled(isVisibleTo(PlayerRoster.getMySide()));
@@ -257,26 +231,29 @@ public class PrivateMap extends Map {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PrivateMap.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PrivateMap.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("PrivateWindow.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("PrivateWindow.html"); // $NON-NLS-1$
   }
 
   @Override
   public void build(org.w3c.dom.Element el) {
-    validator = new ValidityChecker() {
-      @Override
-      public void validate(Buildable target, ValidationReport report) {
-        if (!PlayerRoster.isActive()) {
-          report.addWarning(Resources.getString("Editor.PrivateMap.warning",
-                            ConfigureTree.getConfigureName(PlayerRoster.class),
-                            ConfigureTree.getConfigureName(getClass())));
-        }
-      }
-    };
+    validator =
+        new ValidityChecker() {
+          @Override
+          public void validate(Buildable target, ValidationReport report) {
+            if (!PlayerRoster.isActive()) {
+              report.addWarning(
+                  Resources.getString(
+                      "Editor.PrivateMap.warning",
+                      ConfigureTree.getConfigureName(PlayerRoster.class),
+                      ConfigureTree.getConfigureName(getClass())));
+            }
+          }
+        };
     surrogate = null;
     super.build(el);
   }
@@ -306,8 +283,7 @@ public class PrivateMap extends Map {
     public synchronized void addKeyListener(KeyListener l) {
       if (listenersActive) {
         super.addKeyListener(l);
-      }
-      else {
+      } else {
         keyListeners.add(l);
       }
     }
@@ -316,8 +292,7 @@ public class PrivateMap extends Map {
     public synchronized void addMouseListener(MouseListener l) {
       if (listenersActive) {
         super.addMouseListener(l);
-      }
-      else {
+      } else {
         mouseListeners.add(l);
       }
     }
@@ -326,15 +301,12 @@ public class PrivateMap extends Map {
     public synchronized void addMouseMotionListener(MouseMotionListener l) {
       if (listenersActive || motionListenersActive) {
         super.addMouseMotionListener(l);
-      }
-      else {
+      } else {
         mouseMotionListeners.add(l);
       }
     }
 
-    /**
-     * Disable all keyboard and mouse listeners on this component
-     */
+    /** Disable all keyboard and mouse listeners on this component */
     protected void disableListeners() {
       for (final KeyListener l : keyListeners) {
         removeKeyListener(l);
@@ -350,9 +322,7 @@ public class PrivateMap extends Map {
       motionListenersActive = false;
     }
 
-    /**
-     * Enable all keyboard and mouse listeners on this component
-     */
+    /** Enable all keyboard and mouse listeners on this component */
     protected void enableListeners() {
       for (final KeyListener l : keyListeners) {
         super.addKeyListener(l);
@@ -367,9 +337,7 @@ public class PrivateMap extends Map {
       listenersActive = true;
     }
 
-    /**
-     * Enable all mouse listeners ONLY on this component
-     */
+    /** Enable all mouse listeners ONLY on this component */
     protected void enableMotionListeners() {
       for (final MouseMotionListener l : mouseMotionListeners) {
         super.addMouseMotionListener(l);

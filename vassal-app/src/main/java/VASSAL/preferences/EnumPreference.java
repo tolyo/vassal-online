@@ -17,19 +17,16 @@
  */
 package VASSAL.preferences;
 
-import VASSAL.i18n.Resources;
-import org.apache.commons.lang3.ArrayUtils;
-
 import VASSAL.configure.Configurer;
 import VASSAL.configure.StringArrayConfigurer;
 import VASSAL.configure.StringEnumConfigurer;
+import VASSAL.i18n.Resources;
+import org.apache.commons.lang3.ArrayUtils;
 
-/**
- * A Drop-down list preference.
- */
+/** A Drop-down list preference. */
 public class EnumPreference extends BasicPreference {
 
-  public static final String LIST = "list"; //NON-NLS
+  public static final String LIST = "list"; // NON-NLS
 
   protected String defaultValue = "";
   protected String[] options = new String[0];
@@ -56,26 +53,18 @@ public class EnumPreference extends BasicPreference {
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.add(
-      super.getAttributeNames(),
-      LIST
-    );
+    return ArrayUtils.add(super.getAttributeNames(), LIST);
   }
 
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.add(
-      super.getAttributeDescriptions(),
-      Resources.getString("Editor.EnumPreference.list_values")
-    );
+        super.getAttributeDescriptions(), Resources.getString("Editor.EnumPreference.list_values"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return ArrayUtils.add(
-      super.getAttributeTypes(),
-      String[].class
-    );
+    return ArrayUtils.add(super.getAttributeTypes(), String[].class);
   }
 
   @Override
@@ -88,18 +77,14 @@ public class EnumPreference extends BasicPreference {
       if (config != null) {
         config.setValidValues(options);
       }
-    }
-    else
-      super.setAttribute(key, value);
+    } else super.setAttribute(key, value);
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (LIST.equals(key)) {
       return StringArrayConfigurer.arrayToString(options);
-    }
-    else
-      return super.getAttributeValueString(key);
+    } else return super.getAttributeValueString(key);
   }
 
   @Override

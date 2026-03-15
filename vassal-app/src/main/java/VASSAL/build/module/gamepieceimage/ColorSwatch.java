@@ -16,10 +16,7 @@
  * at http://www.opensource.org.
  */
 
-
 package VASSAL.build.module.gamepieceimage;
-
-import java.awt.Color;
 
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
@@ -27,26 +24,24 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.ColorConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Color;
 
-/**
- * Class that implements a named Color Swatch
- */
-public class ColorSwatch extends AbstractConfigurable
-                         implements Comparable<ColorSwatch> {
+/** Class that implements a named Color Swatch */
+public class ColorSwatch extends AbstractConfigurable implements Comparable<ColorSwatch> {
 
-  protected static final String NAME = "name"; //$NON-NLS-1$
-  protected static final String COLOR = "color"; //$NON-NLS-1$
+  protected static final String NAME = "name"; // $NON-NLS-1$
+  protected static final String COLOR = "color"; // $NON-NLS-1$
 
-  public static final String BLACK = "BLACK"; //$NON-NLS-1$
-  public static final String WHITE = "WHITE"; //$NON-NLS-1$
-  public static final String CLEAR = "CLEAR"; //$NON-NLS-1$
-  public static final String RED = "RED"; //$NON-NLS-1$
+  public static final String BLACK = "BLACK"; // $NON-NLS-1$
+  public static final String WHITE = "WHITE"; // $NON-NLS-1$
+  public static final String CLEAR = "CLEAR"; // $NON-NLS-1$
+  public static final String RED = "RED"; // $NON-NLS-1$
 
   protected Color color;
 
   public ColorSwatch() {
     super();
-    name = ""; //$NON-NLS-1$
+    name = ""; // $NON-NLS-1$
     color = null;
   }
 
@@ -79,26 +74,19 @@ public class ColorSwatch extends AbstractConfigurable
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] {
-      String.class,
-      Color.class
-    };
+    return new Class<?>[] {String.class, Color.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      NAME,
-      COLOR
-    };
+    return new String[] {NAME, COLOR};
   }
 
   @Override
   public void setAttribute(String key, Object o) {
     if (NAME.equals(key)) {
       setConfigureName((String) o);
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (o instanceof String) {
         o = ColorConfigurer.stringToColor((String) o);
       }
@@ -106,23 +94,17 @@ public class ColorSwatch extends AbstractConfigurable
     }
   }
 
-
   @Override
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
@@ -168,7 +150,7 @@ public class ColorSwatch extends AbstractConfigurable
     setConfigureName(sd.nextToken());
     Color c = ColorManager.getColorManager().getColorByName(getConfigureName());
     if (c == null && !getConfigureName().equals(CLEAR)) {
-      c = ColorManager.getColorManager().getColorByName("BLACK"); //$NON-NLS-1$
+      c = ColorManager.getColorManager().getColorByName("BLACK"); // $NON-NLS-1$
     }
     setColor(c);
   }

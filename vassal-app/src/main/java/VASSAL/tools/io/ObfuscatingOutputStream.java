@@ -28,14 +28,14 @@ import java.nio.file.Path;
 import java.util.Random;
 
 /**
- * A {@link FilterOutputStream} which handles simple obfuscation of a file's
- * contents, to prevent the casual cheat of hand-editing.
+ * A {@link FilterOutputStream} which handles simple obfuscation of a file's contents, to prevent
+ * the casual cheat of hand-editing.
  *
  * @author uckelman
  * @since 3.2.0
  */
 public class ObfuscatingOutputStream extends FilterOutputStream {
-  public static final String HEADER = "!VCSK"; //NON-NLS
+  public static final String HEADER = "!VCSK"; // NON-NLS
   private static final Random rand = new Random();
 
   private final byte key;
@@ -54,8 +54,7 @@ public class ObfuscatingOutputStream extends FilterOutputStream {
    * @param key the byte to use as the key
    * @throws IOException oops
    */
-  public ObfuscatingOutputStream(OutputStream out, byte key)
-                                                          throws IOException {
+  public ObfuscatingOutputStream(OutputStream out, byte key) throws IOException {
     super(out);
     this.key = key;
 
@@ -89,7 +88,7 @@ public class ObfuscatingOutputStream extends FilterOutputStream {
 
   public static void main(String[] args) throws IOException {
     try (InputStream in = args.length > 0 ? Files.newInputStream(Path.of(args[0])) : System.in;
-         OutputStream out = new ObfuscatingOutputStream(new BufferedOutputStream(System.out))) {
+        OutputStream out = new ObfuscatingOutputStream(new BufferedOutputStream(System.out))) {
       in.transferTo(out);
     }
 

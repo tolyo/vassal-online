@@ -21,37 +21,35 @@ package VASSAL.configure;
 import VASSAL.build.AbstractBuildable;
 import VASSAL.counters.TraitLayout;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import net.miginfocom.swing.MigLayout;
-
 import org.apache.commons.lang3.ArrayUtils;
 
-/**
- * A Configurer that returns an array of Strings
- */
+/** A Configurer that returns an array of Strings */
 public class StringArrayConfigurer extends Configurer implements ConfigurableList {
 
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected JList<String> list;
+
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected DefaultListModel<String> model;
+
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected JTextField textField;
+
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected int minRows = 3;
+
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected int maxRows = 3;
 
@@ -82,8 +80,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
 
   @Deprecated(since = "2020-11-12", forRemoval = true)
   public void addValue(String s) {
-    setValue(value == null ?
-      new String[]{s} : ArrayUtils.add((String[]) value, s));
+    setValue(value == null ? new String[] {s} : ArrayUtils.add((String[]) value, s));
   }
 
   public void removeValue(String s) {
@@ -95,9 +92,13 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   @Override
   public Component getControls() {
     if (panel == null) {
-      panel = new JPanel(new MigLayout("hidemode 3,ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      panel =
+          new JPanel(
+              new MigLayout(
+                  "hidemode 3,ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
 
-      controls = new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      controls =
+          new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
       controls.setBorder(BorderFactory.createEtchedBorder());
       panel.add(controls, "grow"); // NON-NLS
       panel.add(getListController(), "growy 0,aligny center"); // NON-NLS
@@ -108,8 +109,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   }
 
   @Deprecated(since = "2020-11-12", forRemoval = true)
-  public void updateViewable(int rows) {
-  }
+  public void updateViewable(int rows) {}
 
   @Deprecated(since = "2020-11-12", forRemoval = true)
   protected Component getTextComponent() {
@@ -134,8 +134,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   public String[] getStringArray() {
     if (value instanceof String[]) {
       return (String[]) value;
-    }
-    else {
+    } else {
       return EMPTY;
     }
   }
@@ -174,8 +173,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   }
 
   public static String[] stringToArray(String s) {
-    if (s == null
-        || s.length() == 0) {
+    if (s == null || s.length() == 0) {
       return EMPTY;
     }
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(s, ',');
@@ -187,12 +185,11 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   }
 
   @Deprecated(since = "2020-11-12", forRemoval = true)
-  protected void updateModel() {
-
-  }
+  protected void updateModel() {}
 
   /**
    * Rebuild controls from scratch and set focus
+   *
    * @param focus index of entry to request focus
    */
   private void rebuildControls(int focus) {
@@ -200,9 +197,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
     entries.get(focus).requestFocus();
   }
 
-  /**
-   * Rebuild controls from scratch
-   */
+  /** Rebuild controls from scratch */
   private void rebuildControls() {
     for (final StringEntry entry : entries) {
       entry.removeFocusListener(sharedFocusListener);
@@ -221,15 +216,14 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
       entries.add(entry); // NON-NLS
     }
 
-    setSelectedEntryIndex(getSelectedEntryIndex()); // Reselecting our current entry ensures our selection is in range
+    setSelectedEntryIndex(
+        getSelectedEntryIndex()); // Reselecting our current entry ensures our selection is in range
 
     updateControls();
     repack();
   }
 
-  /**
-   * Refresh visible state of controls without rebuilding
-   */
+  /** Refresh visible state of controls without rebuilding */
   private void updateControls() {
     int i = 0;
     for (final StringEntry entry : entries) {
@@ -237,10 +231,10 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
     }
     getListController();
     controller.setCanMoveUp(getSelectedEntryIndex() > 0);
-    controller.setCanMoveDown(getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
+    controller.setCanMoveDown(
+        getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
 
     controls.repaint();
-
   }
 
   public Configurer buildChildConfigurer(Object value) {
@@ -322,8 +316,7 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
       setValue(ArrayUtils.add(getStringArray(), ""));
       newEntry = getStringArray().length - 1;
       setSelectedEntryIndex(newEntry);
-    }
-    else {
+    } else {
       newEntry = pos + 1;
       setValue(ArrayUtils.insert(newEntry, getStringArray(), ""));
       setSelectedEntryIndex(newEntry);
@@ -399,13 +392,15 @@ public class StringArrayConfigurer extends Configurer implements ConfigurableLis
   }
 
   /**
-   * Don't do anything special when highlighting, but deslect currently selected entry when unhighlighting
+   * Don't do anything special when highlighting, but deslect currently selected entry when
+   * unhighlighting
+   *
    * @param highlighted New Highlighted status
    */
   @Override
   public void setHighlighted(boolean highlighted) {
     super.setHighlighted(highlighted);
-    if (! highlighted) {
+    if (!highlighted) {
       selectEntry(null);
     }
   }

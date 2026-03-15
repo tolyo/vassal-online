@@ -32,7 +32,6 @@ import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Point;
@@ -40,12 +39,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.JComponent;
 
-/**
- * Abstract base class for grid numbering classes for hexagonal and rectangular grids
- */
+/** Abstract base class for grid numbering classes for hexagonal and rectangular grids */
 public abstract class RegularGridNumbering extends AbstractConfigurable implements GridNumbering {
   protected PropertyChangeSupport propSupport = new PropertyChangeSupport(this);
   protected char first = 'H';
@@ -68,26 +64,26 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   protected String locationFormat = "$" + GRID_LOCATION + "$";
   protected FormattedString format = new FormattedString();
 
-  public static final String FIRST = "first"; //NON-NLS
-  public static final String SEP = "sep"; //NON-NLS
-  public static final String H_TYPE = "hType"; //NON-NLS
-  public static final String V_TYPE = "vType"; //NON-NLS
-  public static final String H_LEADING = "hLeading"; //NON-NLS
-  public static final String V_LEADING = "vLeading"; //NON-NLS
-  public static final String H_OFF = "hOff"; //NON-NLS
-  public static final String V_OFF = "vOff"; //NON-NLS
-  public static final String V_DESCEND = "vDescend"; //NON-NLS
-  public static final String H_DESCEND = "hDescend"; //NON-NLS
-  public static final String FONT_SIZE = "fontSize"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String VISIBLE = "visible"; //NON-NLS
-  public static final String ROTATE_TEXT = "rotateText"; //NON-NLS
-  public static final String H_DRAW_OFF = "hDrawOff"; //NON-NLS
-  public static final String V_DRAW_OFF = "vDrawOff"; //NON-NLS
-  public static final String LOCATION_FORMAT = "locationFormat"; //NON-NLS
-  public static final String GRID_LOCATION = "gridLocation"; //NON-NLS
-  public static final String ROW = "row"; //NON-NLS
-  public static final String COLUMN = "column"; //NON-NLS
+  public static final String FIRST = "first"; // NON-NLS
+  public static final String SEP = "sep"; // NON-NLS
+  public static final String H_TYPE = "hType"; // NON-NLS
+  public static final String V_TYPE = "vType"; // NON-NLS
+  public static final String H_LEADING = "hLeading"; // NON-NLS
+  public static final String V_LEADING = "vLeading"; // NON-NLS
+  public static final String H_OFF = "hOff"; // NON-NLS
+  public static final String V_OFF = "vOff"; // NON-NLS
+  public static final String V_DESCEND = "vDescend"; // NON-NLS
+  public static final String H_DESCEND = "hDescend"; // NON-NLS
+  public static final String FONT_SIZE = "fontSize"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String VISIBLE = "visible"; // NON-NLS
+  public static final String ROTATE_TEXT = "rotateText"; // NON-NLS
+  public static final String H_DRAW_OFF = "hDrawOff"; // NON-NLS
+  public static final String V_DRAW_OFF = "vDrawOff"; // NON-NLS
+  public static final String LOCATION_FORMAT = "locationFormat"; // NON-NLS
+  public static final String GRID_LOCATION = "gridLocation"; // NON-NLS
+  public static final String ROW = "row"; // NON-NLS
+  public static final String COLUMN = "column"; // NON-NLS
 
   public static final double VISUALIZER_GRID_SIZE = 100.0;
 
@@ -95,56 +91,39 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public String getAttributeValueString(String key) {
     if (FIRST.equals(key)) {
       return String.valueOf(first);
-    }
-    else if (SEP.equals(key)) {
+    } else if (SEP.equals(key)) {
       return sep;
-    }
-    else if (H_TYPE.equals(key)) {
+    } else if (H_TYPE.equals(key)) {
       return String.valueOf(hType);
-    }
-    else if (V_TYPE.equals(key)) {
+    } else if (V_TYPE.equals(key)) {
       return String.valueOf(vType);
-    }
-    else if (H_LEADING.equals(key)) {
+    } else if (H_LEADING.equals(key)) {
       return String.valueOf(hLeading);
-    }
-    else if (V_LEADING.equals(key)) {
+    } else if (V_LEADING.equals(key)) {
       return String.valueOf(vLeading);
-    }
-    else if (H_OFF.equals(key)) {
+    } else if (H_OFF.equals(key)) {
       return String.valueOf(hOff);
-    }
-    else if (V_OFF.equals(key)) {
+    } else if (V_OFF.equals(key)) {
       return String.valueOf(vOff);
-    }
-    else if (H_DESCEND.equals(key)) {
+    } else if (H_DESCEND.equals(key)) {
       return String.valueOf(hDescending);
-    }
-    else if (V_DESCEND.equals(key)) {
+    } else if (V_DESCEND.equals(key)) {
       return String.valueOf(vDescending);
-    }
-    else if (FONT_SIZE.equals(key)) {
+    } else if (FONT_SIZE.equals(key)) {
       return String.valueOf(fontSize);
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else if (VISIBLE.equals(key)) {
+    } else if (VISIBLE.equals(key)) {
       return String.valueOf(visible);
-    }
-    else if (LOCATION_FORMAT.equals(key)) {
+    } else if (LOCATION_FORMAT.equals(key)) {
       return locationFormat;
-    }
-    else if (ROTATE_TEXT.equals(key)) {
+    } else if (ROTATE_TEXT.equals(key)) {
       return String.valueOf(rotateTextDegrees);
-    }
-    else if (H_DRAW_OFF.equals(key)) {
+    } else if (H_DRAW_OFF.equals(key)) {
       return String.valueOf(hDrawOff);
-    }
-    else if (V_DRAW_OFF.equals(key)) {
+    } else if (V_DRAW_OFF.equals(key)) {
       return String.valueOf(vDrawOff);
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -153,86 +132,70 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public void setAttribute(String key, Object value) {
     if (FIRST.equals(key)) {
       first = ((String) value).charAt(0);
-    }
-    else if (SEP.equals(key)) {
+    } else if (SEP.equals(key)) {
       sep = (String) value;
-    }
-    else if (H_TYPE.equals(key)) {
+    } else if (H_TYPE.equals(key)) {
       hType = ((String) value).charAt(0);
-    }
-    else if (V_TYPE.equals(key)) {
+    } else if (V_TYPE.equals(key)) {
       vType = ((String) value).charAt(0);
-    }
-    else if (H_LEADING.equals(key)) {
+    } else if (H_LEADING.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       hLeading = (Integer) value;
-    }
-    else if (V_LEADING.equals(key)) {
+    } else if (V_LEADING.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       vLeading = (Integer) value;
-    }
-    else if (H_OFF.equals(key)) {
+    } else if (H_OFF.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       hOff = (Integer) value;
-    }
-    else if (V_OFF.equals(key)) {
+    } else if (V_OFF.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       vOff = (Integer) value;
-    }
-    else if (H_DESCEND.equals(key)) {
+    } else if (H_DESCEND.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       hDescending = (Boolean) value;
-    }
-    else if (V_DESCEND.equals(key)) {
+    } else if (V_DESCEND.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       vDescending = (Boolean) value;
-    }
-    else if (FONT_SIZE.equals(key)) {
+    } else if (FONT_SIZE.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       fontSize = (Integer) value;
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
       color = (Color) value;
-    }
-    else if (VISIBLE.equals(key)) {
+    } else if (VISIBLE.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       visible = (Boolean) value;
-    }
-    else if (LOCATION_FORMAT.equals(key)) {
+    } else if (LOCATION_FORMAT.equals(key)) {
       locationFormat = (String) value;
-    }
-    else if (ROTATE_TEXT.equals(key)) {
+    } else if (ROTATE_TEXT.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       rotateTextDegrees = (Integer) value;
-    }
-    else if (H_DRAW_OFF.equals(key)) {
+    } else if (H_DRAW_OFF.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       hDrawOff = (Integer) value;
-    }
-    else if (V_DRAW_OFF.equals(key)) {
+    } else if (V_DRAW_OFF.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -261,7 +224,7 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
+    return new String[] {
       FIRST,
       SEP,
       H_TYPE,
@@ -284,7 +247,7 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.RegularGridNumbering.order"),
       Resources.getString("Editor.RegularGridNumbering.separator"),
       Resources.getString("Editor.RegularGridNumbering.horizontal_numbering"),
@@ -308,7 +271,7 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public static class F extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{"Horizontal first", "Vertical first"}; //NON-NLS (really)
+      return new String[] {"Horizontal first", "Vertical first"}; // NON-NLS (really)
     }
 
     @Override
@@ -323,14 +286,13 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public static class T extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{"Numerical", "Alphabetic"}; //NON-NLS
+      return new String[] {"Numerical", "Alphabetic"}; // NON-NLS
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
       return new String[] {
-        "Editor.RegularGridNumbering.numerical",
-        "Editor.RegularGridNumbering.alphabetic",
+        "Editor.RegularGridNumbering.numerical", "Editor.RegularGridNumbering.alphabetic",
       };
     }
   }
@@ -338,20 +300,20 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public static class LocationFormatConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new FormattedStringConfigurer(key, name, new String[]{GRID_LOCATION, ROW, COLUMN});
+      return new FormattedStringConfigurer(key, name, new String[] {GRID_LOCATION, ROW, COLUMN});
     }
   }
 
   public static class R extends StringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{"0", "90", "180", "270"};
+      return new String[] {"0", "90", "180", "270"};
     }
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       F.class,
       String.class,
       T.class,
@@ -372,24 +334,18 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
     };
   }
 
-  /**
-   * Return a component that shows how the grid will draw itself
-   */
+  /** Return a component that shows how the grid will draw itself */
   protected abstract JComponent getGridVisualizer();
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
-    if (FONT_SIZE.equals(name)
-        || COLOR.equals(name)) {
+    if (FONT_SIZE.equals(name) || COLOR.equals(name)) {
       return () -> visible;
-    }
-    else if (H_LEADING.equals(name)) {
+    } else if (H_LEADING.equals(name)) {
       return () -> hType == 'N';
-    }
-    else if (V_LEADING.equals(name)) {
+    } else if (V_LEADING.equals(name)) {
       return () -> vType == 'N';
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -411,7 +367,7 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GridNumbering.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("GridNumbering.html"); // NON-NLS
   }
 
   protected String getName(int row, int column) {
@@ -427,13 +383,12 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   // using groups. It also helps when there is no separator between alphabetic
   // coordinates (as long as both coordinates don't use the same letter).
   // AAFF is not ambiguous, but AAAA is.  Coordinates like 04AB will fail.
-  static final String ALPHABETIC_MATCH = "-?(?:A+|B+|C+|D+|E+|F+|G+|H+|I+|J+|K+|L+|M+|N+|O+|P+|Q+|R+|S+|T+|U+|V+|W+|X+|Y+|Z+)"; //NON-NLS
+  static final String ALPHABETIC_MATCH =
+      "-?(?:A+|B+|C+|D+|E+|F+|G+|H+|I+|J+|K+|L+|M+|N+|O+|P+|Q+|R+|S+|T+|U+|V+|W+|X+|Y+|Z+)"; // NON-NLS
 
   protected String getMatchingPattern(char type, int leading) {
-    if (type == 'A')
-      return ALPHABETIC_MATCH;
-    else
-      return "-?[0-9]{" + (leading + 1) + ",}";
+    if (type == 'A') return ALPHABETIC_MATCH;
+    else return "-?[0-9]{" + (leading + 1) + ",}";
   }
 
   @Override
@@ -451,44 +406,39 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
       if (token.length() > 0) {
         if (!isProperty || !se.hasMoreTokens()) {
           regex.append(Pattern.quote(token));
-        }
-        else if (token.equals(GRID_LOCATION)) {
+        } else if (token.equals(GRID_LOCATION)) {
           if (first == 'H') {
             regex.append('(').append(getMatchingPattern(hType, hLeading)).append(')');
             colGroup = ++groupCount;
-            if (sep.length() > 0)
-              regex.append(Pattern.quote(sep));
+            if (sep.length() > 0) regex.append(Pattern.quote(sep));
             regex.append('(').append(getMatchingPattern(vType, vLeading)).append(')');
             rowGroup = ++groupCount;
-          }
-          else {
+          } else {
             regex.append('(').append(getMatchingPattern(vType, vLeading)).append(')');
             rowGroup = ++groupCount;
-            regex.append(Pattern.quote(sep))
-              .append('(')
-              .append(getMatchingPattern(hType, hLeading))
-              .append(')');
+            regex
+                .append(Pattern.quote(sep))
+                .append('(')
+                .append(getMatchingPattern(hType, hLeading))
+                .append(')');
             colGroup = ++groupCount;
           }
-        }
-        else if (token.equals(ROW)) {
+        } else if (token.equals(ROW)) {
           regex.append('(').append(getMatchingPattern(vType, vLeading)).append(')');
           rowGroup = ++groupCount;
-        }
-        else if (token.equals(COLUMN)) {
+        } else if (token.equals(COLUMN)) {
           regex.append('(').append(getMatchingPattern(hType, hLeading)).append(')');
           colGroup = ++groupCount;
         }
       }
     }
 
-    if (regex.length() == 0 || colGroup == 0 || rowGroup == 0)
-      throw new BadCoords();
+    if (regex.length() == 0 || colGroup == 0 || rowGroup == 0) throw new BadCoords();
 
     final Pattern pattern = Pattern.compile(regex.toString());
     final Matcher matcher = pattern.matcher(location);
     if (!matcher.matches()) {
-// FIXME: rename to BadCoordsException
+      // FIXME: rename to BadCoordsException
       throw new BadCoords();
     }
     assert (matcher.groupCount() == groupCount && groupCount >= 2);
@@ -519,7 +469,7 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
     return locationName(pt);
   }
 
-  public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //NON-NLS
+  public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // NON-NLS
 
   protected int parseName(String name, char type) {
     int value = 0;
@@ -532,16 +482,12 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
         ++index;
       }
       while (index < name.length() && Character.isUpperCase(name.charAt(index))) {
-        if (index < name.length() - 1)
-          value += 26;
-        else
-          value += ALPHABET.indexOf(name.charAt(index));
+        if (index < name.length() - 1) value += 26;
+        else value += ALPHABET.indexOf(name.charAt(index));
         ++index;
       }
-      if (negative)
-        value *= -1;
-    }
-    else { // Numeric
+      if (negative) value *= -1;
+    } else { // Numeric
       value = Integer.parseInt(name);
     }
 
@@ -576,22 +522,22 @@ public abstract class RegularGridNumbering extends AbstractConfigurable implemen
   public Point offsetLabelCenter(int x, int y, double zoom) {
     final Point n = new Point(x, y);
     switch (rotateTextDegrees) {
-    case 0:
-      break;
-    case 90:
-      n.x = y;
-      n.y = -x;
-      break;
-    case 180:
-      n.x = -x;
-      n.y = -y;
-      break;
-    case 270:
-      n.x = -y;
-      n.y = x;
-      break;
-    default  :
-      break;
+      case 0:
+        break;
+      case 90:
+        n.x = y;
+        n.y = -x;
+        break;
+      case 180:
+        n.x = -x;
+        n.y = -y;
+        break;
+      case 270:
+        n.x = -y;
+        n.y = x;
+        break;
+      default:
+        break;
     }
     n.x += (hDrawOff * zoom);
     n.y += (vDrawOff * zoom);

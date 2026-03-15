@@ -32,7 +32,20 @@ import VASSAL.tools.ScrollPane;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.WarningDialog;
 import VASSAL.tools.swing.SwingUtils;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -49,24 +62,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-public class SecretNotesController implements GameComponent, CommandEncoder, AddSecretNoteCommand.Interface {
-  public static final String COMMAND_PREFIX = "SNOTE\t"; //$NON-NLS-1$
+public class SecretNotesController
+    implements GameComponent, CommandEncoder, AddSecretNoteCommand.Interface {
+  public static final String COMMAND_PREFIX = "SNOTE\t"; // $NON-NLS-1$
 
   private Controls controls;
   private JPanel panel;
@@ -79,27 +78,27 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
   public static final int COL_NAME = 2;
   public static final int COL_REVEALED = 3;
 
-  private static final String INTERNAL_DATETIME_FORMAT = "MM/dd/yyyy h:mm a"; //NON-NLS
+  private static final String INTERNAL_DATETIME_FORMAT = "MM/dd/yyyy h:mm a"; // NON-NLS
 
   /**
    * Date formatter to save and restore date/times in the save file.
    *
-   * Not thread-safe!
+   * <p>Not thread-safe!
    */
   @SuppressFBWarnings(value = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE")
   @Deprecated(since = "2023-02-27", forRemoval = true)
   public static final DateFormat INTERNAL_DATE_FORMATTER =
-    new SimpleDateFormat(INTERNAL_DATETIME_FORMAT);
+      new SimpleDateFormat(INTERNAL_DATETIME_FORMAT);
 
   /**
    * Date formatter to display date/time to the player.
    *
-   * Not thread-safe!
+   * <p>Not thread-safe!
    */
   @SuppressFBWarnings(value = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE")
   @Deprecated(since = "2023-02-27", forRemoval = true)
   public static final DateFormat LOCAL_DATE_FORMATTER =
-    DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+      DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
 
   public SecretNotesController() {
     notes = new ArrayList<>();
@@ -113,8 +112,7 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
       final Command c = new AddSecretNoteCommand(this, note);
       if (comm == null) {
         comm = c;
-      }
-      else {
+      } else {
         comm.append(c);
       }
     }
@@ -144,21 +142,22 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     if (!command.startsWith(COMMAND_PREFIX)) {
       return null;
     }
-    final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
+    final SequenceEncoder.Decoder st =
+        new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
     final String name = st.nextToken();
     final String owner = st.nextToken();
-    final boolean hidden = "true".equals(st.nextToken()); //$NON-NLS-1$
+    final boolean hidden = "true".equals(st.nextToken()); // $NON-NLS-1$
     final String text = TextConfigurer.restoreNewlines(st.nextToken());
-    String handle = ""; //$NON-NLS-1$
+    String handle = ""; // $NON-NLS-1$
     Date date = null;
 
     if (st.hasMoreTokens()) {
       final String formattedDate = st.nextToken();
       try {
         date = new SimpleDateFormat(INTERNAL_DATETIME_FORMAT).parse(formattedDate);
-      }
-      catch (final ParseException e) {
-        ErrorDialog.dataWarning(new BadDataReport("Illegal date format", formattedDate, e));  //NON-NLS
+      } catch (final ParseException e) {
+        ErrorDialog.dataWarning(
+            new BadDataReport("Illegal date format", formattedDate, e)); // NON-NLS
       }
     }
 
@@ -178,16 +177,18 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     final SecretNote note = ((AddSecretNoteCommand) c).getNote();
     final SequenceEncoder se = new SequenceEncoder('\t');
     final String date =
-      note.getDate() == null ? "" : new SimpleDateFormat(INTERNAL_DATETIME_FORMAT).format(note.getDate()); //$NON-NLS-1$
+        note.getDate() == null
+            ? ""
+            : new SimpleDateFormat(INTERNAL_DATETIME_FORMAT).format(note.getDate()); // $NON-NLS-1$
 
-    return COMMAND_PREFIX +
-      se
-        .append(note.getName())
-        .append(note.getOwner())
-        .append(note.isHidden())
-        .append(TextConfigurer.escapeNewlines(note.getText()))
-        .append(date)
-        .append(note.getHandle()).getValue();
+    return COMMAND_PREFIX
+        + se.append(note.getName())
+            .append(note.getOwner())
+            .append(note.isHidden())
+            .append(TextConfigurer.escapeNewlines(note.getText()))
+            .append(date)
+            .append(note.getHandle())
+            .getValue();
   }
 
   @Override
@@ -195,19 +196,18 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     final int index = notes.indexOf(note);
     if (index >= 0) {
       notes.set(index, note);
-    }
-    else {
+    } else {
       notes.add(note);
     }
     rebuildControls();
   }
 
-
   public JComponent getControls() {
     if (panel == null) {
       panel = new JPanel();
       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-      final JLabel l = new JLabel(Resources.getString("Notes.visible_once_revealed")); //$NON-NLS-1$
+      final JLabel l =
+          new JLabel(Resources.getString("Notes.visible_once_revealed")); // $NON-NLS-1$
       l.setAlignmentX(0.0F);
       panel.add(l);
       panel.add(controls);
@@ -219,21 +219,30 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     Command comm = null;
     for (final SecretNote secretNote : notes) {
       final int index = lastSavedNotes.indexOf(secretNote);
-      if (index < 0 ||
-          lastSavedNotes.get(index).isHidden() != secretNote.isHidden()) {
+      if (index < 0 || lastSavedNotes.get(index).isHidden() != secretNote.isHidden()) {
         Command c = new AddSecretNoteCommand(this, secretNote);
         if (comm == null) {
           comm = c;
-        }
-        else {
+        } else {
           comm.append(c);
         }
         final String msg;
         if (index < 0) {
-          msg = "* " + Resources.getString("Notes.has_created", GlobalOptions.getInstance().getPlayerId(), secretNote.getName()) + " *"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-        else {
-          msg = "* " + Resources.getString("Notes.has_revealed", GlobalOptions.getInstance().getPlayerId(), secretNote.getName()) + " *"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          msg =
+              "* "
+                  + Resources.getString(
+                      "Notes.has_created",
+                      GlobalOptions.getInstance().getPlayerId(),
+                      secretNote.getName())
+                  + " *"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        } else {
+          msg =
+              "* "
+                  + Resources.getString(
+                      "Notes.has_revealed",
+                      GlobalOptions.getInstance().getPlayerId(),
+                      secretNote.getName())
+                  + " *"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), msg);
         c.execute();
@@ -261,10 +270,10 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     private final JButton revealButton;
 
     private final String[] columnNames = {
-      Resources.getString("Notes.player"),    //$NON-NLS-1$
-      Resources.getString("Notes.date_time"), //$NON-NLS-1$
-      Resources.getString("Notes.note_name"), //$NON-NLS-1$
-      Resources.getString("Notes.revealed")   //$NON-NLS-1$
+      Resources.getString("Notes.player"), // $NON-NLS-1$
+      Resources.getString("Notes.date_time"), // $NON-NLS-1$
+      Resources.getString("Notes.note_name"), // $NON-NLS-1$
+      Resources.getString("Notes.revealed") // $NON-NLS-1$
     };
 
     public Controls() {
@@ -278,16 +287,16 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
 
       table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       final ListSelectionModel rowSM = table.getSelectionModel();
-      rowSM.addListSelectionListener(e -> {
-        //Ignore extra messages.
-        if (e.getValueIsAdjusting())
-          return;
+      rowSM.addListSelectionListener(
+          e -> {
+            // Ignore extra messages.
+            if (e.getValueIsAdjusting()) return;
 
-        final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!lsm.isSelectionEmpty()) {
-          displaySelected();
-        }
-      });
+            final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+            if (!lsm.isSelectionEmpty()) {
+              displaySelected();
+            }
+          });
 
       final JScrollPane secretScroll = new ScrollPane(table);
       table.setPreferredScrollableViewportSize(new Dimension(500, 100));
@@ -301,17 +310,16 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
       newButton.addActionListener(e -> createNewNote());
       b.add(newButton);
 
-      revealButton = new JButton(Resources.getString("Notes.reveal")); //$NON-NLS-1$
+      revealButton = new JButton(Resources.getString("Notes.reveal")); // $NON-NLS-1$
       revealButton.addActionListener(e -> revealSelectedNote());
       revealButton.setEnabled(false);
       b.add(revealButton);
       add(b);
 
-
       text = new JTextArea(6, 20);
       text.setEditable(false);
       final JScrollPane scroll = new ScrollPane(text);
-      scroll.setBorder(new TitledBorder(Resources.getString("Notes.text"))); //$NON-NLS-1$
+      scroll.setBorder(new TitledBorder(Resources.getString("Notes.text"))); // $NON-NLS-1$
       add(scroll);
     }
 
@@ -321,21 +329,21 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
         column = t.getColumnModel().getColumn(i);
         final int width;
         switch (i) {
-        case COL_HANDLE:
-          width = 60;
-          break;
-        case COL_DTM:
-          width = 100;
-          break;
-        case COL_NAME:
-          width = 280;
-          break;
-        case COL_REVEALED:
-          width = 60;
-          break;
-        default:
-          width = 100;
-          break;
+          case COL_HANDLE:
+            width = 60;
+            break;
+          case COL_DTM:
+            width = 100;
+            break;
+          case COL_NAME:
+            width = 280;
+            break;
+          case COL_REVEALED:
+            width = 60;
+            break;
+          default:
+            width = 100;
+            break;
         }
         column.setPreferredWidth(width);
       }
@@ -344,9 +352,8 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     public class DateRenderer extends DefaultTableCellRenderer {
       private static final long serialVersionUID = 1L;
 
-      private final DateFormat fmt = DateFormat.getDateTimeInstance(
-        DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault()
-      );
+      private final DateFormat fmt =
+          DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
 
       @Override
       public void setValue(Object val) {
@@ -377,32 +384,32 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
       public Object getValueAt(int row, int col) {
         final SecretNote note = notes.get(row);
         switch (col) {
-        case COL_HANDLE:
-          return note.getHandle();
-        case COL_DTM:
-          return note.getDate();
-        case COL_NAME:
-          return note.getName();
-        case COL_REVEALED:
-          return !note.isHidden();
-        default:
-          return null;
+          case COL_HANDLE:
+            return note.getHandle();
+          case COL_DTM:
+            return note.getDate();
+          case COL_NAME:
+            return note.getName();
+          case COL_REVEALED:
+            return !note.isHidden();
+          default:
+            return null;
         }
       }
 
       @Override
       public Class<?> getColumnClass(int c) {
         switch (c) {
-        case COL_HANDLE:
-          return String.class;
-        case COL_DTM:
-          return Date.class;
-        case COL_NAME:
-          return String.class;
-        case COL_REVEALED:
-          return Boolean.class;
-        default:
-          return super.getColumnClass(c);
+          case COL_HANDLE:
+            return String.class;
+          case COL_DTM:
+            return Date.class;
+          case COL_NAME:
+            return String.class;
+          case COL_REVEALED:
+            return Boolean.class;
+          default:
+            return super.getColumnClass(c);
         }
       }
 
@@ -412,8 +419,7 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
       }
 
       @Override
-      public void setValueAt(Object value, int row, int col) {
-      }
+      public void setValueAt(Object value, int row, int col) {}
     }
 
     public void refresh() {
@@ -430,7 +436,14 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
 
       SecretNote note = notes.get(table.convertRowIndexToModel(selectedRow));
       if (note.getOwner().equals(GameModule.getActiveUserId())) {
-        note = new SecretNote(note.getName(), note.getOwner(), note.getText(), false, note.getDate(), note.getHandle());
+        note =
+            new SecretNote(
+                note.getName(),
+                note.getOwner(),
+                note.getText(),
+                false,
+                note.getDate(),
+                note.getHandle());
         if (note != null) {
           final int i = notes.indexOf(note);
           notes.set(i, note);
@@ -440,26 +453,21 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
     }
 
     public void createNewNote() {
-      final Dialog parent =
-        (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, this);
+      final Dialog parent = (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, this);
 
       final JDialog d;
       if (parent != null) {
         d = new JDialog(parent, true);
-      }
-      else {
-        d = new JDialog(
-          (Frame) SwingUtilities.getAncestorOfClass(Frame.class, this),
-          true
-        );
+      } else {
+        d = new JDialog((Frame) SwingUtilities.getAncestorOfClass(Frame.class, this), true);
       }
 
-      d.setTitle(Resources.getString("Notes.delayed_note")); //$NON-NLS-1$
+      d.setTitle(Resources.getString("Notes.delayed_note")); // $NON-NLS-1$
 
-      final StringConfigurer name = new StringConfigurer(null,
-        Resources.getString("Notes.name")); //$NON-NLS-1$
-      final TextConfigurer text = new TextConfigurer(null,
-        Resources.getString("Notes.text")); //$NON-NLS-1$
+      final StringConfigurer name =
+          new StringConfigurer(null, Resources.getString("Notes.name")); // $NON-NLS-1$
+      final TextConfigurer text =
+          new TextConfigurer(null, Resources.getString("Notes.text")); // $NON-NLS-1$
 
       d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
       d.add(name.getControls());
@@ -467,35 +475,37 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
 
       final Box buttonPanel = Box.createHorizontalBox();
       final JButton okButton = new JButton(Resources.getString(Resources.OK));
-      okButton.addActionListener(e -> {
-        final SecretNote note = new SecretNote(
-          name.getValueString(),
-          GameModule.getActiveUserId(),
-          (String) text.getValue(),
-          true
-        );
+      okButton.addActionListener(
+          e -> {
+            final SecretNote note =
+                new SecretNote(
+                    name.getValueString(),
+                    GameModule.getActiveUserId(),
+                    (String) text.getValue(),
+                    true);
 
-        if (notes.contains(note)) {
-          WarningDialog.show(this, "Notes.note_exists");  //NON-NLS
-        }
-        else {
-          notes.add(0, note);
-          refresh();
-          d.dispose();
-        }
-      });
+            if (notes.contains(note)) {
+              WarningDialog.show(this, "Notes.note_exists"); // NON-NLS
+            } else {
+              notes.add(0, note);
+              refresh();
+              d.dispose();
+            }
+          });
 
-      final PropertyChangeListener l = evt -> okButton.setEnabled(name.getValueString() != null
-                          && name.getValueString().length() > 0
-                          && text.getValueString() != null
-                          && text.getValueString().length() > 0);
+      final PropertyChangeListener l =
+          evt ->
+              okButton.setEnabled(
+                  name.getValueString() != null
+                      && name.getValueString().length() > 0
+                      && text.getValueString() != null
+                      && text.getValueString().length() > 0);
       name.addPropertyChangeListener(l);
       text.addPropertyChangeListener(l);
 
       okButton.setEnabled(false);
       buttonPanel.add(okButton);
-      final JButton cancelButton =
-        new JButton(Resources.getString(Resources.CANCEL));
+      final JButton cancelButton = new JButton(Resources.getString(Resources.CANCEL));
       cancelButton.addActionListener(e -> d.dispose());
       d.add(buttonPanel);
 
@@ -514,7 +524,7 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
 
     private void displaySelected() {
       revealButton.setEnabled(false);
-      text.setText(""); //$NON-NLS-1$
+      text.setText(""); // $NON-NLS-1$
 
       final int selectedRow = table.getSelectedRow();
       if (selectedRow < 0) {
@@ -526,9 +536,11 @@ public class SecretNotesController implements GameComponent, CommandEncoder, Add
         if (note.getOwner().equals(GameModule.getActiveUserId())) {
           text.setText(note.getText());
           revealButton.setEnabled(note.isHidden());
-        }
-        else {
-          text.setText(note.isHidden() ? Resources.getString("Notes.message_not_revealed") : note.getText()); //$NON-NLS-1$
+        } else {
+          text.setText(
+              note.isHidden()
+                  ? Resources.getString("Notes.message_not_revealed")
+                  : note.getText()); // $NON-NLS-1$
         }
       }
     }

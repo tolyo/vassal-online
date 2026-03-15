@@ -17,29 +17,28 @@
  */
 package VASSAL.chat;
 
+import VASSAL.configure.Configurer;
+import VASSAL.i18n.Resources;
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
-import VASSAL.configure.Configurer;
-import VASSAL.i18n.Resources;
 
 /**
- * Improved version of ServerConfigurer that includes an Address Book of
- * commonly visited private servers and P2P clients.
- *
+ * Improved version of ServerConfigurer that includes an Address Book of commonly visited private
+ * servers and P2P clients.
  */
 public class AddressBookServerConfigurer extends Configurer {
-  private static final String CONNECTED = Resources.getString("Server.please_disconnect"); //$NON-NLS-1$
-  private static final String DISCONNECTED = Resources.getString("ServerAddressBook.select_server"); //$NON-NLS-1$
-  private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
+  private static final String CONNECTED =
+      Resources.getString("Server.please_disconnect"); // $NON-NLS-1$
+  private static final String DISCONNECTED =
+      Resources.getString("ServerAddressBook.select_server"); // $NON-NLS-1$
+  private static final String ENCODING = "UTF-8"; // $NON-NLS-1$
   protected JComponent controls;
   protected ServerAddressBook addressBook;
   private final HybridClient client;
@@ -49,9 +48,7 @@ public class AddressBookServerConfigurer extends Configurer {
     super(key, name, client);
     this.client = client;
     client.addPropertyChangeListener(
-      ChatServerConnection.CONNECTED,
-      e -> enableControls(Boolean.TRUE.equals(e.getNewValue()))
-    );
+        ChatServerConnection.CONNECTED, e -> enableControls(Boolean.TRUE.equals(e.getNewValue())));
     getControls();
     setValue(addressBook.getDefaultServerProperties());
     client.updateDisplayControls(addressBook.getCurrentIcon(), addressBook.getCurrentDescription());
@@ -62,15 +59,16 @@ public class AddressBookServerConfigurer extends Configurer {
     if (controls == null) {
       controls = new JPanel(new MigLayout());
       header = new JLabel(DISCONNECTED);
-      controls.add(header, "wrap"); //$NON-NLS-1$
+      controls.add(header, "wrap"); // $NON-NLS-1$
       addressBook = new ServerAddressBook();
-      addressBook.addPropertyChangeListener(e -> {
-        if (ServerAddressBook.CURRENT_SERVER.equals(e.getPropertyName())) {
-          addressBook.setFrozen(true);
-          setValue(e.getNewValue());
-          addressBook.setFrozen(false);
-        }
-      });
+      addressBook.addPropertyChangeListener(
+          e -> {
+            if (ServerAddressBook.CURRENT_SERVER.equals(e.getPropertyName())) {
+              addressBook.setFrozen(true);
+              setValue(e.getNewValue());
+              addressBook.setFrozen(false);
+            }
+          });
       controls.add(addressBook.getControls());
     }
 
@@ -90,7 +88,8 @@ public class AddressBookServerConfigurer extends Configurer {
     }
     if (client != null && !CONNECTED.equals(header.getText())) {
       client.setDelegate(ChatServerFactory.build(getServerInfo()));
-      client.updateDisplayControls(addressBook.getCurrentIcon(), addressBook.getCurrentDescription());
+      client.updateDisplayControls(
+          addressBook.getCurrentIcon(), addressBook.getCurrentDescription());
     }
   }
 
@@ -104,7 +103,7 @@ public class AddressBookServerConfigurer extends Configurer {
 
   @Override
   public String getValueString() {
-    String s = ""; //$NON-NLS-1$
+    String s = ""; // $NON-NLS-1$
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       final Properties p = (Properties) getValue();
       if (p != null) {

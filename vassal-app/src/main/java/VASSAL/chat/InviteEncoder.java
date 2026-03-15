@@ -20,11 +20,9 @@ package VASSAL.chat;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 
-/**
- * Date: Mar 16, 2003
- */
+/** Date: Mar 16, 2003 */
 public class InviteEncoder implements CommandEncoder {
-  public static final String COMMAND_PREFIX = "INVITE\t"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "INVITE\t"; // $NON-NLS-1$
   private final ChatServerConnection client;
 
   public InviteEncoder(ChatServerConnection client) {
@@ -37,7 +35,7 @@ public class InviteEncoder implements CommandEncoder {
       return null;
     }
 
-    final String[] info = s.split("\\t"); //$NON-NLS-1$
+    final String[] info = s.split("\\t"); // $NON-NLS-1$
     if (info.length != 4) {
       return null;
     }
@@ -51,7 +49,11 @@ public class InviteEncoder implements CommandEncoder {
       return null;
     }
     final InviteCommand cmd = (InviteCommand) c;
-    return COMMAND_PREFIX + cmd.getPlayer() + "\t" + cmd.getPlayerId() + "\t" + cmd.getRoom(); //$NON-NLS-1$ //$NON-NLS-2$
+    return COMMAND_PREFIX
+        + cmd.getPlayer()
+        + "\t"
+        + cmd.getPlayerId()
+        + "\t"
+        + cmd.getRoom(); // $NON-NLS-1$ //$NON-NLS-2$
   }
-
 }

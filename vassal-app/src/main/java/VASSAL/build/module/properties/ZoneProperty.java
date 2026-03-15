@@ -26,12 +26,9 @@ import VASSAL.build.module.map.boardPicker.board.mapgrid.Zone;
 import VASSAL.i18n.Resources;
 
 /**
- *
  * @author Brent Easton
- *
- * A class implementing a cut-down Global property at the Zone level. Zone Properties
- * do not have Toolbar butttons, but are controlled by SetGlobalProperty traits in
- * counters.
+ *     <p>A class implementing a cut-down Global property at the Zone level. Zone Properties do not
+ *     have Toolbar butttons, but are controlled by SetGlobalProperty traits in counters.
  */
 public class ZoneProperty extends GlobalProperty {
 

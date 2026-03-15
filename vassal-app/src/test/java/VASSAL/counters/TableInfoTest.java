@@ -19,13 +19,16 @@ package VASSAL.counters;
 
 import VASSAL.tools.NamedKeyStroke;
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 public class TableInfoTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     TableInfo trait = new TableInfo();
 
@@ -41,8 +44,5 @@ public class TableInfoTest extends DecoratorTest {
     trait.values = "a,b,c,d,e,f"; // NON-NLS
     trait.description = "plugh";
     serializeTest("Complex trait", trait); // NON-NLS
-
-
-
   }
 }

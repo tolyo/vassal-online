@@ -31,7 +31,6 @@ import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.ScrollPane;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.WindowAdapter;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -48,9 +46,9 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
 /**
- * d/b/a "Spreadsheet"
- * A Decorator class that endows a GamePiece with an editable
- * spreadsheet (i.e. JTable) */
+ * d/b/a "Spreadsheet" A Decorator class that endows a GamePiece with an editable spreadsheet (i.e.
+ * JTable)
+ */
 public class TableInfo extends Decorator implements TranslatablePiece {
   public static final String ID = "table;"; // NON-NLS
 
@@ -65,7 +63,9 @@ public class TableInfo extends Decorator implements TranslatablePiece {
   protected String description = "";
 
   public TableInfo() {
-    this(ID + "2;2;" + Resources.getString("Editor.TableInfo.default_command") + ";S", null); // NON-NLS
+    this(
+        ID + "2;2;" + Resources.getString("Editor.TableInfo.default_command") + ";S",
+        null); // NON-NLS
   }
 
   public TableInfo(String type, GamePiece p) {
@@ -118,8 +118,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
   public String myGetState() {
     if (table == null) {
       return values;
-    }
-    else {
+    } else {
       final SequenceEncoder se = new SequenceEncoder(',');
       for (int row = 0; row < nRows; ++row) {
         for (int col = 0; col < nCols; ++col) {
@@ -135,8 +134,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
   public void mySetState(String state) {
     if (table == null) {
       values = state;
-    }
-    else {
+    } else {
       setValues(state);
     }
   }
@@ -166,7 +164,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
     if (launch == null) {
       launch = new KeyCommand(command, launchKey, getOutermost(this), this);
     }
-    return new KeyCommand[]{launch};
+    return new KeyCommand[] {launch};
   }
 
   @Override
@@ -198,19 +196,21 @@ public class TableInfo extends Decorator implements TranslatablePiece {
       }
       frame.setLocation(p.x, p.y);
 
-      frame.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent evt) {
-          if (table.isEditing()) {
-            table.getCellEditor().stopCellEditing();
-          }
+      frame.addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+              if (table.isEditing()) {
+                table.getCellEditor().stopCellEditing();
+              }
 
-          final GamePiece outer = getOutermost(TableInfo.this);
-          if (outer.getId() != null) {
-            GameModule.getGameModule().sendAndLog(new ChangePiece(outer.getId(), oldState, outer.getState()));
-          }
-        }
-      });
+              final GamePiece outer = getOutermost(TableInfo.this);
+              if (outer.getId() != null) {
+                GameModule.getGameModule()
+                    .sendAndLog(new ChangePiece(outer.getId(), oldState, outer.getState()));
+              }
+            }
+          });
       frame.pack();
     }
     frame.setTitle(getName());
@@ -253,13 +253,13 @@ public class TableInfo extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof TableInfo)) return false;
+    if (!(o instanceof TableInfo)) return false;
     final TableInfo c = (TableInfo) o;
 
-    if (! Objects.equals(nRows, c.nRows)) return false;
-    if (! Objects.equals(nCols, c.nCols)) return false;
-    if (! Objects.equals(command, c.command)) return false;
-    if (! Objects.equals(launchKey, c.launchKey)) return false;
+    if (!Objects.equals(nRows, c.nRows)) return false;
+    if (!Objects.equals(nCols, c.nCols)) return false;
+    if (!Objects.equals(command, c.command)) return false;
+    if (!Objects.equals(launchKey, c.launchKey)) return false;
 
     return Objects.equals(values, c.values);
   }
@@ -303,10 +303,10 @@ public class TableInfo extends Decorator implements TranslatablePiece {
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(rowConfig.getValueString())
-        .append(colConfig.getValueString())
-        .append(commandConfig.getValueString())
-        .append(keyConfig.getValueString())
-        .append(descInput.getValueString());
+          .append(colConfig.getValueString())
+          .append(commandConfig.getValueString())
+          .append(keyConfig.getValueString())
+          .append(descInput.getValueString());
       return ID + se.getValue();
     }
 
@@ -321,8 +321,6 @@ public class TableInfo extends Decorator implements TranslatablePiece {
     }
   }
 
-
-
   /**
    * @return a list of the Decorator's string/expression fields if any (for search)
    */
@@ -335,8 +333,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
           l.add((String) table.getValueAt(row, col));
         }
       }
-    }
-    else {
+    } else {
       l.add(values);
     }
     return l;

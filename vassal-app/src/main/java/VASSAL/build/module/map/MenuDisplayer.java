@@ -26,22 +26,11 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.KeyBuffer;
 import VASSAL.counters.KeyCommand;
 import VASSAL.counters.KeyCommandSubMenu;
-import VASSAL.counters.MultiLocationCommand;
 import VASSAL.counters.MenuSeparator;
+import VASSAL.counters.MultiLocationCommand;
 import VASSAL.counters.PieceFinder;
 import VASSAL.counters.Properties;
 import VASSAL.tools.NamedKeyManager;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Shape;
@@ -52,6 +41,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class MenuDisplayer extends MouseAdapter implements Buildable {
   @Deprecated(since = "2022-08-08", forRemoval = true)
@@ -68,9 +66,9 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
   }
 
   /**
-   * Return a {@link PieceFinder} instance that will select a
-   * {@link GamePiece} whose menu will be displayed when the
-   * user clicks on the map
+   * Return a {@link PieceFinder} instance that will select a {@link GamePiece} whose menu will be
+   * displayed when the user clicks on the map
+   *
    * @return Position of Piece or null (not found)
    */
   protected PieceFinder createTargetSelector() {
@@ -81,8 +79,7 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
         final Point p = new Point(pt.x - pos.x, pt.y - pos.y);
         if (d.getShape().contains(p)) {
           return d;
-        }
-        else {
+        } else {
           return null;
         }
       }
@@ -90,8 +87,7 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
   public Element getBuildElement(Document doc) {
@@ -99,20 +95,23 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
   }
 
   @Override
-  public void build(Element e) {
-  }
-
+  public void build(Element e) {}
 
   // For those who wish to override text behavior of both menus and submenus
   protected static String getMenuText(KeyCommand keyCommand) {
     return keyCommand.getLocalizedMenuText();
   }
 
-  // This both eliminates duplicate code AND makes this critical menu-building functionality able to "play well with others".
-  // Menu text & behavior can now be custom-classed without needing to override the monster that is MenuDisplayer#createPopup.
+  // This both eliminates duplicate code AND makes this critical menu-building functionality able to
+  // "play well with others".
+  // Menu text & behavior can now be custom-classed without needing to override the monster that is
+  // MenuDisplayer#createPopup.
   protected static JMenuItem makeMenuItem(KeyCommand keyCommand) {
-    final JMenuItem item = new JMenuItem(keyCommand.isMenuSeparator() ? MenuSeparator.SEPARATOR_NAME : getMenuText(keyCommand));
-    if (!NamedKeyManager.isNamed(keyCommand.getKeyStroke())) { // If the KeyStroke is named, then there is no accelerator
+    final JMenuItem item =
+        new JMenuItem(
+            keyCommand.isMenuSeparator() ? MenuSeparator.SEPARATOR_NAME : getMenuText(keyCommand));
+    if (!NamedKeyManager.isNamed(
+        keyCommand.getKeyStroke())) { // If the KeyStroke is named, then there is no accelerator
       item.setAccelerator(keyCommand.getKeyStroke());
     }
     item.addActionListener(keyCommand);
@@ -127,10 +126,8 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
   }
 
   /**
-   *
    * @param target Piece for which Menu is to be displayed
-   * @param global If true, then apply the KeyCommands globally,
-   * i.e. to all selected pieces
+   * @param global If true, then apply the KeyCommands globally, i.e. to all selected pieces
    * @return Menu
    */
   public static JPopupMenu createPopup(GamePiece target, boolean global) {
@@ -145,11 +142,14 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
       // Maps name to a list of commands with that name
       final java.util.Map<String, List<JMenuItem>> commandNames = new HashMap<>();
 
-      // If a deck has only one menu item, and it's one of the ones that just fires off a choose-from-here dialog, then skip directly to the dialog
+      // If a deck has only one menu item, and it's one of the ones that just fires off a
+      // choose-from-here dialog, then skip directly to the dialog
       if (target instanceof Deck) {
         if (c.length == 1) {
           final String menu_item = c[0].getName();
-          if ((menu_item != null) && (menu_item.equals(((Deck)target).getDrawMultipleMessage()) || menu_item.equals(((Deck)target).getDrawSpecificMessage()))) {
+          if ((menu_item != null)
+              && (menu_item.equals(((Deck) target).getDrawMultipleMessage())
+                  || menu_item.equals(((Deck) target).getDrawSpecificMessage()))) {
             c[0].actionPerformed(new ActionEvent(popup, 0, ""));
             return null;
           }
@@ -166,44 +166,42 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
           item = subMenu;
           commands.add(item);
           strokes.add(KeyStroke.getKeyStroke('\0'));
-        }
-        else {
-          if (strokes.contains(stroke) && !keyCommand.isMenuSeparator() && !(keyCommand instanceof MultiLocationCommand.MultiLocationKeyCommand)) {
+        } else {
+          if (strokes.contains(stroke)
+              && !keyCommand.isMenuSeparator()
+              && !(keyCommand instanceof MultiLocationCommand.MultiLocationKeyCommand)) {
             final JMenuItem command = commands.get(strokes.indexOf(stroke));
             final Action action = command.getAction();
             if (action != null) {
-              final String commandName =
-                      (String) command.getAction().getValue(Action.NAME);
-              if (commandName == null ||
-                      commandName.length() < keyCommand.getName().length()) {
+              final String commandName = (String) command.getAction().getValue(Action.NAME);
+              if (commandName == null || commandName.length() < keyCommand.getName().length()) {
                 item = makeMenuItem(keyCommand);
                 commands.set(strokes.indexOf(stroke), item);
               }
             }
-          }
-          else {
-            strokes.add((stroke != null && !keyCommand.isMenuSeparator()) ? stroke : KeyStroke.getKeyStroke('\0'));
+          } else {
+            strokes.add(
+                (stroke != null && !keyCommand.isMenuSeparator())
+                    ? stroke
+                    : KeyStroke.getKeyStroke('\0'));
             item = makeMenuItem(keyCommand);
             commands.add(item);
           }
         }
-        if (keyCommand.getName() != null &&
-                !keyCommand.getName().isEmpty() &&
-                item != null) {
-          final List<JMenuItem> l = commandNames.computeIfAbsent(keyCommand.getName(), k -> new ArrayList<>());
+        if (keyCommand.getName() != null && !keyCommand.getName().isEmpty() && item != null) {
+          final List<JMenuItem> l =
+              commandNames.computeIfAbsent(keyCommand.getName(), k -> new ArrayList<>());
           l.add(item);
         }
       }
 
-// Move commands from main menu into submenus
-      for (final java.util.Map.Entry<KeyCommandSubMenu, JMenu> e :
-              subMenus.entrySet()) {
+      // Move commands from main menu into submenus
+      for (final java.util.Map.Entry<KeyCommandSubMenu, JMenu> e : subMenus.entrySet()) {
         final KeyCommandSubMenu menuCommand = e.getKey();
         final JMenu subMenu = e.getValue();
 
-        for (final Iterator<String> it2 = menuCommand.getCommands(); it2.hasNext();) {
-          final List<JMenuItem> matchingCommands =
-                  commandNames.get(it2.next());
+        for (final Iterator<String> it2 = menuCommand.getCommands(); it2.hasNext(); ) {
+          final List<JMenuItem> matchingCommands = commandNames.get(it2.next());
           if (matchingCommands != null) {
             for (final JMenuItem item : matchingCommands) {
               subMenu.add(item);
@@ -224,8 +222,7 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
         final String text = item.getText();
         if (MenuSeparator.SEPARATOR_NAME.equals(text)) {
           popup.addSeparator();
-        }
-        else if (text != null && !text.isBlank()) {
+        } else if (text != null && !text.isBlank()) {
           popup.add(item);
         }
       }
@@ -305,21 +302,21 @@ public class MenuDisplayer extends MouseAdapter implements Buildable {
 
     final JPopupMenu popup = createPopup(p, true);
     if (popup != null) {
-      popup.addPopupMenuListener(new PopupMenuListener() {
-        @Override
-        public void popupMenuCanceled(PopupMenuEvent evt) {
-          map.repaint();
-        }
+      popup.addPopupMenuListener(
+          new PopupMenuListener() {
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent evt) {
+              map.repaint();
+            }
 
-        @Override
-        public void popupMenuWillBecomeInvisible(PopupMenuEvent evt) {
-          map.repaint();
-        }
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent evt) {
+              map.repaint();
+            }
 
-        @Override
-        public void popupMenuWillBecomeVisible(PopupMenuEvent evt) {
-        }
-      });
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent evt) {}
+          });
 
       // NB: The conversion back to component coordinates is correct. The
       // master mouse event listener on the map translates all coordinates to

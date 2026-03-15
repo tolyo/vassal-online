@@ -18,35 +18,32 @@
 
 package VASSAL.tools.imageop;
 
-import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.NoSuchFileException;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import VASSAL.build.GameModule;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.image.ImageIOException;
 import VASSAL.tools.image.ImageNotFoundException;
 import VASSAL.tools.image.svg.SVGRenderer;
 import VASSAL.tools.opcache.Op;
+import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * An {@link ImageOp} for producing tiles directly from a source,
- * without cobbling tiles from the source.
+ * An {@link ImageOp} for producing tiles directly from a source, without cobbling tiles from the
+ * source.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class SourceTileOpSVGImpl extends AbstractTileOpImpl
-                                 implements SVGOp {
+public class SourceTileOpSVGImpl extends AbstractTileOpImpl implements SVGOp {
   private final SVGOp sop;
   private final int x0, y0, x1, y1;
   private final int hash;
@@ -54,8 +51,7 @@ public class SourceTileOpSVGImpl extends AbstractTileOpImpl
   public SourceTileOpSVGImpl(SVGOp sop, int tileX, int tileY) {
     if (sop == null) throw new IllegalArgumentException();
 
-    if (tileX < 0 || tileX >= sop.getNumXTiles() ||
-        tileY < 0 || tileY >= sop.getNumYTiles())
+    if (tileX < 0 || tileX >= sop.getNumXTiles() || tileY < 0 || tileY >= sop.getNumYTiles())
       throw new IndexOutOfBoundsException();
 
     this.sop = sop;
@@ -72,12 +68,8 @@ public class SourceTileOpSVGImpl extends AbstractTileOpImpl
 
     size = new Dimension(x1 - x0, y1 - y0);
 
-    hash = new HashCodeBuilder().append(sop)
-                                .append(x0)
-                                .append(y0)
-                                .append(x1)
-                                .append(y1)
-                                .toHashCode();
+    hash =
+        new HashCodeBuilder().append(sop).append(x0).append(y0).append(x1).append(y1).toHashCode();
   }
 
   @Override
@@ -87,27 +79,25 @@ public class SourceTileOpSVGImpl extends AbstractTileOpImpl
 
   @Override
   public BufferedImage eval() throws ImageIOException {
-// FIXME: getting archive this way is a kludge, we should get it from sop
+    // FIXME: getting archive this way is a kludge, we should get it from sop
     final DataArchive archive = GameModule.getGameModule().getDataArchive();
     final String name = getName();
 
     try (InputStream in = archive.getInputStream(name);
-         BufferedInputStream bin = new BufferedInputStream(in)) {
+        BufferedInputStream bin = new BufferedInputStream(in)) {
       final SVGRenderer renderer = new SVGRenderer(archive.getURL(name), bin);
 
       final Rectangle2D aoi = new Rectangle2D.Float(x0, y0, x1 - x0, y1 - y0);
       return renderer.render(0.0, 1.0, aoi);
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       throw new ImageNotFoundException(name, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(name, e);
     }
   }
 
   @Override
-  protected void fixSize() { }
+  protected void fixSize() {}
 
   @Override
   public String getName() {
@@ -120,11 +110,7 @@ public class SourceTileOpSVGImpl extends AbstractTileOpImpl
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final SourceTileOpSVGImpl op = (SourceTileOpSVGImpl) o;
-    return x0 == op.x0 &&
-           y0 == op.y0 &&
-           x1 == op.x1 &&
-           y1 == op.y1 &&
-           sop.equals(op.sop);
+    return x0 == op.x0 && y0 == op.y0 && x1 == op.x1 && y1 == op.y1 && sop.equals(op.sop);
   }
 
   @Override

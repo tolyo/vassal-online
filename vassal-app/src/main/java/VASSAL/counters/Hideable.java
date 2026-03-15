@@ -32,8 +32,6 @@ import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.image.ImageUtils;
-
-import javax.swing.KeyStroke;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -48,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
 public class Hideable extends Decorator implements TranslatablePiece {
 
@@ -68,7 +67,8 @@ public class Hideable extends Decorator implements TranslatablePiece {
   protected KeyCommand hideCommand;
   protected String description = "";
 
-  // Cache the Hidden image that is shown to the owner. Only re-generate when Zoom or piece state changes.
+  // Cache the Hidden image that is shown to the owner. Only re-generate when Zoom or piece state
+  // changes.
   protected BufferedImage cachedImage;
   protected double cachedZoom = -1d;
   protected String cachedState = "";
@@ -77,8 +77,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public void setProperty(Object key, Object val) {
     if (HIDDEN_BY.equals(key)) {
       hiddenBy = (String) val;
-    }
-    else {
+    } else {
       super.setProperty(key, val);
     }
   }
@@ -87,20 +86,15 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public Object getLocalizedProperty(Object key) {
     if (invisibleToMe()) {
       return ((BasicPiece) getInnermost(this)).getLocalizedPublicProperty(key);
-    }
-    else if (HIDDEN_BY.equals(key)) {
+    } else if (HIDDEN_BY.equals(key)) {
       return hiddenBy;
-    }
-    else if (Properties.INVISIBLE_TO_ME.equals(key)) {
+    } else if (Properties.INVISIBLE_TO_ME.equals(key)) {
       return invisibleToMe() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else if (Properties.INVISIBLE_TO_OTHERS.equals(key)) {
+    } else if (Properties.INVISIBLE_TO_OTHERS.equals(key)) {
       return invisibleToOthers() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return Boolean.toString(invisibleToOthers()) + invisibleToMe() + piece.getProperty(key);
-    }
-    else {
+    } else {
       return super.getLocalizedProperty(key);
     }
   }
@@ -109,20 +103,15 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public Object getProperty(Object key) {
     if (HIDDEN_BY.equals(key)) {
       return hiddenBy;
-    }
-    else if (Properties.INVISIBLE_TO_ME.equals(key)) {
+    } else if (Properties.INVISIBLE_TO_ME.equals(key)) {
       return invisibleToMe() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else if (Properties.INVISIBLE_TO_OTHERS.equals(key)) {
+    } else if (Properties.INVISIBLE_TO_OTHERS.equals(key)) {
       return invisibleToOthers() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else if (Properties.INVISIBLE_DISABLE_AUTO_REPORT_MOVE.equals(key)) {
+    } else if (Properties.INVISIBLE_DISABLE_AUTO_REPORT_MOVE.equals(key)) {
       return disableAutoReportMove;
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return Boolean.toString(invisibleToOthers()) + invisibleToMe() + piece.getProperty(key);
-    }
-    else {
+    } else {
       return super.getProperty(key);
     }
   }
@@ -144,7 +133,8 @@ public class Hideable extends Decorator implements TranslatablePiece {
     command = st.nextToken(Resources.getString("Editor.Hideable.default_command"));
     bgColor = st.nextColor(null);
     access = PieceAccessConfigurer.decode(st.nextToken(null));
-    transparency = Math.max(0.0f, Math.min(1.0f, st.hasMoreTokens() ? (float) st.nextDouble(0.3) : 0.3f));
+    transparency =
+        Math.max(0.0f, Math.min(1.0f, st.hasMoreTokens() ? (float) st.nextDouble(0.3) : 0.3f));
     description = st.nextToken("");
     disableAutoReportMove = st.nextBoolean(false);
     commands = null;
@@ -159,12 +149,12 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(hideKey)
-      .append(command)
-      .append(bgColor)
-      .append(PieceAccessConfigurer.encode(access))
-      .append(transparency)
-      .append(description)
-      .append(disableAutoReportMove);
+        .append(command)
+        .append(bgColor)
+        .append(PieceAccessConfigurer.encode(access))
+        .append(transparency)
+        .append(description)
+        .append(disableAutoReportMove);
     return ID + se.getValue();
   }
 
@@ -185,8 +175,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public Shape getShape() {
     if (invisibleToMe()) {
       return new Rectangle();
-    }
-    else {
+    } else {
       return piece.getShape();
     }
   }
@@ -195,8 +184,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public Rectangle boundingBox() {
     if (invisibleToMe()) {
       return new Rectangle();
-    }
-    else {
+    } else {
       return piece.boundingBox();
     }
   }
@@ -228,7 +216,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
       }
 
       final String visibleState = (String) piece.getProperty(Properties.VISIBLE_STATE);
-      if (cachedImage == null || zoom != cachedZoom || ! cachedState.equals(visibleState)) {
+      if (cachedImage == null || zoom != cachedZoom || !cachedState.equals(visibleState)) {
 
         // Create an in-memory cached image and draw piece fully opaque
         cachedImage = ImageUtils.createCompatibleTranslucentImage(w, h);
@@ -241,8 +229,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
           cg.translate(-bounds.x, -bounds.y);
 
           piece.draw(cg, 0, 0, obs, 1.0); // Fully opaque
-        }
-        finally {
+        } finally {
           cg.dispose();
         }
       }
@@ -256,8 +243,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
       g2d.drawImage(cachedImage, drawX, drawY, obs);
 
       g2d.setComposite(oldComp);
-    }
-    else {
+    } else {
       // Normal draw at the end
       piece.draw(g, x, y, obs, zoom);
     }
@@ -267,11 +253,9 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public String getName() {
     if (invisibleToMe()) {
       return "";
-    }
-    else if (invisibleToOthers()) {
+    } else if (invisibleToOthers()) {
       return piece.getName() + "(" + command + ")";
-    }
-    else {
+    } else {
       return piece.getName();
     }
   }
@@ -280,10 +264,9 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public KeyCommand[] myGetKeyCommands() {
     if (commands == null) {
       hideCommand = new KeyCommand(command, hideKey, getOutermost(this), this);
-      if (command.length() > 0 && hideKey != null && ! hideKey.isNull()) {
+      if (command.length() > 0 && hideKey != null && !hideKey.isNull()) {
         commands = new KeyCommand[] {hideCommand};
-      }
-      else {
+      } else {
         commands = KeyCommand.NONE;
       }
     }
@@ -298,8 +281,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
       final ChangeTracker tracker = new ChangeTracker(this);
       if (invisibleToOthers()) {
         hiddenBy = null;
-      }
-      else if (!invisibleToMe()) {
+      } else if (!invisibleToMe()) {
         hiddenBy = access.getCurrentPlayerId();
       }
       return tracker.getChangeCommand();
@@ -333,8 +315,8 @@ public class Hideable extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * If true, then all hidden pieces are considered invisible to all players.
-   * Used to temporarily draw pieces as they appear to other players
+   * If true, then all hidden pieces are considered invisible to all players. Used to temporarily
+   * draw pieces as they appear to other players
    *
    * @param allHidden true if all pieces should be considered hidden
    * @deprecated
@@ -343,8 +325,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
   public static void setAllHidden(boolean allHidden) {
     if (allHidden) {
       PieceAccess.GlobalAccess.hideAll();
-    }
-    else {
+    } else {
       PieceAccess.GlobalAccess.revertAll();
     }
   }
@@ -354,9 +335,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
     return getI18nData(command, Resources.getString("Editor.Hideable.hide_command"));
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -368,16 +347,17 @@ public class Hideable extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Hideable)) return false;
+    if (!(o instanceof Hideable)) return false;
     final Hideable c = (Hideable) o;
 
-    if (! Objects.equals(hideKey, c.hideKey)) return false;
-    if (! Objects.equals(command, c.command)) return false;
-    if (! Objects.equals(bgColor, c.bgColor)) return false;
-    if (! Objects.equals(PieceAccessConfigurer.encode(access), PieceAccessConfigurer.encode(c.access))) return false;
-    if (! Objects.equals(transparency, c.transparency)) return false;
-    if (! Objects.equals(bgColor, c.bgColor)) return false;
-    if (! Objects.equals(disableAutoReportMove, c.disableAutoReportMove)) return false;
+    if (!Objects.equals(hideKey, c.hideKey)) return false;
+    if (!Objects.equals(command, c.command)) return false;
+    if (!Objects.equals(bgColor, c.bgColor)) return false;
+    if (!Objects.equals(
+        PieceAccessConfigurer.encode(access), PieceAccessConfigurer.encode(c.access))) return false;
+    if (!Objects.equals(transparency, c.transparency)) return false;
+    if (!Objects.equals(bgColor, c.bgColor)) return false;
+    if (!Objects.equals(disableAutoReportMove, c.disableAutoReportMove)) return false;
 
     return Objects.equals(hiddenBy, c.hiddenBy);
   }
@@ -412,7 +392,7 @@ public class Hideable extends Decorator implements TranslatablePiece {
       transpConfig = new IntConfigurer((int) (p.transparency * 100));
       controls.add("Editor.Hideable.opacity", transpConfig);
 
-      disableAutoReportMoves =  new BooleanConfigurer(p.disableAutoReportMove);
+      disableAutoReportMoves = new BooleanConfigurer(p.disableAutoReportMove);
       controls.add("Editor.Hideable.disable_auto_report_moves", disableAutoReportMoves);
 
       accessConfig = new PieceAccessConfigurer(p.access);
@@ -430,12 +410,12 @@ public class Hideable extends Decorator implements TranslatablePiece {
 
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(hideKeyInput.getValueString())
-        .append(hideCommandInput.getValueString())
-        .append(colorConfig.getValue() == null ? "" : colorConfig.getValueString())
-        .append(accessConfig.getValueString())
-        .append(transp)
-        .append(descInput.getValueString())
-        .append(disableAutoReportMoves.getValueString());
+          .append(hideCommandInput.getValueString())
+          .append(colorConfig.getValue() == null ? "" : colorConfig.getValueString())
+          .append(accessConfig.getValueString())
+          .append(transp)
+          .append(descInput.getValueString())
+          .append(disableAutoReportMoves.getValueString());
       return ID + se.getValue();
     }
 

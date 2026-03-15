@@ -7,11 +7,9 @@ import VASSAL.configure.StringArrayConfigurer;
 import VASSAL.configure.StringEnum;
 import VASSAL.configure.StringEnumConfigurer;
 import VASSAL.i18n.Resources;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class ListScenarioProperty extends AbstractScenarioProperty {
 
@@ -20,7 +18,7 @@ public class ListScenarioProperty extends AbstractScenarioProperty {
   public String[] options = new String[0];
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.ListScenarioProperty.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.ListScenarioProperty.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -31,33 +29,25 @@ public class ListScenarioProperty extends AbstractScenarioProperty {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.addAll(
-      super.getAttributeDescriptions(),
-      Resources.getString("Editor.ListScenarioProperty.valid_options")
-    );
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.ListScenarioProperty.valid_options"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return ArrayUtils.addAll(
-      super.getAttributeTypes(),
-      OptionsPrompt.class
-    );
+    return ArrayUtils.addAll(super.getAttributeTypes(), OptionsPrompt.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.addAll(
-      super.getAttributeNames(),
-      OPTIONS
-    );
+    return ArrayUtils.addAll(super.getAttributeNames(), OPTIONS);
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (OPTIONS.equals(key)) {
       return StringArrayConfigurer.arrayToString(options);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -69,8 +59,7 @@ public class ListScenarioProperty extends AbstractScenarioProperty {
         initialValue = (String) value;
         property.setPropertyValue(initialValue);
       }
-    }
-    else if (OPTIONS.equals(key)) {
+    } else if (OPTIONS.equals(key)) {
       if (value instanceof String) {
         value = StringArrayConfigurer.stringToArray((String) value);
       }
@@ -79,8 +68,7 @@ public class ListScenarioProperty extends AbstractScenarioProperty {
 
       // Clear our configurer to force the initial values list to repopulate next time it is opened
       config = null;
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -97,7 +85,6 @@ public class ListScenarioProperty extends AbstractScenarioProperty {
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
       return new StringArrayConfigurer(key, name);
     }
-
   }
 
   public static class validOptions extends StringEnum {

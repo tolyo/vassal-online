@@ -18,8 +18,6 @@
 
 package VASSAL.build.module.gamepieceimage;
 
-import java.awt.Color;
-
 import VASSAL.build.AutoConfigurable;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
@@ -27,13 +25,14 @@ import VASSAL.configure.TextConfigurer;
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Color;
 
 public class TextBoxItemInstance extends ItemInstance {
 
-  protected static final String VALUE = "value"; //$NON-NLS-1$
-  protected static final String BG_COLOR = "borderColor"; //$NON-NLS-1$
+  protected static final String VALUE = "value"; // $NON-NLS-1$
+  protected static final String BG_COLOR = "borderColor"; // $NON-NLS-1$
 
-  protected String val = ""; //$NON-NLS-1$
+  protected String val = ""; // $NON-NLS-1$
 
   public TextBoxItemInstance() {
     super();
@@ -74,12 +73,12 @@ public class TextBoxItemInstance extends ItemInstance {
 
   public void decode(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
-    setType(sd.nextToken("")); //$NON-NLS-1$
-    setName(sd.nextToken("")); //$NON-NLS-1$
-    setLocation(sd.nextToken("")); //$NON-NLS-1$
-    setFgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setBgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setValue(sd.nextToken("")); //$NON-NLS-1$
+    setType(sd.nextToken("")); // $NON-NLS-1$
+    setName(sd.nextToken("")); // $NON-NLS-1$
+    setLocation(sd.nextToken("")); // $NON-NLS-1$
+    setFgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setBgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setValue(sd.nextToken("")); // $NON-NLS-1$
   }
 
   @Override
@@ -94,9 +93,7 @@ public class TextBoxItemInstance extends ItemInstance {
   @Override
   public Class<?>[] getAttributeTypes() {
     return new Class<?>[] {
-      WrappingTextConfigurer.class,
-      FgColorSwatchConfig.class,
-      BgColorSwatchConfig.class
+      WrappingTextConfigurer.class, FgColorSwatchConfig.class, BgColorSwatchConfig.class
     };
   }
 
@@ -109,7 +106,7 @@ public class TextBoxItemInstance extends ItemInstance {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] { VALUE, FG_COLOR, BG_COLOR };
+    return new String[] {VALUE, FG_COLOR, BG_COLOR};
   }
 
   @Override
@@ -117,46 +114,38 @@ public class TextBoxItemInstance extends ItemInstance {
 
     if (VALUE.equals(key)) {
       this.val = (String) o;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
       fgColor = (ColorSwatch) o;
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
-      bgColor = (ColorSwatch)o;
+      bgColor = (ColorSwatch) o;
     }
     if (myConfig != null) {
       myConfig.rebuildViz();
     }
-
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (VALUE.equals(key)) {
       return val;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       return fgColor.encode();
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       return bgColor.encode();
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
     if (VALUE.equals(name)) {
       return valueCond;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }

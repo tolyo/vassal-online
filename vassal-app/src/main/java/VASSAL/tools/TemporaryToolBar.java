@@ -1,16 +1,13 @@
 package VASSAL.tools;
 
 import java.awt.Component;
-
 import javax.swing.JToolBar;
 
 /**
- * Stores components in a dummy toolbar, then transfers them to another toolbar
- * component when it becomes available. Used to get around lazy creation of
- * toolbars in ToolBarComponents
+ * Stores components in a dummy toolbar, then transfers them to another toolbar component when it
+ * becomes available. Used to get around lazy creation of toolbars in ToolBarComponents
  *
  * @author rkinney
- *
  */
 public class TemporaryToolBar implements ToolBarComponent {
   private JToolBar tempToolBar = new JToolBar();
@@ -32,5 +29,4 @@ public class TemporaryToolBar implements ToolBarComponent {
     tempToolBar = null;
     this.delegate = delegate;
   }
-
 }

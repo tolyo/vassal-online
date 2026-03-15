@@ -17,19 +17,17 @@
  */
 package VASSAL.chat.peer2peer;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import org.litesoft.p2pchat.PeerInfo;
-
 import VASSAL.chat.Player;
 import VASSAL.chat.SimplePlayer;
 import VASSAL.chat.SimpleStatus;
 import VASSAL.tools.PropertiesEncoder;
+import java.io.IOException;
+import java.util.Properties;
+import org.litesoft.p2pchat.PeerInfo;
 
 public class P2PPlayer extends SimplePlayer {
-  private static final String ID = "id"; //$NON-NLS-1$
-  private static final String ROOM = "room"; //$NON-NLS-1$
+  private static final String ID = "id"; // $NON-NLS-1$
+  private static final String ROOM = "room"; // $NON-NLS-1$
 
   private final PeerInfo info;
   private Properties props;
@@ -46,8 +44,7 @@ public class P2PPlayer extends SimplePlayer {
         props = new Properties();
         setProps();
       }
-    }
-    else {
+    } else {
       props = new Properties();
       setProps();
     }
@@ -79,17 +76,17 @@ public class P2PPlayer extends SimplePlayer {
   }
 
   private void setStats() {
-    setName(props.getProperty(SimpleStatus.NAME, "???")); //$NON-NLS-1$
+    setName(props.getProperty(SimpleStatus.NAME, "???")); // $NON-NLS-1$
     setStatus(
         new SimpleStatus(
-            "true".equals(props.getProperty(SimpleStatus.LOOKING)), //$NON-NLS-1$
-            "true".equals(props.getProperty(SimpleStatus.AWAY)), //$NON-NLS-1$
-            props.getProperty(SimpleStatus.PROFILE, ""), //$NON-NLS-1$
-            props.getProperty(SimpleStatus.CLIENT, ""), //$NON-NLS-1$
-            props.getProperty(SimpleStatus.IP, ""), //$NON-NLS-1$
-            props.getProperty(SimpleStatus.MODULE_VERSION, ""), //$NON-NLS-1$
+            "true".equals(props.getProperty(SimpleStatus.LOOKING)), // $NON-NLS-1$
+            "true".equals(props.getProperty(SimpleStatus.AWAY)), // $NON-NLS-1$
+            props.getProperty(SimpleStatus.PROFILE, ""), // $NON-NLS-1$
+            props.getProperty(SimpleStatus.CLIENT, ""), // $NON-NLS-1$
+            props.getProperty(SimpleStatus.IP, ""), // $NON-NLS-1$
+            props.getProperty(SimpleStatus.MODULE_VERSION, ""), // $NON-NLS-1$
             props.getProperty(SimpleStatus.CRC, ""),
-            props.getProperty(SimpleStatus.COMBINED_CRC, "")));  //$NON-NLS-1$
+            props.getProperty(SimpleStatus.COMBINED_CRC, ""))); // $NON-NLS-1$
   }
 
   public String getRoom() {
@@ -122,8 +119,7 @@ public class P2PPlayer extends SimplePlayer {
     if (o instanceof P2PPlayer) {
       final P2PPlayer p = (P2PPlayer) o;
       return getId() == null ? info.equals(p.info) : getId().equals(p.getId());
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -133,6 +129,15 @@ public class P2PPlayer extends SimplePlayer {
   }
 
   public String summary() {
-    return getName() + " [looking = " + ((SimpleStatus)status).isLooking() + ", away = " + ((SimpleStatus)getStatus()).isAway() + ", room = " + props.getProperty(ROOM) + ", host = " + getInfo().getAddresses() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+    return getName()
+        + " [looking = "
+        + ((SimpleStatus) status).isLooking()
+        + ", away = "
+        + ((SimpleStatus) getStatus()).isAway()
+        + ", room = "
+        + props.getProperty(ROOM)
+        + ", host = "
+        + getInfo().getAddresses()
+        + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
   }
 }

@@ -18,17 +18,16 @@
 
 package VASSAL.property;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class PropertyTest {
   @Test
   public void testEqualsTrue() {
     final Property<Boolean> p1 = new Property<Boolean>("foo", Boolean.class);
     final Property<Boolean> p2 = new Property<Boolean>("foo", Boolean.class);
-    final Property<Boolean> p3 = new Property<Boolean>("foo", Boolean.class,
-                                                              Boolean.FALSE);
+    final Property<Boolean> p3 = new Property<Boolean>("foo", Boolean.class, Boolean.FALSE);
 
     assertEquals(p1, p1);
     assertEquals(p1, p2);

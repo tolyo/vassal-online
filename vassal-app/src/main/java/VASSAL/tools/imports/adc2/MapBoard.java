@@ -17,40 +17,6 @@
 
 package VASSAL.tools.imports.adc2;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.font.TextAttribute;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FileUtils;
-
 import VASSAL.Info;
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.GameModule;
@@ -86,12 +52,42 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.filechooser.ExtensionFileFilter;
 import VASSAL.tools.imports.FileFormatException;
 import VASSAL.tools.imports.Importer;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.font.TextAttribute;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 
 /**
  * The map board itself.
  *
  * @author Michael Kiefte
- *
  */
 public class MapBoard extends Importer {
 
@@ -130,8 +126,7 @@ public class MapBoard extends Importer {
         String order = l.getAttributeValueString(LayeredPieceCollection.LAYER_ORDER);
         if (order.equals("")) {
           order = getName();
-        }
-        else {
+        } else {
           order = order + "," + getName();
         }
         l.setAttribute(LayeredPieceCollection.LAYER_ORDER, order);
@@ -155,7 +150,8 @@ public class MapBoard extends Importer {
           final LayerControl control = new LayerControl();
           insertComponent(control, l);
           control.setAttribute(LayerControl.BUTTON_TEXT, getName());
-          control.setAttribute(LayerControl.TOOLTIP, "Toggle " + getName().toLowerCase() + " visibility");
+          control.setAttribute(
+              LayerControl.TOOLTIP, "Toggle " + getName().toLowerCase() + " visibility");
           control.setAttribute(LayerControl.COMMAND, LayerControl.CMD_TOGGLE);
           control.setAttribute(LayerControl.LAYERS, getName());
 
@@ -164,8 +160,7 @@ public class MapBoard extends Importer {
           String entries = menu.getAttributeValueString(ToolbarMenu.MENU_ITEMS);
           if (entries.equals("")) {
             entries = getName();
-          }
-          else {
+          } else {
             entries = entries + "," + new SequenceEncoder(getName(), ',').getValue();
           }
           menu.setAttribute(ToolbarMenu.MENU_ITEMS, entries);
@@ -192,12 +187,9 @@ public class MapBoard extends Importer {
       try {
         ImageIO.write(image.getSubimage(r.x, r.y, r.width, r.height), "png", f);
         imageName = getUniqueImageFileName(getName(), ".png");
-        GameModule.getGameModule()
-                  .getArchiveWriter()
-                  .addImage(f.getPath(), imageName);
+        GameModule.getGameModule().getArchiveWriter().addImage(f.getPath(), imageName);
         return r;
-      }
-      finally {
+      } finally {
         FileUtils.forceDelete(f);
       }
     }
@@ -271,8 +263,7 @@ public class MapBoard extends Importer {
             l.draw(g);
           }
         }
-      }
-      else {
+      } else {
         image = null;
       }
       return image;
@@ -281,8 +272,8 @@ public class MapBoard extends Importer {
     boolean draw(Graphics2D g) {
       if (shouldDraw) {
         shouldDraw = false;
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,   RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING,      RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         for (final MapDrawable m : elements) {
@@ -314,10 +305,15 @@ public class MapBoard extends Importer {
     }
 
     boolean hasBaseMap() {
-      File underlay = action.getCaseInsensitiveFile(new File(forceExtension(path, "sml")), null, false, null);
+      File underlay =
+          action.getCaseInsensitiveFile(new File(forceExtension(path, "sml")), null, false, null);
       if (underlay == null) {
-        underlay = action.getCaseInsensitiveFile(new File(stripExtension(path) + "-Z" + (zoomLevel + 1) + ".bmp"),
-          null, false, null);
+        underlay =
+            action.getCaseInsensitiveFile(
+                new File(stripExtension(path) + "-Z" + (zoomLevel + 1) + ".bmp"),
+                null,
+                false,
+                null);
       }
       return underlay != null;
     }
@@ -330,7 +326,8 @@ public class MapBoard extends Importer {
       g.clearRect(0, 0, d.width, d.height);
 
       // See if map image file exists
-      final File sml = action.getCaseInsensitiveFile(new File(forceExtension(path, "sml")), null, false, null);
+      final File sml =
+          action.getCaseInsensitiveFile(new File(forceExtension(path, "sml")), null, false, null);
       if (sml != null) {
         try {
           readScannedMapLayoutFile(sml, g);
@@ -339,8 +336,7 @@ public class MapBoard extends Importer {
         catch (IOException e) {
 
         }
-      }
-      else if (getSet().underlay != null) {
+      } else if (getSet().underlay != null) {
         // If sml file doesn't exist, see if there is a single-sheet underlay image
         g.drawImage(getSet().underlay, null, 0, 0);
       }
@@ -372,11 +368,10 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * A layout consisting of squares in a checkerboard pattern (<it>i.e.</it> each
-   * square has four neighbours).
+   * A layout consisting of squares in a checkerboard pattern (<it>i.e.</it> each square has four
+   * neighbours).
    *
    * @author Michael Kiefte
-   *
    */
   protected class GridLayout extends Layout {
 
@@ -390,9 +385,7 @@ public class MapBoard extends Importer {
         final int xx = getDeltaX() * x;
         final int yy = getDeltaY() * y;
         return new Point(xx, yy);
-      }
-      else
-        return null;
+      } else return null;
     }
 
     @Override
@@ -433,8 +426,7 @@ public class MapBoard extends Importer {
       final Rectangle r = map.getField();
 
       final Point upperLeft = coordinatesToPosition(r.x, r.y, false);
-      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y
-        + r.height - 1, false);
+      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y + r.height - 1, false);
 
       // get lower right-hand corner of lower right-hand square
       lowerRight.x += getHexSize() - 1;
@@ -442,8 +434,8 @@ public class MapBoard extends Importer {
 
       constrainRectangle(upperLeft, lowerRight);
 
-      return new Rectangle(upperLeft.x, upperLeft.y, lowerRight.x
-        - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
+      return new Rectangle(
+          upperLeft.x, upperLeft.y, lowerRight.x - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
     }
 
     @Override
@@ -458,8 +450,8 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Redundant information about each hex. So far only used for determining
-   * the default order of line definitions for hex sides and hex lines.
+   * Redundant information about each hex. So far only used for determining the default order of
+   * line definitions for hex sides and hex lines.
    */
   private static class Hex {
     final List<Line> hexLines = new ArrayList<>();
@@ -468,7 +460,8 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Mapboard element based on terrain symbol from <code>SymbolSet</code>. Not necessarily hexagonal but can also be square.
+   * Mapboard element based on terrain symbol from <code>SymbolSet</code>. Not necessarily hexagonal
+   * but can also be square.
    */
   protected class HexData extends MapDrawable {
 
@@ -486,16 +479,13 @@ public class MapBoard extends Importer {
       if (symbol != null && !symbol.isTransparent()) {
         g.drawImage(symbol.getImage(), null, p.x, p.y);
         return true;
-      }
-      else {
+      } else {
         return false;
       }
     }
   }
 
-  /**
-   * Symbol that is placed in every hex.
-   */
+  /** Symbol that is placed in every hex. */
   protected class MapBoardOverlay extends HexData {
 
     @Override
@@ -508,8 +498,7 @@ public class MapBoard extends Importer {
           }
         }
         return true;
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -535,17 +524,12 @@ public class MapBoard extends Importer {
 
     @Override
     int compare(LineDefinition o1, LineDefinition o2) {
-      if (o1 == null && o2 == null)
-        return 0;
-      else if (o1 == null)
-        return 1;
-      else if (o2 == null)
-        return -1;
+      if (o1 == null && o2 == null) return 0;
+      else if (o1 == null) return 1;
+      else if (o2 == null) return -1;
       final int priority = o1.getHexLineDrawPriority() - o2.getHexLineDrawPriority();
-      if (priority != 0)
-        return priority;
-      else
-        return super.compare(o1, o2);
+      if (priority != 0) return priority;
+      else return super.compare(o1, o2);
     }
 
     /*
@@ -594,8 +578,7 @@ public class MapBoard extends Importer {
         if ((direction & 0x100) > 0) { // north
           final Point n = lo.getNorth(hexIndex);
           n.translate(size / 2, size / 2);
-          l.addLine(pos.x, pos.y, (pos.x + n.x) / 2.0f,
-            (pos.y + n.y) / 2.0f);
+          l.addLine(pos.x, pos.y, (pos.x + n.x) / 2.0f, (pos.y + n.y) / 2.0f);
         }
         // if ((direction & 0x200) > 0) // horizontal north east
         if ((direction & 0xC00) > 0) { // north east; 0x800 = version 1
@@ -630,9 +613,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * The edges of a hex or square.
-   */
+  /** The edges of a hex or square. */
   protected class HexSide extends Line {
 
     // flags indicating which side to draw.
@@ -645,17 +626,12 @@ public class MapBoard extends Importer {
 
     @Override
     int compare(LineDefinition o1, LineDefinition o2) {
-      if (o1 == null && o2 == null)
-        return 0;
-      else if (o1 == null)
-        return 1;
-      else if (o2 == null)
-        return -1;
+      if (o1 == null && o2 == null) return 0;
+      else if (o1 == null) return 1;
+      else if (o2 == null) return -1;
       final int priority = o1.getHexSideDrawPriority() - o2.getHexSideDrawPriority();
-      if (priority != 0)
-        return priority;
-      else
-        return super.compare(o1, o2);
+      if (priority != 0) return priority;
+      else return super.compare(o1, o2);
     }
 
     // see the comments for HexLine.draw(Graphics2D).
@@ -719,9 +695,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Hexes aligned along rows.
-   */
+  /** Hexes aligned along rows. */
   protected class HorizontalHexLayout extends HorizontalLayout {
 
     HorizontalHexLayout(int size, int columns, int rows) {
@@ -768,12 +742,10 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * A layout consisting of squares in which every second row is shifted to the
-   * right by one half-width. Used to approximate hexagons as each square has
-   * six neighbours.
+   * A layout consisting of squares in which every second row is shifted to the right by one
+   * half-width. Used to approximate hexagons as each square has six neighbours.
    *
    * @author Michael Kiefte
-   *
    */
   protected class GridOffsetRowLayout extends HorizontalLayout {
 
@@ -818,9 +790,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * A layout in which every second row is offset by one-half hex or square.
-   */
+  /** A layout in which every second row is offset by one-half hex or square. */
   protected abstract class HorizontalLayout extends Layout {
 
     HorizontalLayout(int size, int columns, int rows) {
@@ -850,10 +820,8 @@ public class MapBoard extends Importer {
     void initGridNumbering(RegularGridNumbering numbering, MapSheet sheet) {
       super.initGridNumbering(numbering, sheet);
       boolean stagger = false;
-      if (sheet.firstHexRight() && (sheet.getField().y & 1) == 1)
-        stagger = true;
-      else if (sheet.firstHexLeft() && sheet.getField().y % 2 == 0)
-        stagger = true;
+      if (sheet.firstHexRight() && (sheet.getField().y & 1) == 1) stagger = true;
+      else if (sheet.firstHexLeft() && sheet.getField().y % 2 == 0) stagger = true;
       numbering.setAttribute(HexGridNumbering.STAGGER, stagger);
       numbering.setAttribute(RegularGridNumbering.FIRST, sheet.rowsAndCols() ? "H" : "V");
       numbering.setAttribute(RegularGridNumbering.H_TYPE, sheet.numericRows() ? "N" : "A");
@@ -873,9 +841,7 @@ public class MapBoard extends Importer {
         final int xx = getDeltaX() * x + (y % 2) * getDeltaX() / 2;
         final int yy = getDeltaY() * y;
         return new Point(xx, yy);
-      }
-      else
-        return null;
+      } else return null;
     }
 
     @Override
@@ -898,28 +864,22 @@ public class MapBoard extends Importer {
       final Rectangle r = map.getField();
 
       final Point upperLeft = coordinatesToPosition(r.x, r.y, false);
-      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y
-        + r.height - 1, false);
+      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y + r.height - 1, false);
 
       // adjust for staggering of hexes
       if (map.firstHexLeft()) // next one down is to the left
-        upperLeft.x -= getHexSize() / 2;
+      upperLeft.x -= getHexSize() / 2;
 
       // adjust x of bottom right-hand corner
       if (r.y % 2 == (r.y + r.height - 1) % 2) { // both even or both odd
-        if (map.firstHexRight())
-          lowerRight.x += getHexSize() / 2;
+        if (map.firstHexRight()) lowerRight.x += getHexSize() / 2;
         // check to see if lower right-hand corner is on the wrong
         // square
-      }
-      else if ((r.y & 1) == 1) {
+      } else if ((r.y & 1) == 1) {
         // top is odd and bottom is even
-        if (map.firstHexLeft())
-          lowerRight.x += getHexSize() / 2;
-        else
-          lowerRight.x += getHexSize();
-      }
-      else if (map.firstHexLeft() && r.y % 2 == 0)
+        if (map.firstHexLeft()) lowerRight.x += getHexSize() / 2;
+        else lowerRight.x += getHexSize();
+      } else if (map.firstHexLeft() && r.y % 2 == 0)
         // top is even and bottom is odd
         lowerRight.x -= getHexSize() / 2;
 
@@ -934,8 +894,8 @@ public class MapBoard extends Importer {
 
       constrainRectangle(upperLeft, lowerRight);
 
-      return new Rectangle(upperLeft.x, upperLeft.y, lowerRight.x
-        - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
+      return new Rectangle(
+          upperLeft.x, upperLeft.y, lowerRight.x - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
     }
 
     @Override
@@ -954,9 +914,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * A drawable line such as a river, border, or road.
-   */
+  /** A drawable line such as a river, border, or road. */
   protected abstract class Line extends MapDrawable {
 
     // index of line definition. don't know the actual line definitions until later
@@ -965,10 +923,8 @@ public class MapBoard extends Importer {
     Line(int index, int line) {
       super(index);
       this.line = line;
-      if (hexes == null)
-        hexes = new Hex[getNColumns() * getNRows()];
-      if (hexes[index] == null)
-        hexes[index] = new Hex();
+      if (hexes == null) hexes = new Hex[getNColumns() * getNRows()];
+      if (hexes[index] == null) hexes[index] = new Hex();
       getLineList(hexes[index]).add(this);
     }
 
@@ -986,28 +942,21 @@ public class MapBoard extends Importer {
 
     // I no longer remember how this works, but I do remember it took a long time to figure out.
     int compare(LineDefinition o1, LineDefinition o2) {
-      if (o1 == null && o2 == null)
-        return 0;
-      else if (o1 == null)
-        return 1;
-      else if (o2 == null)
-        return -1;
+      if (o1 == null && o2 == null) return 0;
+      else if (o1 == null) return 1;
+      else if (o2 == null) return -1;
       // go through all the hexes
       // and determine file order for lines
       for (final Hex h : hexes) {
-        if (h == null)
-          continue;
+        if (h == null) continue;
         boolean index1 = false;
         boolean index2 = false;
         for (final Line hl : getLineList(h)) {
           if (hl.getLine() == o1) {
-            if (index2)
-              return 1;
+            if (index2) return 1;
             index1 = true;
-          }
-          else if (hl.getLine() == o2) {
-            if (index1)
-              return -1;
+          } else if (hl.getLine() == o2) {
+            if (index1) return -1;
             index2 = true;
           }
         }
@@ -1016,20 +965,16 @@ public class MapBoard extends Importer {
     }
 
     void drawLines(Graphics2D g, int cap) {
-      final List<LineDefinition> lds =
-        new ArrayList<>(Arrays.asList(lineDefinitions));
+      final List<LineDefinition> lds = new ArrayList<>(Arrays.asList(lineDefinitions));
 
       // find the next line in priority
       while (!lds.isEmpty()) {
         LineDefinition lowest = null;
         for (final LineDefinition ld : lds) {
-          if (ld == null)
-            continue;
-          else if (lowest == null || compare(ld, lowest) < 0)
-            lowest = ld;
+          if (ld == null) continue;
+          else if (lowest == null || compare(ld, lowest) < 0) lowest = ld;
         }
-        if (lowest == null)
-          break;
+        if (lowest == null) break;
         else {
           lowest.draw(g, cap);
           lowest.clearPoints();
@@ -1039,9 +984,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Line styles for hex sides and hex lines.
-   */
+  /** Line styles for hex sides and hex lines. */
   protected static class LineDefinition {
 
     private final Color color;
@@ -1067,13 +1010,11 @@ public class MapBoard extends Importer {
 
     private void setHexLineDrawPriority(int priority) {
       // only change the priority if it hasn't already been set.
-      if (hexLineDrawPriority == 0)
-        hexLineDrawPriority = priority;
+      if (hexLineDrawPriority == 0) hexLineDrawPriority = priority;
     }
 
     private void setHexSideDrawPriority(int priority) {
-      if (hexSideDrawPriority == 0)
-        hexSideDrawPriority = priority;
+      if (hexSideDrawPriority == 0) hexSideDrawPriority = priority;
     }
 
     Color getColor() {
@@ -1081,8 +1022,7 @@ public class MapBoard extends Importer {
     }
 
     BasicStroke getStroke(int cap) {
-      if (size <= 0 || style == null)
-        return null;
+      if (size <= 0 || style == null) return null;
       return style.getStroke(size, cap);
     }
 
@@ -1091,18 +1031,16 @@ public class MapBoard extends Importer {
     }
 
     void addLine(int x1, int y1, float x2, float y2) {
-      addLine(new Point2D.Float(x1, y1),
-        new Point2D.Float(x2, y2));
+      addLine(new Point2D.Float(x1, y1), new Point2D.Float(x2, y2));
     }
 
     void addLine(int x1, int y1, int x2, int y2) {
-      addLine(new Point2D.Float(x1, y1),
-        new Point2D.Float(x2, y2));
+      addLine(new Point2D.Float(x1, y1), new Point2D.Float(x2, y2));
     }
 
     /**
-     * Add a line to the line list for later processing. Attach it to already existing line if possible.
-     * Otherwise start a new one.
+     * Add a line to the line list for later processing. Attach it to already existing line if
+     * possible. Otherwise start a new one.
      */
     void addLine(Point2D.Float a, Point2D.Float b) {
       // find out if this line is attached to any other line in the list.
@@ -1111,26 +1049,22 @@ public class MapBoard extends Importer {
         final List<Point2D.Float> lineA = points.get(i);
         if (a.equals(lineA.get(0))) { // a at the start of lineA
           // repeated segment?
-          if (b.equals(lineA.get(1)))
-            return;
+          if (b.equals(lineA.get(1))) return;
           // find out if this segment joins two lines already in
           // existance
           for (int j = 0; j < points.size(); ++j) {
-            if (i == j)
-              continue;
+            if (i == j) continue;
             final List<Point2D.Float> lineB = points.get(j);
             if (b.equals(lineB.get(0))) { // point A at start of lineA and point B at start of lineB
               if (lineA.size() < lineB.size()) { // insert A before B
                 for (final Point2D.Float aFloat : lineA) lineB.add(0, aFloat);
                 points.remove(i);
-              }
-              else { // insert B before A
+              } else { // insert B before A
                 for (final Point2D.Float aFloat : lineB) lineA.add(0, aFloat);
                 points.remove(j);
               }
               return;
-            }
-            else if (b.equals(lineB.get(lineB.size() - 1))) {
+            } else if (b.equals(lineB.get(lineB.size() - 1))) {
               // point A at start of lineA and point B at end of lineB
               lineB.addAll(lineA);
               points.remove(i);
@@ -1140,31 +1074,26 @@ public class MapBoard extends Importer {
           // point A at start of lineA and point B is open
           lineA.add(0, b);
           return;
-        }
-        else if (a.equals(lineA.get(lineA.size() - 1))) {
+        } else if (a.equals(lineA.get(lineA.size() - 1))) {
           // Point A is at end of line A
           if (b.equals(lineA.get(lineA.size() - 2))) // repeated segment?
-            return;
+          return;
           for (int j = 0; j < points.size(); ++j) {
             if (i == j) // skip closed loops
-              continue;
+            continue;
             final List<Point2D.Float> lineB = points.get(j);
             if (b.equals(lineB.get(0))) {
               // point A at end of line A and point B at start of lineB
               lineA.addAll(lineB);
               points.remove(j);
               return;
-            }
-            else if (b.equals(lineB.get(lineB.size() - 1))) {
+            } else if (b.equals(lineB.get(lineB.size() - 1))) {
               // point A at end of lineA and point B at end of lineB
               if (lineA.size() < lineB.size()) { // add line A to B
-                for (int k = lineA.size() - 1; k >= 0; --k)
-                  lineB.add(lineA.get(k));
+                for (int k = lineA.size() - 1; k >= 0; --k) lineB.add(lineA.get(k));
                 points.remove(i);
-              }
-              else { // add line B to A
-                for (int k = lineB.size() - 1; k >= 0; --k)
-                  lineA.add(lineB.get(k));
+              } else { // add line B to A
+                for (int k = lineB.size() - 1; k >= 0; --k) lineA.add(lineB.get(k));
                 points.remove(j);
               }
               return;
@@ -1176,9 +1105,7 @@ public class MapBoard extends Importer {
         }
         // find out if the segment already exists
         for (int j = 1; j < lineA.size() - 1; ++j)
-          if (a.equals(lineA.get(j))
-            && (b.equals(lineA.get(j - 1)) || b.equals(lineA
-            .get(j + 1))))
+          if (a.equals(lineA.get(j)) && (b.equals(lineA.get(j - 1)) || b.equals(lineA.get(j + 1))))
             return;
       }
 
@@ -1186,15 +1113,12 @@ public class MapBoard extends Importer {
       for (final List<Point2D.Float> line : points) {
         if (b.equals(line.get(0))) { // B at the start of the line
           // repeated segment?
-          if (a.equals(line.get(1)))
-            return;
+          if (a.equals(line.get(1))) return;
           line.add(0, a);
           return;
-        }
-        else if (b.equals(line.get(line.size() - 1))) {
+        } else if (b.equals(line.get(line.size() - 1))) {
           // B at the end of the line
-          if (a.equals(line.get(line.size() - 2)))
-            return;
+          if (a.equals(line.get(line.size() - 2))) return;
           line.add(a);
           return;
         }
@@ -1207,9 +1131,7 @@ public class MapBoard extends Importer {
       points.add(newLine);
     }
 
-    /**
-     * start fresh.
-     */
+    /** start fresh. */
     void clearPoints() {
       points.clear();
     }
@@ -1217,18 +1139,15 @@ public class MapBoard extends Importer {
     void draw(Graphics2D g, int cap) {
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       final BasicStroke stroke = getStroke(cap);
-      if (stroke == null)
-        return;
+      if (stroke == null) return;
       g.setStroke(stroke);
       g.setColor(getColor());
       final GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
       for (final List<Point2D.Float> line : points) {
         gp.moveTo(line.get(0).x, line.get(0).y);
         for (final Point2D.Float p : line) {
-          if (!p.equals(line.get(0)))
-            gp.lineTo(p.x, p.y);
-          else if (p != line.get(0))
-            gp.closePath();
+          if (!p.equals(line.get(0))) gp.lineTo(p.x, p.y);
+          else if (p != line.get(0)) gp.closePath();
         }
       }
       g.draw(gp);
@@ -1244,14 +1163,12 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * line patter such as dashed or dotted or solid
-   */
+  /** line patter such as dashed or dotted or solid */
   protected enum LineStyle {
-    DASH_DOT(new float[] { 12.0f, 8.0f, 4.0f, 8.0f }),
-    DASH_DOT_DOT(new float[] { 12.f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f }),
-    DASHED(new float[] { 12.0f, 8.0f }),
-    DOTTED(new float[] { 4.0f, 4.0f }),
+    DASH_DOT(new float[] {12.0f, 8.0f, 4.0f, 8.0f}),
+    DASH_DOT_DOT(new float[] {12.f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f}),
+    DASHED(new float[] {12.0f, 8.0f}),
+    DOTTED(new float[] {4.0f, 4.0f}),
     SOLID(null);
 
     private final float[] dash;
@@ -1265,14 +1182,12 @@ public class MapBoard extends Importer {
         // nice effect if it's a solid line
         return new BasicStroke(size, cap, BasicStroke.JOIN_ROUND);
       else
-        return new BasicStroke(size, BasicStroke.CAP_BUTT,
-          BasicStroke.JOIN_ROUND, 0.0f, dash, 0.0f);
+        return new BasicStroke(
+            size, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0.0f, dash, 0.0f);
     }
   }
 
-  /**
-   * Anything that can be drawn on the map and is associated with a particular hex.
-   */
+  /** Anything that can be drawn on the map and is associated with a particular hex. */
   protected abstract class MapDrawable {
 
     // hex index in row-major order: determines location on map
@@ -1283,7 +1198,8 @@ public class MapBoard extends Importer {
     }
 
     /**
-     * Draw the element to the graphics context. Return <code>true</code> if an element was actually drawn.
+     * Draw the element to the graphics context. Return <code>true</code> if an element was actually
+     * drawn.
      */
     abstract boolean draw(Graphics2D g);
 
@@ -1310,9 +1226,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Defines the numbering system for an ADC2 mapboard.
-   */
+  /** Defines the numbering system for an ADC2 mapboard. */
   protected class MapSheet {
 
     private int topLeftCol;
@@ -1367,16 +1281,25 @@ public class MapBoard extends Importer {
       return nRowChars;
     }
 
-    /**
-     * Used by the grid numbering system in VASSAL.
-     */
+    /** Used by the grid numbering system in VASSAL. */
     String getRectangleAsString() {
       final Rectangle r = getLayout().getRectangle(this);
-      if (r == null)
-        return null;
-      return r.x + "," + r.y + ";" + (r.x + r.width - 1) + "," + r.y
-        + ";" + (r.x + r.width - 1) + "," + (r.y + r.height - 1)
-        + ";" + r.x + "," + (r.y + r.height - 1);
+      if (r == null) return null;
+      return r.x
+          + ","
+          + r.y
+          + ";"
+          + (r.x + r.width - 1)
+          + ","
+          + r.y
+          + ";"
+          + (r.x + r.width - 1)
+          + ","
+          + (r.y + r.height - 1)
+          + ";"
+          + r.x
+          + ","
+          + (r.y + r.height - 1);
     }
 
     /**
@@ -1449,17 +1372,14 @@ public class MapBoard extends Importer {
       return gn;
     }
 
-    /**
-     * Creates a VASSAL <code>Zone</code> if not already created and initializes settings.
-     */
+    /** Creates a VASSAL <code>Zone</code> if not already created and initializes settings. */
     Zone getZone() {
       if (zone == null) {
         zone = new Zone();
         zone.setConfigureName(getName());
 
         final String rect = getRectangleAsString();
-        if (rect == null)
-          return null;
+        if (rect == null) return null;
         zone.setAttribute(Zone.PATH, rect);
         zone.setAttribute(Zone.LOCATION_FORMAT, "$name$ $gridLocation$");
         final AbstractConfigurable mg = getLayout().getGeometricGrid();
@@ -1491,9 +1411,7 @@ public class MapBoard extends Importer {
       return (style & 0x8) > 0;
     }
 
-    /**
-     * Rows before columns?
-     */
+    /** Rows before columns? */
     boolean rowsAndCols() {
       return !colsAndRows();
     }
@@ -1519,9 +1437,7 @@ public class MapBoard extends Importer {
       return topLeftCol;
     }
 
-    /**
-     * Sets the top left column index of the map sheet.
-     */
+    /** Sets the top left column index of the map sheet. */
     void setTopLeftCol(int topLeftCol) {
       this.topLeftCol = topLeftCol;
     }
@@ -1533,9 +1449,7 @@ public class MapBoard extends Importer {
       return topLeftRow;
     }
 
-    /**
-     * Sets the top left row index of the map sheet.
-     */
+    /** Sets the top left row index of the map sheet. */
     void setTopLeftRow(int topLeftRow) {
       this.topLeftRow = topLeftRow;
     }
@@ -1563,14 +1477,15 @@ public class MapBoard extends Importer {
     // the actual name
     private final String text;
 
-    PlaceName(int index, String text, Color color, PlaceNameOrientation orientation, int size, int font) {
+    PlaceName(
+        int index, String text, Color color, PlaceNameOrientation orientation, int size, int font) {
       super(index);
       this.text = text;
       assert (color != null);
       this.color = color;
       assert (orientation != null);
       this.orientation = orientation;
-//      assert (size > 0);
+      //      assert (size > 0);
       this.size = size;
       font &= 0x7f;
       int fontIndex = font & 0xf;
@@ -1586,67 +1501,64 @@ public class MapBoard extends Importer {
       return size == 0 ? null : getDefaultFont(getSize(), font);
     }
 
-    /**
-     * Get the position based on the hex index, font and orientation.
-     */
+    /** Get the position based on the hex index, font and orientation. */
     Point getPosition(Graphics2D g) {
       final Point p = getPosition();
-      if (getSize() == 0)
-        return p;
+      if (getSize() == 0) return p;
       assert (g.getFont() == getFont());
       final FontMetrics fm = g.getFontMetrics();
       final int size = getLayout().getHexSize();
 
       switch (orientation) {
-      case LOWER_CENTER:
-      case UPPER_CENTER:
-      case LOWER_RIGHT:
-      case UPPER_RIGHT:
-      case UPPER_LEFT:
-      case LOWER_LEFT:
-      case HEX_CENTER:
-        p.x += size / 2; // middle of the hex.
-        break;
-      case CENTER_RIGHT:
-        p.x += size; // right of hex
-        break;
-      case CENTER_LEFT:
-        break;
+        case LOWER_CENTER:
+        case UPPER_CENTER:
+        case LOWER_RIGHT:
+        case UPPER_RIGHT:
+        case UPPER_LEFT:
+        case LOWER_LEFT:
+        case HEX_CENTER:
+          p.x += size / 2; // middle of the hex.
+          break;
+        case CENTER_RIGHT:
+          p.x += size; // right of hex
+          break;
+        case CENTER_LEFT:
+          break;
       }
       switch (orientation) {
-      case LOWER_CENTER:
-      case UPPER_CENTER:
-      case HEX_CENTER:
-        // text centered
-        p.x -= fm.charsWidth(text.toCharArray(), 0, text.length()) / 2;
-        break;
-      case UPPER_LEFT:
-      case LOWER_LEFT:
-      case CENTER_LEFT:
-        // right justified
-        p.x -= fm.charsWidth(text.toCharArray(), 0, text.length());
-        break;
-      case LOWER_RIGHT:
-      case UPPER_RIGHT:
-      case CENTER_RIGHT:
-        break;
+        case LOWER_CENTER:
+        case UPPER_CENTER:
+        case HEX_CENTER:
+          // text centered
+          p.x -= fm.charsWidth(text.toCharArray(), 0, text.length()) / 2;
+          break;
+        case UPPER_LEFT:
+        case LOWER_LEFT:
+        case CENTER_LEFT:
+          // right justified
+          p.x -= fm.charsWidth(text.toCharArray(), 0, text.length());
+          break;
+        case LOWER_RIGHT:
+        case UPPER_RIGHT:
+        case CENTER_RIGHT:
+          break;
       }
       switch (orientation) {
-      case LOWER_CENTER:
-      case LOWER_RIGHT:
-      case LOWER_LEFT:
-        p.y += size + fm.getAscent();
-        break;
-      case UPPER_CENTER:
-      case UPPER_RIGHT:
-      case UPPER_LEFT:
-        p.y -= fm.getDescent();
-        break;
-      case CENTER_LEFT:
-      case CENTER_RIGHT:
-      case HEX_CENTER:
-        p.y += size / 2 + fm.getHeight() / 2 - fm.getDescent();
-        break;
+        case LOWER_CENTER:
+        case LOWER_RIGHT:
+        case LOWER_LEFT:
+          p.y += size + fm.getAscent();
+          break;
+        case UPPER_CENTER:
+        case UPPER_RIGHT:
+        case UPPER_LEFT:
+          p.y -= fm.getDescent();
+          break;
+        case CENTER_LEFT:
+        case CENTER_RIGHT:
+        case HEX_CENTER:
+          p.y += size / 2 + fm.getHeight() / 2 - fm.getDescent();
+          break;
       }
       return p;
     }
@@ -1660,17 +1572,16 @@ public class MapBoard extends Importer {
     @Override
     boolean draw(Graphics2D g) {
       if (getSize() != 0) {
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(
+            RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setFont(getFont());
         g.setColor(color);
         final Point p = getPosition(g);
         g.drawString(text, p.x, p.y);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-          RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        g.setRenderingHint(
+            RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         return true;
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -1681,16 +1592,22 @@ public class MapBoard extends Importer {
   }
 
   protected enum PlaceNameOrientation {
-    CENTER_LEFT, CENTER_RIGHT, HEX_CENTER, LOWER_CENTER, LOWER_LEFT, LOWER_RIGHT, UPPER_CENTER, UPPER_LEFT, UPPER_RIGHT;
+    CENTER_LEFT,
+    CENTER_RIGHT,
+    HEX_CENTER,
+    LOWER_CENTER,
+    LOWER_LEFT,
+    LOWER_RIGHT,
+    UPPER_CENTER,
+    UPPER_LEFT,
+    UPPER_RIGHT;
   }
 
   /**
-   * A layout consisting of squares in which every second column is shifted
-   * downward by one half width.  This is done to approximate hexagons as each
-   * square as six neighbours.
+   * A layout consisting of squares in which every second column is shifted downward by one half
+   * width. This is done to approximate hexagons as each square as six neighbours.
    *
    * @author Michael Kiefte
-   *
    */
   protected class GridOffsetColumnLayout extends VerticalLayout {
 
@@ -1733,9 +1650,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Hexes in columns.
-   */
+  /** Hexes in columns. */
   protected class VerticalHexLayout extends VerticalLayout {
 
     VerticalHexLayout(int size, int columns, int rows) {
@@ -1777,9 +1692,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * A layout in which every second column is offset--either hexes or squares.
-   */
+  /** A layout in which every second column is offset--either hexes or squares. */
   protected abstract class VerticalLayout extends Layout {
 
     @Override
@@ -1799,10 +1712,8 @@ public class MapBoard extends Importer {
     @Override
     void initGridNumbering(RegularGridNumbering numbering, MapSheet sheet) {
       boolean stagger = false;
-      if (sheet.firstHexDown() && (sheet.getField().x & 1) == 1)
-        stagger = true;
-      else if (sheet.firstHexUp() && sheet.getField().x % 2 == 0)
-        stagger = true;
+      if (sheet.firstHexDown() && (sheet.getField().x & 1) == 1) stagger = true;
+      else if (sheet.firstHexUp() && sheet.getField().x % 2 == 0) stagger = true;
       numbering.setAttribute(HexGridNumbering.STAGGER, stagger);
       super.initGridNumbering(numbering, sheet);
     }
@@ -1835,32 +1746,25 @@ public class MapBoard extends Importer {
     Rectangle getRectangle(MapSheet map) {
       final Rectangle r = map.getField();
 
-      if (r.width <= 0 || r.height <= 0)
-        return null;
+      if (r.width <= 0 || r.height <= 0) return null;
 
       final Point upperLeft = coordinatesToPosition(r.x, r.y, false);
-      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y
-        + r.height - 1, false);
+      final Point lowerRight = coordinatesToPosition(r.x + r.width - 1, r.y + r.height - 1, false);
 
       // adjust for staggering of hexes
       if (map.firstHexUp()) // next one over is above
-        upperLeft.y -= getHexSize() / 2;
+      upperLeft.y -= getHexSize() / 2;
 
       // adjust y of bottom right-hand corner
       if (r.x % 2 == (r.x + r.width - 1) % 2) { // both even or both odd
-        if (map.firstHexDown())
-          lowerRight.y += getHexSize() / 2;
+        if (map.firstHexDown()) lowerRight.y += getHexSize() / 2;
         // check to see if lower right-hand corner is on the wrong
         // square
-      }
-      else if ((r.x & 1) == 1) {
+      } else if ((r.x & 1) == 1) {
         // left is odd and right is even
-        if (map.firstHexDown())
-          lowerRight.y += getHexSize();
-        else
-          lowerRight.y += getHexSize() / 2;
-      }
-      else if (map.firstHexUp() && r.x % 2 == 0) {
+        if (map.firstHexDown()) lowerRight.y += getHexSize();
+        else lowerRight.y += getHexSize() / 2;
+      } else if (map.firstHexUp() && r.x % 2 == 0) {
         // left is even and right is odd
         lowerRight.y -= getHexSize() / 2;
       }
@@ -1876,8 +1780,8 @@ public class MapBoard extends Importer {
 
       constrainRectangle(upperLeft, lowerRight);
 
-      return new Rectangle(upperLeft.x, upperLeft.y, lowerRight.x
-        - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
+      return new Rectangle(
+          upperLeft.x, upperLeft.y, lowerRight.x - upperLeft.x + 1, lowerRight.y - upperLeft.y + 1);
     }
 
     @Override
@@ -1897,9 +1801,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * How the hexes or squares are organized on the map board.
-   */
+  /** How the hexes or squares are organized on the map board. */
   protected abstract class Layout {
 
     protected final int nColumns;
@@ -1923,20 +1825,14 @@ public class MapBoard extends Importer {
       return index % nColumns;
     }
 
-    /**
-     * Move the upper left and lower-right points to just within the map board.
-     */
+    /** Move the upper left and lower-right points to just within the map board. */
     void constrainRectangle(Point upperLeft, Point lowerRight) {
-      if (upperLeft.x < 0)
-        upperLeft.x = 0;
-      if (upperLeft.y < 0)
-        upperLeft.y = 0;
+      if (upperLeft.x < 0) upperLeft.x = 0;
+      if (upperLeft.y < 0) upperLeft.y = 0;
       final Dimension d = getBoardSize();
 
-      if (lowerRight.x >= d.width)
-        lowerRight.x = d.width - 1;
-      if (lowerRight.y >= d.height)
-        lowerRight.y = d.height - 1;
+      if (lowerRight.x >= d.width) lowerRight.x = d.width - 1;
+      if (lowerRight.y >= d.height) lowerRight.y = d.height - 1;
     }
 
     /**
@@ -1944,9 +1840,7 @@ public class MapBoard extends Importer {
      */
     abstract int getNFaces();
 
-    /**
-     * Set attributes of the <code>GridNumbering</code> object based on map board parameters.
-     */
+    /** Set attributes of the <code>GridNumbering</code> object based on map board parameters. */
     void initGridNumbering(RegularGridNumbering numbering, MapSheet sheet) {
       numbering.setAttribute(RegularGridNumbering.FIRST, sheet.colsAndRows() ? "H" : "V");
       numbering.setAttribute(RegularGridNumbering.H_TYPE, sheet.numericCols() ? "N" : "A");
@@ -1958,9 +1852,7 @@ public class MapBoard extends Importer {
       numbering.setAttribute(RegularGridNumbering.V_DESCEND, sheet.rowsIncreaseUp());
     }
 
-    /**
-     * Set the offset in the grid numbering system according to the specified map sheet.
-     */
+    /** Set the offset in the grid numbering system according to the specified map sheet. */
     void setGridNumberingOffsets(RegularGridNumbering numbering, MapSheet sheet) {
       final Point position = coordinatesToPosition(sheet.getField().x, sheet.getField().y, true);
       // shift to the middle of the hex
@@ -1982,13 +1874,12 @@ public class MapBoard extends Importer {
     abstract RegularGridNumbering getGridNumbering();
 
     /**
-     * Returns a point corresponding the the upper-left corner of the square
-     * specified by the coordinates.
+     * Returns a point corresponding the the upper-left corner of the square specified by the
+     * coordinates.
      *
      * @param x column
      * @param y row
-     * @param nullIfOffBoard return null if not on the board. Otherwise the point
-     *        may not be valid.
+     * @param nullIfOffBoard return null if not on the board. Otherwise the point may not be valid.
      * @return the point corresponding to the upper-left-hand corner of the square.
      */
     abstract Point coordinatesToPosition(int x, int y, boolean nullIfOffBoard);
@@ -2067,8 +1958,8 @@ public class MapBoard extends Importer {
     abstract Point getOrigin();
 
     /**
-     * Returns a rectangle in pixels that encloses the given <code>MapSheet</code>.
-     * Returns null if <code>MapSheet</code> has a negative size.
+     * Returns a rectangle in pixels that encloses the given <code>MapSheet</code>. Returns null if
+     * <code>MapSheet</code> has a negative size.
      */
     abstract Rectangle getRectangle(MapSheet map);
 
@@ -2136,15 +2027,23 @@ public class MapBoard extends Importer {
   private static final int zoomLevel = 2;
 
   // fonts available to ADC
-  private static final String[] defaultFontNames = { "Courier", "Fixedsys",
-    "MS Sans Serif", "MS Serif", "Impact", "Brush Script MT",
-    "System", "Times New Roman", "Arial" };
+  private static final String[] defaultFontNames = {
+    "Courier",
+    "Fixedsys",
+    "MS Sans Serif",
+    "MS Serif",
+    "Impact",
+    "Brush Script MT",
+    "System",
+    "Times New Roman",
+    "Arial"
+  };
 
   private static final String PLACE_NAMES = "Place Names";
 
   /**
-   * Get a font based on size and font index. If this font has not already been created, then it will be generated.
-   * Can be reused later if the same font was already created.
+   * Get a font based on size and font index. If this font has not already been created, then it
+   * will be generated. Can be reused later if the same font was already created.
    *
    * @param size Font size.
    * @param font Font index. See MapBoard.java for format.
@@ -2169,10 +2068,8 @@ public class MapBoard extends Importer {
       final boolean isUnderline = (font & 0x0040) > 0;
       final String fontName = defaultFontNames[fontIndex - 1];
       int fontStyle = Font.PLAIN;
-      if (isItalic)
-        fontStyle |= Font.ITALIC;
-      if (isBold)
-        fontStyle |= Font.BOLD;
+      if (isItalic) fontStyle |= Font.ITALIC;
+      if (isBold) fontStyle |= Font.BOLD;
       f = new Font(fontName, fontStyle, size);
       if (isUnderline) {
         // TODO: why doesn't underlining doesn't work? Why why why?
@@ -2266,23 +2163,24 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Many maps are actually just scanned images held in a separate file. The images are often broken up into
-   * sections. An extra file describes how the images are pasted together. This function pieces the images
-   * together using the <code>Graphics2D</code> object <code>g</code>.
+   * Many maps are actually just scanned images held in a separate file. The images are often broken
+   * up into sections. An extra file describes how the images are pasted together. This function
+   * pieces the images together using the <code>Graphics2D</code> object <code>g</code>.
    */
   protected void readScannedMapLayoutFile(File f, Graphics2D g) throws IOException {
 
     try (InputStream fin = Files.newInputStream(f.toPath());
-         InputStream bin = new BufferedInputStream(fin);
-         DataInputStream in = new DataInputStream(bin)) {
+        InputStream bin = new BufferedInputStream(fin);
+        DataInputStream in = new DataInputStream(bin)) {
       // how many image sections
       final int nSheets = ADC2Utils.readBase250Word(in);
       for (int i = 0; i < nSheets; ++i) {
         // image file name
         final String name = stripExtension(readWindowsFileName(in));
-        final File file = action.getCaseInsensitiveFile(new File(name + "-L" + (zoomLevel + 1) + ".bmp"), new File(path), true, null);
-        if (file == null)
-          throw new FileNotFoundException("Unable to find map image.");
+        final File file =
+            action.getCaseInsensitiveFile(
+                new File(name + "-L" + (zoomLevel + 1) + ".bmp"), new File(path), true, null);
+        if (file == null) throw new FileNotFoundException("Unable to find map image.");
         final BufferedImage img = ImageIO.read(file);
         int x = 0;
         int y = 0;
@@ -2299,21 +2197,17 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Read symbol that is drawn on all hexes.
-   */
+  /** Read symbol that is drawn on all hexes. */
   protected void readMapBoardOverlaySymbolBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "MapBoard Overlay Symbol");
 
-    final SymbolSet.SymbolData overlaySymbol = getSet().getMapBoardSymbol(ADC2Utils.readBase250Word(in));
+    final SymbolSet.SymbolData overlaySymbol =
+        getSet().getMapBoardSymbol(ADC2Utils.readBase250Word(in));
     // the reason we use an ArrayList<> here is so that it is treated like all other drawn elements
-    if (overlaySymbol != null)
-      this.overlaySymbol.add(new MapBoardOverlay(overlaySymbol));
+    if (overlaySymbol != null) this.overlaySymbol.add(new MapBoardOverlay(overlaySymbol));
   }
 
-  /**
-   * Block of flags to indicate which elements are actually displayed.
-   */
+  /** Block of flags to indicate which elements are actually displayed. */
   protected void readMapItemDrawFlagBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Map Item Draw Flag");
 
@@ -2321,25 +2215,18 @@ public class MapBoard extends Importer {
     // TODO: check this! If they're turned off in the map, can they be turned on
     // again in the player?
     final List<MapLayer> elements = new ArrayList<>(mapElements);
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[0]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[1]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[2]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[3]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[4]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[7]));
-    if (in.readByte() == 0)
-      mapElements.remove(elements.get(drawingPriorities[5]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[0]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[1]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[2]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[3]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[4]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[7]));
+    if (in.readByte() == 0) mapElements.remove(elements.get(drawingPriorities[5]));
   }
 
   /**
-   * Attributes are tertiary symbols, any number of which can be attached to a specific hex.  Otherwise, they
-   * function the same as primary or secondary hex symbols.
+   * Attributes are tertiary symbols, any number of which can be attached to a specific hex.
+   * Otherwise, they function the same as primary or secondary hex symbols.
    */
   protected void readAttributeBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Attribute Symbol");
@@ -2348,14 +2235,13 @@ public class MapBoard extends Importer {
     for (int i = 0; i < nAttributes; ++i) {
       final int index = ADC2Utils.readBase250Word(in);
       final SymbolSet.SymbolData symbol = set.getMapBoardSymbol(ADC2Utils.readBase250Word(in));
-      if (isOnMapBoard(index) && symbol != null)
-        attributes.add(new HexData(index, symbol));
+      if (isOnMapBoard(index) && symbol != null) attributes.add(new HexData(index, symbol));
     }
   }
 
   /**
-   * Read primary and secondary symbol information. Each hex may only have one of each. Additional symbols must
-   * be tertiary attributes.
+   * Read primary and secondary symbol information. Each hex may only have one of each. Additional
+   * symbols must be tertiary attributes.
    */
   protected void readHexDataBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Hex Data");
@@ -2366,14 +2252,12 @@ public class MapBoard extends Importer {
       // primary symbol
       int symbolIndex = ADC2Utils.readBase250Word(in);
       SymbolSet.SymbolData symbol = getSet().getMapBoardSymbol(symbolIndex);
-      if (symbol != null)
-        primaryMapBoardSymbols.add(new HexData(i, symbol));
+      if (symbol != null) primaryMapBoardSymbols.add(new HexData(i, symbol));
 
       // secondary symbol
       symbolIndex = ADC2Utils.readBase250Word(in);
       symbol = getSet().getMapBoardSymbol(symbolIndex);
-      if (symbol != null)
-        secondaryMapBoardSymbols.add(new HexData(i, symbol));
+      if (symbol != null) secondaryMapBoardSymbols.add(new HexData(i, symbol));
 
       /* int elevation = */ ADC2Utils.readBase250Word(in);
 
@@ -2383,10 +2267,10 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Hex lines are like spokes of the hex and are typically used for things like roads or other elements that
-   * traverse from hex to hex.  The direction of each spoke is encoded as bit flags, and while ADC2 could encode
-   * each hex with only one record, modules typically have a separate record for every spoke resulting in
-   * data inflation.
+   * Hex lines are like spokes of the hex and are typically used for things like roads or other
+   * elements that traverse from hex to hex. The direction of each spoke is encoded as bit flags,
+   * and while ADC2 could encode each hex with only one record, modules typically have a separate
+   * record for every spoke resulting in data inflation.
    */
   protected void readHexLineBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Hex Line");
@@ -2396,14 +2280,11 @@ public class MapBoard extends Importer {
       final int index = ADC2Utils.readBase250Word(in);
       final int line = in.readUnsignedByte();
       final int direction = in.readUnsignedShort();
-      if (isOnMapBoard(index))
-        hexLines.add(new HexLine(index, line, direction));
+      if (isOnMapBoard(index)) hexLines.add(new HexLine(index, line, direction));
     }
   }
 
-  /**
-   * Information about hex sides which are used for things like rivers, etc. is read in.
-   */
+  /** Information about hex sides which are used for things like rivers, etc. is read in. */
   protected void readHexSideBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Hex Side");
 
@@ -2412,14 +2293,11 @@ public class MapBoard extends Importer {
       final int index = ADC2Utils.readBase250Word(in);
       final int line = in.readUnsignedByte();
       final int side = in.readUnsignedByte();
-      if (isOnMapBoard(index))
-        hexSides.add(new HexSide(index, line, side));
+      if (isOnMapBoard(index)) hexSides.add(new HexSide(index, line, side));
     }
   }
 
-  /**
-   * Information about the width, colour and style of hex sides and hex lines is read in.
-   */
+  /** Information about the width, colour and style of hex sides and hex lines is read in. */
   protected void readLineDefinitionBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Line Definition");
 
@@ -2431,46 +2309,42 @@ public class MapBoard extends Importer {
       int size = 0;
       for (int j = 0; j < 3; ++j) {
         final int s = in.readByte();
-        if (j == zoomLevel)
-          size = s;
+        if (j == zoomLevel) size = s;
       }
       // only used when editing ADC2 maps within ADC2.
       /* String name = */ readNullTerminatedString(in, 25);
       final int styleByte = in.readUnsignedByte();
       final LineStyle style;
       switch (styleByte) {
-      case 2:
-        style = LineStyle.DOTTED;
-        break;
-      case 3:
-        style = LineStyle.DASH_DOT;
-        break;
-      case 4:
-        style = LineStyle.DASHED;
-        break;
-      case 5:
-        style = LineStyle.DASH_DOT_DOT;
-        break;
-      default:
-        style = LineStyle.SOLID;
+        case 2:
+          style = LineStyle.DOTTED;
+          break;
+        case 3:
+          style = LineStyle.DASH_DOT;
+          break;
+        case 4:
+          style = LineStyle.DASHED;
+          break;
+        case 5:
+          style = LineStyle.DASH_DOT_DOT;
+          break;
+        default:
+          style = LineStyle.SOLID;
       }
 
-      if (size > 0)
-        lineDefinitions[i] = new LineDefinition(color, size, style);
-      else
-        lineDefinitions[i] = null;
+      if (size > 0) lineDefinitions[i] = new LineDefinition(color, size, style);
+      else lineDefinitions[i] = null;
     }
   }
 
-  /**
-   * Read what order to draw the lines in.
-   */
+  /** Read what order to draw the lines in. */
   protected void readLineDrawPriorityBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Line Draw Priority");
 
     in.readByte(); // unused.
 
-    // there can only be 10 line definitions. however drawning priorities for hex sides and hex lines
+    // there can only be 10 line definitions. however drawning priorities for hex sides and hex
+    // lines
     // are completely independent
     for (int i = 1; i <= 10; ++i) {
       final int index = in.readUnsignedByte();
@@ -2485,9 +2359,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Read information on hex numbering.
-   */
+  /** Read information on hex numbering. */
   protected void readMapSheetBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Map Sheet");
 
@@ -2500,21 +2372,20 @@ public class MapBoard extends Importer {
       final Rectangle r = new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
       // must be exactly 9 bytes or 10 if there's a terminating null at the end
       final String name = readNullTerminatedString(in, 10);
-      if (name.length() < 9)
-        in.readFully(new byte[9 - name.length()]);
+      if (name.length() < 9) in.readFully(new byte[9 - name.length()]);
       final int style = in.readUnsignedByte();
       in.readFully(new byte[2]);
       final int nColChars = in.readUnsignedByte();
       final int nRowChars = in.readUnsignedByte();
       if (i < nMapSheets - 1) // the last one is always ignored.
-        mapSheets.add(new MapSheet(name, r, style, nColChars, nRowChars));
+      mapSheets.add(new MapSheet(name, r, style, nColChars, nRowChars));
     }
   }
 
   /**
-   * Read in information on hex sheets which define the hex numbering systems. This represents supplemental
-   * information--some map sheet info occurs earlier in the file.  Only the coordinates of the top-left corner
-   * are read in here.
+   * Read in information on hex sheets which define the hex numbering systems. This represents
+   * supplemental information--some map sheet info occurs earlier in the file. Only the coordinates
+   * of the top-left corner are read in here.
    */
   protected void readHexNumberingBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Hex Numbering");
@@ -2540,9 +2411,7 @@ public class MapBoard extends Importer {
     }
   }
 
-  /**
-   * Read and set the order of the drawn element types.
-   */
+  /** Read and set the order of the drawn element types. */
   protected void readMapItemDrawingOrderBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Map Item Drawing Order");
 
@@ -2552,14 +2421,12 @@ public class MapBoard extends Importer {
     for (int i = 0; i < mapElements.size(); ++i) {
 
       // invalid index: abort reordering and switch back to default
-      if (priority[i] >= mapElements.size() || priority[i] < 0)
-        return;
+      if (priority[i] >= mapElements.size() || priority[i] < 0) return;
 
       if (i > 0) {
         // abort reordering and switch back to default if any indeces are repeated
         for (int j = 0; j < i; ++j) {
-          if (priority[j] == priority[i])
-            return;
+          if (priority[j] == priority[i]) return;
         }
       }
 
@@ -2575,8 +2442,9 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Crude version information.  Comes near the end of the file!  Actually it's just a flag to indicate whether
-   * the version is less than 2.08.  In version 2.08, the hexes are abutted slightly differently.
+   * Crude version information. Comes near the end of the file! Actually it's just a flag to
+   * indicate whether the version is less than 2.08. In version 2.08, the hexes are abutted slightly
+   * differently.
    */
   protected void readVersionBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "File Format Version");
@@ -2585,9 +2453,7 @@ public class MapBoard extends Importer {
     isPreV208 = version != 0;
   }
 
-  /**
-   * The colour to fill before any elements are drawn. The fast-scroll flag is also read.
-   */
+  /** The colour to fill before any elements are drawn. The fast-scroll flag is also read. */
   protected void readTableColorBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Table Color");
 
@@ -2596,7 +2462,8 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Optional labels that can be added to hexes.  Can also include a symbol that can be added with the label.
+   * Optional labels that can be added to hexes. Can also include a symbol that can be added with
+   * the label.
    */
   protected void readPlaceNameBlock(DataInputStream in) throws IOException {
     ADC2Utils.readBlockHeader(in, "Place Name");
@@ -2606,16 +2473,14 @@ public class MapBoard extends Importer {
       final int index = ADC2Utils.readBase250Word(in);
       // extra hex symbol
       final SymbolSet.SymbolData symbol = getSet().getMapBoardSymbol(ADC2Utils.readBase250Word(in));
-      if (symbol != null && isOnMapBoard(index))
-        placeSymbols.add(new HexData(index, symbol));
+      if (symbol != null && isOnMapBoard(index)) placeSymbols.add(new HexData(index, symbol));
       final String text = readNullTerminatedString(in, 25);
       final Color color = ADC2Utils.getColorFromIndex(in.readUnsignedByte());
 
       int size = 0;
       for (int z = 0; z < 3; ++z) {
         final int b = in.readUnsignedByte();
-        if (z == zoomLevel)
-          size = b;
+        if (z == zoomLevel) size = b;
       }
 
       PlaceNameOrientation orientation = null;
@@ -2623,48 +2488,48 @@ public class MapBoard extends Importer {
         final int o = in.readByte();
         if (z == zoomLevel) {
           switch (o) {
-          case 1:
-            orientation = PlaceNameOrientation.LOWER_CENTER;
-            break;
-          case 2:
-            orientation = PlaceNameOrientation.UPPER_CENTER;
-            break;
-          case 3:
-            orientation = PlaceNameOrientation.LOWER_RIGHT;
-            break;
-          case 4:
-            orientation = PlaceNameOrientation.UPPER_RIGHT;
-            break;
-          case 5:
-            orientation = PlaceNameOrientation.UPPER_LEFT;
-            break;
-          case 6:
-            orientation = PlaceNameOrientation.LOWER_LEFT;
-            break;
-          case 7:
-            orientation = PlaceNameOrientation.CENTER_LEFT;
-            break;
-          case 8:
-            orientation = PlaceNameOrientation.CENTER_RIGHT;
-            break;
-          case 9:
-            orientation = PlaceNameOrientation.HEX_CENTER;
-            break;
+            case 1:
+              orientation = PlaceNameOrientation.LOWER_CENTER;
+              break;
+            case 2:
+              orientation = PlaceNameOrientation.UPPER_CENTER;
+              break;
+            case 3:
+              orientation = PlaceNameOrientation.LOWER_RIGHT;
+              break;
+            case 4:
+              orientation = PlaceNameOrientation.UPPER_RIGHT;
+              break;
+            case 5:
+              orientation = PlaceNameOrientation.UPPER_LEFT;
+              break;
+            case 6:
+              orientation = PlaceNameOrientation.LOWER_LEFT;
+              break;
+            case 7:
+              orientation = PlaceNameOrientation.CENTER_LEFT;
+              break;
+            case 8:
+              orientation = PlaceNameOrientation.CENTER_RIGHT;
+              break;
+            case 9:
+              orientation = PlaceNameOrientation.HEX_CENTER;
+              break;
           }
         }
       }
 
       final int font = in.readUnsignedByte();
 
-      if (!isOnMapBoard(index) || text.length() == 0 || orientation == null)
-        continue;
+      if (!isOnMapBoard(index) || text.length() == 0 || orientation == null) continue;
 
       placeNames.add(new PlaceName(index, text, color, orientation, size, font));
     }
   }
 
   /**
-   * @param index Index of hex or square in row-major order starting with the upper-left-hand corner (0-based).
+   * @param index Index of hex or square in row-major order starting with the upper-left-hand corner
+   *     (0-based).
    * @return <code>true</code> if <code>index</code> is valid, <code>false</code> otherwise.
    */
   boolean isOnMapBoard(int index) {
@@ -2674,8 +2539,8 @@ public class MapBoard extends Importer {
   /**
    * @param x Hex or square column.
    * @param y Hex or square row.
-   * @return <code>true</code> if <code>x</code> and <code>y</code> are within the bounds of the board
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if <code>x</code> and <code>y</code> are within the bounds of the
+   *     board <code>false</code> otherwise.
    */
   boolean isOnMapBoard(int x, int y) {
     return x >= 0 && x < columns && y >= 0 && y < rows;
@@ -2688,14 +2553,10 @@ public class MapBoard extends Importer {
     return layout;
   }
 
-  /**
-   * Returns the LineDefinition object corresponding to the given index.
-   */
+  /** Returns the LineDefinition object corresponding to the given index. */
   protected LineDefinition getLineDefinition(int index) {
-    if (index < 0 | index >= lineDefinitions.length)
-      return null;
-    else
-      return lineDefinitions[index];
+    if (index < 0 | index >= lineDefinitions.length) return null;
+    else return lineDefinitions[index];
   }
 
   /**
@@ -2724,13 +2585,12 @@ public class MapBoard extends Importer {
     super.load(f);
 
     try (InputStream fin = Files.newInputStream(f.toPath());
-         InputStream bin = new BufferedInputStream(fin);
-         DataInputStream in = new DataInputStream(bin)) {
+        InputStream bin = new BufferedInputStream(fin);
+        DataInputStream in = new DataInputStream(bin)) {
       baseName = stripExtension(f.getName());
       path = f.getPath();
       final int header = in.readByte();
-      if (header != -3)
-        throw new FileFormatException("Invalid Mapboard File Header");
+      if (header != -3) throw new FileFormatException("Invalid Mapboard File Header");
 
       // don't know what these do.
       in.readFully(new byte[2]);
@@ -2739,10 +2599,14 @@ public class MapBoard extends Importer {
       final String s = readWindowsFileName(in);
       final String symbolSetFileName = forceExtension(s, "set");
       set = new SymbolSet();
-      final File setFile = action.getCaseInsensitiveFile(new File(symbolSetFileName), f, true,
-        new ExtensionFileFilter(ADC2Utils.SET_DESCRIPTION, new String[] {ADC2Utils.SET_EXTENSION}));
-      if (setFile == null)
-        throw new FileNotFoundException("Unable to find symbol set file.");
+      final File setFile =
+          action.getCaseInsensitiveFile(
+              new File(symbolSetFileName),
+              f,
+              true,
+              new ExtensionFileFilter(
+                  ADC2Utils.SET_DESCRIPTION, new String[] {ADC2Utils.SET_EXTENSION}));
+      if (setFile == null) throw new FileNotFoundException("Unable to find symbol set file.");
       set.importFile(action, setFile);
 
       in.readByte(); // ignored
@@ -2765,21 +2629,19 @@ public class MapBoard extends Importer {
 
       final int orientation = in.read();
       switch (orientation) {
-      case 0:
-      case 1: // vertical hex orientation or grid offset column
-        if (set.getMapBoardSymbolShape() == SymbolSet.Shape.SQUARE)
-          layout = new GridOffsetColumnLayout(hexSize, columns, rows);
-        else
-          layout = new VerticalHexLayout(hexSize, columns, rows);
-        break;
-      case 2: // horizontal hex orientation or grid offset row
-        if (set.getMapBoardSymbolShape() == SymbolSet.Shape.SQUARE)
-          layout = new GridOffsetRowLayout(hexSize, columns, rows);
-        else
-          layout = new HorizontalHexLayout(hexSize, columns, rows);
-        break;
-      default: // square grid -- no offset
-        layout = new GridLayout(hexSize, columns, rows);
+        case 0:
+        case 1: // vertical hex orientation or grid offset column
+          if (set.getMapBoardSymbolShape() == SymbolSet.Shape.SQUARE)
+            layout = new GridOffsetColumnLayout(hexSize, columns, rows);
+          else layout = new VerticalHexLayout(hexSize, columns, rows);
+          break;
+        case 2: // horizontal hex orientation or grid offset row
+          if (set.getMapBoardSymbolShape() == SymbolSet.Shape.SQUARE)
+            layout = new GridOffsetRowLayout(hexSize, columns, rows);
+          else layout = new HorizontalHexLayout(hexSize, columns, rows);
+          break;
+        default: // square grid -- no offset
+          layout = new GridLayout(hexSize, columns, rows);
       }
 
       /* int saveMapPosition = */ in.readByte();
@@ -2800,8 +2662,7 @@ public class MapBoard extends Importer {
         readVersionBlock(in);
         readMapItemDrawingOrderBlock(in);
         readMapItemDrawFlagBlock(in);
-      }
-      catch (ADC2Utils.NoMoreBlocksException e) {
+      } catch (ADC2Utils.NoMoreBlocksException e) {
       }
     }
   }
@@ -2829,7 +2690,8 @@ public class MapBoard extends Importer {
 
   /**
    * @param index Hex index in row-major order starting with the upper-left-hand corner (0-based).
-   * @return upper-left-hand point of the hex or square. Returns <code>null</code> if the index is not valid.
+   * @return upper-left-hand point of the hex or square. Returns <code>null</code> if the index is
+   *     not valid.
    */
   Point indexToPosition(int index) {
     return getLayout().coordinatesToPosition(index % columns, index / columns, true);
@@ -2838,23 +2700,22 @@ public class MapBoard extends Importer {
   /**
    * @param index hex index in row-major order starting with the upper-left-hand corner (0-based).
    * @param nullIfOffBoard return <code>null</code> if not a valid index. If <code>false</code> will
-   *                       return the point corresponding to the index if it were valid.
+   *     return the point corresponding to the index if it were valid.
    * @return Point corresponding to the upper left hand corner of the hex or square.
    */
   Point indexToPosition(int index, boolean nullIfOffBoard) {
-    return getLayout().coordinatesToPosition(index % columns, index / columns,
-      nullIfOffBoard);
+    return getLayout().coordinatesToPosition(index % columns, index / columns, nullIfOffBoard);
   }
 
   /**
-   * @param index The hex index in row major order starting with the upper-left-hand corner (0-based).
+   * @param index The hex index in row major order starting with the upper-left-hand corner
+   *     (0-based).
    * @return <code>Point</code> corresponding to the centre of that hex.
    */
   Point indexToCenterPosition(int index) {
     // get upper-left-hand corner of the hex
     final Point p = indexToPosition(index);
-    if (p == null)
-      return p;
+    if (p == null) return p;
     // shift to the centre
     p.translate(getLayout().getDeltaX() / 2, getLayout().getDeltaY() / 2);
     return p;
@@ -2876,8 +2737,7 @@ public class MapBoard extends Importer {
         iter.remove();
       }
       mapElements.add(base);
-    }
-    else {
+    } else {
       mapElements.add(0, base);
       final Iterator<MapLayer> iter = mapElements.iterator();
       iter.next();
@@ -2901,8 +2761,12 @@ public class MapBoard extends Importer {
     }
 
     // map options: log formats
-    getMainMap().setAttribute(Map.MOVE_WITHIN_FORMAT, "$pieceName$ moving from [$previousLocation$] to [$location$]");
-    getMainMap().setAttribute(Map.MOVE_TO_FORMAT, "$pieceName$ moving from [$previousLocation$] to [$location$]");
+    getMainMap()
+        .setAttribute(
+            Map.MOVE_WITHIN_FORMAT, "$pieceName$ moving from [$previousLocation$] to [$location$]");
+    getMainMap()
+        .setAttribute(
+            Map.MOVE_TO_FORMAT, "$pieceName$ moving from [$previousLocation$] to [$location$]");
     getMainMap().setAttribute(Map.CREATE_FORMAT, "$pieceName$ Added to [$location$]");
 
     // default grid
@@ -2911,8 +2775,7 @@ public class MapBoard extends Importer {
     // TODO: set default grid numbering for maps that have no sheets (e.g., Air Assault on Crete).
 
     // ensure that we don't have a singleton null
-    if (mapSheets.size() == 1 && mapSheets.get(0) == null)
-      mapSheets.remove(0);
+    if (mapSheets.size() == 1 && mapSheets.get(0) == null) mapSheets.remove(0);
 
     // setup grids defined by ADC module
     final Board board = getBoard();
@@ -2920,7 +2783,7 @@ public class MapBoard extends Importer {
       final ZonedGrid zg = new ZonedGrid();
       for (final MapSheet ms : mapSheets) {
         if (ms == null) // the last one is always null
-          break;
+        break;
         final Zone z = ms.getZone();
         if (z != null) {
           insertComponent(z, zg);
@@ -2932,8 +2795,7 @@ public class MapBoard extends Importer {
 
       // add zoned grid to board
       insertComponent(zg, board);
-    }
-    else {
+    } else {
       // add the default grid to the board
       insertComponent(ac, board);
     }
@@ -2941,15 +2803,15 @@ public class MapBoard extends Importer {
     /* global properties */
 
     // for testing purposes
-    final GlobalOptions options = module.getAllDescendantComponentsOf(GlobalOptions.class).toArray(new GlobalOptions[0])[0];
+    final GlobalOptions options =
+        module.getAllDescendantComponentsOf(GlobalOptions.class).toArray(new GlobalOptions[0])[0];
     options.setAttribute(GlobalOptions.AUTO_REPORT, GlobalOptions.ALWAYS);
 
     // add zoom capability
     if (zoomLevel > 0) {
       final Zoomer zoom = new Zoomer();
       final String[] s = new String[3];
-      for (int i = 0; i < 3; ++i)
-        s[i] = Double.toString(set.getZoomFactor(i));
+      for (int i = 0; i < 3; ++i) s[i] = Double.toString(set.getZoomFactor(i));
       zoom.setAttribute("zoomLevels", StringArrayConfigurer.arrayToString(s));
       insertComponent(zoom, getMainMap());
     }
@@ -2970,14 +2832,15 @@ public class MapBoard extends Importer {
   }
 
   /**
-   * Write out place name information as non-stackable pieces which can be searched via
-   * the piece inventory.
+   * Write out place name information as non-stackable pieces which can be searched via the piece
+   * inventory.
    *
    * @param module - Game module to write to.
    */
   protected void writePlaceNames(GameModule module) {
     // write prototype
-    final PrototypesContainer container = module.getAllDescendantComponentsOf(PrototypesContainer.class).iterator().next();
+    final PrototypesContainer container =
+        module.getAllDescendantComponentsOf(PrototypesContainer.class).iterator().next();
     final PrototypeDefinition def = new PrototypeDefinition();
     insertComponent(def, container);
     def.setConfigureName(PLACE_NAMES);
@@ -2999,10 +2862,8 @@ public class MapBoard extends Importer {
     for (final PlaceName pn : placeNames) {
       final String name = pn.getText();
       final Point p = pn.getPosition();
-      if (p == null)
-        continue;
-      if (set.contains(name))
-        continue;
+      if (p == null) continue;
+      if (set.contains(name)) continue;
       set.add(name);
       final SetupStack stack = new SetupStack();
       insertComponent(stack, getMainMap());
@@ -3013,8 +2874,7 @@ public class MapBoard extends Importer {
 
       final MapGrid mg = board.getGrid();
       Zone z = null;
-      if (mg instanceof ZonedGrid)
-        z = ((ZonedGrid) mg).findZone(p);
+      if (mg instanceof ZonedGrid) z = ((ZonedGrid) mg).findZone(p);
       stack.setAttribute(SetupStack.X_POSITION, Integer.toString(p.x));
       stack.setAttribute(SetupStack.Y_POSITION, Integer.toString(p.y));
       if (z != null) {
@@ -3024,8 +2884,7 @@ public class MapBoard extends Importer {
             stack.setAttribute(SetupStack.USE_GRID_LOCATION, true);
             stack.setAttribute(SetupStack.LOCATION, location);
           }
-        }
-        catch (BadCoords e) {
+        } catch (BadCoords e) {
 
         }
       }
@@ -3047,7 +2906,8 @@ public class MapBoard extends Importer {
   /**
    * Does this map board use old-style hex spacing?
    *
-   * @return <code>true</code> if this board is pre version 2.08, <code>false</code> if V2.08 or later.
+   * @return <code>true</code> if this board is pre version 2.08, <code>false</code> if V2.08 or
+   *     later.
    */
   boolean isPreV208Layout() {
     return isPreV208;
@@ -3064,8 +2924,7 @@ public class MapBoard extends Importer {
     if (boards.length == 0) {
       board = new Board();
       insertComponent(board, picker);
-    }
-    else {
+    } else {
       board = picker.getBoard(boards[0]);
     }
     return board;
@@ -3080,8 +2939,7 @@ public class MapBoard extends Importer {
       insertComponent(menu, getMainMap());
       menu.setAttribute(ToolbarMenu.BUTTON_TEXT, "View");
       menu.setAttribute(ToolbarMenu.TOOLTIP, "Toggle visibility of map elements");
-    }
-    else {
+    } else {
       assert (list.size() == 1);
       menu = list.get(0);
     }
@@ -3100,14 +2958,17 @@ public class MapBoard extends Importer {
    */
   BoardPicker getBoardPicker() {
     if (boardPicker == null)
-      boardPicker = getMainMap().getAllDescendantComponentsOf(BoardPicker.class).toArray(new BoardPicker[0])[0];
+      boardPicker =
+          getMainMap()
+              .getAllDescendantComponentsOf(BoardPicker.class)
+              .toArray(new BoardPicker[0])[0];
     return boardPicker;
   }
 
   @Override
   public boolean isValidImportFile(File f) throws IOException {
     try (InputStream fin = Files.newInputStream(f.toPath());
-         DataInputStream in = new DataInputStream(fin)) {
+        DataInputStream in = new DataInputStream(fin)) {
       return in.readByte() == -3;
     }
   }

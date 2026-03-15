@@ -18,7 +18,6 @@
 package VASSAL.counters;
 
 import VASSAL.i18n.Resources;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -33,22 +32,24 @@ public class SimplePieceEditor implements PieceEditor {
     final String type;
     if (p instanceof Decorator) {
       type = ((Decorator) p).myGetType();
-    }
-    else {
+    } else {
       type = p.getType();
     }
     typeField = new JTextField(type);
-    typeField.setMaximumSize(new java.awt.Dimension(typeField.getMaximumSize().width, typeField.getPreferredSize().height));
+    typeField.setMaximumSize(
+        new java.awt.Dimension(
+            typeField.getMaximumSize().width, typeField.getPreferredSize().height));
 
     final String state;
     if (p instanceof Decorator) {
       state = ((Decorator) p).myGetState();
-    }
-    else {
+    } else {
       state = p.getState();
     }
     stateField = new JTextField(state);
-    stateField.setMaximumSize(new java.awt.Dimension(stateField.getMaximumSize().width, stateField.getPreferredSize().height));
+    stateField.setMaximumSize(
+        new java.awt.Dimension(
+            stateField.getMaximumSize().width, stateField.getPreferredSize().height));
 
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -77,5 +78,4 @@ public class SimplePieceEditor implements PieceEditor {
   public java.awt.Component getControls() {
     return panel;
   }
-
 }

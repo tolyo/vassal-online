@@ -17,17 +17,14 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.module.PlayerRoster;
 import java.util.Collections;
 import java.util.List;
 
-import VASSAL.build.module.PlayerRoster;
-
 /**
- * Access is granted if {@link VASSAL.build.module.PlayerRoster#getMySide()}
- * is in a specified list
+ * Access is granted if {@link VASSAL.build.module.PlayerRoster#getMySide()} is in a specified list
  *
  * @author rkinney
- *
  */
 public class SpecifiedSideAccess implements PieceAccess {
   private final List<String> sides;
@@ -45,11 +42,9 @@ public class SpecifiedSideAccess implements PieceAccess {
   public boolean currentPlayerHasAccess(String ownerId) {
     if (ownerId == null) {
       return true;
-    }
-    else if (sides.contains(ownerId)) {
+    } else if (sides.contains(ownerId)) {
       return !GlobalAccess.isHideAll() && sides.contains(getCurrentPlayerId());
-    }
-    else {
+    } else {
       return false;
     }
   }

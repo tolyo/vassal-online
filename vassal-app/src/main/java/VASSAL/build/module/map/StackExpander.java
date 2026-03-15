@@ -17,12 +17,6 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import VASSAL.build.Buildable;
 import VASSAL.build.module.Map;
 import VASSAL.counters.GamePiece;
@@ -30,6 +24,10 @@ import VASSAL.counters.KeyBuffer;
 import VASSAL.counters.PieceFinder;
 import VASSAL.counters.Stack;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class StackExpander extends MouseAdapter implements Buildable {
   protected Map map;
@@ -41,8 +39,7 @@ public class StackExpander extends MouseAdapter implements Buildable {
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
   public Element getBuildElement(Document doc) {
@@ -50,21 +47,23 @@ public class StackExpander extends MouseAdapter implements Buildable {
   }
 
   @Override
-  public void build(Element e) {
-  }
+  public void build(Element e) {}
 
-// FIXME: should be mouseClicked()?
+  // FIXME: should be mouseClicked()?
   @Override
   public void mouseReleased(MouseEvent e) {
-    if (!e.isConsumed() && e.getClickCount() == 2
-                        && SwingUtils.isMainMouseButtonDown(e)) {
+    if (!e.isConsumed() && e.getClickCount() == 2 && SwingUtils.isMainMouseButtonDown(e)) {
       final GamePiece p = map.findPiece(e.getPoint(), PieceFinder.STACK_ONLY);
       if (p != null) {
-        final Stack s = (Stack)p;
+        final Stack s = (Stack) p;
         if (s.nVisible() > 1) {
           KeyBuffer.getBuffer().clear();
           ((Stack) p).setExpanded(!((Stack) p).isExpanded());
-          KeyBuffer.getBuffer().add(((Stack) p).topPiece());  //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
+          KeyBuffer.getBuffer()
+              .add(
+                  ((Stack) p)
+                      .topPiece()); // NOTE: topPiece() returns the top VISIBLE piece (not hidden by
+          // Invisible trait)
         }
       }
       e.consume();

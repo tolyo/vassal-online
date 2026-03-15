@@ -17,36 +17,32 @@
  */
 package VASSAL.tools;
 
-import java.awt.Color;
-import java.awt.event.InputEvent;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import javax.swing.KeyStroke;
-
 import VASSAL.configure.ColorConfigurer;
 import VASSAL.configure.HotKeyConfigurer;
 import VASSAL.configure.NamedHotKeyConfigurer;
 import VASSAL.configure.PropertyExpression;
 import VASSAL.configure.StringArrayConfigurer;
+import java.awt.Color;
+import java.awt.event.InputEvent;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import javax.swing.KeyStroke;
 
 /**
- * Encodes a sequence of Strings into a single String with a given delimiter.
- * Escapes the delimiter character if it occurs in the element strings.
+ * Encodes a sequence of Strings into a single String with a given delimiter. Escapes the delimiter
+ * character if it occurs in the element strings.
  *
- * This is a very handy class for storing structured data into flat text and
- * quite a bit faster than parsing an XML document.
+ * <p>This is a very handy class for storing structured data into flat text and quite a bit faster
+ * than parsing an XML document.
  *
- * For example, a structure such as {A,{B,C}} can be encoded with
+ * <p>For example, a structure such as {A,{B,C}} can be encoded with
  *
  * <pre>
  * new SequenceEncoder("A",',').append(new SequenceEncoder("B",',').append("C").getValue()).getValue()
  * </pre>
  *
- * which returns <code>A,B\,C</code>
- *
- * and then extracted with
+ * which returns <code>A,B\,C</code> and then extracted with
  *
  * <pre>
  * SequenceEncoder.Decoder st = new SequenceEncoder.Decoder("A,B\,C",',');
@@ -69,7 +65,7 @@ public class SequenceEncoder {
   //
   // These characters are all terrible choices for delimiters anyway, so
   // hopefully no one uses them, but we have to check just in case.
-  private static final String UGLY = "-.0123456789EINaefilnrstuy"; //NON-NLS
+  private static final String UGLY = "-.0123456789EINaefilnrstuy"; // NON-NLS
   private final boolean uglyDelim;
 
   public SequenceEncoder(char delimiter) {
@@ -85,8 +81,7 @@ public class SequenceEncoder {
   private void startBufferOrAddDelimiter() {
     if (buffer == null) {
       buffer = new StringBuilder();
-    }
-    else {
+    } else {
       buffer.append(delim);
     }
   }
@@ -99,13 +94,11 @@ public class SequenceEncoder {
       return this;
     }
 
-    if (s.charAt(0) == '\\' ||
-        (s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'')) {
+    if (s.charAt(0) == '\\' || (s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'')) {
       buffer.append('\'');
       appendEscapedString(s);
       buffer.append('\'');
-    }
-    else {
+    } else {
       appendEscapedString(s);
     }
 
@@ -127,8 +120,7 @@ public class SequenceEncoder {
       buffer.append('\'');
       appendEscapedChar(c);
       buffer.append('\'');
-    }
-    else {
+    } else {
       appendEscapedChar(c);
     }
 
@@ -259,7 +251,7 @@ public class SequenceEncoder {
 
       String tok = null;
       int i = start;
-      for ( ; i < stop; ++i) {
+      for (; i < stop; ++i) {
         if (val.charAt(i) == delim) {
           if (i > 0 && val.charAt(i - 1) == '\\') {
             // escaped delimiter; piece together the token
@@ -268,14 +260,12 @@ public class SequenceEncoder {
             }
             buf.append(val, start, i - 1);
             start = i;
-          }
-          else {
+          } else {
             // real delimiter
             if (buf == null || buf.length() == 0) {
               // no escapes; take the token whole
               tok = val.substring(start, i);
-            }
-            else {
+            } else {
               // had an earlier escape; cobble on the end
               buf.append(val, start, i);
             }
@@ -290,8 +280,7 @@ public class SequenceEncoder {
         if (buf == null || buf.length() == 0) {
           // no escapes; take the token whole
           tok = val.substring(start);
-        }
-        else {
+        } else {
           // had an earlier escape; cobble on the end
           buf.append(val, start, stop);
         }
@@ -304,10 +293,10 @@ public class SequenceEncoder {
     private String unquote(CharSequence cs) {
       // strip enclosure by single quotes
       final int len = cs.length();
-      return (
-        len > 1 && cs.charAt(0) == '\'' && cs.charAt(len - 1) == '\'' ?
-        cs.subSequence(1, len - 1) : cs
-      ).toString();
+      return (len > 1 && cs.charAt(0) == '\'' && cs.charAt(len - 1) == '\''
+              ? cs.subSequence(1, len - 1)
+              : cs)
+          .toString();
     }
 
     @Override
@@ -331,15 +320,16 @@ public class SequenceEncoder {
 
     /**
      * Parse the next token into an integer
-     * @param defaultValue Return this value if no more tokens, or next token doesn't parse to an integer
+     *
+     * @param defaultValue Return this value if no more tokens, or next token doesn't parse to an
+     *     integer
      * @return next token as an integer, or defaultValue if it didn't exist or didn't parse
      */
     public int nextInt(int defaultValue) {
       if (val != null) {
         try {
           defaultValue = Integer.parseInt(nextToken());
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
           // no action
         }
       }
@@ -350,8 +340,7 @@ public class SequenceEncoder {
       if (val != null) {
         try {
           defaultValue = Long.parseLong(nextToken());
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
           // no action
         }
       }
@@ -362,8 +351,7 @@ public class SequenceEncoder {
       if (val != null) {
         try {
           defaultValue = Double.parseDouble(nextToken());
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
           // no action
         }
       }
@@ -371,13 +359,15 @@ public class SequenceEncoder {
     }
 
     public boolean nextBoolean(boolean defaultValue) {
-      return val != null ? "true".equals(nextToken()) : defaultValue; //NON-NLS
+      return val != null ? "true".equals(nextToken()) : defaultValue; // NON-NLS
     }
 
     /**
      * Return the first character of the next token
+     *
      * @param defaultValue Return this value if no more tokens, or if next token has zero length
-     * @return next token if a character is available, or defaultValue if no more tokens or the token has zero length
+     * @return next token if a character is available, or defaultValue if no more tokens or the
+     *     token has zero length
      */
     public char nextChar(char defaultValue) {
       if (val != null) {
@@ -388,8 +378,7 @@ public class SequenceEncoder {
     }
 
     public KeyStroke nextKeyStroke(char defaultValue) {
-      return nextKeyStroke(
-        KeyStroke.getKeyStroke(defaultValue, InputEvent.CTRL_DOWN_MASK));
+      return nextKeyStroke(KeyStroke.getKeyStroke(defaultValue, InputEvent.CTRL_DOWN_MASK));
     }
 
     public Color nextColor(Color defaultValue) {
@@ -397,8 +386,7 @@ public class SequenceEncoder {
         final String s = nextToken();
         if (s.length() > 0) {
           defaultValue = ColorConfigurer.stringToColor(s);
-        }
-        else {
+        } else {
           defaultValue = null;
         }
       }
@@ -410,12 +398,9 @@ public class SequenceEncoder {
         final String s = nextToken();
         if (s.length() == 0) {
           defaultValue = null;
-        }
-        else if (s.indexOf(',') < 0) {
-          defaultValue =
-            KeyStroke.getKeyStroke(s.charAt(0), InputEvent.CTRL_DOWN_MASK);
-        }
-        else {
+        } else if (s.indexOf(',') < 0) {
+          defaultValue = KeyStroke.getKeyStroke(s.charAt(0), InputEvent.CTRL_DOWN_MASK);
+        } else {
           defaultValue = HotKeyConfigurer.decode(s);
         }
       }
@@ -435,11 +420,9 @@ public class SequenceEncoder {
         final String s = nextToken();
         if (s.length() == 0) {
           defaultValue = null;
-        }
-        else if (s.indexOf(',') < 0) {
+        } else if (s.indexOf(',') < 0) {
           defaultValue = NamedKeyStroke.of(s.charAt(0), InputEvent.CTRL_DOWN_MASK);
-        }
-        else {
+        } else {
           defaultValue = NamedHotKeyConfigurer.decode(s);
         }
       }
@@ -448,6 +431,7 @@ public class SequenceEncoder {
 
     /**
      * Return the next token, or the default value if there are no more tokens
+     *
      * @param defaultValue default value in case there are no more tokens
      * @return next token, or the default value if no more tokens
      */
@@ -459,8 +443,7 @@ public class SequenceEncoder {
       String[] retVal;
       if (val != null) {
         retVal = StringArrayConfigurer.stringToArray(nextToken());
-      }
-      else {
+      } else {
         retVal = new String[0];
       }
 

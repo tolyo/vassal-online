@@ -18,19 +18,18 @@
 
 package VASSAL.build.module.map;
 
+import VASSAL.build.module.Map;
+import VASSAL.command.Command;
+import VASSAL.counters.GamePiece;
+import VASSAL.counters.Stack;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import VASSAL.build.module.Map;
-import VASSAL.command.Command;
-import VASSAL.counters.GamePiece;
-import VASSAL.counters.Stack;
-
 /**
- * Handles the drawing of cards in a {@link VASSAL.build.module.PlayerHand}.
- * Lays out the cards horizontally with no overlap and even spacing.
+ * Handles the drawing of cards in a {@link VASSAL.build.module.PlayerHand}. Lays out the cards
+ * horizontally with no overlap and even spacing.
  */
 public class HandMetrics extends StackMetrics {
   public HandMetrics() {
@@ -44,13 +43,20 @@ public class HandMetrics extends StackMetrics {
   }
 
   @Override
-  public void draw(Stack stack, Point location, Graphics g, Map map, double zoom, Rectangle visibleRect) {
+  public void draw(
+      Stack stack, Point location, Graphics g, Map map, double zoom, Rectangle visibleRect) {
     stack.setExpanded(true);
     super.draw(stack, location, g, map, zoom, visibleRect);
   }
 
   @Override
-  protected void nextPosition(Point currentPos, Rectangle currentBounds, Point nextPos, Rectangle nextBounds, int dx, int dy) {
+  protected void nextPosition(
+      Point currentPos,
+      Rectangle currentBounds,
+      Point nextPos,
+      Rectangle nextBounds,
+      int dx,
+      int dy) {
     final int x = currentPos.x + currentBounds.width + dx;
     final int y = currentPos.y;
     nextBounds.setLocation(x, y);
@@ -59,7 +65,7 @@ public class HandMetrics extends StackMetrics {
 
   @Override
   public Command merge(GamePiece fixed, GamePiece moving) {
-    final Command c =  super.merge(fixed, moving);
+    final Command c = super.merge(fixed, moving);
     map.getView().revalidate();
     return c;
   }

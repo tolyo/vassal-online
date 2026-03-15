@@ -17,11 +17,10 @@
 
 package VASSAL.tools.deprecation;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -51,7 +50,7 @@ public class DeprecationWalker implements Walker {
   public void setInput(byte[] classFile) {
     reader = new ClassReader(classFile);
   }
- 
+
   @Override
   public void setInput(InputStream in) throws IOException {
     reader = new ClassReader(in);
@@ -76,30 +75,25 @@ public class DeprecationWalker implements Walker {
 
     @Override
     public void visit(
-      int version, 
-      int access,
-      String name,
-      String signature,
-      String superName,
-      String[] interfaces) {
+        int version,
+        int access,
+        String name,
+        String signature,
+        String superName,
+        String[] interfaces) {
 
       path.clear();
       path.add(classString(name));
     }
-   
+
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-      return DEPRECATED.equals(descString(desc)) ? 
-        new AnnotationDependencyVisitor() : null;
+      return DEPRECATED.equals(descString(desc)) ? new AnnotationDependencyVisitor() : null;
     }
 
     @Override
     public FieldVisitor visitField(
-      int access,
-      String name,
-      String desc,
-      String signature, 
-      Object value) {
+        int access, String name, String desc, String signature, Object value) {
 
       path.add(name);
       return new FieldDependencyVisitor();
@@ -107,14 +101,10 @@ public class DeprecationWalker implements Walker {
 
     @Override
     public MethodVisitor visitMethod(
-      int access,
-      String name,
-      String desc,
-      String signature,
-      String[] exceptions) {
+        int access, String name, String desc, String signature, String[] exceptions) {
 
       path.add(methodString(name, desc));
-      return new MethodDependencyVisitor(); 
+      return new MethodDependencyVisitor();
     }
   }
 
@@ -124,14 +114,13 @@ public class DeprecationWalker implements Walker {
     }
 
     private String since = null;
-    private boolean forRemoval = false; 
+    private boolean forRemoval = false;
 
     @Override
     public void visit(String name, Object value) {
       if ("since".equals(name)) {
         since = (String) value;
-      }
-      else if ("forRemoval".equals(name)) {
+      } else if ("forRemoval".equals(name)) {
         forRemoval = (Boolean) value;
       }
     }
@@ -149,8 +138,7 @@ public class DeprecationWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-      return DEPRECATED.equals(descString(desc)) ? 
-        new AnnotationDependencyVisitor() : null;
+      return DEPRECATED.equals(descString(desc)) ? new AnnotationDependencyVisitor() : null;
     }
 
     @Override
@@ -166,8 +154,7 @@ public class DeprecationWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-      return DEPRECATED.equals(descString(desc)) ? 
-        new AnnotationDependencyVisitor() : null;
+      return DEPRECATED.equals(descString(desc)) ? new AnnotationDependencyVisitor() : null;
     }
 
     @Override
@@ -178,28 +165,28 @@ public class DeprecationWalker implements Walker {
 
   private String typeString(Type t) {
     switch (t.getSort()) {
-    case Type.BOOLEAN:
-      return "boolean";
-    case Type.CHAR:
-      return "char";
-    case Type.BYTE:
-      return "byte";
-    case Type.SHORT:
-      return "short";
-    case Type.INT:
-      return "int";
-    case Type.FLOAT:
-      return "float";
-    case Type.LONG:
-      return "long";
-    case Type.DOUBLE:
-      return "double";
-    case Type.ARRAY:
-      return typeString(t.getElementType()) + "[]".repeat(t.getDimensions()); 
-    case Type.OBJECT:
-      return t.getInternalName();
-    default:
-      throw new IllegalArgumentException();
+      case Type.BOOLEAN:
+        return "boolean";
+      case Type.CHAR:
+        return "char";
+      case Type.BYTE:
+        return "byte";
+      case Type.SHORT:
+        return "short";
+      case Type.INT:
+        return "int";
+      case Type.FLOAT:
+        return "float";
+      case Type.LONG:
+        return "long";
+      case Type.DOUBLE:
+        return "double";
+      case Type.ARRAY:
+        return typeString(t.getElementType()) + "[]".repeat(t.getDimensions());
+      case Type.OBJECT:
+        return t.getInternalName();
+      default:
+        throw new IllegalArgumentException();
     }
   }
 
@@ -213,10 +200,10 @@ public class DeprecationWalker implements Walker {
 
   private String methodString(String name, String desc) {
     final List<String> args = new ArrayList<>();
-    for (final Type t: Type.getArgumentTypes(desc)) {
+    for (final Type t : Type.getArgumentTypes(desc)) {
       args.add(typeString(t));
     }
 
     return (name + "(" + String.join(", ", args) + ")").replace('/', '.');
-  } 
+  }
 }

@@ -17,10 +17,9 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.chat.SimplePlayer;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-
-import VASSAL.chat.SimplePlayer;
 
 /*
  *

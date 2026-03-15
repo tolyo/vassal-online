@@ -17,35 +17,32 @@
  */
 package VASSAL.tools;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import VASSAL.build.Buildable;
 import VASSAL.configure.ConfigureTree;
 import VASSAL.configure.ValidationReport;
 import VASSAL.configure.ValidityChecker;
 import VASSAL.i18n.Resources;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * A class for assigning unique identifiers to objects.  Identifiers will be
- * of the form prefix#, where prefix is specified at initialization and the #
- * is an increasing digit. Components will have the same ID provided they
- * are loaded in the same order.
+ * A class for assigning unique identifiers to objects. Identifiers will be of the form prefix#,
+ * where prefix is specified at initialization and the # is an increasing digit. Components will
+ * have the same ID provided they are loaded in the same order.
  *
- * Unfortunately, this approach is flawed. If a module is edited, saved games
- * from previous versions can become broken. Worse, two players with different
- * extensions loaded could have incompatible behavior.
+ * <p>Unfortunately, this approach is flawed. If a module is edited, saved games from previous
+ * versions can become broken. Worse, two players with different extensions loaded could have
+ * incompatible behavior.
  *
- * The preferred way to have unique identifiers is to allow the user to provide
- * names and use a {@link VASSAL.configure.ValidityChecker} to ensure that the
- * names are unique.  This class provides some support for using this approach
- * while providing backward compatibility with old saved games and modules.
+ * <p>The preferred way to have unique identifiers is to allow the user to provide names and use a
+ * {@link VASSAL.configure.ValidityChecker} to ensure that the names are unique. This class provides
+ * some support for using this approach while providing backward compatibility with old saved games
+ * and modules.
  *
- * Usage:  an {@link Identifyable} instance invokes {@link #add}, typically
- * during the {@link Buildable#build} method.  Classes can use the
- * {@link #getIdentifier} method to look up an identifier for that instance,
- * and can use {@link #findInstance} to look up a component by id.
+ * <p>Usage: an {@link Identifyable} instance invokes {@link #add}, typically during the {@link
+ * Buildable#build} method. Classes can use the {@link #getIdentifier} method to look up an
+ * identifier for that instance, and can use {@link #findInstance} to look up a component by id.
  */
 public class UniqueIdManager implements ValidityChecker {
   private final List<Identifyable> instances = new ArrayList<>();
@@ -72,9 +69,9 @@ public class UniqueIdManager implements ValidityChecker {
   }
 
   /**
-   * Make a best guess for a unique identifier for the target.
-   * Use {@link Identifyable#getConfigureName} if non-null, otherwise
-   * use {@link Identifyable#getId}
+   * Make a best guess for a unique identifier for the target. Use {@link
+   * Identifyable#getConfigureName} if non-null, otherwise use {@link Identifyable#getId}
+   *
    * @param target identifiable target
    * @return identifier for target
    */
@@ -92,6 +89,7 @@ public class UniqueIdManager implements ValidityChecker {
 
   /**
    * Return the first instance whose name or id matches the argument
+   *
    * @param id name or id
    * @return Return the first instance whose name or id matches the argument
    */
@@ -111,20 +109,22 @@ public class UniqueIdManager implements ValidityChecker {
   public void validate(Buildable target, ValidationReport report) {
     if (target instanceof Identifyable) {
       final Identifyable iTarget = (Identifyable) target;
-      if (iTarget.getConfigureName() == null ||
-          iTarget.getConfigureName().length() == 0) {
-        report.addWarning(Resources.getString("Editor.UniqueIdManager.a_girl_has_no_name", ConfigureTree.getConfigureName(target.getClass())));
-      }
-      else if (instances.contains(iTarget)) {
+      if (iTarget.getConfigureName() == null || iTarget.getConfigureName().length() == 0) {
+        report.addWarning(
+            Resources.getString(
+                "Editor.UniqueIdManager.a_girl_has_no_name",
+                ConfigureTree.getConfigureName(target.getClass())));
+      } else if (instances.contains(iTarget)) {
         Identifyable compare = null;
         for (final Iterator<Identifyable> i = instances.iterator();
-             i.hasNext() && compare != iTarget; ) {
+            i.hasNext() && compare != iTarget; ) {
           compare = i.next();
-          if (compare != iTarget &&
-              iTarget.getConfigureName().equals(compare.getConfigureName())) {
-            report.addWarning(Resources.getString("Editor.UniqueIdManager.more_than_one",
-                     ConfigureTree.getConfigureName(target.getClass()),
-                              iTarget.getConfigureName()));
+          if (compare != iTarget && iTarget.getConfigureName().equals(compare.getConfigureName())) {
+            report.addWarning(
+                Resources.getString(
+                    "Editor.UniqueIdManager.more_than_one",
+                    ConfigureTree.getConfigureName(target.getClass()),
+                    iTarget.getConfigureName()));
             break;
           }
         }
@@ -132,10 +132,7 @@ public class UniqueIdManager implements ValidityChecker {
     }
   }
 
-  /**
-   * An object with an identifier that can be manipulated by a
-   * {@link UniqueIdManager}
-   */
+  /** An object with an identifier that can be manipulated by a {@link UniqueIdManager} */
   public interface Identifyable {
     void setId(String id);
 

@@ -22,15 +22,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import VASSAL.script.expression.Expression;
-
 import java.lang.reflect.InvocationTargetException;
-
 import org.junit.jupiter.api.Test;
 
 public class CalculatedPropertyTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     CalculatedProperty trait = new CalculatedProperty();
 
@@ -43,7 +45,6 @@ public class CalculatedPropertyTest extends DecoratorTest {
     trait.expression = Expression.createExpression("{x * 2}"); // NON-NLS
     trait.description = "plover";
     serializeTest("Expression", trait); // NON-NLS
-
   }
 
   // Custom EditorTest. The CP Editor strips the {} from the Expression
@@ -58,10 +59,15 @@ public class CalculatedPropertyTest extends DecoratorTest {
     final PieceEditor editor = referenceTrait.getEditor();
 
     // Confirm that the Type and State encoded by the editor is the same as the original trait
-    assertThat("Trait Edit Test (State): " + test, editor.getState(), is(equalTo(originalState))); // NON-NLS
+    assertThat(
+        "Trait Edit Test (State): " + test,
+        editor.getState(),
+        is(equalTo(originalState))); // NON-NLS
 
     // The Type returned from the CP editor has the {} removed from the expression
-    assertThat("Trait Edit Test (Type): " + test, editor.getType(), is(equalTo(originalType.replace("{", "").replace("}", "")))); // NON-NLS
+    assertThat(
+        "Trait Edit Test (Type): " + test,
+        editor.getType(),
+        is(equalTo(originalType.replace("{", "").replace("}", "")))); // NON-NLS
   }
-
 }

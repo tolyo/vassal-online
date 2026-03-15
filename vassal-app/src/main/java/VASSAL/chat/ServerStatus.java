@@ -21,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents the history and current state of connections to the chat
- * room server
+ * Represents the history and current state of connections to the chat room server
  *
  * @author rkinney
  */
@@ -33,8 +32,7 @@ public interface ServerStatus {
   String[] getSupportedTimeRanges();
 
   /**
-   * @return the connections to the server within <code>time</code>
-   * milliseconds of the current time
+   * @return the connections to the server within <code>time</code> milliseconds of the current time
    */
   ModuleSummary[] getHistory(String timeRange);
 
@@ -47,7 +45,7 @@ public interface ServerStatus {
     }
 
     public ModuleSummary(String moduleName, Room[] rooms) {
-      this (moduleName);
+      this(moduleName);
       for (final Room r : rooms) {
         this.rooms.put(r.getName(), r);
       }

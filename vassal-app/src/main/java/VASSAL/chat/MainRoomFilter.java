@@ -21,9 +21,7 @@ import VASSAL.build.module.Chatter;
 import VASSAL.command.Command;
 import VASSAL.command.CommandFilter;
 
-/**
- * Only passes commands that are allowed in the Main Room
- */
+/** Only passes commands that are allowed in the Main Room */
 public class MainRoomFilter extends CommandFilter {
   @Override
   protected boolean accept(Command c) {
@@ -32,4 +30,3 @@ public class MainRoomFilter extends CommandFilter {
         || c instanceof SoundEncoder.Cmd;
   }
 }
-

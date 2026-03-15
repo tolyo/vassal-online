@@ -17,20 +17,16 @@
  */
 package VASSAL;
 
+import VASSAL.launch.Config;
+import VASSAL.launch.DummyConfig;
+import VASSAL.tools.swing.SwingUtils;
+import VASSAL.tools.version.VersionUtils;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.io.File;
-
 import org.apache.commons.lang3.SystemUtils;
 
-import VASSAL.launch.Config;
-import VASSAL.launch.DummyConfig;
-import VASSAL.tools.version.VersionUtils;
-import VASSAL.tools.swing.SwingUtils;
-
-/**
- * Class for storing release-related information
- */
+/** Class for storing release-related information */
 public final class Info {
   private static Config CONFIG = new DummyConfig();
 
@@ -47,13 +43,12 @@ public final class Info {
   public static final String javaBinPath = getJavaBinPath().getAbsolutePath();
 
   /** This class should not be instantiated */
-  private Info() { }
+  private Info() {}
 
   /**
-   * A valid version format is "w.x.y[-z]", where 'w','x', and 'y' are
-   * integers and z is a string. In the version number, w.x are the
-   * major/minor release number, y is the bug-fix release number, and the 'z'
-   * identifies an intermediate build: e.g., 3.3.3-alpha1 or 3.3.3-SNAPSHOT
+   * A valid version format is "w.x.y[-z]", where 'w','x', and 'y' are integers and z is a string.
+   * In the version number, w.x are the major/minor release number, y is the bug-fix release number,
+   * and the 'z' identifies an intermediate build: e.g., 3.3.3-alpha1 or 3.3.3-SNAPSHOT
    *
    * @return the full version of the VASSAL engine.
    */
@@ -62,9 +57,8 @@ public final class Info {
   }
 
   /**
-   * Bugzilla (and other potential external reporting tools) require only the
-   * primary numeric portion of the version number: e.g., 3.3.3-SNAPSHOT
-   * return 3.3.3.
+   * Bugzilla (and other potential external reporting tools) require only the primary numeric
+   * portion of the version number: e.g., 3.3.3-SNAPSHOT return 3.3.3.
    *
    * @return The reportable version number
    */
@@ -113,17 +107,17 @@ public final class Info {
   }
 
   /**
-   * @return size of screen accounting for the screen insets (e.g., Windows
-   * taskbar)
-   * @deprecated Use {@link VASSAL.tools.swing.SwingUtils#getScreenBounds(Component)}
-   * instead.
+   * @return size of screen accounting for the screen insets (e.g., Windows taskbar)
+   * @deprecated Use {@link VASSAL.tools.swing.SwingUtils#getScreenBounds(Component)} instead.
    */
   @Deprecated(since = "2020-10-03", forRemoval = true)
   public static Rectangle getScreenBounds(Component c) {
     return SwingUtils.getScreenBounds(c);
   }
 
-  /** @deprecated Use {@link SystemUtils#IS_OS_MAC} instead */
+  /**
+   * @deprecated Use {@link SystemUtils#IS_OS_MAC} instead
+   */
   @Deprecated(since = "2020-08-06", forRemoval = true)
   public static boolean isMacOSX() {
     return SystemUtils.IS_OS_MAC;
@@ -131,25 +125,29 @@ public final class Info {
 
   public static boolean isModuleTooNew(String version) {
     return VersionUtils.compareVersions(
-      VersionUtils.truncateToMinorVersion(version),
-      VersionUtils.nextMinorVersion(getVersion())
-    ) >= 0;
+            VersionUtils.truncateToMinorVersion(version),
+            VersionUtils.nextMinorVersion(getVersion()))
+        >= 0;
   }
 
   public static boolean hasOldFormat(String version) {
     return VersionUtils.compareVersions(
-      VersionUtils.truncateToMinorVersion(version),
-      VersionUtils.truncateToMinorVersion(getVersion())
-    ) < 0;
+            VersionUtils.truncateToMinorVersion(version),
+            VersionUtils.truncateToMinorVersion(getVersion()))
+        < 0;
   }
 
-  /** @deprecated Use {@link #getBaseDir()} instead. */
+  /**
+   * @deprecated Use {@link #getBaseDir()} instead.
+   */
   @Deprecated(since = "2020-10-03", forRemoval = true)
   public static File getBinDir() {
     return getBaseDir();
   }
 
-  /** @deprecated Use {@link #getConfDir()} instead. */
+  /**
+   * @deprecated Use {@link #getConfDir()} instead.
+   */
   @Deprecated(since = "2020-10-02", forRemoval = true)
   public static File getHomeDir() {
     return getConfDir();

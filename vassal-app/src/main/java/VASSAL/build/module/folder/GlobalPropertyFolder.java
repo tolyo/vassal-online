@@ -32,9 +32,11 @@ public class GlobalPropertyFolder extends AbstractFolder {
     if (parent instanceof GlobalProperties) {
       if (((GlobalProperties) parent).getAncestor() instanceof GameModule) {
         // Only Module-level Global Property hierachy can contain Scenario Options
-        return new Class<?>[] { this.getClass(), GlobalProperty.class, ScenarioPropertiesOptionTab.class };
+        return new Class<?>[] {
+          this.getClass(), GlobalProperty.class, ScenarioPropertiesOptionTab.class
+        };
       }
     }
-    return new Class<?>[] { this.getClass(), GlobalProperty.class };
+    return new Class<?>[] {this.getClass(), GlobalProperty.class};
   }
 }

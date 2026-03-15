@@ -23,16 +23,18 @@ import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 
 /**
- * Individual override parameters for an instance of an {@link Item}. The XXXItemInstance classes ({@link TextItemInstance},{@link ImageItemInstance},
- * etc.) draw themselves optionally using values for color, text value, etc., from the corresponding XXXItem classes ({@link TextItem},{@link ImageItem}, etc.) can make use of when drawing themselves
+ * Individual override parameters for an instance of an {@link Item}. The XXXItemInstance classes
+ * ({@link TextItemInstance},{@link ImageItemInstance}, etc.) draw themselves optionally using
+ * values for color, text value, etc., from the corresponding XXXItem classes ({@link
+ * TextItem},{@link ImageItem}, etc.) can make use of when drawing themselves
  */
 public abstract class ItemInstance extends AbstractConfigurable {
 
-  public static final String FG_COLOR = "fgColor"; //$NON-NLS-1$
-  public static final String BG_COLOR = "bgColor"; //$NON-NLS-1$
+  public static final String FG_COLOR = "fgColor"; // $NON-NLS-1$
+  public static final String BG_COLOR = "bgColor"; // $NON-NLS-1$
 
-  protected String type = ""; //$NON-NLS-1$
-  protected String location = ""; //$NON-NLS-1$
+  protected String type = ""; // $NON-NLS-1$
+  protected String location = ""; // $NON-NLS-1$
   protected ColorSwatch bgColor = ColorSwatch.getClear();
   protected ColorSwatch fgColor = ColorSwatch.getBlack();
   protected GamePieceImage defn;
@@ -46,7 +48,7 @@ public abstract class ItemInstance extends AbstractConfigurable {
   }
 
   public ItemInstance() {
-    this("", "", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    this("", "", ""); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
 
   public ItemInstance(GamePieceImage defn) {
@@ -80,24 +82,23 @@ public abstract class ItemInstance extends AbstractConfigurable {
 
   public abstract String encode();
 
-  public static ItemInstance newDefaultInstance(String name, String type,
-      String location) {
+  public static ItemInstance newDefaultInstance(String name, String type, String location) {
 
     if (type.equals(SymbolItem.TYPE)) {
-      return new SymbolItemInstance(name, type, location,
+      return new SymbolItemInstance(
+          name,
+          type,
+          location,
           Symbol.NatoUnitSymbolSet.SZ_DIVISION,
-          Symbol.NatoUnitSymbolSet.INFANTRY, Symbol.NatoUnitSymbolSet.NONE);
-    }
-    else if (type.equals(TextItem.TYPE)) {
+          Symbol.NatoUnitSymbolSet.INFANTRY,
+          Symbol.NatoUnitSymbolSet.NONE);
+    } else if (type.equals(TextItem.TYPE)) {
       return new TextItemInstance(name, type, location, null);
-    }
-    else if (type.equals(TextBoxItem.TYPE)) {
+    } else if (type.equals(TextBoxItem.TYPE)) {
       return new TextBoxItemInstance(name, type, location);
-    }
-    else if (type.equals(ShapeItem.TYPE)) {
+    } else if (type.equals(ShapeItem.TYPE)) {
       return new ShapeItemInstance(name, type, location);
-    }
-    else if (type.equals(ImageItem.TYPE)) {
+    } else if (type.equals(ImageItem.TYPE)) {
       return new ImageItemInstance(name, type, location);
     }
     return null;
@@ -163,9 +164,7 @@ public abstract class ItemInstance extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public String getAttributeValueString(String key) {
@@ -173,9 +172,7 @@ public abstract class ItemInstance extends AbstractConfigurable {
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {

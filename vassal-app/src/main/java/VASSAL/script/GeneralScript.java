@@ -17,18 +17,6 @@
  */
 package VASSAL.script;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.StringReader;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import VASSAL.build.Buildable;
 import VASSAL.build.Configurable;
 import VASSAL.build.module.documentation.HelpFile;
@@ -39,15 +27,22 @@ import VASSAL.configure.TextConfigurer;
 import VASSAL.configure.ValidationReport;
 import VASSAL.configure.ValidityChecker;
 import VASSAL.tools.UniqueIdManager;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.StringReader;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-/**
- *
- *
- */
+/** */
 public class GeneralScript extends AbstractScript
-   implements UniqueIdManager.Identifyable, ValidityChecker {
+    implements UniqueIdManager.Identifyable, ValidityChecker {
 
-  private static final UniqueIdManager idMgr = new UniqueIdManager("General-"); //NON-NLS
+  private static final UniqueIdManager idMgr = new UniqueIdManager("General-"); // NON-NLS
 
   public static String getConfigureTypeName() {
     return "General Script";
@@ -63,9 +58,7 @@ public class GeneralScript extends AbstractScript
   }
 
   @Override
-  public void setId(String id) {
-
-  }
+  public void setId(String id) {}
 
   protected String buildHeaderLine() {
     return "void " + getConfigureName() + "() {";
@@ -88,7 +81,7 @@ public class GeneralScript extends AbstractScript
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Script.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("Script.html"); // $NON-NLS-1$
   }
 
   @Override
@@ -106,9 +99,7 @@ public class GeneralScript extends AbstractScript
     idMgr.validate(this, report);
   }
 
-  /**
-   * Configure a Script
-   */
+  /** Configure a Script */
   class ScriptConfigurer extends Configurer implements ActionListener {
 
     protected GeneralScript script;
@@ -124,21 +115,23 @@ public class GeneralScript extends AbstractScript
       super(null, s.getConfigureName());
       script = s;
       setValue(script);
-      script.addPropertyChangeListener(evt -> {
-        if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
-          setName((String) evt.getNewValue());
-        }
-      });
+      script.addPropertyChangeListener(
+          evt -> {
+            if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
+              setName((String) evt.getNewValue());
+            }
+          });
 
       panel = new JPanel();
       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
       panel.setPreferredSize(new Dimension(800, 600));
 
       nameConfig = new JavaNameConfigurer(NAME, "Name:  ", script.getConfigureName());
-      nameConfig.addPropertyChangeListener(e -> {
-        script.setAttribute(NAME, e.getNewValue());
-        updateHeader();
-      });
+      nameConfig.addPropertyChangeListener(
+          e -> {
+            script.setAttribute(NAME, e.getNewValue());
+            updateHeader();
+          });
 
       descConfig = new StringConfigurer(DESC, "Description:  ", script.getDescription());
       descConfig.addPropertyChangeListener(e -> script.setAttribute(DESC, e.getNewValue()));
@@ -159,7 +152,6 @@ public class GeneralScript extends AbstractScript
       compileBox.add(compileButton);
       compileBox.add(error);
       panel.add(compileBox);
-
     }
 
     public void updateHeader() {
@@ -185,19 +177,15 @@ public class GeneralScript extends AbstractScript
       throw new RuntimeException("Can't set ScriptConfigurable from String");
     }
 
-    /**
-     * Compile the script and report errors
-     */
+    /** Compile the script and report errors */
     @Override
     public void actionPerformed(ActionEvent e) {
       final CompileResult r = script.compile();
       if (r.isSuccess()) {
         error.setText("");
-      }
-      else {
+      } else {
         error.setText(r.getMessage());
       }
     }
   }
-
 }

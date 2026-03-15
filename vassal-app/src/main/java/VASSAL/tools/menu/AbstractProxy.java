@@ -1,4 +1,3 @@
-
 package VASSAL.tools.menu;
 
 import java.awt.Container;
@@ -7,17 +6,14 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JComponent;
 
 /**
  * @author Joel Uckelman
  * @since 3.1.0
  */
-public abstract class AbstractProxy<T extends JComponent>
-                implements ChildProxy<T> {
-  protected final List<WeakReference<T>> peers =
-    new ArrayList<>();
+public abstract class AbstractProxy<T extends JComponent> implements ChildProxy<T> {
+  protected final List<WeakReference<T>> peers = new ArrayList<>();
 
   protected final ReferenceQueue<T> queue = new ReferenceQueue<>();
 
@@ -51,12 +47,13 @@ public abstract class AbstractProxy<T extends JComponent>
     this.parent = parent;
 
     if (parent == null) {
-      forEachPeer(peer -> {
-        final Container par = peer.getParent();
-        if (par != null) {
-          par.remove(peer);
-        }
-      });
+      forEachPeer(
+          peer -> {
+            final Container par = peer.getParent();
+            if (par != null) {
+              par.remove(peer);
+            }
+          });
     }
   }
 

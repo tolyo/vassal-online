@@ -17,12 +17,11 @@
 
 package VASSAL.tools.deprecation;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -93,12 +92,12 @@ public class DependencyWalker implements Walker {
 
     @Override
     public void visit(
-      int version,
-      int access,
-      String name,
-      String signature,
-      String superName,
-      String[] interfaces) {
+        int version,
+        int access,
+        String name,
+        String signature,
+        String superName,
+        String[] interfaces) {
 
       addThisClassName(name);
 
@@ -107,8 +106,7 @@ public class DependencyWalker implements Walker {
           addInternalName(superName);
         }
         addInternalNames(interfaces);
-      }
-      else {
+      } else {
         addSignature(signature);
       }
     }
@@ -121,10 +119,7 @@ public class DependencyWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(
-      int typeRef,
-      TypePath typePath,
-      String desc,
-      boolean visible) {
+        int typeRef, TypePath typePath, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
@@ -132,16 +127,11 @@ public class DependencyWalker implements Walker {
 
     @Override
     public FieldVisitor visitField(
-      int access,
-      String name,
-      String desc,
-      String signature,
-      Object value) {
+        int access, String name, String desc, String signature, Object value) {
 
       if (signature == null) {
         addDesc(desc);
-      }
-      else {
+      } else {
         addTypeSignature(signature);
       }
 
@@ -154,16 +144,11 @@ public class DependencyWalker implements Walker {
 
     @Override
     public MethodVisitor visitMethod(
-      int access,
-      String name,
-      String desc,
-      String signature,
-      String[] exceptions) {
+        int access, String name, String desc, String signature, String[] exceptions) {
 
       if (signature == null) {
         addMethodDesc(desc);
-      }
-      else {
+      } else {
         addSignature(signature);
       }
 
@@ -222,10 +207,7 @@ public class DependencyWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(
-      int typeRef,
-      TypePath typePath,
-      String desc,
-      boolean visible) {
+        int typeRef, TypePath typePath, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
@@ -250,20 +232,14 @@ public class DependencyWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(
-      int typeRef,
-      TypePath typePath,
-      String desc,
-      boolean visible) {
+        int typeRef, TypePath typePath, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
     }
 
     @Override
-    public AnnotationVisitor visitParameterAnnotation(
-      int parameter,
-      String desc,
-      boolean visible) {
+    public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
@@ -271,10 +247,7 @@ public class DependencyWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitInsnAnnotation(
-      int typeRef,
-      TypePath typePath,
-      String desc,
-      boolean visible) {
+        int typeRef, TypePath typePath, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
@@ -286,11 +259,7 @@ public class DependencyWalker implements Walker {
     }
 
     @Override
-    public void visitFieldInsn(
-      int opcode,
-      String owner,
-      String name,
-      String desc) {
+    public void visitFieldInsn(int opcode, String owner, String name, String desc) {
 
       addInternalName(owner);
       addDesc(desc);
@@ -299,11 +268,7 @@ public class DependencyWalker implements Walker {
 
     @Override
     public void visitMethodInsn(
-      int opcode,
-      String owner,
-      String name,
-      String desc,
-      boolean isInterface) {
+        int opcode, String owner, String name, String desc, boolean isInterface) {
 
       addInternalName(owner);
       addMethodDesc(desc);
@@ -311,11 +276,7 @@ public class DependencyWalker implements Walker {
     }
 
     @Override
-    public void visitInvokeDynamicInsn(
-      String name,
-      String desc,
-      Handle bsm,
-      Object... bsmArgs) {
+    public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
 
       addMethodDesc(desc);
       addConstant(bsm);
@@ -334,41 +295,31 @@ public class DependencyWalker implements Walker {
 
     @Override
     public void visitLocalVariable(
-      String name,
-      String desc,
-      String signature,
-      Label start,
-      Label end,
-      int index) {
+        String name, String desc, String signature, Label start, Label end, int index) {
 
       if (signature == null) {
         addDesc(desc);
-      }
-      else {
+      } else {
         addSignature(signature);
       }
     }
 
     @Override
     public AnnotationVisitor visitLocalVariableAnnotation(
-      int typeRef,
-      TypePath typePath,
-      Label[] start,
-      Label[] end,
-      int[] index,
-      String desc,
-      boolean visible) {
+        int typeRef,
+        TypePath typePath,
+        Label[] start,
+        Label[] end,
+        int[] index,
+        String desc,
+        boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
     }
 
     @Override
-    public void visitTryCatchBlock(
-      Label start,
-      Label end,
-      Label handler,
-      String type) {
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
 
       if (type != null) {
         addInternalName(type);
@@ -377,10 +328,7 @@ public class DependencyWalker implements Walker {
 
     @Override
     public AnnotationVisitor visitTryCatchAnnotation(
-      int typeRef,
-      TypePath typePath,
-      String desc,
-      boolean visible) {
+        int typeRef, TypePath typePath, String desc, boolean visible) {
 
       addDesc(desc);
       return new AnnotationDependencyVisitor();
@@ -413,21 +361,21 @@ public class DependencyWalker implements Walker {
 
   private void addType(Type t) {
     switch (t.getSort()) {
-    case Type.ARRAY:
-      addType(t.getElementType());
-      break;
-    case Type.OBJECT:
-      addName(t.getInternalName());
-      break;
-    case Type.METHOD:
-      addMethodDesc(t.getDescriptor());
-      break;
+      case Type.ARRAY:
+        addType(t.getElementType());
+        break;
+      case Type.OBJECT:
+        addName(t.getInternalName());
+        break;
+      case Type.METHOD:
+        addMethodDesc(t.getDescriptor());
+        break;
     }
   }
 
   private void addMethodDesc(String desc) {
     addType(Type.getReturnType(desc));
-    for (final Type t: Type.getArgumentTypes(desc)) {
+    for (final Type t : Type.getArgumentTypes(desc)) {
       addType(t);
     }
   }
@@ -449,7 +397,7 @@ public class DependencyWalker implements Walker {
   }
 
   private void addInternalNames(String[] names) {
-    for (final String n: names) {
+    for (final String n : names) {
       addInternalName(n);
     }
   }
@@ -457,8 +405,7 @@ public class DependencyWalker implements Walker {
   private void addConstant(Object cst) {
     if (cst instanceof Type) {
       addType((Type) cst);
-    }
-    else if (cst instanceof Handle) {
+    } else if (cst instanceof Handle) {
       final Handle h = (Handle) cst;
       addInternalName(h.getOwner());
       addMethodDesc(h.getDesc());
@@ -466,45 +413,46 @@ public class DependencyWalker implements Walker {
   }
 
   private void addConstants(Object[] cst) {
-    for (final Object c: cst) {
+    for (final Object c : cst) {
       addConstant(c);
     }
   }
 
   private String typeString(Type t) {
     switch (t.getSort()) {
-    case Type.BOOLEAN:
-      return "boolean";
-    case Type.CHAR:
-      return "char";
-    case Type.BYTE:
-      return "byte";
-    case Type.SHORT:
-      return "short";
-    case Type.INT:
-      return "int";
-    case Type.FLOAT:
-      return "float";
-    case Type.LONG:
-      return "long";
-    case Type.DOUBLE:
-      return "double";
-    case Type.ARRAY:
-      return typeString(t.getElementType()) + "[]".repeat(t.getDimensions());
-    case Type.OBJECT:
-      return t.getInternalName();
-    default:
-      throw new IllegalArgumentException();
+      case Type.BOOLEAN:
+        return "boolean";
+      case Type.CHAR:
+        return "char";
+      case Type.BYTE:
+        return "byte";
+      case Type.SHORT:
+        return "short";
+      case Type.INT:
+        return "int";
+      case Type.FLOAT:
+        return "float";
+      case Type.LONG:
+        return "long";
+      case Type.DOUBLE:
+        return "double";
+      case Type.ARRAY:
+        return typeString(t.getElementType()) + "[]".repeat(t.getDimensions());
+      case Type.OBJECT:
+        return t.getInternalName();
+      default:
+        throw new IllegalArgumentException();
     }
   }
 
   private void addMethod(String owner, String name, String desc) {
     final List<String> args = new ArrayList<>();
-    for (final Type t: Type.getArgumentTypes(desc)) {
+    for (final Type t : Type.getArgumentTypes(desc)) {
       args.add(typeString(t));
     }
 
-    methodCallback.accept((owner + "." + name + "(" + String.join(", ", args) + ")").replace('/', '.'));
+    methodCallback.accept(
+        (owner + "." + name + "(" + String.join(", ", args) + ")").replace('/', '.'));
   }
 
   private void addField(String owner, String name) {

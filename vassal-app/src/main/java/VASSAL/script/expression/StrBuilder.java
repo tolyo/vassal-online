@@ -29,14 +29,13 @@ import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ButtonFactory;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import net.miginfocom.swing.MigLayout;
 
 public class StrBuilder extends JDialog {
   private static final long serialVersionUID = 1L;
@@ -54,17 +53,16 @@ public class StrBuilder extends JDialog {
   }
 
   protected void build(String type) {
-    setLayout(new MigLayout("fillx")); //NON-NLS
+    setLayout(new MigLayout("fillx")); // NON-NLS
 
     final JPanel p = new JPanel();
-    p.setLayout(new MigLayout("fillx", "[grow 0]rel[grow 1]")); //NON-NLS
+    p.setLayout(new MigLayout("fillx", "[grow 0]rel[grow 1]")); // NON-NLS
 
-    p.add(new JLabel(type + ":"), "growx"); //NON-NLS
+    p.add(new JLabel(type + ":"), "growx"); // NON-NLS
     entry = new StringConfigurer("", "");
-    p.add(entry.getControls(), "wrap,growx"); //NON-NLS
+    p.add(entry.getControls(), "wrap,growx"); // NON-NLS
 
-
-    final JPanel buttonBox = new JPanel(new MigLayout("", "[]rel[]rel[]")); //NON-NLS
+    final JPanel buttonBox = new JPanel(new MigLayout("", "[]rel[]rel[]")); // NON-NLS
     final JButton okButton = ButtonFactory.getOkButton();
     okButton.addActionListener(e -> save());
     buttonBox.add(okButton);
@@ -73,8 +71,8 @@ public class StrBuilder extends JDialog {
     cancelButton.addActionListener(e -> cancel());
     buttonBox.add(cancelButton);
 
-    p.add(buttonBox, "span 2,align center"); //NON-NLS
-    add(p, "growx"); //NON-NLS
+    p.add(buttonBox, "span 2,align center"); // NON-NLS
+    add(p, "growx"); // NON-NLS
 
     // Default actions for Enter/ESC
     SwingUtils.setDefaultButtons(getRootPane(), okButton, cancelButton);
@@ -82,12 +80,13 @@ public class StrBuilder extends JDialog {
     pack();
     setLocationRelativeTo(getParent());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent we) {
-        cancel();
-      }
-    });
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent we) {
+            cancel();
+          }
+        });
   }
 
   protected void save() {
@@ -103,5 +102,4 @@ public class StrBuilder extends JDialog {
   protected void cancel() {
     dispose();
   }
-
 }

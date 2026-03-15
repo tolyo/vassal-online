@@ -20,17 +20,13 @@ package VASSAL.build.module.metadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-/**
- * Class representing the metadata for an Importable file.
- */
+/** Class representing the metadata for an Importable file. */
 public class ImportMetaData extends AbstractMetaData {
 
   public static final String DATA_VERSION = "1";
 
   @Override
-  protected void addElements(Document doc, Element root) {
-
-  }
+  protected void addElements(Document doc, Element root) {}
 
   @Override
   public String getMetaDataVersion() {

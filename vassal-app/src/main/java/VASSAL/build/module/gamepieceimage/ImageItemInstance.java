@@ -18,18 +18,17 @@
 
 package VASSAL.build.module.gamepieceimage;
 
-import java.awt.Image;
-import java.io.File;
-
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Image;
+import java.io.File;
 
 public class ImageItemInstance extends ItemInstance {
 
-  protected static final String IMAGE = "image"; //$NON-NLS-1$
+  protected static final String IMAGE = "image"; // $NON-NLS-1$
 
-  protected String imageName = ""; //$NON-NLS-1$
+  protected String imageName = ""; // $NON-NLS-1$
 
   private final VisibilityCondition imageCond = () -> !((ImageItem) getItem()).isFixed();
 
@@ -41,7 +40,6 @@ public class ImageItemInstance extends ItemInstance {
     super(defn);
     decode(code);
   }
-
 
   public ImageItemInstance(String name, String type, String location) {
     super(name, type, location);
@@ -55,19 +53,16 @@ public class ImageItemInstance extends ItemInstance {
   @Override
   public String encode() {
     final SequenceEncoder se = new SequenceEncoder(';');
-    se.append(getType())
-      .append(getName())
-      .append(getLocation())
-      .append(imageName);
+    se.append(getType()).append(getName()).append(getLocation()).append(imageName);
     return se.getValue();
   }
 
   public void decode(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
-    setType(sd.nextToken("")); //$NON-NLS-1$
-    setName(sd.nextToken("")); //$NON-NLS-1$
-    setLocation(sd.nextToken("")); //$NON-NLS-1$
-    imageName = sd.nextToken(""); //$NON-NLS-1$
+    setType(sd.nextToken("")); // $NON-NLS-1$
+    setName(sd.nextToken("")); // $NON-NLS-1$
+    setLocation(sd.nextToken("")); // $NON-NLS-1$
+    imageName = sd.nextToken(""); // $NON-NLS-1$
   }
 
   public String getImageName() {
@@ -76,17 +71,19 @@ public class ImageItemInstance extends ItemInstance {
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[] { Resources.getString("Editor.image_label") };
+    return new String[] {Resources.getString("Editor.image_label")};
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] { Image.class, };
+    return new Class<?>[] {
+      Image.class,
+    };
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] { IMAGE };
+    return new String[] {IMAGE};
   }
 
   @Override
@@ -94,17 +91,14 @@ public class ImageItemInstance extends ItemInstance {
     if (IMAGE.equals(key)) {
       if (o instanceof String) {
         imageName = (String) o;
-      }
-      else {
+      } else {
         if (o == null) {
           imageName = null;
-        }
-        else {
+        } else {
           imageName = ((File) o).getName();
         }
       }
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
     if (myConfig != null) {
@@ -117,8 +111,7 @@ public class ImageItemInstance extends ItemInstance {
 
     if (IMAGE.equals(key)) {
       return imageName;
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -127,10 +120,8 @@ public class ImageItemInstance extends ItemInstance {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (IMAGE.equals(name)) {
       return imageCond;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
-
 }

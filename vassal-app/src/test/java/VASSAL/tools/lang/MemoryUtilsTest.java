@@ -18,30 +18,26 @@
 
 package VASSAL.tools.lang;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class MemoryUtilsTest {
   @Test
-  @EnabledOnOs({ OS.LINUX })
+  @EnabledOnOs({OS.LINUX})
   public void testGetPhysicalMemoryLinux() throws IOException {
 
     // get the total RAM from the system, in kB
-    final Process p = Runtime.getRuntime().exec(new String[] {
-      "sh",
-      "-c",
-      "grep '^MemTotal:' /proc/meminfo | sed 's/[^0-9]//g'"
-    });
+    final Process p =
+        Runtime.getRuntime()
+            .exec(new String[] {"sh", "-c", "grep '^MemTotal:' /proc/meminfo | sed 's/[^0-9]//g'"});
 
-    final BufferedReader r =
-      new BufferedReader(new InputStreamReader(p.getInputStream()));
+    final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
     final int eRAM = Integer.parseInt(r.readLine());
     r.close();
@@ -52,14 +48,14 @@ public class MemoryUtilsTest {
 
   // FIXME: how to get RAM on MacOS?
   @Test
-  @EnabledOnOs({ OS.MAC })
+  @EnabledOnOs({OS.MAC})
   public void testGetPhysicalMemoryMacOS() {
     assertTrue(true);
   }
 
   // FIXME: how to get RAM on Windows?
   @Test
-  @EnabledOnOs({ OS.WINDOWS })
+  @EnabledOnOs({OS.WINDOWS})
   public void testGetPhysicalMemoryWindows() {
     assertTrue(true);
   }

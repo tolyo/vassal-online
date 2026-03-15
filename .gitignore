@@ -19,8 +19,12 @@ buildNumber.properties
 .idea/
 .vscode/
 .metals/
+.bloop/
 .bsp/
 .scala-build/
+.m2/
+node_modules/
+.husky/_/
 .project
 .classpath
 .settings/

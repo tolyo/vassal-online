@@ -18,16 +18,14 @@
 
 package VASSAL.tools.logging;
 
+import VASSAL.tools.ReadErrorDialog;
+import VASSAL.tools.io.Tailer;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.JTextArea;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-
-import VASSAL.tools.ReadErrorDialog;
-import VASSAL.tools.io.Tailer;
 
 public class LogPane extends JTextArea {
   private static final long serialVersionUID = 1L;
@@ -43,30 +41,31 @@ public class LogPane extends JTextArea {
 
     tailer = new Tailer(file);
 
-    tailer.addEventListener((src, s) -> {
-      // NB: JTextArea.append() is thread-safe; it can be called off-EDT.
-      append(s);
-    });
+    tailer.addEventListener(
+        (src, s) -> {
+          // NB: JTextArea.append() is thread-safe; it can be called off-EDT.
+          append(s);
+        });
 
     // tail the file only when the pane is visible
-    addAncestorListener(new AncestorListener() {
-      @Override
-      public void ancestorRemoved(AncestorEvent e) {
-        tailer.stop();
-      }
+    addAncestorListener(
+        new AncestorListener() {
+          @Override
+          public void ancestorRemoved(AncestorEvent e) {
+            tailer.stop();
+          }
 
-      @Override
-      public void ancestorAdded(AncestorEvent e) {
-        try {
-          tailer.start();
-        }
-        catch (IOException ex) {
-          ReadErrorDialog.error(ex, tailer.getFile());
-        }
-      }
+          @Override
+          public void ancestorAdded(AncestorEvent e) {
+            try {
+              tailer.start();
+            } catch (IOException ex) {
+              ReadErrorDialog.error(ex, tailer.getFile());
+            }
+          }
 
-      @Override
-      public void ancestorMoved(AncestorEvent e) {}
-    });
+          @Override
+          public void ancestorMoved(AncestorEvent e) {}
+        });
   }
 }

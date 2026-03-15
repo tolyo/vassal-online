@@ -20,26 +20,31 @@ package VASSAL.chat;
 import VASSAL.build.module.ServerConnection;
 import VASSAL.command.Command;
 
- /**
-  * Specialized interface for chat-room server connections
-  * @author rkinney
-  *
-  */
+/**
+ * Specialized interface for chat-room server connections
+ *
+ * @author rkinney
+ */
 public interface ChatServerConnection extends ServerConnection {
   /** Property representing the currently-occupied room */
-  String ROOM = "Room"; //$NON-NLS-1$
-  /** Property representing the list of all rooms */
-  String AVAILABLE_ROOMS = "AvailableRooms"; //$NON-NLS-1$
-  /** Property representing an informational message (e.g. "Connection succeeded")*/
-  String STATUS = "Status"; //$NON-NLS-1$
-  /** Property representing the current player's information */
-  String PLAYER_INFO = "Player"; //$NON-NLS-1$
-  /** Property representing a message received from the remove server */
-  String INCOMING_MSG = "Msg"; //$NON-NLS-1$
-  /** Property representing the StatusServer implementation */
-  String STATUS_SERVER = "StatusServer"; //$NON-NLS-1$
+  String ROOM = "Room"; // $NON-NLS-1$
 
-  String DEFAULT_ROOM_NAME = "Main Room"; //$NON-NLS-1$
+  /** Property representing the list of all rooms */
+  String AVAILABLE_ROOMS = "AvailableRooms"; // $NON-NLS-1$
+
+  /** Property representing an informational message (e.g. "Connection succeeded") */
+  String STATUS = "Status"; // $NON-NLS-1$
+
+  /** Property representing the current player's information */
+  String PLAYER_INFO = "Player"; // $NON-NLS-1$
+
+  /** Property representing a message received from the remove server */
+  String INCOMING_MSG = "Msg"; // $NON-NLS-1$
+
+  /** Property representing the StatusServer implementation */
+  String STATUS_SERVER = "StatusServer"; // $NON-NLS-1$
+
+  String DEFAULT_ROOM_NAME = "Main Room"; // $NON-NLS-1$
 
   /** Return the room currently occupied by the player */
   Room getRoom();

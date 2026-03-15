@@ -26,7 +26,11 @@ import org.junit.jupiter.api.Test;
 public class HideableTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Hideable trait = new Hideable();
 

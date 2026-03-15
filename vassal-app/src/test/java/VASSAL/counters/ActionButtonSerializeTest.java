@@ -1,18 +1,16 @@
 package VASSAL.counters;
 
-import java.awt.Rectangle;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import VASSAL.tools.NamedKeyStroke;
-
+import java.awt.Rectangle;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ActionButtonSerializeTest extends SerializeTest<ActionButton> {
   @Test
   public void serialize() throws Exception {
     ActionButton button = new ActionButton();
-    button.bounds = new Rectangle(1,2,3,4);
+    button.bounds = new Rectangle(1, 2, 3, 4);
     button.description = "testDesc";
     button.stroke = NamedKeyStroke.of("A");
     super.serializeTest(ActionButton.class, button);

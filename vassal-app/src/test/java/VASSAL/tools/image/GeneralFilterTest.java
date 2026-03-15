@@ -18,9 +18,9 @@
 
 package VASSAL.tools.image;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -36,14 +36,20 @@ public class GeneralFilterTest {
 
     int type;
     switch (Integer.parseInt(args[2])) {
-    case 0: type = BufferedImage.TYPE_INT_ARGB; break;
-    case 1: type = BufferedImage.TYPE_INT_ARGB_PRE; break;
-    case 2: type = BufferedImage.TYPE_INT_RGB; break;
-    default: throw new IllegalArgumentException();
+      case 0:
+        type = BufferedImage.TYPE_INT_ARGB;
+        break;
+      case 1:
+        type = BufferedImage.TYPE_INT_ARGB_PRE;
+        break;
+      case 2:
+        type = BufferedImage.TYPE_INT_RGB;
+        break;
+      default:
+        throw new IllegalArgumentException();
     }
 
-    final BufferedImage tmp =
-      new BufferedImage(src.getWidth(), src.getHeight(), type);
+    final BufferedImage tmp = new BufferedImage(src.getWidth(), src.getHeight(), type);
 
     final Graphics2D g = tmp.createGraphics();
     g.drawImage(src, 0, 0, null);
@@ -64,7 +70,7 @@ public class GeneralFilterTest {
       acc += t;
     }
 
-    System.out.println((double) acc/100);
+    System.out.println((double) acc / 100);
 
     System.out.println("Done.");
     System.in.read();

@@ -17,6 +17,11 @@
  */
 package VASSAL.build.module.map.boardPicker.board.mapgrid;
 
+import VASSAL.build.Buildable;
+import VASSAL.build.module.map.boardPicker.board.HexGrid;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.image.LabelUtils;
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -26,17 +31,9 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import org.apache.commons.lang3.ArrayUtils;
-
-import VASSAL.build.Buildable;
-import VASSAL.build.module.map.boardPicker.board.HexGrid;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.image.LabelUtils;
-import VASSAL.tools.swing.SwingUtils;
 
 public class HexGridNumbering extends RegularGridNumbering {
   private HexGrid grid;
@@ -48,7 +45,7 @@ public class HexGridNumbering extends RegularGridNumbering {
     grid.setGridNumbering(this);
   }
 
-  public static final String STAGGER = "stagger"; //NON-NLS
+  public static final String STAGGER = "stagger"; // NON-NLS
 
   public HexGrid getGrid() {
     return grid;
@@ -57,25 +54,17 @@ public class HexGridNumbering extends RegularGridNumbering {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.add(
-      super.getAttributeDescriptions(),
-      Resources.getString("Editor.HexGridNumbering.stagger")
-    );
+        super.getAttributeDescriptions(), Resources.getString("Editor.HexGridNumbering.stagger"));
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.add(
-      super.getAttributeNames(),
-      STAGGER
-    );
+    return ArrayUtils.add(super.getAttributeNames(), STAGGER);
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return ArrayUtils.add(
-      super.getAttributeTypes(),
-      Boolean.class
-    );
+    return ArrayUtils.add(super.getAttributeTypes(), Boolean.class);
   }
 
   @Override
@@ -85,8 +74,7 @@ public class HexGridNumbering extends RegularGridNumbering {
         value = Boolean.valueOf((String) value);
       }
       stagger = (Boolean) value;
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -95,22 +83,23 @@ public class HexGridNumbering extends RegularGridNumbering {
   public String getAttributeValueString(String key) {
     if (STAGGER.equals(key)) {
       return String.valueOf(stagger);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
 
   /** Draw the numbering if visible */
   @Override
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
+  public void draw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
     if (visible) {
       forceDraw(g, bounds, visibleRect, scale, reversed);
     }
   }
 
   /** Draw the numbering, even if not visible */
-  public void forceDraw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
+  public void forceDraw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
     final int size = (int) (scale * fontSize + 0.5);
     if (size < 5) {
       return;
@@ -119,11 +108,9 @@ public class HexGridNumbering extends RegularGridNumbering {
     final Graphics2D g2d = (Graphics2D) g;
     final AffineTransform oldT = g2d.getTransform();
     if (reversed) {
-      final AffineTransform t = AffineTransform.getRotateInstance(
-        Math.PI,
-        bounds.x + 0.5 * bounds.width,
-        bounds.y + 0.5 * bounds.height
-      );
+      final AffineTransform t =
+          AffineTransform.getRotateInstance(
+              Math.PI, bounds.x + 0.5 * bounds.width, bounds.y + 0.5 * bounds.height);
       g2d.transform(t);
       visibleRect = t.createTransformedShape(visibleRect).getBounds();
     }
@@ -149,10 +136,15 @@ public class HexGridNumbering extends RegularGridNumbering {
       region = new Rectangle(region.y, region.x, region.height, region.width);
     }
 
-    final int minCol = 2 * (int) Math.floor(((region.x - bounds.x - scale * grid.getOrigin().x) / deltaX - 0.5) / 2.0);
+    final int minCol =
+        2
+            * (int)
+                Math.floor(
+                    ((region.x - bounds.x - scale * grid.getOrigin().x) / deltaX - 0.5) / 2.0);
     final double xmin = bounds.x + scale * grid.getOrigin().x + deltaX * minCol;
     final double xmax = region.x + region.width + deltaX;
-    final int minRow = (int) Math.floor((region.y - bounds.y - scale * grid.getOrigin().y) / deltaY);
+    final int minRow =
+        (int) Math.floor((region.y - bounds.y - scale * grid.getOrigin().y) / deltaY);
     final double ymin = bounds.y + scale * grid.getOrigin().y + deltaY * minRow;
     final double ymax = region.y + region.height + deltaY;
 
@@ -192,7 +184,15 @@ public class HexGridNumbering extends RegularGridNumbering {
     g2d.setTransform(oldT);
   }
 
-  private void drawLabel(Graphics2D g2d, Rectangle bounds, double scale, Point p, Point gridp, int offset, int alignment, Font f) {
+  private void drawLabel(
+      Graphics2D g2d,
+      Rectangle bounds,
+      double scale,
+      Point p,
+      Point gridp,
+      int offset,
+      int alignment,
+      Font f) {
     gridp.setLocation(p.x, p.y - offset);
     grid.rotateIfSideways(p);
 
@@ -204,10 +204,16 @@ public class HexGridNumbering extends RegularGridNumbering {
 
     final Point centerPoint = offsetLabelCenter(p, scale);
     LabelUtils.drawLabel(
-      g2d, getName(getRow(gridp), getColumn(gridp)),
-      centerPoint.x, centerPoint.y,
-      f, LabelUtils.CENTER, alignment, color, null, null
-    );
+        g2d,
+        getName(getRow(gridp), getColumn(gridp)),
+        centerPoint.x,
+        centerPoint.y,
+        f,
+        LabelUtils.CENTER,
+        alignment,
+        color,
+        null,
+        null);
   }
 
   @Override
@@ -215,33 +221,23 @@ public class HexGridNumbering extends RegularGridNumbering {
     if (stagger) {
       if (grid.isSideways()) {
         if (col % 2 != 0) {
-          if (hDescending)
-            row++;
-          else
-            row--;
+          if (hDescending) row++;
+          else row--;
         }
-      }
-      else {
+      } else {
         if (col % 2 != 0) {
-          if (vDescending)
-            row++;
-          else
-            row--;
+          if (vDescending) row++;
+          else row--;
         }
       }
     }
 
     if (grid.isSideways()) {
-      if (vDescending)
-        col = getMaxRows() - col;
-      if (hDescending)
-        row = getMaxColumns() - row;
-    }
-    else {
-      if (hDescending)
-        col = getMaxColumns() - col;
-      if (vDescending)
-        row = getMaxRows() - row;
+      if (vDescending) col = getMaxRows() - col;
+      if (hDescending) row = getMaxColumns() - row;
+    } else {
+      if (hDescending) col = getMaxColumns() - col;
+      if (vDescending) row = getMaxRows() - row;
     }
 
     final Point p = new Point();
@@ -249,10 +245,8 @@ public class HexGridNumbering extends RegularGridNumbering {
     p.x = (int) (col * grid.getHexWidth());
     p.x += grid.getOrigin().x;
 
-    if (col % 2 == 0)
-      p.y = (int) (row * grid.getHexSize());
-    else
-      p.y = (int) (row * grid.getHexSize() + grid.getHexSize() / 2);
+    if (col % 2 == 0) p.y = (int) (row * grid.getHexSize());
+    else p.y = (int) (row * grid.getHexSize() + grid.getHexSize() / 2);
     p.y += grid.getOrigin().y;
 
     grid.rotateIfSideways(p);
@@ -281,40 +275,42 @@ public class HexGridNumbering extends RegularGridNumbering {
   @Override
   protected JComponent getGridVisualizer() {
     if (visualizer == null) {
-      visualizer = new JPanel() {
-        private static final long serialVersionUID = 1L;
+      visualizer =
+          new JPanel() {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void paint(Graphics g) {
-          final Graphics2D g2d = (Graphics2D) g;
-          final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
-          final AffineTransform orig_t = g2d.getTransform();
-          g2d.setTransform(SwingUtils.descaleTransform(orig_t));
+            @Override
+            public void paint(Graphics g) {
+              final Graphics2D g2d = (Graphics2D) g;
+              final double os_scale =
+                  g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
+              final AffineTransform orig_t = g2d.getTransform();
+              g2d.setTransform(SwingUtils.descaleTransform(orig_t));
 
-          final double orig_grid_size = grid.getHexSize();
-          final double orig_grid_width = grid.getHexWidth();
-          grid.setHexSize(VISUALIZER_GRID_SIZE);
+              final double orig_grid_size = grid.getHexSize();
+              final double orig_grid_width = grid.getHexWidth();
+              grid.setHexSize(VISUALIZER_GRID_SIZE);
 
-          final Rectangle bounds = new Rectangle(0, 0, getWidth(), getHeight());
-          bounds.x *= os_scale;
-          bounds.y *= os_scale;
-          bounds.width *= os_scale;
-          bounds.height *= os_scale;
+              final Rectangle bounds = new Rectangle(0, 0, getWidth(), getHeight());
+              bounds.x *= os_scale;
+              bounds.y *= os_scale;
+              bounds.width *= os_scale;
+              bounds.height *= os_scale;
 
-          g.clearRect(0, 0, bounds.width, bounds.height);
-          grid.forceDraw(g, bounds, bounds, os_scale, false);
-          forceDraw(g, bounds, bounds, os_scale, false);
+              g.clearRect(0, 0, bounds.width, bounds.height);
+              grid.forceDraw(g, bounds, bounds, os_scale, false);
+              forceDraw(g, bounds, bounds, os_scale, false);
 
-          g2d.setTransform(orig_t);
-          grid.setHexSize(orig_grid_size);
-          grid.setHexWidth(orig_grid_width);
-        }
+              g2d.setTransform(orig_t);
+              grid.setHexSize(orig_grid_size);
+              grid.setHexWidth(orig_grid_width);
+            }
 
-        @Override
-        public Dimension getPreferredSize() {
-          return new Dimension(6 * (int) VISUALIZER_GRID_SIZE, 4 * (int) VISUALIZER_GRID_SIZE);
-        }
-      };
+            @Override
+            public Dimension getPreferredSize() {
+              return new Dimension(6 * (int) VISUALIZER_GRID_SIZE, 4 * (int) VISUALIZER_GRID_SIZE);
+            }
+          };
     }
     return visualizer;
   }
@@ -336,18 +332,15 @@ public class HexGridNumbering extends RegularGridNumbering {
         if (getRawColumn(p) % 2 != 0) {
           if (hDescending) {
             ny--;
-          }
-          else {
+          } else {
             ny++;
           }
         }
-      }
-      else {
+      } else {
         if (getRawColumn(p) % 2 != 0) {
           if (vDescending) {
             ny--;
-          }
-          else {
+          } else {
             ny++;
           }
         }

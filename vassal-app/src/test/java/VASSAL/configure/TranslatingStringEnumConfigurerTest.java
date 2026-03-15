@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.is;
 import VASSAL.i18n.Resources;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -35,21 +34,31 @@ public class TranslatingStringEnumConfigurerTest {
     try (MockedStatic<Resources> staticResources = Mockito.mockStatic(Resources.class)) {
 
       // Mock a translation of A/B/C to X/Y/Z
-      staticResources.when(() -> {
-        Resources.getString(key1);
-      }).thenReturn(tran1);
-      staticResources.when(() -> {
-        Resources.getString(key2);
-      }).thenReturn(tran2);
-      staticResources.when(() -> {
-        Resources.getString(key3);
-      }).thenReturn(tran3);
+      staticResources
+          .when(
+              () -> {
+                Resources.getString(key1);
+              })
+          .thenReturn(tran1);
+      staticResources
+          .when(
+              () -> {
+                Resources.getString(key2);
+              })
+          .thenReturn(tran2);
+      staticResources
+          .when(
+              () -> {
+                Resources.getString(key3);
+              })
+          .thenReturn(tran3);
     }
 
-    // Check basic functionality is working. All Constructors eventually track through this Constructor.
-    TranslatingStringEnumConfigurer config = new TranslatingStringEnumConfigurer(key, name,
-      new String[] {option1, option2, option3},
-      new String[] {key1, key2, key3});
+    // Check basic functionality is working. All Constructors eventually track through this
+    // Constructor.
+    TranslatingStringEnumConfigurer config =
+        new TranslatingStringEnumConfigurer(
+            key, name, new String[] {option1, option2, option3}, new String[] {key1, key2, key3});
     config.getControls();
 
     // Should default to first entry when not specified
@@ -90,5 +99,4 @@ public class TranslatingStringEnumConfigurerTest {
     assertThat(validValues[1], is(equalTo(option2)));
     assertThat(validValues[2], is(equalTo(option3)));
   }
-
 }

@@ -44,20 +44,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.Translatable;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.swing.SwingUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -73,14 +59,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.WindowConstants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
- * This class is responsible for maintaining the {@link Board}s on a {@link Map}. As a {@link CommandEncoder}, it
- * recognizes {@link Command}s that specify the set of boards to be used on a map. As a {@link GameComponent} it reacts
- * to the start of a game by prompting the player to select boards if none have been specified.
+ * This class is responsible for maintaining the {@link Board}s on a {@link Map}. As a {@link
+ * CommandEncoder}, it recognizes {@link Command}s that specify the set of boards to be used on a
+ * map. As a {@link GameComponent} it reacts to the start of a game by prompting the player to
+ * select boards if none have been specified.
  */
-public class BoardPicker extends AbstractBuildable implements ActionListener, GameComponent, GameSetupStep, Configurable, CommandEncoder, ValidityChecker {
-  public static final String ID = "BoardPicker"; //$NON-NLS-1$
+public class BoardPicker extends AbstractBuildable
+    implements ActionListener,
+        GameComponent,
+        GameSetupStep,
+        Configurable,
+        CommandEncoder,
+        ValidityChecker {
+  public static final String ID = "BoardPicker"; // $NON-NLS-1$
   protected List<Board> possibleBoards = new ArrayList<>();
   protected List<Board> currentBoards = null;
   protected Dimension psize = new Dimension(350, 125);
@@ -88,7 +94,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   protected JLabel statusLabel;
   protected Map map;
   protected JPanel slotPanel;
-  protected String version = "0.0"; //$NON-NLS-1$
+  protected String version = "0.0"; // $NON-NLS-1$
   protected int nx = 1, ny = 1;
   protected JToolBar toolbar;
   protected JPanel controls;
@@ -96,21 +102,22 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   protected JButton addColumnButton;
   protected boolean allowMultiple;
   protected int maxColumns;
-  protected String title = Resources.getString("BoardPicker.choose_boards"); //$NON-NLS-1$
-  protected String addRowButtonText = Resources.getString("BoardPicker.add_row"); //$NON-NLS-1$
-  protected String addColumnButtonText = Resources.getString("BoardPicker.add_column"); //$NON-NLS-1$
-  protected String boardPrompt = Resources.getString("BoardPicker.select_board"); //$NON-NLS-1$
+  protected String title = Resources.getString("BoardPicker.choose_boards"); // $NON-NLS-1$
+  protected String addRowButtonText = Resources.getString("BoardPicker.add_row"); // $NON-NLS-1$
+  protected String addColumnButtonText =
+      Resources.getString("BoardPicker.add_column"); // $NON-NLS-1$
+  protected String boardPrompt = Resources.getString("BoardPicker.select_board"); // $NON-NLS-1$
   protected String defaultSetup;
   protected List<JButton> multipleButtons;
-  public static final String SCALE = "slotScale"; //$NON-NLS-1$
-  public static final String SLOT_HEIGHT = "slotHeight"; //$NON-NLS-1$
-  public static final String SLOT_WIDTH = "slotWidth"; //$NON-NLS-1$
-  public static final String SETUP = "setup"; //$NON-NLS-1$
-  public static final String DIALOG_TITLE = "title"; //$NON-NLS-1$
-  public static final String ADD_ROW_BUTTON_TEXT = "addRowText"; //$NON-NLS-1$
-  public static final String ADD_COLUMN_BUTTON_TEXT = "addColumnText"; //$NON-NLS-1$
-  public static final String BOARD_PROMPT = "boardPrompt"; //$NON-NLS-1$
-  public static final String MAX_COLUMNS = "maxColumns"; //$NON-NLS-1$
+  public static final String SCALE = "slotScale"; // $NON-NLS-1$
+  public static final String SLOT_HEIGHT = "slotHeight"; // $NON-NLS-1$
+  public static final String SLOT_WIDTH = "slotWidth"; // $NON-NLS-1$
+  public static final String SETUP = "setup"; // $NON-NLS-1$
+  public static final String DIALOG_TITLE = "title"; // $NON-NLS-1$
+  public static final String ADD_ROW_BUTTON_TEXT = "addRowText"; // $NON-NLS-1$
+  public static final String ADD_COLUMN_BUTTON_TEXT = "addColumnText"; // $NON-NLS-1$
+  public static final String BOARD_PROMPT = "boardPrompt"; // $NON-NLS-1$
+  public static final String MAX_COLUMNS = "maxColumns"; // $NON-NLS-1$
   protected JButton clearButton;
   protected JButton okButton;
   protected ComponentI18nData myI18nData;
@@ -123,7 +130,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   protected void initComponents() {
     multipleButtons = new ArrayList<>();
     controls = new JPanel(new BorderLayout());
-    statusLabel = new JLabel(""); //$NON-NLS-1$
+    statusLabel = new JLabel(""); // $NON-NLS-1$
     statusLabel.setForeground(Color.BLUE);
     slotPanel = new JPanel();
     toolbar = new JToolBar();
@@ -133,7 +140,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     multipleButtons.add(addRowButton);
     addColumnButton = addButton(addColumnButtonText);
     multipleButtons.add(addColumnButton);
-    clearButton = addButton(Resources.getString("BoardPicker.clear")); //$NON-NLS-1$
+    clearButton = addButton(Resources.getString("BoardPicker.clear")); // $NON-NLS-1$
     multipleButtons.add(clearButton);
     setAllowMultiple(allowMultiple);
     controls.add(BorderLayout.NORTH, statusLabel);
@@ -181,8 +188,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
       final Board b = new Board();
       b.build(null);
       b.addTo(this);
-    }
-    else {
+    } else {
       final NodeList l = e.getElementsByTagName(SETUP);
       if (l.getLength() > 0) {
         final Element setupEl = (Element) l.item(0);
@@ -191,32 +197,30 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
         e.removeChild(setupEl);
         Builder.build(e, this);
         e.insertBefore(setupEl, nextSibling);
-      }
-      else {
+      } else {
         Builder.build(e, this);
       }
 
       try {
-        psize = new Dimension(Integer.parseInt(e.getAttribute(SLOT_WIDTH)),
-                              Integer.parseInt(e.getAttribute(SLOT_HEIGHT)));
-      }
-      catch (NumberFormatException ex) {
+        psize =
+            new Dimension(
+                Integer.parseInt(e.getAttribute(SLOT_WIDTH)),
+                Integer.parseInt(e.getAttribute(SLOT_HEIGHT)));
+      } catch (NumberFormatException ex) {
         // Use default values if attribute doesn't parse.
         // Correct value will be written when module is saved.
       }
 
       try {
         slotScale = Double.parseDouble(e.getAttribute(SCALE));
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         // Use default values if attribute doesn't parse.
         // Correct value will be written when module is saved.
       }
 
       try {
         maxColumns = Integer.parseInt(e.getAttribute(MAX_COLUMNS));
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         // Use default values if attribute doesn't parse.
         // Correct value will be written when module is saved.
         maxColumns = 0;
@@ -246,16 +250,25 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   @Override
   public void validate(Buildable target, ValidationReport report) {
     if (possibleBoards.isEmpty()) {
-      report.addWarning(Resources.getString("BoardPicker.must_define", ConfigureTree.getConfigureName(map), Resources.getString("Editor.Map.component_type"))); //$NON-NLS-1$
+      report.addWarning(
+          Resources.getString(
+              "BoardPicker.must_define",
+              ConfigureTree.getConfigureName(map),
+              Resources.getString("Editor.Map.component_type"))); // $NON-NLS-1$
     }
     final Set<String> names = new HashSet<>();
     for (final Board b : possibleBoards) {
       if (names.contains(b.getName())) {
-        report.addWarning(Resources.getString("BoardPicker.more_than_one", b.getName(), ConfigureTree.getConfigureName(map))); //$NON-NLS-1$
+        report.addWarning(
+            Resources.getString(
+                "BoardPicker.more_than_one",
+                b.getName(),
+                ConfigureTree.getConfigureName(map))); // $NON-NLS-1$
       }
       names.add(b.getName());
       if (b.getName() == null) {
-        report.addWarning(Resources.getString("BoardPicker.no_name", ConfigureTree.getConfigureName(map)));
+        report.addWarning(
+            Resources.getString("BoardPicker.no_name", ConfigureTree.getConfigureName(map)));
       }
       b.validate(b, report);
     }
@@ -264,22 +277,23 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     validateComponent(target, report, getAncestor(), boardPickerSeen);
   }
 
-  private void validateComponent(Buildable target, ValidationReport report, Buildable component, boolean boardPickerSeen) {
+  private void validateComponent(
+      Buildable target, ValidationReport report, Buildable component, boolean boardPickerSeen) {
     if (component instanceof AbstractBuildable) {
       for (final Buildable b : ((AbstractBuildable) component).getBuildables()) {
         if (b == target) {
           boardPickerSeen = true;
           return;
-        }
-        else if (b instanceof SetupStack) {
-          report.addWarning(Resources.getString("Editor.BoardPicker.out_of_sequence",
-            Resources.getString("Editor.BoardPicker.component_type"),
-            ((Map) getAncestor()).getConfigureName(),
-            Resources.getString("Editor.Map.component_type"),
-            ((SetupStack) b).getConfigureName()));
+        } else if (b instanceof SetupStack) {
+          report.addWarning(
+              Resources.getString(
+                  "Editor.BoardPicker.out_of_sequence",
+                  Resources.getString("Editor.BoardPicker.component_type"),
+                  ((Map) getAncestor()).getConfigureName(),
+                  Resources.getString("Editor.Map.component_type"),
+                  ((SetupStack) b).getConfigureName()));
           return;
-        }
-        else {
+        } else {
           validateComponent(target, report, b, boardPickerSeen);
           if (boardPickerSeen) {
             return;
@@ -294,7 +308,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     if (defaultSetup == null || defaultSetup.length() == 0) {
       if (possibleBoards.size() == 1) {
         final Board b = possibleBoards.get(0);
-        if (!"true".equals(b.getAttributeValueString(Board.REVERSIBLE))) { //$NON-NLS-1$
+        if (!"true".equals(b.getAttributeValueString(Board.REVERSIBLE))) { // $NON-NLS-1$
           s = encode(new SetBoards(this, Collections.singletonList(b)));
         }
       }
@@ -302,9 +316,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     return s;
   }
 
-  /**
-   * Add a board to the list of those available for the user to choose from
-   */
+  /** Add a board to the list of those available for the user to choose from */
   @Override
   public void add(Buildable b) {
     if (b instanceof Board) {
@@ -313,15 +325,13 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     if (b instanceof Translatable) {
       ((Translatable) b).getI18nData().setOwningComponent(this);
     }
-    super.add(b);  // PG-2011-09-24
+    super.add(b); // PG-2011-09-24
   }
 
-  /**
-   * Remove a board from the list of those available for the user to choose from
-   */
+  /** Remove a board from the list of those available for the user to choose from */
   @Override
   public void remove(Buildable b) {
-    buildComponents.remove(b);  // PG-2011-09-24
+    buildComponents.remove(b); // PG-2011-09-24
     if (b instanceof Board) {
       possibleBoards.remove(b);
     }
@@ -333,7 +343,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.BoardPicker.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.BoardPicker.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -362,20 +372,17 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{Board.class};
+    return new Class<?>[] {Board.class};
   }
 
   @Override
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-  }
+  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {}
 
   public void setBoards(Collection<Board> c) {
     reset();
     for (final Board b : c) {
-      while (b.relativePosition().x > nx - 1)
-        addColumn();
-      while (b.relativePosition().y > ny - 1)
-        addRow();
+      while (b.relativePosition().x > nx - 1) addColumn();
+      while (b.relativePosition().y > ny - 1) addRow();
     }
     for (final Board b : c) {
       getSlot(b.relativePosition().x + nx * b.relativePosition().y).setBoard(b);
@@ -389,11 +396,12 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     final Box b = Box.createVerticalBox();
     final Box buttons = Box.createHorizontalBox();
     final JButton ok = new JButton(Resources.getString(Resources.OK));
-    ok.addActionListener(e -> {
-      final List<Board> l = getBoardsFromControls();
-      defaultSetup = l.isEmpty() ? null : encode(new SetBoards(this, l));
-      d.dispose();
-    });
+    ok.addActionListener(
+        e -> {
+          final List<Board> l = getBoardsFromControls();
+          defaultSetup = l.isEmpty() ? null : encode(new SetBoards(this, l));
+          d.dispose();
+        });
     buttons.add(ok);
     final JButton cancel = new JButton(Resources.getString(Resources.CANCEL));
     cancel.addActionListener(e -> d.dispose());
@@ -412,7 +420,8 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   }
 
   /**
-   * @return a Collection of boards that have been selected either by the user via the dialog or from reading a savefile
+   * @return a Collection of boards that have been selected either by the user via the dialog or
+   *     from reading a savefile
    */
   public Collection<Board> getSelectedBoards() {
     if (currentBoards == null) {
@@ -422,7 +431,8 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   }
 
   /**
-   * @return a List of the names of all boards from which have been selected either by the user via the dialog or from reading a savefile
+   * @return a List of the names of all boards from which have been selected either by the user via
+   *     the dialog or from reading a savefile
    */
   public List<String> getSelectedBoardNames() {
     if (currentBoards == null) {
@@ -468,13 +478,14 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
         return b;
       }
     }
-    warn(Resources.getString("BoardPicker.board_not_found", boardName)); //$NON-NLS-1$
+    warn(Resources.getString("BoardPicker.board_not_found", boardName)); // $NON-NLS-1$
     return null;
   }
 
   /**
-   * When starting a game, check to see if any boards have been specified (via an encoded {@link Command}. If not, show
-   * a dialog to prompt the user for boards. When ending a game, clear the selected boards
+   * When starting a game, check to see if any boards have been specified (via an encoded {@link
+   * Command}. If not, show a dialog to prompt the user for boards. When ending a game, clear the
+   * selected boards
    */
   @Override
   public void setup(boolean show) {
@@ -489,8 +500,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
         }
       }
       map.setBoards(getSelectedBoards());
-    }
-    else {
+    } else {
       currentBoards = null;
     }
   }
@@ -558,15 +568,12 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     if (addColumnButton == e.getSource()) {
       if (maxColumns == 0 || nx < maxColumns) {
         addColumn();
-      }
-      else {
+      } else {
         addRow();
       }
-    }
-    else if (addRowButton == e.getSource()) {
+    } else if (addRowButton == e.getSource()) {
       addRow();
-    }
-    else if (clearButton == e.getSource()) {
+    } else if (clearButton == e.getSource()) {
       reset();
     }
   }
@@ -599,9 +606,8 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   public void reset() {
     if (toolbar == null) {
       initComponents();
-    }
-    else {
-      warn(""); //$NON-NLS-1$
+    } else {
+      warn(""); // $NON-NLS-1$
       removeAllBoards();
       slotPanel.add(new BoardSlot(this, boardPrompt), 0);
     }
@@ -643,7 +649,9 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   }
 
   public BoardSlot getSlot(int i) {
-    return i >= 0 && i < slotPanel.getComponentCount() ? (BoardSlot) slotPanel.getComponent(i) : null;
+    return i >= 0 && i < slotPanel.getComponentCount()
+        ? (BoardSlot) slotPanel.getComponent(i)
+        : null;
   }
 
   public void repaintAll() {
@@ -702,8 +710,8 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
 
   @Override
   public Command decode(String command) {
-    if (!command.startsWith(map.getId() + ID + "\t") &&
-      !command.startsWith(map.getConfigureName() + ID + "\t")) {
+    if (!command.startsWith(map.getId() + ID + "\t")
+        && !command.startsWith(map.getConfigureName() + ID + "\t")) {
       return null;
     }
 
@@ -715,7 +723,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
       final String name = st2.nextToken();
       boolean reversed = false;
       if (st2.hasMoreTokens()) {
-        reversed = "rev".equals(st2.nextToken()); //$NON-NLS-1$
+        reversed = "rev".equals(st2.nextToken()); // $NON-NLS-1$
       }
       final Point p = new Point(st.nextInt(0), st.nextInt(0));
       Board b = getBoard(name);
@@ -737,8 +745,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
       return null;
     }
 
-    final SequenceEncoder se =
-      new SequenceEncoder(map.getIdentifier() + ID, '\t');
+    final SequenceEncoder se = new SequenceEncoder(map.getIdentifier() + ID, '\t');
     final List<Board> bds = ((SetBoards) c).boards;
     if (bds == null) {
       return se.getValue();
@@ -748,11 +755,9 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
       if (b.getName() != null) {
         final SequenceEncoder se2 = new SequenceEncoder(b.getName(), '/');
         if (b.isReversed()) {
-          se2.append("rev"); //$NON-NLS-1$
+          se2.append("rev"); // $NON-NLS-1$
         }
-        se.append(se2.getValue())
-          .append(b.relativePosition().x)
-          .append(b.relativePosition().y);
+        se.append(se2.getValue()).append(b.relativePosition().x).append(b.relativePosition().y);
       }
     }
     return se.getValue();
@@ -792,49 +797,55 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
       super(null, null);
       controls = new ComponentConfigPanel();
 
-
       final StringConfigurer title = new StringConfigurer(BoardPicker.this.title);
-      title.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          BoardPicker.this.title = (String) evt.getNewValue();
-        }
-      });
+      title.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              BoardPicker.this.title = (String) evt.getNewValue();
+            }
+          });
       controls.add("Editor.BoardPicker.dialog_title", title);
 
       final StringConfigurer prompt = new StringConfigurer(BoardPicker.this.boardPrompt);
-      prompt.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          BoardPicker.this.boardPrompt = (String) evt.getNewValue();
-        }
-      });
+      prompt.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              BoardPicker.this.boardPrompt = (String) evt.getNewValue();
+            }
+          });
       controls.add("Editor.BoardPicker.board_prompt", prompt);
 
       final DoubleConfigurer scale = new DoubleConfigurer(slotScale);
-      scale.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          slotScale = (Double) evt.getNewValue();
-        }
-      });
+      scale.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              slotScale = (Double) evt.getNewValue();
+            }
+          });
       controls.add("Editor.BoardPicker.cell_scale_factor", scale);
 
       final IntConfigurer width = new IntConfigurer(psize.width);
-      width.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          psize.width = (Integer) evt.getNewValue();
-        }
-      });
+      width.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              psize.width = (Integer) evt.getNewValue();
+            }
+          });
       controls.add("Editor.BoardPicker.cell_width", width);
 
       final IntConfigurer height = new IntConfigurer(psize.height);
-      height.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          psize.height = (Integer) evt.getNewValue();
-        }
-      });
+      height.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              psize.height = (Integer) evt.getNewValue();
+            }
+          });
       controls.add("Editor.BoardPicker.cell_height", height);
 
-      final JButton selectButton = new JButton(Resources.getString("BoardPicker.select_default")); //$NON-NLS-1$
-      selectButton.addActionListener(e -> selectBoards(e.getSource() instanceof Component ? (Component) e.getSource() : null));
+      final JButton selectButton =
+          new JButton(Resources.getString("BoardPicker.select_default")); // $NON-NLS-1$
+      selectButton.addActionListener(
+          e -> selectBoards(e.getSource() instanceof Component ? (Component) e.getSource() : null));
       controls.add(selectButton, "skip 1,grow 0"); // NON-NLS
     }
 
@@ -849,8 +860,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     }
 
     @Override
-    public void setValue(String s) {
-    }
+    public void setValue(String s) {}
   }
 
   /*
@@ -859,10 +869,17 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   @Override
   public ComponentI18nData getI18nData() {
     if (myI18nData == null) {
-      myI18nData = new ComponentI18nData(this, "", null, //$NON-NLS-1$
-          new String[]{DIALOG_TITLE, BOARD_PROMPT}, new boolean[]{true, true},
-          new String[]{Resources.getString("Editor.BoardPicker.dialog_title"), Resources.getString("Editor.BoardPicker.board_prompt") //$NON-NLS-1$ //$NON-NLS-2$
-          });
+      myI18nData =
+          new ComponentI18nData(
+              this,
+              "",
+              null, //$NON-NLS-1$
+              new String[] {DIALOG_TITLE, BOARD_PROMPT},
+              new boolean[] {true, true},
+              new String[] {
+                Resources.getString("Editor.BoardPicker.dialog_title"),
+                Resources.getString("Editor.BoardPicker.board_prompt") // $NON-NLS-1$ //$NON-NLS-2$
+              });
     }
     return myI18nData;
   }
@@ -871,8 +888,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   public void setAttribute(String key, Object value) {
     if (DIALOG_TITLE.equals(key)) {
       title = (String) value;
-    }
-    else if (BOARD_PROMPT.equals(key)) {
+    } else if (BOARD_PROMPT.equals(key)) {
       boardPrompt = (String) value;
     }
   }
@@ -881,8 +897,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
   public String getAttributeValueString(String attr) {
     if (DIALOG_TITLE.equals(attr)) {
       return title;
-    }
-    else if (BOARD_PROMPT.equals(attr)) {
+    } else if (BOARD_PROMPT.equals(attr)) {
       return boardPrompt;
     }
     return null;
@@ -894,7 +909,7 @@ public class BoardPicker extends AbstractBuildable implements ActionListener, Ga
     }
   }
 
-  @Override  // PG-2011-09-24
+  @Override // PG-2011-09-24
   public String[] getAttributeNames() {
     return new String[0];
   }

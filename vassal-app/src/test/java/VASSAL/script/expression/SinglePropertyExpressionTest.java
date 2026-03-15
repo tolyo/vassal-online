@@ -1,16 +1,13 @@
 package VASSAL.script.expression;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import VASSAL.build.module.properties.PropertySource;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-
 
 public class SinglePropertyExpressionTest implements Auditable {
 

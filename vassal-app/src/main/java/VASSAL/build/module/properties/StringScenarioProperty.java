@@ -7,7 +7,7 @@ import VASSAL.i18n.Resources;
 public class StringScenarioProperty extends AbstractScenarioProperty {
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.StringScenarioProperty.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.StringScenarioProperty.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -17,8 +17,7 @@ public class StringScenarioProperty extends AbstractScenarioProperty {
         initialValue = (String) value;
         property.setPropertyValue(initialValue);
       }
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }

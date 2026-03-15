@@ -1,12 +1,11 @@
 package VASSAL.build;
 
-import VASSAL.tools.DataArchive;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import VASSAL.tools.DataArchive;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 
 @Disabled
 public class MockModuleTest {

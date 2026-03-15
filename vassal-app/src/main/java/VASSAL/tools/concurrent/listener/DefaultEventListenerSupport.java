@@ -30,8 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class DefaultEventListenerSupport<T> implements EventListenerSupport<T> {
 
-  protected final List<EventListener<? super T>> listeners =
-    new CopyOnWriteArrayList<>();
+  protected final List<EventListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
   protected final Object src;
 

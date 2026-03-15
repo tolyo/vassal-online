@@ -17,21 +17,19 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.chat.Player;
+import VASSAL.chat.Room;
+import VASSAL.i18n.Resources;
 import java.util.List;
-
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import VASSAL.chat.Player;
-import VASSAL.chat.Room;
-import VASSAL.i18n.Resources;
-
 /**
  * JTree component displaying chat rooms on the server
- * @author rkinney
  *
+ * @author rkinney
  */
 public class RoomTree extends JTree {
   private static final long serialVersionUID = 1L;
@@ -42,15 +40,16 @@ public class RoomTree extends JTree {
   public RoomTree() {
     setRootVisible(false);
     setShowsRootHandles(true);
-    root = new DefaultMutableTreeNode(Resources.getString("Chat.server")); //$NON-NLS-1$
-    model = new DefaultTreeModel(root) {
-      private static final long serialVersionUID = 1L;
+    root = new DefaultMutableTreeNode(Resources.getString("Chat.server")); // $NON-NLS-1$
+    model =
+        new DefaultTreeModel(root) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public boolean isLeaf(Object node) {
-        return ((DefaultMutableTreeNode) node).getUserObject() instanceof Player;
-      }
-    };
+          @Override
+          public boolean isLeaf(Object node) {
+            return ((DefaultMutableTreeNode) node).getUserObject() instanceof Player;
+          }
+        };
     setModel(model);
     setCellRenderer(new RoomTreeRenderer());
   }
@@ -60,18 +59,16 @@ public class RoomTree extends JTree {
       room = new Room[0];
     }
 
-// Remove rooms no longer present
+    // Remove rooms no longer present
     for (int i = 0; i < root.getChildCount(); ++i) {
       final Room r = roomAt(i);
       int j = 0;
       for (j = 0; j < room.length; ++j) {
         if (room[j] == r) {
           break;
-        }
-        else if (room[j].equals(r)) {
+        } else if (room[j].equals(r)) {
           model.valueForPathChanged(
-            new TreePath(((DefaultMutableTreeNode) root.getChildAt(i))
-              .getPath()), room[j]);
+              new TreePath(((DefaultMutableTreeNode) root.getChildAt(i)).getPath()), room[j]);
           break;
         }
       }
@@ -79,7 +76,7 @@ public class RoomTree extends JTree {
         model.removeNodeFromParent((DefaultMutableTreeNode) root.getChildAt(i--));
       }
     }
-// Add new rooms
+    // Add new rooms
     for (int i = 0; i < room.length; ++i) {
       int j;
       for (j = 0; j < root.getChildCount(); ++j) {
@@ -91,7 +88,7 @@ public class RoomTree extends JTree {
         model.insertNodeInto(new DefaultMutableTreeNode(room[i]), root, i);
       }
     }
-// Update players
+    // Update players
     for (int i = 0; i < root.getChildCount(); ++i) {
       final DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
       final List<Player> p = roomAt(i).getPlayerList();
@@ -103,7 +100,7 @@ public class RoomTree extends JTree {
       }
       for (int j = 0; j < node.getChildCount(); ++j) {
         model.valueForPathChanged(
-          new TreePath(((DefaultMutableTreeNode) node.getChildAt(j)).getPath()), p.get(j));
+            new TreePath(((DefaultMutableTreeNode) node.getChildAt(j)).getPath()), p.get(j));
       }
     }
   }

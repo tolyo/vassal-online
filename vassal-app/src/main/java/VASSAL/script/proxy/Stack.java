@@ -20,19 +20,15 @@ package VASSAL.script.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * BeanShell proxy for the Vassal GamePiece object
  *
- * BeanShell proxies control access to Vassal components and expose
- * a consistent API to BeanShell Scripts.
+ * <p>BeanShell proxies control access to Vassal components and expose a consistent API to BeanShell
+ * Scripts.
  *
- * PLEASE NOTE
- * New methods may be added, but DO NOT remove or change the
- * call signature of any existing methods
- *
+ * <p>PLEASE NOTE New methods may be added, but DO NOT remove or change the call signature of any
+ * existing methods
  */
-
 public class Stack extends GamePiece {
 
   public Stack(VASSAL.counters.Stack s) {

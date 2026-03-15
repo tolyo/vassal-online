@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 public class ExpressionTest {
 
   /**
-   * See also Tests for {@link BeanShellExpression#createExpression(String)}
-   * See individual classes for more detailed functional tests
+   * See also Tests for {@link BeanShellExpression#createExpression(String)} See individual classes
+   * for more detailed functional tests
    */
   @Test
   public void createExpression() {

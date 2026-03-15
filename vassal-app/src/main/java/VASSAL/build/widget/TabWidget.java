@@ -17,30 +17,26 @@
  */
 package VASSAL.build.widget;
 
+import VASSAL.build.Buildable;
+import VASSAL.build.Configurable;
+import VASSAL.build.Widget;
+import VASSAL.i18n.Resources;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import VASSAL.build.Buildable;
-import VASSAL.build.Configurable;
-import VASSAL.build.Widget;
-import VASSAL.i18n.Resources;
-
 /**
- * A Widget that corresponds to a JTabbedPane.
- * Adding a Widget to a BoxWidget adds the child Widget's component
- * to the JTabbedPane, setting the tab's name to the child's name
- * (via {@link Configurable#getConfigureName})
+ * A Widget that corresponds to a JTabbedPane. Adding a Widget to a BoxWidget adds the child
+ * Widget's component to the JTabbedPane, setting the tab's name to the child's name (via {@link
+ * Configurable#getConfigureName})
  */
-public class TabWidget extends Widget
-  implements ChangeListener, PropertyChangeListener {
+public class TabWidget extends Widget implements ChangeListener, PropertyChangeListener {
   private JTabbedPane tab = null;
   private final List<Widget> widgets = new ArrayList<>();
 
@@ -66,8 +62,7 @@ public class TabWidget extends Widget
         tab.removeChangeListener(this);
         if (widgets.size() > 1) {
           tab.addTab(w.getConfigureName(), new JPanel());
-        }
-        else {
+        } else {
           tab.addTab(w.getConfigureName(), w.getComponent());
         }
         w.addPropertyChangeListener(this);
@@ -82,10 +77,10 @@ public class TabWidget extends Widget
     if (b instanceof Widget) {
       final Widget w = (Widget) b;
       if (tab != null) {
-        tab.removeChangeListener(this);   // prevent bad recursion
+        tab.removeChangeListener(this); // prevent bad recursion
         tab.removeTabAt(widgets.indexOf(w));
         w.removePropertyChangeListener(this);
-        tab.addChangeListener(this);      // restore listener
+        tab.addChangeListener(this); // restore listener
       }
       widgets.remove(w);
     }
@@ -102,9 +97,9 @@ public class TabWidget extends Widget
     }
   }
 
-
   /**
-   * Shouldn't be necessary, but there's a bug in JTabbedPane with HTML items. Doing this (unsetting and then resetting each title) seems to clear up the problem.
+   * Shouldn't be necessary, but there's a bug in JTabbedPane with HTML items. Doing this (unsetting
+   * and then resetting each title) seems to clear up the problem.
    */
   private void refreshTabs() {
     int index = 0;
@@ -114,10 +109,8 @@ public class TabWidget extends Widget
       // In Play mode, the title may have been translated, so need to keep the existing title
       // In Edit mode, the title will not have been set yet, so need to reset it to the actual title
       tab.setTitleAt(
-        index,
-        currentTitle == null || currentTitle.isEmpty() ?
-          w.getConfigureName() : currentTitle
-      );
+          index,
+          currentTitle == null || currentTitle.isEmpty() ? w.getConfigureName() : currentTitle);
       index++;
     }
   }
@@ -144,26 +137,27 @@ public class TabWidget extends Widget
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, DESCRIPTION};
+    return new String[] {NAME, DESCRIPTION};
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{Resources.getString("Editor.name_label"), Resources.getString(Resources.DESCRIPTION)};
+    return new String[] {
+      Resources.getString("Editor.name_label"), Resources.getString(Resources.DESCRIPTION)
+    };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{String.class, String.class};
+    return new Class<?>[] {String.class, String.class};
   }
 
   @Override
   public void setAttribute(String name, Object value) {
     if (NAME.equals(name)) {
       setConfigureName((String) value);
-    }
-    else if (DESCRIPTION.equals(name)) {
-      description = (String)value;
+    } else if (DESCRIPTION.equals(name)) {
+      description = (String) value;
     }
   }
 
@@ -171,11 +165,9 @@ public class TabWidget extends Widget
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
     }
     return null;
   }
-
 }

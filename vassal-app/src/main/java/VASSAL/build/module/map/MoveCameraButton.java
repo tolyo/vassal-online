@@ -33,26 +33,23 @@ import VASSAL.i18n.Resources;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.FormattedString;
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.awt.Point;
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
-/**
- * Adds a button to a Maps toolbar that moves the view/camera to a specific point
- */
+/** Adds a button to a Maps toolbar that moves the view/camera to a specific point */
 public class MoveCameraButton extends AbstractToolbarItem {
-  public static final String MOVE_CAMERA_MODE = "moveCameraMode"; //NON-NLS
+  public static final String MOVE_CAMERA_MODE = "moveCameraMode"; // NON-NLS
   public static final String ZOOM = "zoom"; // NON-NLS
-  public static final String BOARD_NAME = "boardName"; //NON-NLS
-  public static final String X_POS = "xPos"; //NON-NLS;
-  public static final String Y_POS = "yPos"; //NON-NLS;
-  public static final String ZONE_NAME = "zoneName"; //NON-NLS;
-  public static final String GRID_LOCATION = "gridLocation"; //NON-NLS;
-  public static final String REGION_NAME = "regionName"; //NON-NLS
-  public static final String PROPERTY_FILTER = "propertyFilter"; //NON-NLS
-  public static final String X_OFFSET = "xOffset"; //NON-NLS
-  public static final String Y_OFFSET = "yOffset"; //NON-NLS
+  public static final String BOARD_NAME = "boardName"; // NON-NLS
+  public static final String X_POS = "xPos"; // NON-NLS;
+  public static final String Y_POS = "yPos"; // NON-NLS;
+  public static final String ZONE_NAME = "zoneName"; // NON-NLS;
+  public static final String GRID_LOCATION = "gridLocation"; // NON-NLS;
+  public static final String REGION_NAME = "regionName"; // NON-NLS
+  public static final String PROPERTY_FILTER = "propertyFilter"; // NON-NLS
+  public static final String X_OFFSET = "xOffset"; // NON-NLS
+  public static final String Y_OFFSET = "yOffset"; // NON-NLS
 
   protected String moveCameraMode = SendToLocation.DEST_LOCATION;
   protected FormattedString zoom = new FormattedString("");
@@ -71,40 +68,50 @@ public class MoveCameraButton extends AbstractToolbarItem {
   public static class EmptyFormatConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new FormattedExpressionConfigurer(key, name, new String[] { });
+      return new FormattedExpressionConfigurer(key, name, new String[] {});
     }
   }
 
   public MoveCameraButton() {
     setNameKey("");
 
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("Editor.MoveCameraButton.move_camera_tooltip"),
-      Resources.getString("Editor.MoveCameraButton.move_camera"),
-      "/images/recenter.gif", //NON-NLS
-      e -> moveCamera()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("Editor.MoveCameraButton.move_camera_tooltip"),
+            Resources.getString("Editor.MoveCameraButton.move_camera"),
+            "/images/recenter.gif", // NON-NLS
+            e -> moveCamera()));
   }
 
   private void offsetDest(Point dest) {
-    final String dxString = xOffset.getText(map, "0", this, AuditTrail.create(this, xOffset.getFormat(), "X Offset")); //NON-NLS
-    final String dyString = xOffset.getText(map, "0", this, AuditTrail.create(this, yOffset.getFormat(), "Y Offset")); //NON-NLS
+    final String dxString =
+        xOffset.getText(
+            map, "0", this, AuditTrail.create(this, xOffset.getFormat(), "X Offset")); // NON-NLS
+    final String dyString =
+        xOffset.getText(
+            map, "0", this, AuditTrail.create(this, yOffset.getFormat(), "Y Offset")); // NON-NLS
 
     final int dx;
     final int dy;
     try {
       dx = Integer.parseInt(dxString);
-    }
-    catch (NumberFormatException e) {
-      ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.non_number_error"), xOffset.debugInfo(dxString, "X Offset"))); //NON-NLS
+    } catch (NumberFormatException e) {
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              this,
+              Resources.getString("Error.non_number_error"),
+              xOffset.debugInfo(dxString, "X Offset"))); // NON-NLS
       return;
     }
 
     try {
       dy = Integer.parseInt(dyString);
-    }
-    catch (NumberFormatException e) {
-      ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.non_number_error"), yOffset.debugInfo(dyString, "Y Offset"))); //NON-NLS
+    } catch (NumberFormatException e) {
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              this,
+              Resources.getString("Error.non_number_error"),
+              yOffset.debugInfo(dyString, "Y Offset"))); // NON-NLS
       return;
     }
 
@@ -113,7 +120,21 @@ public class MoveCameraButton extends AbstractToolbarItem {
   }
 
   private Point getDestination() {
-    final SendToLocation.Destination dest = SendToLocation.getSendLocation(map, this, moveCameraMode, null, board, zone, region, gridLocation, x, y, propertyFilter, map, map.getCenter());
+    final SendToLocation.Destination dest =
+        SendToLocation.getSendLocation(
+            map,
+            this,
+            moveCameraMode,
+            null,
+            board,
+            zone,
+            region,
+            gridLocation,
+            x,
+            y,
+            propertyFilter,
+            map,
+            map.getCenter());
 
     if (dest.point != null) {
       offsetDest(dest.point);
@@ -130,9 +151,13 @@ public class MoveCameraButton extends AbstractToolbarItem {
         double toZoom;
         try {
           toZoom = Double.parseDouble(zoomString);
-        }
-        catch (NumberFormatException e) {
-          ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.non_number_error"), Resources.getString("Editor.MoveCameraButton.zoom") + ": " + zoomString, e));
+        } catch (NumberFormatException e) {
+          ErrorDialog.dataWarning(
+              new BadDataReport(
+                  this,
+                  Resources.getString("Error.non_number_error"),
+                  Resources.getString("Editor.MoveCameraButton.zoom") + ": " + zoomString,
+                  e));
           toZoom = 0;
         }
         if (toZoom > 0) {
@@ -153,7 +178,7 @@ public class MoveCameraButton extends AbstractToolbarItem {
 
   @Override
   public void addTo(Buildable parent) {
-    map = (Map)parent;
+    map = (Map) parent;
     map.getToolBar().add(getLaunchButton());
   }
 
@@ -173,26 +198,26 @@ public class MoveCameraButton extends AbstractToolbarItem {
   public VisibilityCondition getAttributeVisibility(String key) {
     if (List.of(MOVE_CAMERA_MODE, X_OFFSET, Y_OFFSET, ZOOM).contains(key)) {
       return () -> true;
-    }
-    else if (BOARD_NAME.equals(key)) {
-      return () -> (SendToLocation.DEST_GRIDLOCATION.equals(moveCameraMode) || SendToLocation.DEST_LOCATION.equals(moveCameraMode));
-    }
-    else if (ZONE_NAME.equals(key)) {
+    } else if (BOARD_NAME.equals(key)) {
+      return () ->
+          (SendToLocation.DEST_GRIDLOCATION.equals(moveCameraMode)
+              || SendToLocation.DEST_LOCATION.equals(moveCameraMode));
+    } else if (ZONE_NAME.equals(key)) {
       return () -> SendToLocation.DEST_ZONE.equals(moveCameraMode);
-    }
-    else if (REGION_NAME.equals(key)) {
+    } else if (REGION_NAME.equals(key)) {
       return () -> SendToLocation.DEST_REGION.equals(moveCameraMode);
-    }
-    else if (GRID_LOCATION.equals(key)) {
+    } else if (GRID_LOCATION.equals(key)) {
       return () -> SendToLocation.DEST_GRIDLOCATION.equals(moveCameraMode);
-    }
-    else if (X_POS.equals(key) || Y_POS.equals(key)) {
-      return () -> SendToLocation.DEST_GRIDLOCATION.equals(moveCameraMode) || SendToLocation.DEST_LOCATION.equals(moveCameraMode);
-    }
-    else if (PROPERTY_FILTER.equals(key)) {
-      return () -> SendToLocation.DEST_COUNTER.equals(moveCameraMode) || SendToLocation.DEST_COUNTER_CYCLE.equals(moveCameraMode) || SendToLocation.DEST_COUNTER_NEAREST.equals(moveCameraMode);
-    }
-    else {
+    } else if (X_POS.equals(key) || Y_POS.equals(key)) {
+      return () ->
+          SendToLocation.DEST_GRIDLOCATION.equals(moveCameraMode)
+              || SendToLocation.DEST_LOCATION.equals(moveCameraMode);
+    } else if (PROPERTY_FILTER.equals(key)) {
+      return () ->
+          SendToLocation.DEST_COUNTER.equals(moveCameraMode)
+              || SendToLocation.DEST_COUNTER_CYCLE.equals(moveCameraMode)
+              || SendToLocation.DEST_COUNTER_NEAREST.equals(moveCameraMode);
+    } else {
       return super.getAttributeVisibility(key);
     }
   }
@@ -200,95 +225,81 @@ public class MoveCameraButton extends AbstractToolbarItem {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.addAll(
-      super.getAttributeDescriptions(),
-      Resources.getString("Editor.MoveCameraButton.move_camera_mode"),
-      Resources.getString("Editor.MoveCameraButton.board"),
-      Resources.getString("Editor.MoveCameraButton.zone"),
-      Resources.getString("Editor.MoveCameraButton.region"),
-      Resources.getString("Editor.MoveCameraButton.grid"),
-      Resources.getString("Editor.MoveCameraButton.x"),
-      Resources.getString("Editor.MoveCameraButton.y"),
-      Resources.getString("Editor.MoveCameraButton.x_offset"),
-      Resources.getString("Editor.MoveCameraButton.y_offset"),
-      Resources.getString("Editor.MoveCameraButton.property_filter"),
-      Resources.getString("Editor.MoveCameraButton.zoom")
-      );
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.MoveCameraButton.move_camera_mode"),
+        Resources.getString("Editor.MoveCameraButton.board"),
+        Resources.getString("Editor.MoveCameraButton.zone"),
+        Resources.getString("Editor.MoveCameraButton.region"),
+        Resources.getString("Editor.MoveCameraButton.grid"),
+        Resources.getString("Editor.MoveCameraButton.x"),
+        Resources.getString("Editor.MoveCameraButton.y"),
+        Resources.getString("Editor.MoveCameraButton.x_offset"),
+        Resources.getString("Editor.MoveCameraButton.y_offset"),
+        Resources.getString("Editor.MoveCameraButton.property_filter"),
+        Resources.getString("Editor.MoveCameraButton.zoom"));
   }
 
   @Override
   public String[] getAttributeNames() {
     return ArrayUtils.addAll(
-      super.getAttributeNames(),
-      MOVE_CAMERA_MODE,
-      BOARD_NAME,
-      ZONE_NAME,
-      REGION_NAME,
-      GRID_LOCATION,
-      X_POS,
-      Y_POS,
-      X_OFFSET,
-      Y_OFFSET,
-      PROPERTY_FILTER,
-      ZOOM
-      );
+        super.getAttributeNames(),
+        MOVE_CAMERA_MODE,
+        BOARD_NAME,
+        ZONE_NAME,
+        REGION_NAME,
+        GRID_LOCATION,
+        X_POS,
+        Y_POS,
+        X_OFFSET,
+        Y_OFFSET,
+        PROPERTY_FILTER,
+        ZOOM);
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.addAll(
-      super.getAttributeTypes(),
-      DestConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      EmptyFormatConfig.class,
-      PropertyExpression.class,
-      EmptyFormatConfig.class
-    );
+        super.getAttributeTypes(),
+        DestConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        EmptyFormatConfig.class,
+        PropertyExpression.class,
+        EmptyFormatConfig.class);
   }
 
   @Override
   public void setAttribute(String key, Object value) {
     if (MOVE_CAMERA_MODE.equals(key)) {
       if (value instanceof String) {
-        moveCameraMode = (String)value;
+        moveCameraMode = (String) value;
       }
-    }
-    else if (BOARD_NAME.equals(key)) {
+    } else if (BOARD_NAME.equals(key)) {
       board.setFormat((String) value);
-    }
-    else if (ZONE_NAME.equals(key)) {
-      zone.setFormat((String)value);
-    }
-    else if (REGION_NAME.equals(key)) {
-      region.setFormat((String)value);
-    }
-    else if (GRID_LOCATION.equals(key)) {
-      gridLocation.setFormat((String)value);
-    }
-    else if (X_POS.equals(key)) {
-      x.setFormat((String)value);
-    }
-    else if (Y_POS.equals(key)) {
-      y.setFormat((String)value);
-    }
-    else if (X_OFFSET.equals(key)) {
-      xOffset.setFormat((String)value);
-    }
-    else if (Y_OFFSET.equals(key)) {
-      yOffset.setFormat((String)value);
-    }
-    else if (PROPERTY_FILTER.equals(key)) {
-      propertyFilter.setExpression((String)value);
-    }
-    else if (ZOOM.equals(key)) {
-      zoom.setFormat((String)value);
-    }
-    else {
+    } else if (ZONE_NAME.equals(key)) {
+      zone.setFormat((String) value);
+    } else if (REGION_NAME.equals(key)) {
+      region.setFormat((String) value);
+    } else if (GRID_LOCATION.equals(key)) {
+      gridLocation.setFormat((String) value);
+    } else if (X_POS.equals(key)) {
+      x.setFormat((String) value);
+    } else if (Y_POS.equals(key)) {
+      y.setFormat((String) value);
+    } else if (X_OFFSET.equals(key)) {
+      xOffset.setFormat((String) value);
+    } else if (Y_OFFSET.equals(key)) {
+      yOffset.setFormat((String) value);
+    } else if (PROPERTY_FILTER.equals(key)) {
+      propertyFilter.setExpression((String) value);
+    } else if (ZOOM.equals(key)) {
+      zoom.setFormat((String) value);
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -297,38 +308,27 @@ public class MoveCameraButton extends AbstractToolbarItem {
   public String getAttributeValueString(String key) {
     if (MOVE_CAMERA_MODE.equals(key)) {
       return moveCameraMode;
-    }
-    else if (BOARD_NAME.equals(key)) {
+    } else if (BOARD_NAME.equals(key)) {
       return board.getFormat();
-    }
-    else if (ZONE_NAME.equals(key)) {
+    } else if (ZONE_NAME.equals(key)) {
       return zone.getFormat();
-    }
-    else if (REGION_NAME.equals(key)) {
+    } else if (REGION_NAME.equals(key)) {
       return region.getFormat();
-    }
-    else if (GRID_LOCATION.equals(key)) {
+    } else if (GRID_LOCATION.equals(key)) {
       return gridLocation.getFormat();
-    }
-    else if (X_POS.equals(key)) {
+    } else if (X_POS.equals(key)) {
       return x.getFormat();
-    }
-    else if (Y_POS.equals(key)) {
+    } else if (Y_POS.equals(key)) {
       return y.getFormat();
-    }
-    else if (X_OFFSET.equals(key)) {
+    } else if (X_OFFSET.equals(key)) {
       return xOffset.getFormat();
-    }
-    else if (Y_OFFSET.equals(key)) {
+    } else if (Y_OFFSET.equals(key)) {
       return yOffset.getFormat();
-    }
-    else if (PROPERTY_FILTER.equals(key)) {
+    } else if (PROPERTY_FILTER.equals(key)) {
       return propertyFilter.getExpression();
-    }
-    else if (ZOOM.equals(key)) {
+    } else if (ZOOM.equals(key)) {
       return zoom.getFormat();
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -340,7 +340,7 @@ public class MoveCameraButton extends AbstractToolbarItem {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "MoveCameraButton"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "MoveCameraButton"); // NON-NLS
   }
 
   @Override

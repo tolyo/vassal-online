@@ -39,5 +39,4 @@ public class OutlineFont extends Font {
   public boolean isOutline() {
     return outline;
   }
-
 }

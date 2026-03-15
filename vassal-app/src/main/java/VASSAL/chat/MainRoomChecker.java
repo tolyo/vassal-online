@@ -17,19 +17,17 @@
  */
 package VASSAL.chat;
 
-import javax.swing.JOptionPane;
-
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
+import javax.swing.JOptionPane;
 
 public class MainRoomChecker {
   private boolean warnedMain = false;
   private final MainRoomFilter filter = new MainRoomFilter();
 
   public String filter(String input, String mainRoom, String currentRoom) {
-    if (GameModule.getGameModule() == null
-      || input == null) {
+    if (GameModule.getGameModule() == null || input == null) {
       return input;
     }
     final String output;
@@ -38,14 +36,13 @@ public class MainRoomChecker {
       output = GameModule.getGameModule().encode(c);
       if (!warnedMain && !input.equals(output)) {
         JOptionPane.showMessageDialog(
-          GameModule.getGameModule().getChatter(), Resources.getString("Chat.chatting_only", mainRoom)); //$NON-NLS-1$
+            GameModule.getGameModule().getChatter(),
+            Resources.getString("Chat.chatting_only", mainRoom)); // $NON-NLS-1$
         warnedMain = true;
       }
-    }
-    else {
+    } else {
       output = input;
     }
     return output;
   }
-
 }

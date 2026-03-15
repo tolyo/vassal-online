@@ -35,7 +35,6 @@ public abstract class Progressor extends RangedRunnable<Integer> {
    *
    * @param init the initial progress value
    * @param max the maximum progress value
-   *
    * @throws IllegalArgumentException if {@code init} is not in {@code [0,max]}
    * @throws IllegalArgumentException if {@code max &lt; 0}
    */
@@ -52,8 +51,8 @@ public abstract class Progressor extends RangedRunnable<Integer> {
   /**
    * Sets the progress.
    *
-   * Setting the progress submits the {@link Runnable} only when it would
-   * result in a change in the progress percentage.
+   * <p>Setting the progress submits the {@link Runnable} only when it would result in a change in
+   * the progress percentage.
    *
    * @param prog the new progress value
    * @throws IllegalArgumentException if {@code prog} is not in {@code [0,max]}
@@ -67,9 +66,7 @@ public abstract class Progressor extends RangedRunnable<Integer> {
     if (prog == cur) return;
 
     if (prog < cur) {
-      throw new IllegalArgumentException(
-        "prog == " + prog + ", get() == " + get()
-      );
+      throw new IllegalArgumentException("prog == " + prog + ", get() == " + get());
     }
 
     // submit only if this change affects the integer percentage
@@ -85,16 +82,12 @@ public abstract class Progressor extends RangedRunnable<Integer> {
     return range.second != null ? range.second : range.first;
   }
 
-  /**
-   * Increments the progress.
-   */
+  /** Increments the progress. */
   public synchronized void increment() {
     add(1);
   }
 
-  /**
-   * Adds some amount to the progress.
-   */
+  /** Adds some amount to the progress. */
   public synchronized void add(int p) {
     if (p != 0) set(get() + p);
   }
@@ -125,9 +118,7 @@ public abstract class Progressor extends RangedRunnable<Integer> {
   @Override
   protected abstract void run(Pair<Integer, Integer> prog);
 
-  /**
-   * Submits this {@link Runnable} to be run on the Event Dispatch Thread.
-   */
+  /** Submits this {@link Runnable} to be run on the Event Dispatch Thread. */
   @Override
   protected void submit() {
     EDT.execute(this);

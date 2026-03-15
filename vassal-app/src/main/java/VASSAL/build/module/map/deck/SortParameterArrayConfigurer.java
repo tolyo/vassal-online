@@ -25,15 +25,12 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerLayout;
 import VASSAL.counters.TraitLayout;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
 public class SortParameterArrayConfigurer extends Configurer implements ConfigurableList {
@@ -59,7 +56,8 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
     }
 
     final int pos = getSelectedEntryIndex();
-    final List<SortParameter> params = getValue() == null ? new ArrayList<>() : getSortParameterListValue();
+    final List<SortParameter> params =
+        getValue() == null ? new ArrayList<>() : getSortParameterListValue();
     final SortParameter moving = params.remove(pos);
     params.add(pos - 1, moving);
     setValue(params);
@@ -76,7 +74,8 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
     }
 
     final int pos = getSelectedEntryIndex();
-    final List<SortParameter> params = getValue() == null ? new ArrayList<>() : getSortParameterListValue();
+    final List<SortParameter> params =
+        getValue() == null ? new ArrayList<>() : getSortParameterListValue();
     final SortParameter moving = params.remove(pos);
     params.add(pos + 1, moving);
     setValue(params);
@@ -89,7 +88,8 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
   @Override
   public void addEntry() {
     final int pos = getSelectedEntryIndex();
-    final List<SortParameter> params = getValue() == null ? new ArrayList<>() : getSortParameterListValue();
+    final List<SortParameter> params =
+        getValue() == null ? new ArrayList<>() : getSortParameterListValue();
 
     final int newEntry;
     // Insert the new entry into the list at the appropriate place
@@ -97,8 +97,7 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
       params.add(new SortParameter());
       setValue(params);
       newEntry = getSortParameterListValue().size() - 1;
-    }
-    else {
+    } else {
       newEntry = pos + 1;
       params.add(pos, new SortParameter());
       setValue(params);
@@ -111,7 +110,8 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
   @Override
   public void deleteEntry(ConfigurableListEntry entry) {
     final int pos = entries.indexOf(entry);
-    final List<SortParameter> params = getValue() == null ? new ArrayList<>() : getSortParameterListValue();
+    final List<SortParameter> params =
+        getValue() == null ? new ArrayList<>() : getSortParameterListValue();
     params.remove(pos);
     setValue(params);
     setSelectedEntryIndex(Math.min(pos, entries.size() - 1));
@@ -174,7 +174,8 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
 
   @Override
   public void setValue(Object o) {
-    final List<SortParameter> newParams = o == null ? new ArrayList<>() : new ArrayList<>((List<SortParameter>) o);
+    final List<SortParameter> newParams =
+        o == null ? new ArrayList<>() : new ArrayList<>((List<SortParameter>) o);
     if (o == null) {
       newParams.add(new SortParameter());
     }
@@ -196,15 +197,17 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
   @Override
   public Component getControls() {
     if (panel == null) {
-      panel = new JPanel(new MigLayout("ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      panel =
+          new JPanel(
+              new MigLayout("ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
 
-      controls = new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      controls =
+          new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
       controls.setBorder(BorderFactory.createEtchedBorder());
       panel.add(controls, "grow"); // NON-NLS
       panel.add(getListController(), "growy 0,aligny center"); // NON-NLS
 
       rebuildControls();
-
     }
     return panel;
   }
@@ -214,9 +217,7 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
     entries.get(focus).requestFocus();
   }
 
-  /**
-   * Rebuild controls from scratch
-   */
+  /** Rebuild controls from scratch */
   private void rebuildControls() {
     entries.clear();
     controls.removeAll();
@@ -234,10 +235,7 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
     repack();
   }
 
-
-  /**
-   * Refresh visible state of controls without rebuilding
-   */
+  /** Refresh visible state of controls without rebuilding */
   private void updateControls() {
     int i = 0;
     for (final SortParameterEntry entry : entries) {
@@ -245,10 +243,10 @@ public class SortParameterArrayConfigurer extends Configurer implements Configur
     }
     getListController();
     controller.setCanMoveUp(getSelectedEntryIndex() > 0);
-    controller.setCanMoveDown(getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
+    controller.setCanMoveDown(
+        getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
 
     controls.repaint();
-
   }
 
   @Override

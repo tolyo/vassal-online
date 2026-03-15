@@ -19,9 +19,9 @@
 package VASSAL.tools;
 
 /*
- * This interface will be implemented by classes who support looking
-   the right path for a given resource. Right now it only works
-   for images  */
+* This interface will be implemented by classes who support looking
+  the right path for a given resource. Right now it only works
+  for images  */
 public interface ResourcePathFinder {
   String findImagePath(String name);
 

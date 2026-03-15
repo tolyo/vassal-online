@@ -17,10 +17,6 @@
  */
 package VASSAL.build.module;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import VASSAL.build.AbstractBuildable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -28,10 +24,12 @@ import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.tools.SequenceEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class EventLog extends AbstractBuildable
-                      implements CommandEncoder, GameComponent {
-  public static final String EVENT_LIST = "Events"; //$NON-NLS-1$
+public class EventLog extends AbstractBuildable implements CommandEncoder, GameComponent {
+  public static final String EVENT_LIST = "Events"; // $NON-NLS-1$
 
   private List<Event> myEvents;
   private List<Event> savedEvents;
@@ -59,10 +57,7 @@ public class EventLog extends AbstractBuildable
 
   public void log(Event e) {
     myEvents.add(e);
-    GameModule.getGameModule()
-              .getPrefs()
-              .getOption(EVENT_LIST)
-              .setValue(encodedEvents(myEvents));
+    GameModule.getGameModule().getPrefs().getOption(EVENT_LIST).setValue(encodedEvents(myEvents));
   }
 
   @Override
@@ -100,28 +95,26 @@ public class EventLog extends AbstractBuildable
    * @return the events represented by the string
    */
   public static Iterable<Event> decodedEvents(final String s) {
-    return () -> new Iterator<>() {
-      private final SequenceEncoder.Decoder se =
-        new SequenceEncoder.Decoder(s, '|');
+    return () ->
+        new Iterator<>() {
+          private final SequenceEncoder.Decoder se = new SequenceEncoder.Decoder(s, '|');
 
-      @Override
-      public boolean hasNext() {
-        return se.hasMoreTokens();
-      }
+          @Override
+          public boolean hasNext() {
+            return se.hasMoreTokens();
+          }
 
-      @Override
-      public Event next() {
-        final SequenceEncoder.Decoder sub =
-          new SequenceEncoder.Decoder(se.nextToken(), ',');
-        return new Event(Long.parseLong(sub.nextToken()),
-                         sub.nextToken(), sub.nextToken());
-      }
+          @Override
+          public Event next() {
+            final SequenceEncoder.Decoder sub = new SequenceEncoder.Decoder(se.nextToken(), ',');
+            return new Event(Long.parseLong(sub.nextToken()), sub.nextToken(), sub.nextToken());
+          }
 
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-    };
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
   }
 
   /**
@@ -134,9 +127,7 @@ public class EventLog extends AbstractBuildable
     final SequenceEncoder se = new SequenceEncoder('|');
     for (final Event e : events) {
       final SequenceEncoder sub = new SequenceEncoder(',');
-      sub.append(e.getTime())
-         .append(e.getUser())
-         .append(e.getAction());
+      sub.append(e.getTime()).append(e.getUser()).append(e.getAction());
       se.append(sub.getValue());
     }
     return se.getValue();
@@ -197,8 +188,7 @@ public class EventLog extends AbstractBuildable
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-  }
+  public void setAttribute(String name, Object value) {}
 
   @Override
   public String getAttributeValueString(String name) {

@@ -17,18 +17,6 @@
  */
 package VASSAL.chat.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.URL;
-
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JToolBar;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.HttpMessageServer;
@@ -39,10 +27,18 @@ import VASSAL.chat.peer2peer.PeerPoolInfo;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URL;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JToolBar;
 
-/**
- * Description?
- */
+/** Description? */
 public class ShowServerStatusAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -57,12 +53,11 @@ public class ShowServerStatusAction extends AbstractAction {
       frame = new Window(status, includeMessageControls);
     }
     if (iconURL == null) {
-      putValue(NAME, Resources.getString("Chat.server_status")); //$NON-NLS-1$
-    }
-    else {
+      putValue(NAME, Resources.getString("Chat.server_status")); // $NON-NLS-1$
+    } else {
       putValue(SMALL_ICON, new ImageIcon(iconURL));
     }
-    putValue(SHORT_DESCRIPTION, Resources.getString("Chat.display_connections")); //$NON-NLS-1$
+    putValue(SHORT_DESCRIPTION, Resources.getString("Chat.display_connections")); // $NON-NLS-1$
   }
 
   @Override
@@ -77,7 +72,7 @@ public class ShowServerStatusAction extends AbstractAction {
     private final MessageBoardControls messageMgr;
 
     public Window(ServerStatus status, boolean includeMessageControls) {
-      super(Resources.getString("Chat.server_status")); //$NON-NLS-1$
+      super(Resources.getString("Chat.server_status")); // $NON-NLS-1$
       setJMenuBar(MenuManager.getInstance().getMenuBarFor(this));
 
       view = new ServerStatusView(status);
@@ -90,23 +85,20 @@ public class ShowServerStatusAction extends AbstractAction {
         toolbar.add(messageMgr.getCheckMessagesAction());
         toolbar.add(messageMgr.getPostMessageAction());
         add(toolbar, BorderLayout.NORTH);
-      }
-      else {
+      } else {
         messageMgr = null;
       }
 
       pack();
       setSize(Math.max(getSize().width, 400), Math.max(getSize().height, 300));
       final Dimension d = SwingUtils.getScreenSize();
-      setLocation(d.width / 2 - getSize().width / 2,
-                  d.height / 2 - getSize().height / 2);
+      setLocation(d.width / 2 - getSize().width / 2, d.height / 2 - getSize().height / 2);
     }
 
     public void refresh() {
       if (!isVisible()) {
         setVisible(true);
-      }
-      else {
+      } else {
         toFront();
       }
       view.refresh();
@@ -117,17 +109,21 @@ public class ShowServerStatusAction extends AbstractAction {
       MessageBoard server = null;
       if (evt.getNewValue() instanceof ServerStatus.ModuleSummary) {
         final String moduleName = ((ServerStatus.ModuleSummary) evt.getNewValue()).getModuleName();
-        server = new HttpMessageServer(new PeerPoolInfo() {
-          @Override
-          public String getModuleName() {
-            return moduleName;
-          }
+        server =
+            new HttpMessageServer(
+                new PeerPoolInfo() {
+                  @Override
+                  public String getModuleName() {
+                    return moduleName;
+                  }
 
-          @Override
-          public String getUserName() {
-            return ((ChatServerConnection) GameModule.getGameModule().getServer()).getUserInfo().getName();
-          }
-        });
+                  @Override
+                  public String getUserName() {
+                    return ((ChatServerConnection) GameModule.getGameModule().getServer())
+                        .getUserInfo()
+                        .getName();
+                  }
+                });
       }
       if (messageMgr != null) {
         messageMgr.setServer(server, null);

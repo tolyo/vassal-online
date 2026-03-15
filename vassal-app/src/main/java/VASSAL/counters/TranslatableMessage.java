@@ -24,17 +24,14 @@ import VASSAL.i18n.PieceI18nData;
 import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
+import javax.swing.KeyStroke;
 
-/**
- * A trait to expose a translated string as a readable/displayable property.
- */
+/** A trait to expose a translated string as a readable/displayable property. */
 public class TranslatableMessage extends Decorator implements TranslatablePiece {
   public static final char DELIMITER = ';';
   public static final String ID = "locmsg" + DELIMITER; // NON-NLS
@@ -43,7 +40,6 @@ public class TranslatableMessage extends Decorator implements TranslatablePiece 
   protected String description;
   protected String message;
   protected String localisedMessage;
-
 
   public TranslatableMessage() {
     this(ID, null);
@@ -115,14 +111,12 @@ public class TranslatableMessage extends Decorator implements TranslatablePiece 
   }
 
   @Override
-  public void mySetState(String state) {
-  }
+  public void mySetState(String state) {}
 
   @Override
   public String myGetState() {
     return "";
   }
-
 
   @Override
   protected KeyCommand[] myGetKeyCommands() {
@@ -165,9 +159,7 @@ public class TranslatableMessage extends Decorator implements TranslatablePiece 
     return new Ed(this);
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     return List.of(key);
@@ -176,7 +168,7 @@ public class TranslatableMessage extends Decorator implements TranslatablePiece 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof TranslatableMessage)) return false;
+    if (!(o instanceof TranslatableMessage)) return false;
     final TranslatableMessage c = (TranslatableMessage) o;
     if (!key.equals(c.key)) return false;
     if (!description.equals(c.description)) return false;
@@ -222,14 +214,13 @@ public class TranslatableMessage extends Decorator implements TranslatablePiece 
     }
   }
 
-
   @Override
   public PieceI18nData getI18nData() {
     return getI18nData(
-      new String[] { message },
-      new String[] {
-        Resources.getString("Editor.TranslatableMessage.message"),
-      });
+        new String[] {message},
+        new String[] {
+          Resources.getString("Editor.TranslatableMessage.message"),
+        });
   }
 
   /**

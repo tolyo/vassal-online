@@ -17,6 +17,7 @@
  */
 package VASSAL.tools;
 
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -24,16 +25,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 
-import VASSAL.tools.swing.SwingUtils;
-
-/**
- * Displays an image centered on the screen
- */
+/** Displays an image centered on the screen */
 public class SplashScreen extends JWindow {
   private static final long serialVersionUID = 1L;
 
@@ -44,16 +40,16 @@ public class SplashScreen extends JWindow {
     add(new JLabel(new ImageIcon(im)));
     pack();
     final Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    setLocation(d.width / 2 - getSize().width / 2,
-                d.height / 2 - getSize().height / 2);
-    addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        if (SwingUtils.isMainMouseButtonDown(e)) {
-          setVisible(false);
-        }
-      }
-    });
+    setLocation(d.width / 2 - getSize().width / 2, d.height / 2 - getSize().height / 2);
+    addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            if (SwingUtils.isMainMouseButtonDown(e)) {
+              setVisible(false);
+            }
+          }
+        });
   }
 
   @Override

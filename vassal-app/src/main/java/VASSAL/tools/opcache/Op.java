@@ -28,8 +28,7 @@ import java.util.List;
  */
 public interface Op<V> {
   /**
-   * Runs the <code>Op</code>. This method should be called only by the
-   * caching framework.
+   * Runs the <code>Op</code>. This method should be called only by the caching framework.
    *
    * @return the result of running this <code>Op</code>
    */
@@ -49,8 +48,6 @@ public interface Op<V> {
    */
   OpCache.Key<V> newKey();
 
-  /**
-   * Invalidates the current cache key for this <code>Op</code>.
-   */
+  /** Invalidates the current cache key for this <code>Op</code>. */
   void update();
 }

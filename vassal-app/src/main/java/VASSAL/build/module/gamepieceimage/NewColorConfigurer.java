@@ -17,9 +17,11 @@
  */
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.BooleanConfigurer;
+import VASSAL.configure.Configurer;
+import VASSAL.i18n.Resources;
 import java.awt.Color;
 import java.util.StringTokenizer;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,13 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import VASSAL.configure.BooleanConfigurer;
-import VASSAL.configure.Configurer;
-import VASSAL.i18n.Resources;
-
-/**
- * Configurer for {@link Color} values
- */
+/** Configurer for {@link Color} values */
 public class NewColorConfigurer extends Configurer {
   private JPanel p;
   private Panel cp;
@@ -49,14 +45,13 @@ public class NewColorConfigurer extends Configurer {
 
   @Override
   public String getValueString() {
-    return value == null ? "" : colorToString(colorValue()); //$NON-NLS-1$
+    return value == null ? "" : colorToString(colorValue()); // $NON-NLS-1$
   }
 
   @Override
   public void setValue(Object o) {
     super.setValue(o);
-    if (cp != null)
-      cp.repaint();
+    if (cp != null) cp.repaint();
   }
 
   @Override
@@ -77,13 +72,14 @@ public class NewColorConfigurer extends Configurer {
 
       final Box box = Box.createHorizontalBox();
       box.add(new JLabel(Resources.getString("Editor.NewColorConfigurer.use_named_colors")));
-      bc = new BooleanConfigurer(null, "", Boolean.FALSE); //$NON-NLS-1$
+      bc = new BooleanConfigurer(null, "", Boolean.FALSE); // $NON-NLS-1$
       box.add(bc.getControls());
-      bc.addPropertyChangeListener(e -> {
-        colorBox.setVisible(!bc.booleanValue());
-        swatchBox.setVisible(bc.booleanValue());
-        SwingUtilities.getWindowAncestor(bc.getControls()).pack();
-      });
+      bc.addPropertyChangeListener(
+          e -> {
+            colorBox.setVisible(!bc.booleanValue());
+            swatchBox.setVisible(bc.booleanValue());
+            SwingUtilities.getWindowAncestor(bc.getControls()).pack();
+          });
       p.add(box);
 
       colorBox = Box.createHorizontalBox();
@@ -97,19 +93,22 @@ public class NewColorConfigurer extends Configurer {
       colorBox.add(b);
       p.add(colorBox);
 
-      b.addActionListener(e -> {
-        setValue(JColorChooser.showDialog(null, getName(), colorValue()));
-        csc.setValue(new ColorSwatch("", (Color) getValue())); //$NON-NLS-1$
-      });
+      b.addActionListener(
+          e -> {
+            setValue(JColorChooser.showDialog(null, getName(), colorValue()));
+            csc.setValue(new ColorSwatch("", (Color) getValue())); // $NON-NLS-1$
+          });
 
       swatchBox = Box.createHorizontalBox();
-      csc = new ColorSwatchConfigurer(null, Resources.getString("Editor.NewColorConfigurer.select_color"), "WHITE"); //$NON-NLS-2$
+      csc =
+          new ColorSwatchConfigurer(
+              null,
+              Resources.getString("Editor.NewColorConfigurer.select_color"),
+              "WHITE"); //$NON-NLS-2$
       csc.addPropertyChangeListener(e -> setValue(csc.getValueColor()));
       swatchBox.add(csc.getControls());
       swatchBox.setVisible(false);
       p.add(swatchBox);
-
-
     }
     return p;
   }
@@ -126,30 +125,33 @@ public class NewColorConfigurer extends Configurer {
       if (colorValue() != null) {
         g.setColor(colorValue());
         g.fillRect(0, 0, getSize().width, getSize().height);
-      }
-      else {
+      } else {
         g.clearRect(0, 0, getSize().width, getSize().height);
       }
     }
   }
 
   public static String colorToString(Color c) {
-    return c == null ? null :
-        c.getRed() + "," //$NON-NLS-1$
-        + c.getGreen() + "," //$NON-NLS-1$
-        + c.getBlue();
+    return c == null
+        ? null
+        : c.getRed()
+            + "," //$NON-NLS-1$
+            + c.getGreen()
+            + "," //$NON-NLS-1$
+            + c.getBlue();
   }
 
   public static Color stringToColor(String s) {
-    if (s == null || "null".equals(s)) { //$NON-NLS-1$
+    if (s == null || "null".equals(s)) { // $NON-NLS-1$
       return null;
     }
 
-    final StringTokenizer st = new StringTokenizer(s, ","); //$NON-NLS-1$
+    final StringTokenizer st = new StringTokenizer(s, ","); // $NON-NLS-1$
     try {
-      return new Color(Integer.parseInt(st.nextToken()),
-                       Integer.parseInt(st.nextToken()),
-                       Integer.parseInt(st.nextToken()));
+      return new Color(
+          Integer.parseInt(st.nextToken()),
+          Integer.parseInt(st.nextToken()),
+          Integer.parseInt(st.nextToken()));
     }
     // FIXME: review error message
     catch (IllegalArgumentException e) {

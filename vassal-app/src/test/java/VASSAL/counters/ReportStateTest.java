@@ -24,7 +24,11 @@ import org.junit.jupiter.api.Test;
 public class ReportStateTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     ReportState trait = new ReportState();
 
@@ -33,13 +37,13 @@ public class ReportStateTest extends DecoratorTest {
 
     //
     trait = new ReportState();
-    trait.keys = new NamedKeyStroke[] { NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2") };
+    trait.keys = new NamedKeyStroke[] {NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2")};
     trait.reportFormat = "xyzzy";
-    trait.cycleDownKeys = new NamedKeyStroke[] { NamedKeyStroke.of("cycle1"), NamedKeyStroke.of("cycle2") };
-    trait.cycleReportFormat = new String[] { "format1", "format2" };
+    trait.cycleDownKeys =
+        new NamedKeyStroke[] {NamedKeyStroke.of("cycle1"), NamedKeyStroke.of("cycle2")};
+    trait.cycleReportFormat = new String[] {"format1", "format2"};
     trait.description = "plover";
 
     serializeTest("Complext trait", trait); // NON-NLS
-
   }
 }

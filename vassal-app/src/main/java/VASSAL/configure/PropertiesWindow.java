@@ -28,24 +28,21 @@ import VASSAL.build.widget.PieceSlot;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import net.miginfocom.swing.MigLayout;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-/**
- * Window for editing properties of a {@link Configurable} object
- */
+/** Window for editing properties of a {@link Configurable} object */
 public class PropertiesWindow extends JDialog {
   private static final long serialVersionUID = 1L;
 
@@ -55,7 +52,8 @@ public class PropertiesWindow extends JDialog {
 
   private static List<PropertiesWindow> propertiesWindowQueue = new ArrayList<>();
 
-  public PropertiesWindow(Frame owner, boolean modal, final Configurable target, HelpWindow helpWindow) {
+  public PropertiesWindow(
+      Frame owner, boolean modal, final Configurable target, HelpWindow helpWindow) {
     super(owner, modal);
     initialize(target, helpWindow);
   }
@@ -69,15 +67,14 @@ public class PropertiesWindow extends JDialog {
       if (Node.ELEMENT_NODE == child.getNodeType()) {
         // Cull Buildables from the state.
         try {
-          final Class<?> c = GameModule.getGameModule().getDataArchive().loadClass(((Element)child).getTagName());
+          final Class<?> c =
+              GameModule.getGameModule().getDataArchive().loadClass(((Element) child).getTagName());
           if (Buildable.class.isAssignableFrom(c)) {
             originalState.removeChild(child);
           }
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
           // This element doesn't correspond to a class. Skip it.
-        }
-        catch (LinkageError e) {
+        } catch (LinkageError e) {
           ErrorDialog.bug(e);
         }
       }
@@ -86,11 +83,12 @@ public class PropertiesWindow extends JDialog {
 
     setLayout(new MigLayout("ins panel,wrap 1", "[grow,fill]", "[align top,grow][]")); // NON-NLS
     configurer = target.getConfigurer();
-    target.addPropertyChangeListener(evt -> {
-      if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
-        setTitle((String) evt.getNewValue());
-      }
-    });
+    target.addPropertyChangeListener(
+        evt -> {
+          if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
+            setTitle((String) evt.getNewValue());
+          }
+        });
 
     setTitle(ConfigureTree.getConfigureName(target));
 
@@ -112,10 +110,14 @@ public class PropertiesWindow extends JDialog {
     // The PieceDefiner handles its own scrolling internally, don't add another set of scrollbars
     if (target instanceof PieceSlot || target instanceof PrototypeDefinition) {
       add(configurer.getControls(), "grow"); // NON-NLS
-    }
-    else {
-      final JPanel scrollPanel = new JPanel(new MigLayout("ins 0,wrap 1", "[grow,fill]")); // NON-NLS
-      final JScrollPane scroll = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    } else {
+      final JPanel scrollPanel =
+          new JPanel(new MigLayout("ins 0,wrap 1", "[grow,fill]")); // NON-NLS
+      final JScrollPane scroll =
+          new JScrollPane(
+              scrollPanel,
+              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       scrollPanel.add(configurer.getControls());
       add(scroll);
     }
@@ -132,12 +134,13 @@ public class PropertiesWindow extends JDialog {
     SwingUtils.ensureOnScreen(this);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-    addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent we) {
-        cancel();
-      }
-    });
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent we) {
+            cancel();
+          }
+        });
 
     propertiesWindowQueue.add(this);
   }
@@ -153,19 +156,25 @@ public class PropertiesWindow extends JDialog {
   }
 
   public void cancel() {
-    if (target instanceof GameModule) { // Modules we don't want to do the full scary rebuild, just put the text fields back.
-      target.setAttribute(GameModule.MODULE_NAME, originalState.getAttribute(GameModule.MODULE_NAME));
-      target.setAttribute(GameModule.MODULE_VERSION, originalState.getAttribute(GameModule.MODULE_VERSION));
-      target.setAttribute(GameModule.DESCRIPTION, originalState.getAttribute(GameModule.DESCRIPTION));
-    }
-    else if (target instanceof Map) {
-      //BR// Keeps us from wiping the whole map contents (running in the player right now) just because user hit cancel.
-      //BR// Possibly this would be better for all/most AbstractConfigurable items. But probably a matter for further research & experiment.
-      for (final String propName : ((Map)target).getAttributeNames()) {
+    if (target
+        instanceof
+        GameModule) { // Modules we don't want to do the full scary rebuild, just put the text
+      // fields back.
+      target.setAttribute(
+          GameModule.MODULE_NAME, originalState.getAttribute(GameModule.MODULE_NAME));
+      target.setAttribute(
+          GameModule.MODULE_VERSION, originalState.getAttribute(GameModule.MODULE_VERSION));
+      target.setAttribute(
+          GameModule.DESCRIPTION, originalState.getAttribute(GameModule.DESCRIPTION));
+    } else if (target instanceof Map) {
+      // BR// Keeps us from wiping the whole map contents (running in the player right now) just
+      // because user hit cancel.
+      // BR// Possibly this would be better for all/most AbstractConfigurable items. But probably a
+      // matter for further research & experiment.
+      for (final String propName : ((Map) target).getAttributeNames()) {
         target.setAttribute(propName, originalState.getAttribute(propName));
       }
-    }
-    else {
+    } else {
       target.build(originalState);
     }
     dispose();

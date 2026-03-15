@@ -8,9 +8,8 @@ import VASSAL.i18n.Resources;
 public class BooleanScenarioProperty extends AbstractScenarioProperty {
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.BooleanScenarioProperty.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.BooleanScenarioProperty.component_type"); // $NON-NLS-1$
   }
-
 
   @Override
   public void addTo(Buildable parent) {
@@ -30,8 +29,7 @@ public class BooleanScenarioProperty extends AbstractScenarioProperty {
       }
       initialValue = value == null ? "false" : ((Boolean) value).toString();
       property.setPropertyValue(initialValue);
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -40,5 +38,4 @@ public class BooleanScenarioProperty extends AbstractScenarioProperty {
   public Configurer getOptionConfigurer() {
     return new BooleanConfigurer("", "", "true".equals(getPropertyValue()));
   }
-
 }

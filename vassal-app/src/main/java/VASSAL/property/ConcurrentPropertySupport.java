@@ -32,10 +32,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ConcurrentPropertySupport implements PropertySupport {
 
-// FIXME: consider using WeakReferences for listeners to prevent memory leaks
+  // FIXME: consider using WeakReferences for listeners to prevent memory leaks
   @SuppressWarnings("PMD.LooseCoupling")
   protected final CopyOnWriteArrayList<PropertyListener<Object>> listeners =
-    new CopyOnWriteArrayList<>();
+      new CopyOnWriteArrayList<>();
 
   /**
    * {@inheritDoc}
@@ -68,20 +68,16 @@ public class ConcurrentPropertySupport implements PropertySupport {
   /** {@inheritDoc} */
   @Override
   public List<PropertyListener<Object>> getPropertyListeners() {
-    return listeners.isEmpty() ?
-      Collections.emptyList() :
-      new ArrayList<>(listeners);
+    return listeners.isEmpty() ? Collections.emptyList() : new ArrayList<>(listeners);
   }
 
-  protected final ConcurrentMap<Property<?>, List<PropertyListener<?>>>
-    plisteners = new ConcurrentHashMap<>();
+  protected final ConcurrentMap<Property<?>, List<PropertyListener<?>>> plisteners =
+      new ConcurrentHashMap<>();
 
   /** {@inheritDoc} */
   @Override
-  public <T> void addPropertyListener(Property<T> prop,
-                                      PropertyListener<? super T> l) {
-    final List<PropertyListener<?>> empty =
-      new CopyOnWriteArrayList<>();
+  public <T> void addPropertyListener(Property<T> prop, PropertyListener<? super T> l) {
+    final List<PropertyListener<?>> empty = new CopyOnWriteArrayList<>();
 
     List<PropertyListener<?>> list = plisteners.putIfAbsent(prop, empty);
     if (list == null) list = empty;
@@ -91,8 +87,7 @@ public class ConcurrentPropertySupport implements PropertySupport {
 
   /** {@inheritDoc} */
   @Override
-  public <T> void removePropertyListener(Property<T> prop,
-                                         PropertyListener<? super T> l) {
+  public <T> void removePropertyListener(Property<T> prop, PropertyListener<? super T> l) {
     final List<PropertyListener<?>> list = plisteners.get(prop);
     if (list != null) list.remove(l);
   }
@@ -100,12 +95,11 @@ public class ConcurrentPropertySupport implements PropertySupport {
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> List<PropertyListener<? super T>>
-                                       getPropertyListeners(Property<T> prop) {
+  public <T> List<PropertyListener<? super T>> getPropertyListeners(Property<T> prop) {
     final List<PropertyListener<?>> list = plisteners.get(prop);
-    return list == null || list.isEmpty() ?
-      Collections.emptyList() :
-      new ArrayList<PropertyListener<? super T>>((List) list);
+    return list == null || list.isEmpty()
+        ? Collections.emptyList()
+        : new ArrayList<PropertyListener<? super T>>((List) list);
   }
 
   /** {@inheritDoc} */
@@ -118,8 +112,7 @@ public class ConcurrentPropertySupport implements PropertySupport {
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> void fireChanged(Object src, Property<T> prop,
-                              T oldVal, T newVal) {
+  public <T> void fireChanged(Object src, Property<T> prop, T oldVal, T newVal) {
     // do nothing if oldVal and newVal are the same
     if (oldVal == newVal || (oldVal != null && oldVal.equals(newVal))) return;
 
@@ -132,9 +125,7 @@ public class ConcurrentPropertySupport implements PropertySupport {
     final List<PropertyListener<?>> list = plisteners.get(prop);
     if (list != null) {
       for (final PropertyListener<?> l : list) {
-        ((PropertyListener<? super T>) l).propertyChanged(
-          src, prop, oldVal, newVal
-        );
+        ((PropertyListener<? super T>) l).propertyChanged(src, prop, oldVal, newVal);
       }
     }
   }

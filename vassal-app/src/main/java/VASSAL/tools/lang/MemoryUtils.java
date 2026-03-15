@@ -17,16 +17,12 @@
  */
 package VASSAL.tools.lang;
 
-import java.lang.management.ManagementFactory;
-
 import com.sun.management.OperatingSystemMXBean;
-
+import java.lang.management.ManagementFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A utility class for getting information about system memory.
- */
+/** A utility class for getting information about system memory. */
 public class MemoryUtils {
   protected MemoryUtils() {}
 
@@ -35,8 +31,7 @@ public class MemoryUtils {
   /**
    * Gets the amount of physical memory (RAM) in this machine, in bytes.
    *
-   * @return the amount of RAM, in bytes; or -1 if the amount of RAM
-   * cannot be queried.
+   * @return the amount of RAM, in bytes; or -1 if the amount of RAM cannot be queried.
    */
   public static long getPhysicalMemory() {
     try {
@@ -45,8 +40,7 @@ public class MemoryUtils {
         final OperatingSystemMXBean osb = (OperatingSystemMXBean) o;
         return osb.getTotalPhysicalMemorySize();
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       // There can be unchecked exceptions due to bugs in Java, argh.
       logger.error("Failed to get amount of physical RAM", e);
     }
@@ -58,10 +52,9 @@ public class MemoryUtils {
   public static void main(String[] args) {
     final long ram = getPhysicalMemory();
     if (ram >= 0) {
-      System.out.println("System reports " + (ram >> 20) + "MB RAM"); //NON-NLS
-    }
-    else {
-      System.out.println("Could not determine amount of RAM"); //NON-NLS
+      System.out.println("System reports " + (ram >> 20) + "MB RAM"); // NON-NLS
+    } else {
+      System.out.println("Could not determine amount of RAM"); // NON-NLS
     }
   }
 }

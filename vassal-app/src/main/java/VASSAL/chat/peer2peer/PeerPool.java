@@ -19,15 +19,14 @@
 package VASSAL.chat.peer2peer;
 
 import java.io.IOException;
-
 import org.litesoft.p2pchat.PeerInfo;
 import org.litesoft.p2pchat.PendingPeerManager;
 
-/**
- * Date: Mar 11, 2003
- */
+/** Date: Mar 11, 2003 */
 public interface PeerPool {
   void initialize(P2PPlayer myInfo, PendingPeerManager ppm) throws IOException;
+
   void disconnect();
+
   void connectFailed(PeerInfo peerInfo);
 }

@@ -18,16 +18,13 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.image.GeneralFilter;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 
-import VASSAL.tools.image.GeneralFilter;
-
-/**
- * Slices one scaled tile from an image and writes it to disk.
- */
+/** Slices one scaled tile from an image and writes it to disk. */
 class ScaledTileTask extends TileTask {
   protected final GeneralFilter.Filter filter;
 
@@ -44,9 +41,16 @@ class ScaledTileTask extends TileTask {
    * @param dw the width of the whole scaled image
    * @param dh the height of the whole scaled image
    */
-  public ScaledTileTask(BufferedImage src, File dst,
-                        GeneralFilter.Filter filter,
-                        int tx, int ty, int tw, int th, int dw, int dh) {
+  public ScaledTileTask(
+      BufferedImage src,
+      File dst,
+      GeneralFilter.Filter filter,
+      int tx,
+      int ty,
+      int tw,
+      int th,
+      int dw,
+      int dh) {
     super(src, dst, tx, ty, tw, th, dw, dh);
     this.filter = filter;
   }
@@ -62,8 +66,7 @@ class ScaledTileTask extends TileTask {
     // scale the tile from the source image
     final BufferedImage tile = new BufferedImage(atw, ath, type);
 
-    final WritableRaster tileR =
-      tile.getRaster().createWritableTranslatedChild(tx * tw, ty * th);
+    final WritableRaster tileR = tile.getRaster().createWritableTranslatedChild(tx * tw, ty * th);
     final Rectangle dstFR = new Rectangle(0, 0, dw, dh);
 
     GeneralFilter.zoom(tileR, dstFR, src, filter);

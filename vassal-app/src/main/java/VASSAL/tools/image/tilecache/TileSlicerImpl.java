@@ -18,6 +18,8 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.image.GeneralFilter;
+import VASSAL.tools.lang.Callback;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +29,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import VASSAL.tools.image.GeneralFilter;
-import VASSAL.tools.lang.Callback;
 
 /**
  * Slices an image into tiles.
@@ -51,14 +50,14 @@ public class TileSlicerImpl implements TileSlicer {
    */
   @Override
   public void slice(
-    BufferedImage src,
-    String iname,
-    String tpath,
-    int tw,
-    int th,
-    ExecutorService exec,
-    Callback<Void> progress
-  ) throws IOException {
+      BufferedImage src,
+      String iname,
+      String tpath,
+      int tw,
+      int th,
+      ExecutorService exec,
+      Callback<Void> progress)
+      throws IOException {
 
     final int sw = src.getWidth();
     final int sh = src.getHeight();
@@ -68,29 +67,25 @@ public class TileSlicerImpl implements TileSlicer {
     // slice unscaled 1:1 tiles
     final TaskMaker unscaled = TileTask::new;
 
-    queueTileTasks(
-      src, iname, tpath, 1, tw, th, sw, sh, unscaled, exec, futures
-    );
+    queueTileTasks(src, iname, tpath, 1, tw, th, sw, sh, unscaled, exec, futures);
 
     // slice scaled tiles, starting at 1:2
-    final TaskMaker scaled = new TaskMaker() {
-      private final GeneralFilter.Filter filter =
-        new GeneralFilter.Lanczos3Filter();
+    final TaskMaker scaled =
+        new TaskMaker() {
+          private final GeneralFilter.Filter filter = new GeneralFilter.Lanczos3Filter();
 
-      @Override
-      public TileTask make(BufferedImage src, File f,
-                           int tx, int ty, int tw, int th, int dw, int dh) {
-        return new ScaledTileTask(src, f, filter, tx, ty, tw, th, dw, dh);
-      }
-    };
+          @Override
+          public TileTask make(
+              BufferedImage src, File f, int tx, int ty, int tw, int th, int dw, int dh) {
+            return new ScaledTileTask(src, f, filter, tx, ty, tw, th, dw, dh);
+          }
+        };
 
     for (int div = 2; sw / div > 0 && sh / div > 0; div <<= 1) {
       final int dw = sw / div;
       final int dh = sh / div;
 
-      queueTileTasks(
-        src, iname, tpath, div, tw, th, dw, dh, scaled, exec, futures
-      );
+      queueTileTasks(src, iname, tpath, div, tw, th, dw, dh, scaled, exec, futures);
     }
 
     // wait for all tiles to complete
@@ -99,15 +94,12 @@ public class TileSlicerImpl implements TileSlicer {
         f.get();
         progress.receive(null);
       }
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       // should never happen
       throw new IllegalStateException(e);
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       throw new IOException(e);
-    }
-    finally {
+    } finally {
       // cancel everything if anything fails
       for (final Future<Void> f : futures) {
         if (!f.isDone()) f.cancel(true);
@@ -117,23 +109,21 @@ public class TileSlicerImpl implements TileSlicer {
 
   @FunctionalInterface
   protected interface TaskMaker {
-    TileTask make(BufferedImage src, File f,
-                         int tx, int ty, int tw, int th, int dw, int dh);
+    TileTask make(BufferedImage src, File f, int tx, int ty, int tw, int th, int dw, int dh);
   }
 
   protected static void queueTileTasks(
-    BufferedImage src,
-    String iname,
-    String tpath,
-    int div,
-    int tw,
-    int th,
-    int dw,
-    int dh,
-    TaskMaker tm,
-    ExecutorService exec,
-    List<Future<Void>> futures
-  ) {
+      BufferedImage src,
+      String iname,
+      String tpath,
+      int div,
+      int tw,
+      int th,
+      int dw,
+      int dh,
+      TaskMaker tm,
+      ExecutorService exec,
+      List<Future<Void>> futures) {
 
     final int tcols = (int) Math.ceil((double) dw / tw);
     final int trows = (int) Math.ceil((double) dh / th);

@@ -17,23 +17,21 @@
  */
 package VASSAL.i18n;
 
+import VASSAL.tools.ReadErrorDialog;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
-import VASSAL.tools.ReadErrorDialog;
-
 /**
- * Utility class to allow translation of VASSAL using the Component
- * Translation mechanism.
+ * Utility class to allow translation of VASSAL using the Component Translation mechanism.
  *
  * @author Brent Easton
  */
@@ -55,8 +53,7 @@ public class VassalTranslation extends Translation {
       try (BufferedInputStream in = new BufferedInputStream(is)) {
         baseValues.load(in);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, propFile);
     }
   }
@@ -110,7 +107,7 @@ public class VassalTranslation extends Translation {
 
   public void saveProperties(File file, Locale locale) throws IOException {
     try (OutputStream fout = Files.newOutputStream(file.toPath());
-         BufferedOutputStream out = new BufferedOutputStream(fout)) {
+        BufferedOutputStream out = new BufferedOutputStream(fout)) {
       localProperties.store(out, locale.getDisplayName());
       dirty = false;
     }

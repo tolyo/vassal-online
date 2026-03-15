@@ -33,10 +33,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -49,13 +45,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
- *
  * d/b/a "Mark When Moved"
  *
- * A GamePiece with this trait will automatically be marked whenever it is moved.  A marked piece is
- * indicated by drawing a specified image at a specified location
+ * <p>A GamePiece with this trait will automatically be marked whenever it is moved. A marked piece
+ * is indicated by drawing a specified image at a specified location
  */
 public class MovementMarkable extends Decorator implements TranslatablePiece {
   public static final String ID = "markmoved;"; // NON-NLS
@@ -105,15 +103,14 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
     commandTrue = st.nextToken(Resources.getString("Editor.MovementMarkable.default_command_true"));
     try {
       keyTrue = st.nextNamedKeyStroke();
-    }
-    catch (NoSuchElementException e) {
+    } catch (NoSuchElementException e) {
       keyTrue = NamedKeyStroke.NULL_KEYSTROKE;
     }
-    commandFalse = st.nextToken(Resources.getString("Editor.MovementMarkable.default_command_false"));
+    commandFalse =
+        st.nextToken(Resources.getString("Editor.MovementMarkable.default_command_false"));
     try {
       keyFalse = st.nextNamedKeyStroke();
-    }
-    catch (NoSuchElementException e) {
+    } catch (NoSuchElementException e) {
       keyFalse = NamedKeyStroke.NULL_KEYSTROKE;
     }
 
@@ -137,7 +134,17 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
   @Override
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
-    se.append(movedIcon.getValueString()).append(xOffset).append(yOffset).append(command).append(key).append(description).append(ignoreSameLocation).append(commandTrue).append(keyTrue).append(commandFalse).append(keyFalse);
+    se.append(movedIcon.getValueString())
+        .append(xOffset)
+        .append(yOffset)
+        .append(command)
+        .append(key)
+        .append(description)
+        .append(ignoreSameLocation)
+        .append(commandTrue)
+        .append(keyTrue)
+        .append(commandFalse)
+        .append(keyFalse);
     return ID + se.getValue();
   }
 
@@ -151,8 +158,7 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
 
       if (list.isEmpty()) {
         commands = KeyCommand.NONE;
-      }
-      else {
+      } else {
         commands = list.toArray(new KeyCommand[0]);
       }
     }
@@ -168,20 +174,17 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
       // Set the property on the entire piece so all traits can respond
       getOutermost(this).setProperty(Properties.MOVED, !hasMoved);
       return c.getChangeCommand();
-    }
-    else if (keyTrue.equals(stroke)) {
+    } else if (keyTrue.equals(stroke)) {
       final ChangeTracker c = new ChangeTracker(this);
       // Set the property on the entire piece so all traits can respond
       getOutermost(this).setProperty(Properties.MOVED, true);
       return c.getChangeCommand();
-    }
-    else if (keyFalse.equals(stroke)) {
+    } else if (keyFalse.equals(stroke)) {
       final ChangeTracker c = new ChangeTracker(this);
       // Set the property on the entire piece so all traits can respond
       getOutermost(this).setProperty(Properties.MOVED, false);
       return c.getChangeCommand();
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -212,21 +215,23 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
 
     if (!GlobalOptions.getInstance().isShowMarkMoved()) return;
 
-    if (hasMoved
-        && movedIcon.getIconValue() != null) {
+    if (hasMoved && movedIcon.getIconValue() != null) {
       final Graphics2D g2d = (Graphics2D) g;
       final AffineTransform transform = g2d.getTransform();
       g2d.scale(zoom, zoom);
-      movedIcon.getIconValue().paintIcon(obs, g,
-                                         (int) Math.round(x / zoom) + xOffset,
-                                         (int) Math.round(y / zoom) + yOffset);
+      movedIcon
+          .getIconValue()
+          .paintIcon(
+              obs, g, (int) Math.round(x / zoom) + xOffset, (int) Math.round(y / zoom) + yOffset);
       g2d.setTransform(transform);
     }
   }
 
   private Dimension getImageSize() {
     final Icon icon = movedIcon.getIconValue();
-    return icon != null ? new Dimension(icon.getIconWidth(), icon.getIconHeight()) : new Dimension();
+    return icon != null
+        ? new Dimension(icon.getIconWidth(), icon.getIconHeight())
+        : new Dimension();
   }
 
   @Override
@@ -259,8 +264,7 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
   public Object getLocalizedProperty(Object key) {
     if (Properties.MOVED.equals(key)) {
       return isMoved() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else {
+    } else {
       return super.getLocalizedProperty(key);
     }
   }
@@ -269,8 +273,7 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
   public Object getProperty(Object key) {
     if (Properties.MOVED.equals(key)) {
       return isMoved() ? Boolean.TRUE : Boolean.FALSE;
-    }
-    else {
+    } else {
       return super.getProperty(key);
     }
   }
@@ -280,14 +283,12 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
     if (Properties.MOVED.equals(key)) {
       setMoved(Boolean.TRUE.equals(val));
       piece.setProperty(key, val); // So other traits can respond to the property change
-    }
-    else if (Properties.MAYBE_MOVED.equals(key)) {
+    } else if (Properties.MAYBE_MOVED.equals(key)) {
       if (!ignoreSameLocation) {
         setMoved(Boolean.TRUE.equals(val));
       }
       piece.setProperty(key, val); // So other traits can respond to the property change
-    }
-    else {
+    } else {
       super.setProperty(key, val);
     }
   }
@@ -305,18 +306,18 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof MovementMarkable)) return false;
+    if (!(o instanceof MovementMarkable)) return false;
     final MovementMarkable c = (MovementMarkable) o;
-    if (! Objects.equals(movedIcon.getValueString(), c.movedIcon.getValueString())) return false;
-    if (! Objects.equals(xOffset, c.xOffset)) return false;
-    if (! Objects.equals(yOffset, c.yOffset)) return false;
-    if (! Objects.equals(command, c.command)) return false;
-    if (! Objects.equals(key, c.key)) return false;
-    if (! Objects.equals(ignoreSameLocation, c.ignoreSameLocation)) return false;
-    if (! Objects.equals(keyTrue, c.keyTrue)) return false;
-    if (! Objects.equals(keyFalse, c.keyFalse)) return false;
-    if (! Objects.equals(commandTrue, c.commandTrue)) return false;
-    if (! Objects.equals(commandFalse, c.commandFalse)) return false;
+    if (!Objects.equals(movedIcon.getValueString(), c.movedIcon.getValueString())) return false;
+    if (!Objects.equals(xOffset, c.xOffset)) return false;
+    if (!Objects.equals(yOffset, c.yOffset)) return false;
+    if (!Objects.equals(command, c.command)) return false;
+    if (!Objects.equals(key, c.key)) return false;
+    if (!Objects.equals(ignoreSameLocation, c.ignoreSameLocation)) return false;
+    if (!Objects.equals(keyTrue, c.keyTrue)) return false;
+    if (!Objects.equals(keyFalse, c.keyFalse)) return false;
+    if (!Objects.equals(commandTrue, c.commandTrue)) return false;
+    if (!Objects.equals(commandFalse, c.commandFalse)) return false;
     return Objects.equals(hasMoved, c.hasMoved);
   }
 
@@ -381,12 +382,17 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
       boolean enabled = false;
       for (final Map m : Map.getMapList()) {
         final String value = m.getAttributeValueString(Map.MARK_MOVED);
-        enabled = enabled
-            || GlobalOptions.ALWAYS.equals(value)
-            || GlobalOptions.PROMPT.equals(value);
+        enabled =
+            enabled || GlobalOptions.ALWAYS.equals(value) || GlobalOptions.PROMPT.equals(value);
       }
       if (!enabled) {
-        final Runnable runnable = () -> JOptionPane.showMessageDialog(box, Resources.getString("Editor.MovementMarkable.enable_text"), Resources.getString("Editor.MovementMarkable.option_not_enabled"), JOptionPane.WARNING_MESSAGE);
+        final Runnable runnable =
+            () ->
+                JOptionPane.showMessageDialog(
+                    box,
+                    Resources.getString("Editor.MovementMarkable.enable_text"),
+                    Resources.getString("Editor.MovementMarkable.option_not_enabled"),
+                    JOptionPane.WARNING_MESSAGE);
         SwingUtilities.invokeLater(runnable);
       }
       return box;
@@ -415,9 +421,7 @@ public class MovementMarkable extends Decorator implements TranslatablePiece {
     }
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();

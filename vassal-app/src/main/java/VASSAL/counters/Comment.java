@@ -22,20 +22,18 @@ import VASSAL.command.Command;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
 /**
- * A trait that exists in a Piece Definition, but is not included when
- * the piece is created in a real game.
- * Behaviour should be exactly the same as a UsePrototype trait that does
- * not have a matching definition for the selected protoype.
+ * A trait that exists in a Piece Definition, but is not included when the piece is created in a
+ * real game. Behaviour should be exactly the same as a UsePrototype trait that does not have a
+ * matching definition for the selected protoype.
  */
 public class Comment extends Decorator implements EditablePiece {
   public static final String ID = "cmt;"; // NON-NLS
@@ -95,8 +93,7 @@ public class Comment extends Decorator implements EditablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   public String getComment() {
     return comment;
@@ -124,7 +121,7 @@ public class Comment extends Decorator implements EditablePiece {
 
   @Override
   public boolean testEquals(Object o) {
-    if (! (o instanceof Comment)) return false;
+    if (!(o instanceof Comment)) return false;
     final Comment c = (Comment) o;
     return Objects.equals(comment, c.comment);
   }

@@ -26,7 +26,9 @@ import VASSAL.build.module.PrototypesContainer;
 public class PrototypeFolder extends AbstractFolder {
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { this.getClass(), PrototypeDefinition.class, };
+    return new Class<?>[] {
+      this.getClass(), PrototypeDefinition.class,
+    };
   }
 
   @Override

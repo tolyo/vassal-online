@@ -19,14 +19,12 @@ package VASSAL.configure.password;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
-
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.event.DocumentListener;
-
 import net.miginfocom.swing.MigLayout;
 
 public class ToggleablePasswordFieldPanel {
@@ -39,7 +37,7 @@ public class ToggleablePasswordFieldPanel {
   private boolean passwordVisible = false;
 
   public ToggleablePasswordFieldPanel(String label, String initialPassword) {
-    panel = new JPanel(new MigLayout("ins 0,hidemode 3", "[]rel[][]")); //NON-NLS
+    panel = new JPanel(new MigLayout("ins 0,hidemode 3", "[]rel[][]")); // NON-NLS
 
     passwordLabel = new JLabel(label);
     panel.add(passwordLabel);
@@ -51,18 +49,20 @@ public class ToggleablePasswordFieldPanel {
 
     panel.add(passwordField);
 
-    final Icon eye = IconFactory.getIcon("eye", IconFamily.XSMALL); //NON-NLS
-    final Icon noEye = IconFactory.getIcon("eye-slash", IconFamily.XSMALL); //NON-NLS
+    final Icon eye = IconFactory.getIcon("eye", IconFamily.XSMALL); // NON-NLS
+    final Icon noEye = IconFactory.getIcon("eye-slash", IconFamily.XSMALL); // NON-NLS
 
     final JButton toggleButton = new JButton(noEye);
-    toggleButton.setToolTipText(Resources.getString(
-      "GlobalOptions.toggle_password_visibility" //$NON-NLS-1$
-    ));
-    toggleButton.addActionListener(e -> {
-      passwordVisible = !passwordVisible;
-      passwordField.setEchoChar(passwordVisible ? (char) 0 : ECHO_CHAR);
-      toggleButton.setIcon(passwordVisible ? eye : noEye);
-    });
+    toggleButton.setToolTipText(
+        Resources.getString(
+            "GlobalOptions.toggle_password_visibility" //$NON-NLS-1$
+            ));
+    toggleButton.addActionListener(
+        e -> {
+          passwordVisible = !passwordVisible;
+          passwordField.setEchoChar(passwordVisible ? (char) 0 : ECHO_CHAR);
+          toggleButton.setIcon(passwordVisible ? eye : noEye);
+        });
     panel.add(toggleButton);
   }
 

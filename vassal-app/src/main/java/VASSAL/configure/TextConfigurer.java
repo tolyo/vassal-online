@@ -21,20 +21,17 @@ import VASSAL.build.AutoConfigurable;
 import VASSAL.tools.ScrollPane;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.swing.SwingUtils;
-import org.apache.commons.lang3.StringUtils;
-
+import java.awt.GraphicsEnvironment;
+import java.util.StringTokenizer;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import java.awt.GraphicsEnvironment;
-import java.util.StringTokenizer;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * A Configurer that allows multi-line string input via a JTextArea
- */
+/** A Configurer that allows multi-line string input via a JTextArea */
 public class TextConfigurer extends Configurer implements ConfigurerFactory {
   private JTextArea textArea;
   private JPanel p;
@@ -86,17 +83,17 @@ public class TextConfigurer extends Configurer implements ConfigurerFactory {
     while (st.hasMoreTokens()) {
       final String token = st.nextToken();
       switch (token.charAt(0)) {
-      case '\n':
-        if (wasNewLine) {
-          se.append("");
-        }
-        wasNewLine = true;
-        break;
-      case '\r':
-        break;
-      default:
-        se.append(token);
-        wasNewLine = false;
+        case '\n':
+          if (wasNewLine) {
+            se.append("");
+          }
+          wasNewLine = true;
+          break;
+        case '\r':
+          break;
+        default:
+          se.append(token);
+          wasNewLine = false;
       }
     }
     return se.getValue() == null ? "" : se.getValue();
@@ -142,12 +139,13 @@ public class TextConfigurer extends Configurer implements ConfigurerFactory {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
       }
-      textArea.addKeyListener(new java.awt.event.KeyAdapter() {
-        @Override
-        public void keyReleased(java.awt.event.KeyEvent evt) {
-          queueForUpdate(textArea.getText());
-        }
-      });
+      textArea.addKeyListener(
+          new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+              queueForUpdate(textArea.getText());
+            }
+          });
 
       textArea.setText((String) getValue());
       SwingUtils.allowUndo(textArea);
@@ -172,18 +170,17 @@ public class TextConfigurer extends Configurer implements ConfigurerFactory {
     updatedValue = s;
     if (System.currentTimeMillis() > lastUpdate + updateFrequency) {
       executeUpdate();
-    }
-    else if (!updateQueued) {
+    } else if (!updateQueued) {
       updateQueued = true;
-      final Runnable delayedUpdate = () -> {
-        try {
-          Thread.sleep(updateFrequency);
-        }
-        catch (InterruptedException e) {
-        }
+      final Runnable delayedUpdate =
+          () -> {
+            try {
+              Thread.sleep(updateFrequency);
+            } catch (InterruptedException e) {
+            }
 
-        SwingUtilities.invokeLater(this::executeUpdate);
-      };
+            SwingUtilities.invokeLater(this::executeUpdate);
+          };
       new Thread(delayedUpdate).start();
     }
   }

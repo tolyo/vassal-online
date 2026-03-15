@@ -22,7 +22,6 @@ package VASSAL.configure;
 import VASSAL.build.module.properties.PropertyChangerConfigurer.Constraints;
 import VASSAL.counters.GamePiece;
 
-
 public class FormattedStringArrayConfigurer extends StringArrayConfigurer {
 
   protected FormattedExpressionConfigurer config;
@@ -54,7 +53,8 @@ public class FormattedStringArrayConfigurer extends StringArrayConfigurer {
 
   @Override
   public Configurer buildChildConfigurer(Object value) {
-    final FormattedExpressionConfigurer s = new FormattedExpressionConfigurer((String) value, target);
+    final FormattedExpressionConfigurer s =
+        new FormattedExpressionConfigurer((String) value, target);
     s.setHint(getHint());
     return s;
   }

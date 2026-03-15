@@ -21,6 +21,8 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.tools.PropertiesEncoder;
+import VASSAL.tools.SequenceEncoder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +30,11 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import VASSAL.tools.PropertiesEncoder;
-import VASSAL.tools.SequenceEncoder;
-
 /**
- * Base class for the hierarchical server model.
- * Each node has a name, a list of children, and arbitrary extra information
- * encoded in the {@link #getInfo} string. Each node can be identified
- * globally by a path name. Messages sent to a node generally broadcast to
- * all descendants of the node.
+ * Base class for the hierarchical server model. Each node has a name, a list of children, and
+ * arbitrary extra information encoded in the {@link #getInfo} string. Each node can be identified
+ * globally by a path name. Messages sent to a node generally broadcast to all descendants of the
+ * node.
  */
 public class Node implements MsgSender {
   private static final Logger logger = Logger.getLogger(MsgSender.class.getName());
@@ -62,8 +60,7 @@ public class Node implements MsgSender {
   public String getInfoProperty(String propName) {
     try {
       return new PropertiesEncoder(info).getProperties().getProperty(propName);
-    }
-    catch (final IOException e) {
+    } catch (final IOException e) {
       return null;
     }
   }
@@ -81,7 +78,7 @@ public class Node implements MsgSender {
   }
 
   public void remove(Node child) {
-    logger.finer("Removing " + child + " from " + this); //$NON-NLS-1$ //$NON-NLS-2$
+    logger.finer("Removing " + child + " from " + this); // $NON-NLS-1$ //$NON-NLS-2$
     children.remove(child);
   }
 
@@ -92,7 +89,7 @@ public class Node implements MsgSender {
     if (child.parent != null) {
       child.parent.remove(child);
     }
-    logger.finer("Adding " + child + " to " + this); //$NON-NLS-1$ //$NON-NLS-2$
+    logger.finer("Adding " + child + " to " + this); // $NON-NLS-1$ //$NON-NLS-2$
     children.add(child);
     child.setParent(this);
   }
@@ -113,11 +110,12 @@ public class Node implements MsgSender {
 
   @Override
   public String toString() {
-    return super.toString() + "[id=" + id + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+    return super.toString() + "[id=" + id + "]"; // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   /**
    * return the child node with the given id, or null if no match
+   *
    * @param id id of node
    * @return node with that id
    */
@@ -132,6 +130,7 @@ public class Node implements MsgSender {
 
   /**
    * Return the descendant node with the given path relative to this node
+   *
    * @param path path
    * @return descendant node
    */
@@ -161,8 +160,7 @@ public class Node implements MsgSender {
   private void addLeaves(Node base, List<Node> l) {
     if (base.isLeaf()) {
       l.add(base);
-    }
-    else {
+    } else {
       for (final Node n : base.getChildren()) {
         addLeaves(n, l);
       }
@@ -180,10 +178,10 @@ public class Node implements MsgSender {
   }
 
   /**
-   * Constructs from a path name.
-   * Instantiates parent nodes with appropriate names as necessary.
-   * @param base the top-level ancestor of the node to be built.
-   *             Its name is not included in the path name
+   * Constructs from a path name. Instantiates parent nodes with appropriate names as necessary.
+   *
+   * @param base the top-level ancestor of the node to be built. Its name is not included in the
+   *     path name
    * @param path path
    * @return node
    */
@@ -204,6 +202,7 @@ public class Node implements MsgSender {
 
   /**
    * Builds a Node from a pathAndInfo string
+   *
    * @see #getPathAndInfo
    * @param base base
    * @param pathAndInfo pathAndInfo
@@ -239,8 +238,7 @@ public class Node implements MsgSender {
     synchronized (children) {
       final SequenceEncoder se = new SequenceEncoder('/');
       final List<Node> path = getPathList();
-      for (final ListIterator<Node> i = path.listIterator(path.size());
-           i.hasPrevious(); ) {
+      for (final ListIterator<Node> i = path.listIterator(path.size()); i.hasPrevious(); ) {
         se.append(i.previous().getId());
       }
       return se.getValue();
@@ -249,17 +247,16 @@ public class Node implements MsgSender {
 
   /**
    * Return a string in the format parentId=parentInfo/childId=childInfo/...
+   *
    * @return string
    */
   public String getPathAndInfo() {
     synchronized (children) {
       final SequenceEncoder se = new SequenceEncoder('/');
       final List<Node> path = getPathList();
-      for (final ListIterator<Node> i = path.listIterator(path.size() - 1);
-           i.hasPrevious(); ) {
+      for (final ListIterator<Node> i = path.listIterator(path.size() - 1); i.hasPrevious(); ) {
         final Node n = i.previous();
-        final SequenceEncoder se2 =
-          new SequenceEncoder(n.getId(), '=').append(n.getInfo());
+        final SequenceEncoder se2 = new SequenceEncoder(n.getId(), '=').append(n.getInfo());
         se.append(se2.getValue());
       }
       return se.getValue();

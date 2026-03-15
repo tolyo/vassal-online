@@ -28,15 +28,11 @@ import VASSAL.tools.concurrent.SimpleRunnableFuture;
  * @since 3.2.0
  */
 public abstract class EDTRunnableFuture<V> extends SimpleRunnableFuture<V> {
-  /**
-   * Creates a {link RunnableFuture} which will be run on the Event Dispatch
-   * Thread.
-   */
-  public EDTRunnableFuture() { }
+  /** Creates a {link RunnableFuture} which will be run on the Event Dispatch Thread. */
+  public EDTRunnableFuture() {}
 
   /**
-   * Creates a {link RunnableFuture} which will be run on the Event Dispatch
-   * Thread.
+   * Creates a {link RunnableFuture} which will be run on the Event Dispatch Thread.
    *
    * @param result the result to return
    */
@@ -57,8 +53,7 @@ public abstract class EDTRunnableFuture<V> extends SimpleRunnableFuture<V> {
     try {
       runOnEDT();
       set(result);
-    }
-    catch (Throwable t) {
+    } catch (Throwable t) {
       setException(t);
     }
   }

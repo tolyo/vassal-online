@@ -2,12 +2,9 @@ package VASSAL.chat.peer2peer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-
 import org.litesoft.p2pchat.PendingPeerManager;
 
-/**
- * Date: Mar 11, 2003
- */
+/** Date: Mar 11, 2003 */
 public class AcceptPeerThread extends Thread {
   private boolean running = true;
   private ServerSocket socket;

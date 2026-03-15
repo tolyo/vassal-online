@@ -21,7 +21,6 @@ import static org.mockito.Mockito.mock;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.GpIdSupport;
-
 import java.lang.reflect.InvocationTargetException;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -30,7 +29,11 @@ import org.mockito.Mockito;
 public class RestrictedTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Restricted trait = createTrait();
 
@@ -44,7 +47,6 @@ public class RestrictedTest extends DecoratorTest {
     trait.mySetState("A-player");
     trait.setDescription("plover");
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 
   private Restricted createTrait() {
@@ -55,7 +57,7 @@ public class RestrictedTest extends DecoratorTest {
 
       // Mock GameModule to return various resources
       final GameModule gm = mock(GameModule.class);
-      //doNothing().when(gm).addSideChangeListenerToPlayerRoster(any());
+      // doNothing().when(gm).addSideChangeListenerToPlayerRoster(any());
 
       staticGm.when(GameModule::getGameModule).thenReturn(gm);
 

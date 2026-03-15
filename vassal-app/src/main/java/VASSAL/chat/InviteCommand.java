@@ -17,18 +17,16 @@
  */
 package VASSAL.chat;
 
-import javax.swing.JOptionPane;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.node.NodeClient;
 import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.swing.Dialogs;
+import javax.swing.JOptionPane;
 
 /**
- * A {@link Command} that, when executed, sends game synchronization
- * information to a given {@link VASSAL.chat.SimplePlayer}
- *
+ * A {@link Command} that, when executed, sends game synchronization information to a given {@link
+ * VASSAL.chat.SimplePlayer}
  */
 public class InviteCommand extends Command {
   private final String room;
@@ -62,17 +60,18 @@ public class InviteCommand extends Command {
   @Override
   protected void executeCommand() {
     if (client instanceof NodeClient) {
-      final int i = Dialogs.showConfirmDialog(
-        GameModule.getGameModule().getPlayerWindow(),
-        Resources.getString("Chat.invite_heading"), //$NON-NLS-1$
-        Resources.getString("Chat.invite_heading"), //$NON-NLS-1$
-        Resources.getString("Chat.invitation", player, room),  //$NON-NLS-1$
-        JOptionPane.QUESTION_MESSAGE,
-        null,
-        JOptionPane.YES_NO_OPTION,
-        "Invite" + playerId,  //$NON-NLS-1$
-        Resources.getString("Chat.ignore_invitation") //$NON-NLS-1$
-      );
+      final int i =
+          Dialogs.showConfirmDialog(
+              GameModule.getGameModule().getPlayerWindow(),
+              Resources.getString("Chat.invite_heading"), // $NON-NLS-1$
+              Resources.getString("Chat.invite_heading"), // $NON-NLS-1$
+              Resources.getString("Chat.invitation", player, room), // $NON-NLS-1$
+              JOptionPane.QUESTION_MESSAGE,
+              null,
+              JOptionPane.YES_NO_OPTION,
+              "Invite" + playerId, // $NON-NLS-1$
+              Resources.getString("Chat.ignore_invitation") // $NON-NLS-1$
+              );
 
       if (i == 0) {
         ((NodeClient) client).doInvite(playerId, room);

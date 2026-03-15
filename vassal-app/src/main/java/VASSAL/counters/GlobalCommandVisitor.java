@@ -21,14 +21,13 @@ import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
-
-import javax.swing.KeyStroke;
 import java.util.HashSet;
 import java.util.Set;
+import javax.swing.KeyStroke;
 
 /**
- * When processing a GlobalCommand (either a Global Key Command or an Attachment command), this applies the
- * "additional properties filter"
+ * When processing a GlobalCommand (either a Global Key Command or an Attachment command), this
+ * applies the "additional properties filter"
  */
 public class GlobalCommandVisitor implements DeckVisitor {
   protected Command command;
@@ -44,12 +43,12 @@ public class GlobalCommandVisitor implements DeckVisitor {
   // Keep track of the ID's of all pieces processed by this GKC.
   private final Set<String> seen = new HashSet<>();
 
-
   public GlobalCommandVisitor(Command command, PieceFilter filter, KeyStroke stroke) {
     this(command, filter, stroke, null);
   }
 
-  public GlobalCommandVisitor(Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit) {
+  public GlobalCommandVisitor(
+      Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit) {
     this.command = command;
     tracker = new BoundsTracker();
     this.filter = filter;
@@ -57,13 +56,26 @@ public class GlobalCommandVisitor implements DeckVisitor {
     auditSoFar = audit;
   }
 
-  public GlobalCommandVisitor(Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit, Auditable owner, int selectFromDeck) {
+  public GlobalCommandVisitor(
+      Command command,
+      PieceFilter filter,
+      KeyStroke stroke,
+      AuditTrail audit,
+      Auditable owner,
+      int selectFromDeck) {
     this(command, filter, stroke, audit);
     this.owner = owner;
     this.selectFromDeck = selectFromDeck;
   }
 
-  public GlobalCommandVisitor(Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit, Auditable owner, int selectFromDeck, GlobalCommand globalCommand) {
+  public GlobalCommandVisitor(
+      Command command,
+      PieceFilter filter,
+      KeyStroke stroke,
+      AuditTrail audit,
+      Auditable owner,
+      int selectFromDeck,
+      GlobalCommand globalCommand) {
     this(command, filter, stroke, audit, owner, selectFromDeck);
     this.globalCommand = globalCommand;
   }
@@ -103,7 +115,9 @@ public class GlobalCommandVisitor implements DeckVisitor {
 
       // Keep drawing until required select count met or all cards in Deck have been processed
       selectedCount = 0;
-      for (final PieceIterator it = d.drawCards(); it.hasMoreElements() && (getSelectFromDeck() < 0 || getSelectFromDeck() > selectedCount);) {
+      for (final PieceIterator it = d.drawCards();
+          it.hasMoreElements()
+              && (getSelectFromDeck() < 0 || getSelectFromDeck() > selectedCount); ) {
         apply(it.nextPiece(), true);
       }
     }
@@ -129,12 +143,12 @@ public class GlobalCommandVisitor implements DeckVisitor {
   protected void apply(GamePiece p, boolean visitingDeck) {
 
     /*
-      Pieces can change Stacks as a result of the GKC being executed and due to the way GlobalCommand
-      has been coded, this can result in a piece being sent the GKC a second time. Rather than hack into
-      GlobalCommand code and potentially change the order that things are being executed, just maintain a
-      Set of the piece IDs that have been sent the GKC so far and prevent duplicates. This will have the
-      minimal impact possible on existing functionality.
-     */
+     Pieces can change Stacks as a result of the GKC being executed and due to the way GlobalCommand
+     has been coded, this can result in a piece being sent the GKC a second time. Rather than hack into
+     GlobalCommand code and potentially change the order that things are being executed, just maintain a
+     Set of the piece IDs that have been sent the GKC so far and prevent duplicates. This will have the
+     minimal impact possible on existing functionality.
+    */
     final String uid = (String) p.getProperty(BasicPiece.PIECE_UID);
     if (seen.contains(uid)) {
       return;
@@ -142,9 +156,9 @@ public class GlobalCommandVisitor implements DeckVisitor {
     seen.add(uid);
 
     /*
-      If an AuditTrail has been supplied for the evaulation history of the filter up to this point,
-      then clone it for applying to each individual piece.
-     */
+     If an AuditTrail has been supplied for the evaulation history of the filter up to this point,
+     then clone it for applying to each individual piece.
+    */
     AuditTrail audit = null;
     if (auditSoFar != null) {
       audit = new AuditTrail(auditSoFar);
@@ -153,27 +167,35 @@ public class GlobalCommandVisitor implements DeckVisitor {
 
     if (filter == null || filter.accept(p, owner, audit)) {
       if (visitingDeck) {
-        p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY after checking filter
+        p.setProperty(
+            Properties.OBSCURED_BY,
+            p.getProperty(
+                Properties
+                    .OBSCURED_BY_PRE_DRAW)); // Bug 13433 restore correct OBSCURED_BY after checking
+        // filter
       }
       tracker.addPiece(p);
       p.setProperty(Properties.SNAPSHOT, ((PropertyExporter) p).getProperties());
 
       // Set any Parameters into the piece prior to issuing the Key Command
-      command = command.append(Decorator.setDynamicProperties(
-        globalCommand.getParameters(),
-        p,
-        globalCommand.getPropertySource(),
-        owner,
-        auditSoFar
-      ));
+      command =
+          command.append(
+              Decorator.setDynamicProperties(
+                  globalCommand.getParameters(),
+                  p,
+                  globalCommand.getPropertySource(),
+                  owner,
+                  auditSoFar));
 
       command = command.append(p.keyEvent(stroke));
       tracker.addPiece(p);
       selectedCount++;
-    }
-    else {
+    } else {
       if (visitingDeck) {
-        p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY
+        p.setProperty(
+            Properties.OBSCURED_BY,
+            p.getProperty(
+                Properties.OBSCURED_BY_PRE_DRAW)); // Bug 13433 restore correct OBSCURED_BY
       }
     }
   }

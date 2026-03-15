@@ -17,6 +17,13 @@
  */
 package VASSAL.counters;
 
+import static VASSAL.counters.BasicPiece.BASIC_NAME;
+import static VASSAL.counters.BasicPiece.PIECE_NAME;
+import static VASSAL.counters.Mat.MAT_ID;
+import static VASSAL.counters.Mat.MAT_NAME;
+import static VASSAL.counters.MatCargo.CURRENT_MAT_OFFSET_X;
+import static VASSAL.counters.MatCargo.CURRENT_MAT_OFFSET_Y;
+
 import VASSAL.build.Configurable;
 import VASSAL.build.GameModule;
 import VASSAL.build.GpIdSupport;
@@ -51,20 +58,6 @@ import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.RecursionLimitException;
 import VASSAL.tools.RecursionLimiter;
 import VASSAL.tools.SequenceEncoder;
-
-import net.miginfocom.swing.MigLayout;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -82,17 +75,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static VASSAL.counters.BasicPiece.BASIC_NAME;
-import static VASSAL.counters.BasicPiece.PIECE_NAME;
-import static VASSAL.counters.Mat.MAT_ID;
-import static VASSAL.counters.Mat.MAT_NAME;
-import static VASSAL.counters.MatCargo.CURRENT_MAT_OFFSET_X;
-import static VASSAL.counters.MatCargo.CURRENT_MAT_OFFSET_Y;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
- * This Decorator defines a key command to places another counter on the same map as this one, normally on top
- * but stack adjustment and offsets may be specified too.
+ * This Decorator defines a key command to places another counter on the same map as this one,
+ * normally on top but stack adjustment and offsets may be specified too.
  */
 public class PlaceMarker extends Decorator implements TranslatablePiece, RecursionLimiter.Loopable {
   public static final String ID = "placemark;"; // NON-NLS
@@ -129,7 +125,9 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
   protected List<Parameter> parameterList = new ArrayList<>();
 
   public PlaceMarker() {
-    this(ID + Resources.getString("Editor.PlaceMarker.default_command") + ";M;null;null", null); // NON-NLS
+    this(
+        ID + Resources.getString("Editor.PlaceMarker.default_command") + ";M;null;null",
+        null); // NON-NLS
   }
 
   public PlaceMarker(String type, GamePiece inner) {
@@ -167,19 +165,20 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(command.getName())
-            .append(key)
-            .append(markerSpec == null ? "null" : markerSpec) // NON-NLS
-            .append(markerText == null ? "null" : markerText) // NON-NLS
-            .append(xOffsetExpression.getExpression()).append(yOffsetExpression.getExpression())
-            .append(matchRotation)
-            .append(afterBurnerKey)
-            .append(description)
-            .append(gpId)
-            .append(placement)
-            .append(above)
-            .append(copyDPsByName)
-            .append(ParameterListConfigurer.encode(parameterList))
-            .append(PLACEMARKER_VERSION);
+        .append(key)
+        .append(markerSpec == null ? "null" : markerSpec) // NON-NLS
+        .append(markerText == null ? "null" : markerText) // NON-NLS
+        .append(xOffsetExpression.getExpression())
+        .append(yOffsetExpression.getExpression())
+        .append(matchRotation)
+        .append(afterBurnerKey)
+        .append(description)
+        .append(gpId)
+        .append(placement)
+        .append(above)
+        .append(copyDPsByName)
+        .append(ParameterListConfigurer.encode(parameterList))
+        .append(PLACEMARKER_VERSION);
     return ID + se.getValue();
   }
 
@@ -188,8 +187,7 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     myGetKeyCommands();
     if (command.matches(stroke)) {
       return placeMarker();
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -204,7 +202,6 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
 
     final GamePiece marker = createMarker();
     if (marker == null) return null;
-
 
     Command c;
 
@@ -221,18 +218,16 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
 
     p.translate(xOffset, -yOffset);
     if (matchRotation) {
-      final FreeRotator myRotation =
-              (FreeRotator) getDecorator(outer, FreeRotator.class);
-      final FreeRotator markerRotation =
-              (FreeRotator) getDecorator(marker, FreeRotator.class);
+      final FreeRotator myRotation = (FreeRotator) getDecorator(outer, FreeRotator.class);
+      final FreeRotator markerRotation = (FreeRotator) getDecorator(marker, FreeRotator.class);
       if (myRotation != null && markerRotation != null) {
         markerRotation.setAngle(myRotation.getAngle());
         final Point2D myPosition = getPosition().getLocation();
         Point2D markerPosition = p.getLocation();
-        markerPosition = AffineTransform.getRotateInstance(
-                myRotation.getAngleInRadians(),
-                myPosition.getX(), myPosition.getY()
-        ).transform(markerPosition, null);
+        markerPosition =
+            AffineTransform.getRotateInstance(
+                    myRotation.getAngleInRadians(), myPosition.getX(), myPosition.getY())
+                .transform(markerPosition, null);
         p = new Point((int) markerPosition.getX(), (int) markerPosition.getY());
       }
     }
@@ -241,11 +236,12 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
       p = getMap().snapTo(p);
     }
 
-    if ((version == 0 || (xOffset == 0 && yOffset == 0)) // Offset negation fix is backward compatible.
-            && m.getStackMetrics().isStackingEnabled() &&
-            !Boolean.TRUE.equals(marker.getProperty(Properties.NO_STACK)) &&
-            !Boolean.TRUE.equals(outer.getProperty(Properties.NO_STACK)) &&
-            m.getPieceCollection().canMerge(outer, marker)) {
+    if ((version == 0
+            || (xOffset == 0 && yOffset == 0)) // Offset negation fix is backward compatible.
+        && m.getStackMetrics().isStackingEnabled()
+        && !Boolean.TRUE.equals(marker.getProperty(Properties.NO_STACK))
+        && !Boolean.TRUE.equals(outer.getProperty(Properties.NO_STACK))
+        && m.getPieceCollection().canMerge(outer, marker)) {
       // The new piece will remain in the same stack as the parent piece
       GamePiece target = outer;
       int index = -1;
@@ -256,20 +252,19 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
         if (placement == STACK_BOTTOM || placement == BELOW) {
           index = 0;
         }
-      }
-      else {
+      } else {
         // we're in a stack already
         switch (placement) {
-        case STACK_TOP:
-          target = parent;
-          break;
-        case STACK_BOTTOM:
-          index = 0;
-          break;
-        case ABOVE:
-          break;
-        case BELOW:
-          index = parent.indexOf(outer);
+          case STACK_TOP:
+            target = parent;
+            break;
+          case STACK_BOTTOM:
+            index = 0;
+            break;
+          case ABOVE:
+            break;
+          case BELOW:
+            index = parent.indexOf(outer);
         }
       }
 
@@ -287,8 +282,8 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
       }
 
       m.repaint();
-    }
-    else if (m.getStackMetrics().isStackingEnabled() && !Boolean.TRUE.equals(marker.getProperty(Properties.NO_STACK))) {
+    } else if (m.getStackMetrics().isStackingEnabled()
+        && !Boolean.TRUE.equals(marker.getProperty(Properties.NO_STACK))) {
       // The new piece is stackable, albeit not on the parent piece or at an offset from that piece.
       // The Above and Below options will fallback to Top and Bottom respectively.
       c = m.placeOrMerge(marker, p);
@@ -300,36 +295,69 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
           c = c.append(ct.getChangeCommand());
         }
       }
-    }
-    else {
+    } else {
       // The new piece is not Stackable.
       // The Above and Below options will have no effect.
       c = m.placeAt(marker, p);
     }
 
-    // Set Our ParentID into the markers parent UniqueID. May have been called by Replace, in which case we do not set a parent Id as the parent will be deleted
+    // Set Our ParentID into the markers parent UniqueID. May have been called by Replace, in which
+    // case we do not set a parent Id as the parent will be deleted
     if (!clearParentId) {
-      c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(PARENT_ID, getProperty(BasicPiece.UNIQUE_ID)));
+      c =
+          c.append(
+              ((PersistentPropertyContainer) marker)
+                  .setPersistentProperty(PARENT_ID, getProperty(BasicPiece.UNIQUE_ID)));
     }
 
     // Mat support
     if ((c != null) && GameModule.getGameModule().isMatSupport()) {
-      // If a cargo piece has been placed, find it a Mat if eligible, and select it if the Mat is selected
-      if (Boolean.TRUE.equals(marker.getProperty(MatCargo.IS_CARGO))) { //NON-NLS
+      // If a cargo piece has been placed, find it a Mat if eligible, and select it if the Mat is
+      // selected
+      if (Boolean.TRUE.equals(marker.getProperty(MatCargo.IS_CARGO))) { // NON-NLS
         final MatCargo cargo = (MatCargo) getDecorator(marker, MatCargo.class);
         if (cargo != null) {
           c = c.append(cargo.findNewMat());
           final GamePiece mat = cargo.getMat();
           if (mat != null) {
-            // Since a piece is being created for the first time & placed on a mat, set its "Old Mat" properties in advance of any future move.
-            // (Really we should probably set the *other* "OLD" properties too for any new PlaceMarker'ed piece, since as things stand they're going to have
-            // e.g. OldLocationName=="" the first time they get moved after a PlaceMarker, but this at least fixes the mats to work right from the get-to)
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT, mat.getProperty(MAT_NAME)));
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT_ID, mat.getProperty(MAT_ID)));
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT_PIECE_NAME, getOutermost(mat).getProperty(PIECE_NAME)));
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT_BASIC_NAME, getOutermost(mat).getProperty(BASIC_NAME)));
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT_OFFSET_X, String.valueOf(cargo.getProperty(CURRENT_MAT_OFFSET_X))));
-            c = c.append(((PersistentPropertyContainer) marker).setPersistentProperty(BasicPiece.OLD_MAT_OFFSET_Y, String.valueOf(cargo.getProperty(CURRENT_MAT_OFFSET_Y))));
+            // Since a piece is being created for the first time & placed on a mat, set its "Old
+            // Mat" properties in advance of any future move.
+            // (Really we should probably set the *other* "OLD" properties too for any new
+            // PlaceMarker'ed piece, since as things stand they're going to have
+            // e.g. OldLocationName=="" the first time they get moved after a PlaceMarker, but this
+            // at least fixes the mats to work right from the get-to)
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(BasicPiece.OLD_MAT, mat.getProperty(MAT_NAME)));
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(BasicPiece.OLD_MAT_ID, mat.getProperty(MAT_ID)));
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(
+                            BasicPiece.OLD_MAT_PIECE_NAME,
+                            getOutermost(mat).getProperty(PIECE_NAME)));
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(
+                            BasicPiece.OLD_MAT_BASIC_NAME,
+                            getOutermost(mat).getProperty(BASIC_NAME)));
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(
+                            BasicPiece.OLD_MAT_OFFSET_X,
+                            String.valueOf(cargo.getProperty(CURRENT_MAT_OFFSET_X))));
+            c =
+                c.append(
+                    ((PersistentPropertyContainer) marker)
+                        .setPersistentProperty(
+                            BasicPiece.OLD_MAT_OFFSET_Y,
+                            String.valueOf(cargo.getProperty(CURRENT_MAT_OFFSET_Y))));
 
             if (mat.getProperty(Properties.SELECTED) == Boolean.TRUE) {
               KeyBuffer.getBuffer().add(marker);
@@ -340,38 +368,34 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     }
 
     // Set any Parameters in the new piece
-    c = c.append(setDynamicProperties(
-            parameterList,
-            marker,
-            getOutermost(this),
-            this));
+    c = c.append(setDynamicProperties(parameterList, marker, getOutermost(this), this));
 
     if ((c != null) && (afterBurnerKey != null) && !afterBurnerKey.isNull()) {
       marker.setProperty(Properties.SNAPSHOT, ((PropertyExporter) marker).getProperties());
       try {
         RecursionLimiter.startExecution(this);
         c.append(marker.keyEvent(afterBurnerKey.getKeyStroke()));
-      }
-      catch (RecursionLimitException e) {
+      } catch (RecursionLimitException e) {
         RecursionLimiter.infiniteLoop(e);
-      }
-      finally {
+      } finally {
         RecursionLimiter.endExecution();
       }
     }
 
-    if (getProperty(Properties.SELECTED) == Boolean.TRUE)
-      selectMarker(marker);
+    if (getProperty(Properties.SELECTED) == Boolean.TRUE) selectMarker(marker);
 
     if (markerText != null) {
-      if (Stream.of(Properties.OBSCURED_TO_OTHERS, Properties.OBSCURED_TO_ME, Properties.INVISIBLE_TO_OTHERS)
-              .noneMatch(s -> Boolean.TRUE.equals(outer.getProperty(s)))) {
+      if (Stream.of(
+              Properties.OBSCURED_TO_OTHERS,
+              Properties.OBSCURED_TO_ME,
+              Properties.INVISIBLE_TO_OTHERS)
+          .noneMatch(s -> Boolean.TRUE.equals(outer.getProperty(s)))) {
         final String location = m.locationName(getPosition());
         if (location != null) {
-          final Command display = new Chatter.DisplayText(
+          final Command display =
+              new Chatter.DisplayText(
                   GameModule.getGameModule().getChatter(),
-                  " * " + location + ":  " + outer.getName() +
-                          " " + markerText + " * ");
+                  " * " + location + ":  " + outer.getName() + " " + markerText + " * ");
           display.execute();
           c = c == null ? display : c.append(display);
         }
@@ -399,8 +423,7 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     if (piece == null) {
       piece = new BasicPiece();
       newGpId = getGpId();
-    }
-    else {
+    } else {
       piece = PieceCloner.getInstance().clonePiece(piece);
     }
     piece.setProperty(Properties.PIECE_ID, newGpId);
@@ -418,31 +441,29 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     }
     GamePiece piece = null;
     if (isMarkerStandalone()) {
-      final AddPiece comm =
-              (AddPiece) GameModule.getGameModule().decode(markerSpec);
+      final AddPiece comm = (AddPiece) GameModule.getGameModule().decode(markerSpec);
       piece = comm.getTarget();
       piece.setState(comm.getState());
       newGpId = getGpId();
-    }
-    else {
+    } else {
       try {
-        final Configurable[] c =
-                ComponentPathBuilder.getInstance().getPath(markerSpec);
+        final Configurable[] c = ComponentPathBuilder.getInstance().getPath(markerSpec);
         final Configurable conf = c[c.length - 1];
 
         if (conf instanceof PieceSlot) {
           piece = ((PieceSlot) conf).getPiece();
           newGpId = ((PieceSlot) conf).getGpId();
         }
-      }
-      catch (ComponentPathBuilder.PathFormatException e) {
-        reportDataError(this, Resources.getString("Error.place_error"),
-                e.getMessage() + " markerSpec=" + markerSpec, e); // NON-NLS
+      } catch (ComponentPathBuilder.PathFormatException e) {
+        reportDataError(
+            this,
+            Resources.getString("Error.place_error"),
+            e.getMessage() + " markerSpec=" + markerSpec,
+            e); // NON-NLS
       }
     }
     return piece;
   }
-
 
   @Override
   public void addImageNamesRecursively(Collection<String> s) {
@@ -456,16 +477,15 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
   }
 
   /**
-   * @return true if the marker is defined from scratch, false if the marker
-   * is defined as a component in the Game Piece Palette
+   * @return true if the marker is defined from scratch, false if the marker is defined as a
+   *     component in the Game Piece Palette
    */
   public boolean isMarkerStandalone() {
     return markerSpec != null && markerSpec.startsWith(BasicCommandEncoder.ADD);
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Shape getShape() {
@@ -528,9 +548,8 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     key = st.nextNamedKeyStroke(null);
     command = new KeyCommand(name, key, this, this);
     if (name.length() > 0 && key != null) {
-      commands = new KeyCommand[]{command};
-    }
-    else {
+      commands = new KeyCommand[] {command};
+    } else {
       commands = KeyCommand.NONE;
     }
     markerSpec = st.nextToken();
@@ -564,7 +583,10 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(command.getName(), getCommandDescription(description, Resources.getString("Editor.PlaceMarker.place_marker_command")));
+    return getI18nData(
+        command.getName(),
+        getCommandDescription(
+            description, Resources.getString("Editor.PlaceMarker.place_marker_command")));
   }
 
   public String getGpId() {
@@ -587,21 +609,21 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof PlaceMarker)) return false;
+    if (!(o instanceof PlaceMarker)) return false;
     final PlaceMarker c = (PlaceMarker) o;
 
-    if (! Objects.equals(key, c.key)) return false;
-    if (! Objects.equals(markerSpec, c.markerSpec)) return false;
-    if (! Objects.equals(markerText, c.markerText)) return false;
-    if (! Objects.equals(xOffsetExpression, c.xOffsetExpression)) return false;
-    if (! Objects.equals(yOffsetExpression, c.yOffsetExpression)) return false;
-    if (! Objects.equals(matchRotation, c.matchRotation)) return false;
-    if (! Objects.equals(afterBurnerKey, c.afterBurnerKey)) return false;
-    if (! Objects.equals(description, c.description)) return false;
-    if (! Objects.equals(gpId, c.gpId)) return false;
-    if (! Objects.equals(placement, c.placement)) return false;
-    if (! Objects.equals(copyDPsByName, c.copyDPsByName)) return false;
-    if (! Objects.equals(parameterList, c.parameterList)) return false;
+    if (!Objects.equals(key, c.key)) return false;
+    if (!Objects.equals(markerSpec, c.markerSpec)) return false;
+    if (!Objects.equals(markerText, c.markerText)) return false;
+    if (!Objects.equals(xOffsetExpression, c.xOffsetExpression)) return false;
+    if (!Objects.equals(yOffsetExpression, c.yOffsetExpression)) return false;
+    if (!Objects.equals(matchRotation, c.matchRotation)) return false;
+    if (!Objects.equals(afterBurnerKey, c.afterBurnerKey)) return false;
+    if (!Objects.equals(description, c.description)) return false;
+    if (!Objects.equals(gpId, c.gpId)) return false;
+    if (!Objects.equals(placement, c.placement)) return false;
+    if (!Objects.equals(copyDPsByName, c.copyDPsByName)) return false;
+    if (!Objects.equals(parameterList, c.parameterList)) return false;
 
     return Objects.equals(above, c.above);
   }
@@ -612,7 +634,8 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     private final PieceSlot pieceInput;
     private final TraitConfigPanel p;
     private String markerSlotPath;
-    protected JButton defineButton = new JButton(Resources.getString("Editor.PlaceMarker.define_marker"));
+    protected JButton defineButton =
+        new JButton(Resources.getString("Editor.PlaceMarker.define_marker"));
     protected JButton selectButton = new JButton(Resources.getString("Editor.select"));
     protected IntConfigurer xOffsetConfig; // Legacy clirr
     protected IntConfigurer yOffsetConfig;
@@ -655,37 +678,49 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
       visPanel.add(pieceInput.getComponent(), "grow"); // NON-NLS
       b.add(visPanel);
 
-      defineButton.addActionListener(e -> {
-        markerSlotPath = null;
-        new PropertiesWindow((Frame) SwingUtilities.getAncestorOfClass(Frame.class,  p), true, pieceInput, null).setVisible(true);
-        piece.descString = pieceInput.getConfigureName();
-        adjustVisualiserSize();
-      });
+      defineButton.addActionListener(
+          e -> {
+            markerSlotPath = null;
+            new PropertiesWindow(
+                    (Frame) SwingUtilities.getAncestorOfClass(Frame.class, p),
+                    true,
+                    pieceInput,
+                    null)
+                .setVisible(true);
+            piece.descString = pieceInput.getConfigureName();
+            adjustVisualiserSize();
+          });
       b.add(defineButton);
       adjustVisualiserSize();
 
-      selectButton.addActionListener(e -> {
-        final ChoosePieceDialog d = new ChoosePieceDialog((Frame) SwingUtilities.getAncestorOfClass(Frame.class, p), PieceSlot.class);
-        d.setVisible(true);
-        if (d.getTarget() instanceof PieceSlot) {
-          pieceInput.setPiece(((PieceSlot) d.getTarget()).getPiece());
-          piece.descString = pieceInput.getConfigureName();
-          adjustVisualiserSize();
-        }
-        if (d.getPath() != null) {
-          markerSlotPath = ComponentPathBuilder.getInstance().getId(d.getPath());
-        }
-        else {
-          markerSlotPath = null;
-        }
-      });
+      selectButton.addActionListener(
+          e -> {
+            final ChoosePieceDialog d =
+                new ChoosePieceDialog(
+                    (Frame) SwingUtilities.getAncestorOfClass(Frame.class, p), PieceSlot.class);
+            d.setVisible(true);
+            if (d.getTarget() instanceof PieceSlot) {
+              pieceInput.setPiece(((PieceSlot) d.getTarget()).getPiece());
+              piece.descString = pieceInput.getConfigureName();
+              adjustVisualiserSize();
+            }
+            if (d.getPath() != null) {
+              markerSlotPath = ComponentPathBuilder.getInstance().getId(d.getPath());
+            } else {
+              markerSlotPath = null;
+            }
+          });
       b.add(selectButton);
       p.add("Editor.Placemarker.marker_definition", b);
 
-      xOffsetConfigEXP = new FormattedExpressionConfigurer(piece.xOffsetExpression.getExpression(), getOutermost(piece));
+      xOffsetConfigEXP =
+          new FormattedExpressionConfigurer(
+              piece.xOffsetExpression.getExpression(), getOutermost(piece));
       p.add("Editor.PlaceMarker.horizontal_offset", xOffsetConfigEXP);
 
-      yOffsetConfigEXP = new FormattedExpressionConfigurer(piece.yOffsetExpression.getExpression(), getOutermost(piece));
+      yOffsetConfigEXP =
+          new FormattedExpressionConfigurer(
+              piece.yOffsetExpression.getExpression(), getOutermost(piece));
       p.add("Editor.PlaceMarker.vertical_offset", yOffsetConfigEXP);
 
       matchRotationConfig = createMatchRotationConfig();
@@ -711,23 +746,28 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
         copyConfig.getControls().setVisible(piece.matchRotation);
         copyLabel.setVisible(piece.matchRotation);
 
-        matchRotationConfig.addPropertyChangeListener(e -> {
-          aboveConfig.getControls().setVisible(matchRotationConfig.getValueBoolean());
-          aboveLabel.setVisible(matchRotationConfig.getValueBoolean());
-          copyConfig.getControls().setVisible(matchRotationConfig.getValueBoolean());
-          copyLabel.setVisible(matchRotationConfig.getValueBoolean());
-        });
-      }
-      else {
+        matchRotationConfig.addPropertyChangeListener(
+            e -> {
+              aboveConfig.getControls().setVisible(matchRotationConfig.getValueBoolean());
+              aboveLabel.setVisible(matchRotationConfig.getValueBoolean());
+              copyConfig.getControls().setVisible(matchRotationConfig.getValueBoolean());
+              copyLabel.setVisible(matchRotationConfig.getValueBoolean());
+            });
+      } else {
         aboveLabel = null;
         copyLabel = null;
       }
 
-      placementConfig = new TranslatingStringEnumConfigurer(
+      placementConfig =
+          new TranslatingStringEnumConfigurer(
               new String[] {"0", "1", "2", "3"},
-              new String[] {"Editor.Placemarker.on_top_of_stack", "Editor.Placemarker.on_bottom_of_stack", "Editor.Placemarker.above_this_piece", "Editor.Placemarker.below_this_piece"},
-              String.valueOf(piece.placement)
-      );
+              new String[] {
+                "Editor.Placemarker.on_top_of_stack",
+                "Editor.Placemarker.on_bottom_of_stack",
+                "Editor.Placemarker.above_this_piece",
+                "Editor.Placemarker.below_this_piece"
+              },
+              String.valueOf(piece.placement));
       p.add("Editor.PlaceMarker.place_marker", placementConfig);
 
       parameterListConfig = new ParameterListConfigurer(piece.parameterList);
@@ -741,31 +781,44 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
 
     @Override
     public void initCustomControls(JDialog d) {
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-              KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_DOWN_MASK), "Define"); //$NON-NLS-1$
-      d.getRootPane().getActionMap().put("Define", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          defineButton.doClick();
-        }
-      });
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_DOWN_MASK),
+              "Define"); //$NON-NLS-1$
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "Define",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  defineButton.doClick();
+                }
+              });
 
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-              KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_DOWN_MASK), "Select"); //$NON-NLS-1$
-      d.getRootPane().getActionMap().put("Select", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          selectButton.doClick();
-        }
-      });
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_DOWN_MASK),
+              "Select"); //$NON-NLS-1$
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "Select",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  selectButton.doClick();
+                }
+              });
     }
 
     private void adjustVisualiserSize() {
       if (pieceInput.getPiece() == null) {
         final int s = (int) defineButton.getPreferredSize().getHeight();
         visPanel.setMinimumSize(new Dimension(s * 2, s));
-      }
-      else {
+      } else {
         visPanel.setMinimumSize(pieceInput.getPreferredSize());
       }
       repack(visPanel);
@@ -796,33 +849,32 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(commandInput.getValueString())
-              .append(keyInput.getValueString());
+      se.append(commandInput.getValueString()).append(keyInput.getValueString());
       if (pieceInput.getPiece() == null) {
         se.append("null"); // NON-NLS
-      }
-      else if (markerSlotPath != null) {
+      } else if (markerSlotPath != null) {
         se.append(markerSlotPath);
-      }
-      else {
+      } else {
         final String spec = GameModule.getGameModule().encode(new AddPiece(pieceInput.getPiece()));
         se.append(spec);
       }
-      se.append("null") // Older versions specified a text message to echo. Now performed by the ReportState trait, // NON-NLS
-              // but we remain backward-compatible.
-              .append(xOffsetConfigEXP.getValueString())
-              .append(yOffsetConfigEXP.getValueString())
-              .append(matchRotationConfig.getValueString())
-              .append(afterBurner.getValueString())
-              .append(descConfig.getValueString())
-              .append(slotId)
-              .append(placementConfig.getSelectedIndex())
-              .append(aboveConfig == null ? "false" : aboveConfig.getValueString()) // NON-NLS
-              .append(copyConfig == null ? "false" : copyConfig.getValueString()) // NON-NLS
-              .append(parameterListConfig.getValueString())
-              .append(PLACEMARKER_VERSION);
+      se.append("null") // Older versions specified a text message to echo. Now performed by the
+          // ReportState trait, // NON-NLS
+          // but we remain backward-compatible.
+          .append(xOffsetConfigEXP.getValueString())
+          .append(yOffsetConfigEXP.getValueString())
+          .append(matchRotationConfig.getValueString())
+          .append(afterBurner.getValueString())
+          .append(descConfig.getValueString())
+          .append(slotId)
+          .append(placementConfig.getSelectedIndex())
+          .append(aboveConfig == null ? "false" : aboveConfig.getValueString()) // NON-NLS
+          .append(copyConfig == null ? "false" : copyConfig.getValueString()) // NON-NLS
+          .append(parameterListConfig.getValueString())
+          .append(PLACEMARKER_VERSION);
       return ID + se.getValue();
     }
+
     public static class ChoosePieceDialog extends ChooseComponentPathDialog {
       private static final long serialVersionUID = 1L;
 

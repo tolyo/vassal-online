@@ -2,10 +2,8 @@ package VASSAL.counters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-
 import VASSAL.tools.NamedKeyStroke;
-
+import org.junit.jupiter.api.Test;
 
 public class CloneSerializeTest extends SerializeTest<Clone> {
   @Test

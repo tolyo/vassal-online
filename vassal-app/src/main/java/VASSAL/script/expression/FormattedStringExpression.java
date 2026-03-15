@@ -20,15 +20,12 @@ package VASSAL.script.expression;
 import VASSAL.build.module.properties.PropertySource;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
 import java.util.Map;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Report Format or old-style Formatted String expression containing at
- * least one $variable$ name reference
- *
+ * Report Format or old-style Formatted String expression containing at least one $variable$ name
+ * reference
  */
 public class FormattedStringExpression extends Expression {
   public FormattedStringExpression(String s) {
@@ -36,8 +33,8 @@ public class FormattedStringExpression extends Expression {
   }
 
   /**
-   * Evaluate this expression.
-   * NB. Code moved from FormattedString.java
+   * Evaluate this expression. NB. Code moved from FormattedString.java
+   *
    * @deprecated Use {@link #evaluate(PropertySource, Map, boolean, Auditable, AuditTrail)}
    */
   @Deprecated(since = "2021-06-11")
@@ -47,7 +44,12 @@ public class FormattedStringExpression extends Expression {
   }
 
   @Override
-  public String evaluate(PropertySource ps, Map<String, String> properties, boolean localized, Auditable owner, AuditTrail audit) {
+  public String evaluate(
+      PropertySource ps,
+      Map<String, String> properties,
+      boolean localized,
+      Auditable owner,
+      AuditTrail audit) {
     final StringBuilder buffer = new StringBuilder();
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(getExpression(), '$');
     boolean isProperty = true;
@@ -58,10 +60,9 @@ public class FormattedStringExpression extends Expression {
         /*
          * Only even numbered tokens with at least one token after them are valid $propertyName$ strings.
          */
-        if (!isProperty || ! st.hasMoreTokens()) {
+        if (!isProperty || !st.hasMoreTokens()) {
           buffer.append(token);
-        }
-        else if (properties != null && properties.containsKey(token)) {
+        } else if (properties != null && properties.containsKey(token)) {
           final String value = properties.get(token);
           if (audit != null) {
             audit.addMessage("$" + token + "$=" + value);
@@ -69,21 +70,17 @@ public class FormattedStringExpression extends Expression {
           if (value != null) {
             buffer.append(value);
           }
-        }
-        else if (ps != null) {
-          final Object value =
-            localized ? ps.getLocalizedProperty(token) : ps.getProperty(token);
+        } else if (ps != null) {
+          final Object value = localized ? ps.getLocalizedProperty(token) : ps.getProperty(token);
           if (audit != null) {
             audit.addMessage("$" + token + "$=" + value);
           }
           if (value != null) {
             buffer.append(value);
-          }
-          else if (!localized) {
+          } else if (!localized) {
             buffer.append(token);
           }
-        }
-        else {
+        } else {
           buffer.append(token);
         }
       }
@@ -95,9 +92,7 @@ public class FormattedStringExpression extends Expression {
     return buffer.toString();
   }
 
-  /**
-   * Convert to a BeanShell expression
-   */
+  /** Convert to a BeanShell expression */
   @Override
   public String toBeanShellString() {
     final String s = getExpression();
@@ -105,8 +100,7 @@ public class FormattedStringExpression extends Expression {
     try {
       Integer.parseInt(s);
       return s;
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       // Not an error
     }
 
@@ -121,16 +115,13 @@ public class FormattedStringExpression extends Expression {
         /*
          * Only even numbered tokens with at least one token after them are valid $propertyName$ strings.
          */
-        if (! first) {
+        if (!first) {
           buffer.append('+');
         }
         if (isProperty && st.hasMoreTokens()) {
           buffer.append(BeanShellExpression.convertProperty(token));
-        }
-        else {
-          buffer.append('\"')
-                .append(token)
-                .append('\"');
+        } else {
+          buffer.append('\"').append(token).append('\"');
         }
         first = false;
       }
@@ -140,6 +131,7 @@ public class FormattedStringExpression extends Expression {
   }
 
   public static Expression instance(String s) {
-    return CACHE.computeIfAbsent(Pair.of(s, FormattedStringExpression.class), k -> new FormattedStringExpression(s));
+    return CACHE.computeIfAbsent(
+        Pair.of(s, FormattedStringExpression.class), k -> new FormattedStringExpression(s));
   }
 }

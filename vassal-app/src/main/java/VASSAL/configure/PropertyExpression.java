@@ -22,9 +22,7 @@ public class PropertyExpression implements PieceFilter {
 
   protected Expression expression = NullExpression.instance();
 
-  public PropertyExpression() {
-
-  }
+  public PropertyExpression() {}
 
   public PropertyExpression(String s) {
     setExpression(s);
@@ -43,7 +41,8 @@ public class PropertyExpression implements PieceFilter {
   }
 
   public PieceFilter getFilter(PropertySource source, Auditable owner, String fieldKey) {
-    return getFilter(source, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
+    return getFilter(
+        source, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
   }
 
   public PieceFilter getFilter(PropertySource source, Auditable owner, AuditTrail audit) {
@@ -65,7 +64,8 @@ public class PropertyExpression implements PieceFilter {
 
   @Override
   public boolean accept(GamePiece piece, Auditable owner, String fieldKey) {
-    return accept(piece, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
+    return accept(
+        piece, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
   }
 
   @Override
@@ -100,15 +100,14 @@ public class PropertyExpression implements PieceFilter {
 
   @Override
   public boolean equals(Object o) {
-    return o instanceof PropertyExpression &&
-           getExpression().equals(((PropertyExpression) o).getExpression());
+    return o instanceof PropertyExpression
+        && getExpression().equals(((PropertyExpression) o).getExpression());
   }
 
   /**
-   * Evaluate the Property Expression as true/false using
-   * a supplied property source
+   * Evaluate the Property Expression as true/false using a supplied property source
    *
-   * @param ps Property Source   *
+   * @param ps Property Source *
    * @return boolean result
    */
   public boolean isTrue(PropertySource ps) {
@@ -119,15 +118,16 @@ public class PropertyExpression implements PieceFilter {
     String result = null;
     try {
       result = expression.evaluate(ps, owner, audit);
-    }
-    catch (ExpressionException e) {
-      // suppress error report if this is an editable piece on the Piece Palette (where boolean calcs are not supported)
+    } catch (ExpressionException e) {
+      // suppress error report if this is an editable piece on the Piece Palette (where boolean
+      // calcs are not supported)
       if (!(owner instanceof EditablePiece) || ((EditablePiece) owner).getMap() != null)
-        ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Error.expression_error"),
-        "Expression=" + getExpression() + ", Error=" + e.getError(), e)); //NON-NLS
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                Resources.getString("Error.expression_error"),
+                "Expression=" + getExpression() + ", Error=" + e.getError(),
+                e)); // NON-NLS
     }
-    return "true".equals(result); //NON-NLS
+    return "true".equals(result); // NON-NLS
   }
-
 }
-

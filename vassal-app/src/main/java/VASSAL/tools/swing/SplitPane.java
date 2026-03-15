@@ -1,14 +1,11 @@
 package VASSAL.tools.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-
-import java.awt.Component;
-
 import javax.swing.JSplitPane;
-
+import javax.swing.UIManager;
 import org.apache.commons.lang3.SystemUtils;
 
 public class SplitPane extends JSplitPane {
@@ -144,22 +141,22 @@ public class SplitPane extends JSplitPane {
     final JButton right = new JButton("Right");
     final SplitPane sp = new SplitPane(HORIZONTAL_SPLIT, left, right);
 
-    left.addActionListener(e -> {
-      if (left.isVisible() && right.isVisible()) {
-        sp.toggleLeft();
-      }
-      else {
-        sp.toggleRight();
-      }
-    });
-    right.addActionListener(e -> {
-      if (left.isVisible() && right.isVisible()) {
-        sp.toggleRight();
-      }
-      else {
-        sp.toggleLeft();
-      }
-    });
+    left.addActionListener(
+        e -> {
+          if (left.isVisible() && right.isVisible()) {
+            sp.toggleLeft();
+          } else {
+            sp.toggleRight();
+          }
+        });
+    right.addActionListener(
+        e -> {
+          if (left.isVisible() && right.isVisible()) {
+            sp.toggleRight();
+          } else {
+            sp.toggleLeft();
+          }
+        });
 
     final JFrame f = new JFrame();
     f.add(sp, BorderLayout.CENTER);

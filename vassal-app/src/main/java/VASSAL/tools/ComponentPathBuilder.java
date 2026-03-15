@@ -17,15 +17,12 @@
  */
 package VASSAL.tools;
 
+import VASSAL.build.Configurable;
+import VASSAL.build.GameModule;
 import java.util.ArrayList;
 import java.util.List;
 
-import VASSAL.build.Configurable;
-import VASSAL.build.GameModule;
-
-/**
- * Provides an XPath-like syntax for identifying configuration components
- */
+/** Provides an XPath-like syntax for identifying configuration components */
 public class ComponentPathBuilder {
 
   private static ComponentPathBuilder instance;
@@ -37,10 +34,9 @@ public class ComponentPathBuilder {
     return instance;
   }
 
-
   /**
-   * Return a string identifying the specified {@link Configurable}
-   * components as a path through the configuration parent-child hierarchy.
+   * Return a string identifying the specified {@link Configurable} components as a path through the
+   * configuration parent-child hierarchy.
    *
    * @param targetPath configurable path
    * @return string path
@@ -59,8 +55,7 @@ public class ComponentPathBuilder {
   }
 
   /**
-   * Return a list of {@link Configurable} components specified by the
-   * given identifier.
+   * Return a list of {@link Configurable} components specified by the given identifier.
    *
    * @param id identifier
    * @return list of components
@@ -75,10 +70,8 @@ public class ComponentPathBuilder {
     return list.toArray(new Configurable[0]);
   }
 
-  private void addToPath(Configurable parent,
-                         SequenceEncoder.Decoder st,
-                         List<Configurable> path)
-                         throws PathFormatException {
+  private void addToPath(Configurable parent, SequenceEncoder.Decoder st, List<Configurable> path)
+      throws PathFormatException {
     if (st.hasMoreTokens()) {
       final String id = st.nextToken();
       String name = null;
@@ -94,7 +87,8 @@ public class ComponentPathBuilder {
       while (++i < children.length) {
         if (className.equals(children[i].getClass().getName())) {
           partialMatches.add(children[i]);
-          if (name == null ? children[i].getConfigureName() == null
+          if (name == null
+              ? children[i].getConfigureName() == null
               : name.equals(children[i].getConfigureName())) {
             match = children[i];
             break;
@@ -104,49 +98,47 @@ public class ComponentPathBuilder {
       if (match != null) {
         path.add(match);
         addToPath(match, st, path);
-      }
-      else if (!partialMatches.isEmpty()) {
+      } else if (!partialMatches.isEmpty()) {
         if (!st.hasMoreTokens()) {
           path.add(partialMatches.get(0));
-        }
-        else {
+        } else {
           List<Configurable> subPath = null;
           for (final Configurable candidate : partialMatches) {
             final List<Configurable> l = new ArrayList<>();
             try {
               addToPath(candidate, st.copy(), l);
               subPath = l;
-// FIXME: adding to front of an ArrayList! Should we use LinkedList instead?
+              // FIXME: adding to front of an ArrayList! Should we use LinkedList instead?
               subPath.add(0, candidate);
               break;
-            }
-            catch (PathFormatException e) {
+            } catch (PathFormatException e) {
               // No match found here.  Continue
             }
           }
           if (subPath != null) {
             path.addAll(subPath);
-          }
-          else {
+          } else {
             findFailed(className, name, parent);
           }
         }
-      }
-      else {
+      } else {
         findFailed(className, name, parent);
       }
     }
   }
 
   private void findFailed(String className, String name, Configurable parent)
-    throws PathFormatException {
+      throws PathFormatException {
 
     String msgName = name;
     if (msgName == null) {
       msgName = className.substring(className.lastIndexOf('.') + 1);
     }
-    throw new PathFormatException("Could not find " + msgName + " in " +
-      VASSAL.configure.ConfigureTree.getConfigureName(parent.getClass()));
+    throw new PathFormatException(
+        "Could not find "
+            + msgName
+            + " in "
+            + VASSAL.configure.ConfigureTree.getConfigureName(parent.getClass()));
   }
 
   public static class PathFormatException extends Exception {

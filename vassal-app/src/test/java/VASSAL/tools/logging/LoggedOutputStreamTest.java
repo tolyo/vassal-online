@@ -18,11 +18,10 @@
 
 package VASSAL.tools.logging;
 
-import org.slf4j.Logger;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
-
-import static org.mockito.Mockito.*;
+import org.slf4j.Logger;
 
 public class LoggedOutputStreamTest {
 
@@ -51,10 +50,10 @@ public class LoggedOutputStreamTest {
     final Logger logger = mock(Logger.class);
     final LoggedOutputStream out = new LoggedOutputStream(logger);
 
-    final byte[] xyzzy = new byte[] { 'x', 'y', 'z', 'z', 'y', '\n' };
+    final byte[] xyzzy = new byte[] {'x', 'y', 'z', 'z', 'y', '\n'};
     out.write(xyzzy, 0, xyzzy.length);
 
-    final byte[] foo = new byte[] { 'f', 'o', 'o' };
+    final byte[] foo = new byte[] {'f', 'o', 'o'};
     out.write(foo, 0, foo.length);
 
     verify(logger, atMostOnce()).warn(eq("xyzzy"));
@@ -70,5 +69,4 @@ public class LoggedOutputStreamTest {
 
     verify(logger, never()).warn(anyString());
   }
-
 }

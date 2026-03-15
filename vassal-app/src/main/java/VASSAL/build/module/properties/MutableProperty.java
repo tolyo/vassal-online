@@ -19,7 +19,6 @@ package VASSAL.build.module.properties;
 
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -44,13 +43,15 @@ public interface MutableProperty {
 
   class Util {
     /**
-     * Look for a {@link MutableProperty} in the list of {@link MutablePropertiesContainer}. Return the first one
-     * found, searching the lists in order. The list may contain null references, which are skipped
+     * Look for a {@link MutableProperty} in the list of {@link MutablePropertiesContainer}. Return
+     * the first one found, searching the lists in order. The list may contain null references,
+     * which are skipped
      *
      * @param propertyContainers list of containers
      * @return first property found
      */
-    public static MutableProperty findMutableProperty(String propertyName, List<MutablePropertiesContainer> propertyContainers) {
+    public static MutableProperty findMutableProperty(
+        String propertyName, List<MutablePropertiesContainer> propertyContainers) {
       MutableProperty p = null;
       for (final MutablePropertiesContainer c : propertyContainers) {
         p = (c == null ? null : c.getMutableProperty(propertyName));
@@ -63,9 +64,9 @@ public interface MutableProperty {
   }
 
   /**
-   * Simple implementation of {@link MutableProperty} Support dynamic changing of the property name, provided that
-   * the {@link #addTo(MutablePropertiesContainer)} method is used to register this property with a properties
-   * container.
+   * Simple implementation of {@link MutableProperty} Support dynamic changing of the property name,
+   * provided that the {@link #addTo(MutablePropertiesContainer)} method is used to register this
+   * property with a properties container.
    *
    * @author rkinney
    */
@@ -77,6 +78,7 @@ public interface MutableProperty {
 
     // Maintain a static list of all Global Properties known to module
     private static final List<Impl> allProperties = new ArrayList<>();
+
     public static List<Impl> getAllProperties() {
       return allProperties;
     }
@@ -84,7 +86,7 @@ public interface MutableProperty {
     /**
      * @param source will be the source of any {@link PropertyChangeEvent} fired by this object
      */
-    public Impl(String propertyName, Object source) { //NOPMD
+    public Impl(String propertyName, Object source) { // NOPMD
       this.propertyName = propertyName;
       propSupport = new PropertyChangeSupport(this);
     }

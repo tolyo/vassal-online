@@ -18,35 +18,31 @@
 
 package VASSAL.tools.io;
 
+import VASSAL.tools.concurrent.DaemonThreadFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.tools.concurrent.DaemonThreadFactory;
-
 /**
- *
- *
  * @author Joel Uckelman
  * @since 3.2.0
  */
 public class ProcessLauncher {
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(ProcessLauncher.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProcessLauncher.class);
 
   protected final ExecutorService exec;
 
   public ProcessLauncher() {
-    this(Executors.newCachedThreadPool(
-      new DaemonThreadFactory(ProcessLauncher.class.getSimpleName())));
+    this(
+        Executors.newCachedThreadPool(
+            new DaemonThreadFactory(ProcessLauncher.class.getSimpleName())));
   }
 
   ProcessLauncher(ExecutorService exec) {
@@ -57,7 +53,6 @@ public class ProcessLauncher {
    * Launches a process.
    *
    * @param args the command-line arguments
-   *
    * @throws IOException if the process fails to launch
    */
   public ProcessWrapper launch(String... args) throws IOException {
@@ -71,14 +66,10 @@ public class ProcessLauncher {
    * @param stdout the stream where the process' STDOUT is redirected
    * @param stderr the stream where the process' STDERR is redirected
    * @param args the command-line arguments
-   *
    * @throws IOException if the process fails to launch
    */
   public ProcessWrapper launch(
-    File workDir,
-    OutputStream stdout,
-    OutputStream stderr,
-    String... args) throws IOException {
+      File workDir, OutputStream stdout, OutputStream stderr, String... args) throws IOException {
 
     final InputOutputStreamPump outP = new InputOutputStreamPump(null, stdout);
     final InputOutputStreamPump errP = new InputOutputStreamPump(null, stderr);
@@ -93,30 +84,22 @@ public class ProcessLauncher {
    * @param stdoutPump the stream where the process' STDOUT is redirected
    * @param stderrPump the stream where the process' STDERR is redirected
    * @param args the command-line arguments
-   *
    * @throws IOException if the process fails to launch
    */
   public ProcessWrapper launch(
-    File workDir,
-    InputStreamPump stdoutPump,
-    InputStreamPump stderrPump,
-    String... args) throws IOException {
+      File workDir, InputStreamPump stdoutPump, InputStreamPump stderrPump, String... args)
+      throws IOException {
 
-    logger.info("launching " + StringUtils.join(args, ' ')); //NON-NLS
+    logger.info("launching " + StringUtils.join(args, ' ')); // NON-NLS
 
     final ProcessBuilder pb = new ProcessBuilder(args);
     pb.directory(workDir);
 
     final Process proc = pb.start();
-    final ProcessCallable pcall =
-      new ProcessCallable(proc, stdoutPump, stderrPump, exec);
+    final ProcessCallable pcall = new ProcessCallable(proc, stdoutPump, stderrPump, exec);
     final Future<Integer> future = exec.submit(pcall);
 
     return new ProcessWrapper(
-      future,
-      proc.getInputStream(),
-      proc.getErrorStream(),
-      proc.getOutputStream()
-    );
+        future, proc.getInputStream(), proc.getErrorStream(), proc.getOutputStream());
   }
 }

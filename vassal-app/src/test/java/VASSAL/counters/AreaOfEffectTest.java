@@ -30,7 +30,11 @@ import org.junit.jupiter.api.Test;
 public class AreaOfEffectTest extends DecoratorTest {
 
   @Test
-  void serializeTests() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+  void serializeTests()
+      throws NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException {
 
     // Default piece
     AreaOfEffect trait = new AreaOfEffect();
@@ -100,7 +104,8 @@ public class AreaOfEffectTest extends DecoratorTest {
     serializeTest("Name and on/off keys", trait); // NON-NLS
   }
 
-  // Test that the <name>_Active property returns the correct value and reflects action of the On/Off/Toggle keys.
+  // Test that the <name>_Active property returns the correct value and reflects action of the
+  // On/Off/Toggle keys.
   // And works for both local and global visibility
   @Test
   void propertyTests() {
@@ -130,25 +135,40 @@ public class AreaOfEffectTest extends DecoratorTest {
     trait.setInner(new DummyPiece());
 
     final String prop = trait.name + AreaOfEffect.ACTIVE;
-    assertThat(testType + "Active property starts false", trait.getProperty(prop), is(equalTo("false")));
+    assertThat(
+        testType + "Active property starts false", trait.getProperty(prop), is(equalTo("false")));
 
     trait.myKeyEvent(toggleKey.getKeyStroke());
-    assertThat(testType + "Subsequent Toggle activates trait", trait.getProperty(prop), is(equalTo("true")));
+    assertThat(
+        testType + "Subsequent Toggle activates trait",
+        trait.getProperty(prop),
+        is(equalTo("true")));
 
     trait.myKeyEvent(toggleKey.getKeyStroke());
-    assertThat(testType + "Subsequent Toggle de-activates trait", trait.getProperty(prop), is(equalTo("false")));
+    assertThat(
+        testType + "Subsequent Toggle de-activates trait",
+        trait.getProperty(prop),
+        is(equalTo("false")));
 
     trait.myKeyEvent(onKey.getKeyStroke());
-    assertThat(testType + "On when Off activates trait", trait.getProperty(prop), is(equalTo("true")));
+    assertThat(
+        testType + "On when Off activates trait", trait.getProperty(prop), is(equalTo("true")));
 
     trait.myKeyEvent(onKey.getKeyStroke());
-    assertThat(testType + "On when On leaves trait activated", trait.getProperty(prop), is(equalTo("true")));
+    assertThat(
+        testType + "On when On leaves trait activated",
+        trait.getProperty(prop),
+        is(equalTo("true")));
 
     trait.myKeyEvent(offKey.getKeyStroke());
-    assertThat(testType + "Off when On deactivates trait", trait.getProperty(prop), is(equalTo("false")));
+    assertThat(
+        testType + "Off when On deactivates trait", trait.getProperty(prop), is(equalTo("false")));
 
     trait.myKeyEvent(onKey.getKeyStroke());
-    assertThat(testType + "Off when Off leaves trait deactivated", trait.getProperty(prop), is(equalTo("true")));
+    assertThat(
+        testType + "Off when Off leaves trait deactivated",
+        trait.getProperty(prop),
+        is(equalTo("true")));
 
     trait = new AreaOfEffect();
     trait.transparencyColor = Color.CYAN;
@@ -161,7 +181,10 @@ public class AreaOfEffectTest extends DecoratorTest {
     trait.name = "TEST";
     trait.mySetType(trait.myGetType());
     trait.setInner(new DummyPiece());
-    assertThat(testType + "Active property true when always active", trait.getProperty(prop), is(equalTo("true")));
+    assertThat(
+        testType + "Active property true when always active",
+        trait.getProperty(prop),
+        is(equalTo("true")));
   }
 
   class DummyPiece extends BasicPiece {
@@ -170,5 +193,4 @@ public class AreaOfEffectTest extends DecoratorTest {
       return null;
     }
   }
-
 }

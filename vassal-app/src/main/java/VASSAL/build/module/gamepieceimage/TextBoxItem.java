@@ -18,6 +18,11 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.TextConfigurer;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,24 +33,16 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JTextPane;
-
-import VASSAL.i18n.Resources;
 import org.apache.commons.lang3.ArrayUtils;
-
-import VASSAL.configure.TextConfigurer;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.tools.SequenceEncoder;
-import VASSAL.tools.image.ImageUtils;
 
 public class TextBoxItem extends TextItem {
 
-  public static final String TYPE = "TextBox"; //$NON-NLS-1$
+  public static final String TYPE = "TextBox"; // $NON-NLS-1$
 
-  protected static final String WIDTH = "width"; //$NON-NLS-1$
-  protected static final String HEIGHT = "height"; //$NON-NLS-1$
-  protected static final String USE_HTML = "use_html"; //$NON-NLS-1$
+  protected static final String WIDTH = "width"; // $NON-NLS-1$
+  protected static final String HEIGHT = "height"; // $NON-NLS-1$
+  protected static final String USE_HTML = "use_html"; // $NON-NLS-1$
 
   protected int height = 30;
   protected int width = 40;
@@ -67,20 +64,18 @@ public class TextBoxItem extends TextItem {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.insert(
-      2, super.getAttributeDescriptions(),
-      Resources.getString("Editor.width"),
-      Resources.getString("Editor.height"),
-      Resources.getString("Editor.TextBoxItem.use_html")
-    );
+        2,
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.width"),
+        Resources.getString("Editor.height"),
+        Resources.getString("Editor.TextBoxItem.use_html"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    final Class<?>[] c = ArrayUtils.insert(
-      2, super.getAttributeTypes(),
-      Integer.class,
-      Integer.class,
-      Boolean.class);
+    final Class<?>[] c =
+        ArrayUtils.insert(
+            2, super.getAttributeTypes(), Integer.class, Integer.class, Boolean.class);
 
     final String[] names = getAttributeNames();
     // Change the type of the "Text" attribute to multi-line text
@@ -97,20 +92,14 @@ public class TextBoxItem extends TextItem {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (FONT.equals(name)) {
       return () -> !isHTML;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.insert(
-      2, super.getAttributeNames(),
-      WIDTH,
-      HEIGHT,
-      USE_HTML
-    );
+    return ArrayUtils.insert(2, super.getAttributeNames(), WIDTH, HEIGHT, USE_HTML);
   }
 
   @Override
@@ -121,28 +110,24 @@ public class TextBoxItem extends TextItem {
       }
       width = (Integer) o;
       if (width < 1) width = 1;
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       if (o instanceof String) {
         o = Integer.valueOf((String) o);
       }
       height = (Integer) o;
       if (height < 1) height = 1;
-    }
-    else if (USE_HTML.equals(key)) {
+    } else if (USE_HTML.equals(key)) {
       if (o instanceof String) {
-        o = Boolean.valueOf((String)o);
+        o = Boolean.valueOf((String) o);
       }
       isHTML = Boolean.TRUE.equals(o);
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
 
     if (layout != null) {
       layout.refresh();
     }
-
   }
 
   @Override
@@ -150,14 +135,11 @@ public class TextBoxItem extends TextItem {
 
     if (WIDTH.equals(key)) {
       return String.valueOf(width);
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       return String.valueOf(height);
-    }
-    else if (USE_HTML.equals(key)) {
+    } else if (USE_HTML.equals(key)) {
       return String.valueOf(isHTML);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -189,8 +171,7 @@ public class TextBoxItem extends TextItem {
     String s = null;
     if (textSource.equals(SRC_FIXED)) {
       s = text;
-    }
-    else {
+    } else {
       if (defn != null) {
         if (tbi != null) {
           s = tbi.getValue();
@@ -203,16 +184,16 @@ public class TextBoxItem extends TextItem {
     final Object aa = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     g2d.setRenderingHint(
         RenderingHints.KEY_ANTIALIASING,
-        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON :
-                        RenderingHints.VALUE_ANTIALIAS_OFF
-    );
+        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
     AffineTransform saveXForm = null;
     if (getRotation() != 0) {
       saveXForm = g2d.getTransform();
       final AffineTransform newXForm =
-        AffineTransform.getRotateInstance(Math.toRadians(getRotation()), getLayout().getVisualizerWidth() / 2,
-          getLayout().getVisualizerHeight() / 2);
+          AffineTransform.getRotateInstance(
+              Math.toRadians(getRotation()),
+              getLayout().getVisualizerWidth() / 2,
+              getLayout().getVisualizerHeight() / 2);
       g2d.transform(newXForm);
     }
 
@@ -222,7 +203,7 @@ public class TextBoxItem extends TextItem {
     }
 
     final JTextPane l = new JTextPane();
-    if (isHTML) l.setContentType("text/html"); //$NON-NLS-1$
+    if (isHTML) l.setContentType("text/html"); // $NON-NLS-1$
     l.setText(s);
     l.setSize(width - 2, height - 2);
     l.setBackground(bg != null ? bg : new Color(0, true));
@@ -231,10 +212,9 @@ public class TextBoxItem extends TextItem {
     final Font f = fs.getFont();
     l.setFont(f);
 
-    final BufferedImage img = ImageUtils.createCompatibleTranslucentImage(
-      Math.max(l.getWidth(), 1),
-      Math.max(l.getHeight(), 1)
-    );
+    final BufferedImage img =
+        ImageUtils.createCompatibleTranslucentImage(
+            Math.max(l.getWidth(), 1), Math.max(l.getHeight(), 1));
     final Graphics2D big = img.createGraphics();
     l.paint(big);
     big.dispose();
@@ -267,7 +247,7 @@ public class TextBoxItem extends TextItem {
     final TextBoxItem item = new TextBoxItem(l);
 
     final SequenceEncoder.Decoder sd1 = new SequenceEncoder.Decoder(s, ',');
-    final String s1 = sd1.nextToken(""); //$NON-NLS-1$
+    final String s1 = sd1.nextToken(""); // $NON-NLS-1$
 
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s1, ';');
     sd.nextToken();
@@ -275,7 +255,7 @@ public class TextBoxItem extends TextItem {
     item.height = sd.nextInt(40);
     item.isHTML = sd.nextBoolean(false);
 
-    TextItem.decode(item, sd1.nextToken("")); //$NON-NLS-1$
+    TextItem.decode(item, sd1.nextToken("")); // $NON-NLS-1$
 
     return item;
   }

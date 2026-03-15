@@ -30,8 +30,6 @@ import VASSAL.i18n.TranslatablePiece;
 import VASSAL.property.PersistentPropertyContainer;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -40,10 +38,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
-/**
- * This trait adds a command that creates a duplicate of the selected Gamepiece
- */
+/** This trait adds a command that creates a duplicate of the selected Gamepiece */
 public class Clone extends Decorator implements TranslatablePiece {
   public static final String ID = "clone;"; // NON-NLS
   public static final String CLONE_ID = "CloneID";
@@ -84,11 +81,9 @@ public class Clone extends Decorator implements TranslatablePiece {
   protected KeyCommand[] myGetKeyCommands() {
     if (command == null) {
       cloneCommand = new KeyCommand(commandName, key, getOutermost(this), this);
-      if (commandName.length() > 0 && key != null && ! key.isNull()) {
-        command =
-            new KeyCommand[]{cloneCommand};
-      }
-      else {
+      if (commandName.length() > 0 && key != null && !key.isNull()) {
+        command = new KeyCommand[] {cloneCommand};
+      } else {
         command = KeyCommand.NONE;
       }
     }
@@ -109,7 +104,11 @@ public class Clone extends Decorator implements TranslatablePiece {
     myGetKeyCommands();
     if (cloneCommand.matches(stroke)) {
       final GamePiece outer = getOutermost(this);
-      final GamePiece newPiece = ((AddPiece) GameModule.getGameModule().decode(GameModule.getGameModule().encode(new AddPiece(outer)))).getTarget();
+      final GamePiece newPiece =
+          ((AddPiece)
+                  GameModule.getGameModule()
+                      .decode(GameModule.getGameModule().encode(new AddPiece(outer))))
+              .getTarget();
       newPiece.setId(null);
       GameModule.getGameModule().getGameState().addPiece(newPiece);
       newPiece.setState(outer.getState());
@@ -119,34 +118,39 @@ public class Clone extends Decorator implements TranslatablePiece {
       if (newPiece instanceof PersistentPropertyContainer) {
 
         // Set the UniqueId in the target piece to its current PieceUID
-        c = c.append(((PersistentPropertyContainer) newPiece).setPersistentProperty(BasicPiece.UNIQUE_ID, newPiece.getProperty(BasicPiece.PIECE_UID)));
+        c =
+            c.append(
+                ((PersistentPropertyContainer) newPiece)
+                    .setPersistentProperty(
+                        BasicPiece.UNIQUE_ID, newPiece.getProperty(BasicPiece.PIECE_UID)));
 
         // Find the CloneID for this piece
         String cloneId = (String) getProperty(CLONE_ID);
         if (cloneId == null || cloneId.isEmpty()) {
           // Never been cloned and not a clone, set a new CloneID
           cloneId = (String) getProperty(BasicPiece.UNIQUE_ID);
-          c = c.append(((PersistentPropertyContainer) this).setPersistentProperty(CLONE_ID, cloneId));
+          c =
+              c.append(
+                  ((PersistentPropertyContainer) this).setPersistentProperty(CLONE_ID, cloneId));
         }
 
         // Set the CloneID into the target piece
-        c = c.append(((PersistentPropertyContainer) newPiece).setPersistentProperty(CLONE_ID, cloneId));
-
+        c =
+            c.append(
+                ((PersistentPropertyContainer) newPiece).setPersistentProperty(CLONE_ID, cloneId));
       }
 
       if (getMap() != null) {
         c.append(getMap().placeOrMerge(newPiece, outer.getPosition()));
         KeyBuffer.getBuffer().remove(outer);
         KeyBuffer.getBuffer().add(newPiece);
-
       }
     }
     return c;
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -206,7 +210,6 @@ public class Clone extends Decorator implements TranslatablePiece {
     return List.of(commandName);
   }
 
-
   @Override
   public HelpFile getHelpFile() {
     return HelpFile.getReferenceManualPage("GamePiece.html", "Clone"); // NON-NLS
@@ -227,9 +230,9 @@ public class Clone extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Clone)) return false;
+    if (!(o instanceof Clone)) return false;
     final Clone c = (Clone) o;
-    if (! Objects.equals(commandName, c.commandName)) return false;
+    if (!Objects.equals(commandName, c.commandName)) return false;
     return Objects.equals(key, c.key);
   }
 
@@ -252,7 +255,6 @@ public class Clone extends Decorator implements TranslatablePiece {
 
       keyInput = new NamedHotKeyConfigurer(p.key);
       controls.add("Editor.keyboard_command", keyInput);
-
     }
 
     @Override
@@ -263,7 +265,9 @@ public class Clone extends Decorator implements TranslatablePiece {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(nameInput.getValueString()).append(keyInput.getValueString()).append(descInput.getValueString());
+      se.append(nameInput.getValueString())
+          .append(keyInput.getValueString())
+          .append(descInput.getValueString());
       return ID + se.getValue();
     }
 

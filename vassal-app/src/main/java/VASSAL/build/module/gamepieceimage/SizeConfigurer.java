@@ -18,12 +18,12 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
@@ -31,8 +31,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-
-import VASSAL.tools.image.ImageUtils;
 
 public class SizeConfigurer extends StringEnumConfigurer {
 
@@ -89,14 +87,13 @@ public class SizeConfigurer extends StringEnumConfigurer {
        * value and returns the label, set up to display the text and image.
        */
       @Override
-      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-          boolean cellHasFocus) {
+      public Component getListCellRendererComponent(
+          JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (isSelected) {
           setBackground(list.getSelectionBackground());
           setForeground(list.getSelectionForeground());
-        }
-        else {
+        } else {
           setBackground(list.getBackground());
           setForeground(list.getForeground());
         }
@@ -115,8 +112,8 @@ public class SizeConfigurer extends StringEnumConfigurer {
         g.setColor(Color.black);
         g.drawRect(0, 0, w - 1, h - 1);
 
-        final BufferedImage simg = Symbol.NatoUnitSymbolSet.buildSizeImage(
-          (String) value, sample_w, sample_h, sample_g);
+        final BufferedImage simg =
+            Symbol.NatoUnitSymbolSet.buildSizeImage((String) value, sample_w, sample_h, sample_g);
         final int x = (w / 2) - (simg.getWidth() / 2);
         g.drawImage(simg, x, 0, null);
         g.dispose();

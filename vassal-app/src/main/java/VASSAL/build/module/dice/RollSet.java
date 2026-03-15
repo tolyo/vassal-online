@@ -1,4 +1,3 @@
-
 package VASSAL.build.module.dice;
 
 import VASSAL.build.module.DieRoll;

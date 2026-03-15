@@ -25,10 +25,9 @@ import VASSAL.tools.SequenceEncoder;
  * Encoder for {@link ChangePropertyCommand}s
  *
  * @author rodneykinney
- *
  */
 public class ChangePropertyCommandEncoder implements CommandEncoder {
-  protected static final String COMMAND_PREFIX = "MutableProperty\t"; //NON-NLS
+  protected static final String COMMAND_PREFIX = "MutableProperty\t"; // NON-NLS
 
   private final MutablePropertiesContainer container;
 
@@ -58,7 +57,8 @@ public class ChangePropertyCommandEncoder implements CommandEncoder {
      * NB. If there is no containerID in the command, then it is a pre-bug fix command. Legacy
      * behaviour is to execute the change on the first matching property found in any container
      */
-    if (containerId.length() != 0 && !containerId.equals(container.getMutablePropertiesContainerId())) {
+    if (containerId.length() != 0
+        && !containerId.equals(container.getMutablePropertiesContainerId())) {
       return null;
     }
 
@@ -85,9 +85,9 @@ public class ChangePropertyCommandEncoder implements CommandEncoder {
 
     final SequenceEncoder se = new SequenceEncoder('\t');
     se.append(cpc.getPropertyName())
-      .append(cpc.getOldValue())
-      .append(cpc.getNewValue())
-      .append(our_cid);
+        .append(cpc.getOldValue())
+        .append(cpc.getNewValue())
+        .append(our_cid);
     return COMMAND_PREFIX + se.getValue();
   }
 }

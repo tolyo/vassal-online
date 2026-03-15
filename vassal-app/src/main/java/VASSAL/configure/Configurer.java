@@ -24,61 +24,75 @@ import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.swing.SwingUtils;
-
-import javax.swing.JDialog;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import javax.swing.JDialog;
 
 /**
- * A property editor class.  Wraps an Object value and provides
- * methods for saving and restoring the Object from a String.  Also
- * includes a {@link java.awt.Component} that can be placed into a
- * property editing window, allowing the user to change the value
- * interactively.
- * */
+ * A property editor class. Wraps an Object value and provides methods for saving and restoring the
+ * Object from a String. Also includes a {@link java.awt.Component} that can be placed into a
+ * property editing window, allowing the user to change the value interactively.
+ */
 public abstract class Configurer {
-// FIXME: maybe parameterize this so that value can have the right type
-// in subclasses?
-  public static final String NAME_PROPERTY = "Configurer.name";  //NON-NLS
+  // FIXME: maybe parameterize this so that value can have the right type
+  // in subclasses?
+  public static final String NAME_PROPERTY = "Configurer.name"; // NON-NLS
+
   //    public static final String VALUE_PROPERTY = "value";
 
   /** A String the uniquely identifies this property */
   protected String key;
+
   /** A String that provides a short description of the property to the user */
   protected String name;
+
   /** The value */
   protected Object value;
+
   protected PropertyChangeSupport changeSupport;
-  /** When noUpdate is true, setting the value programmatically will not
-   * result in an update of the GUI Component */
+
+  /**
+   * When noUpdate is true, setting the value programmatically will not result in an update of the
+   * GUI Component
+   */
   protected boolean noUpdate = false;
-  /** When frozen is true, setting the value programmatically will not
-   * result in a PropertyChangeEvent being fired */
+
+  /**
+   * When frozen is true, setting the value programmatically will not result in a
+   * PropertyChangeEvent being fired
+   */
   protected boolean frozen = false;
+
   /** A Hint to be displayed in an empty field */
   protected String hint = "";
+
   /** The current highlight status of the Configurer */
   private boolean highlighted = false;
+
   /** Default Highlight Color for Configurable Lists */
   public static final Color LIST_ENTRY_HIGHLIGHT_COLOR = new Color(255, 230, 230);
 
   /**
-   * The ContextLevel of a Configurer defines the level that it is defined at.
-   * It is used by the FunctionBuilder (FB) to provide better contextual help for Function calls.
-   *  o PIECE  - The Configurer is defined at the Piece level. Pieces move around, so we can make no assumptions
-   *             about where the piece may be. All functions are to be displayed by the FB
-   *  o MAP    - The Configurer is defined at the Map level, with the actual Map recorded in context
-   *             FB will not show 'Trait Only' versions of functions.
-   *             Any reference to map or zone level properties on a different map to be wrapped in an appropriate GetXXXProperty function.
-   *  o MODULE - The Configurer is defined at the Module level
-   *             FB will not show 'Trait Only' versions of functions.
-   *             Any references to Map or Zone level properties to be wrapped in an appropriate GetXXXProperty function.
+   * The ContextLevel of a Configurer defines the level that it is defined at. It is used by the
+   * FunctionBuilder (FB) to provide better contextual help for Function calls. o PIECE - The
+   * Configurer is defined at the Piece level. Pieces move around, so we can make no assumptions
+   * about where the piece may be. All functions are to be displayed by the FB o MAP - The
+   * Configurer is defined at the Map level, with the actual Map recorded in context FB will not
+   * show 'Trait Only' versions of functions. Any reference to map or zone level properties on a
+   * different map to be wrapped in an appropriate GetXXXProperty function. o MODULE - The
+   * Configurer is defined at the Module level FB will not show 'Trait Only' versions of functions.
+   * Any references to Map or Zone level properties to be wrapped in an appropriate GetXXXProperty
+   * function.
    */
-  public enum ContextLevel { PIECE, MAP, MODULE };
+  public enum ContextLevel {
+    PIECE,
+    MAP,
+    MODULE
+  };
 
   protected ContextLevel contextLevel;
   protected AbstractBuildable context;
@@ -94,16 +108,12 @@ public abstract class Configurer {
     setValue(val);
   }
 
-  /**
-   * Unique identifier
-   */
+  /** Unique identifier */
   public String getKey() {
     return key;
   }
 
-  /**
-   * Plain English description of the Object
-   */
+  /** Plain English description of the Object */
   public String getName() {
     return name;
   }
@@ -116,10 +126,7 @@ public abstract class Configurer {
     }
   }
 
-  /**
-   * The Object value
-   * May be null if the Object has not been initialized
-   */
+  /** The Object value May be null if the Object has not been initialized */
   public Object getValue() {
     return value;
   }
@@ -129,9 +136,7 @@ public abstract class Configurer {
    */
   public abstract String getValueString();
 
-  /**
-   * Set the Object value
-   */
+  /** Set the Object value */
   public void setValue(Object o) {
     final Object oldValue = getValue();
     value = o;
@@ -140,9 +145,7 @@ public abstract class Configurer {
     }
   }
 
-  /**
-   * If true, then don't fire PropertyChangeEvents when the value is reset
-   */
+  /** If true, then don't fire PropertyChangeEvents when the value is reset */
   public void setFrozen(boolean val) {
     frozen = val;
   }
@@ -151,26 +154,18 @@ public abstract class Configurer {
     return frozen;
   }
 
-  /**
-   * Fire a PropertyChangeEvent as if the value had been set from null
-   */
+  /** Fire a PropertyChangeEvent as if the value had been set from null */
   public void fireUpdate() {
     changeSupport.firePropertyChange(key, null, value);
   }
 
-  /**
-   * Set the Object value from a String
-   */
+  /** Set the Object value from a String */
   public abstract void setValue(String s);
 
-  /**
-   * GUI interface for setting the option in an editing window
-   */
+  /** GUI interface for setting the option in an editing window */
   public abstract Component getControls();
 
-  /**
-   * Add a listener to be notified when the Object state changes
-   */
+  /** Add a listener to be notified when the Object state changes */
   public void addPropertyChangeListener(PropertyChangeListener l) {
     changeSupport.addPropertyChangeListener(l);
   }
@@ -179,26 +174,21 @@ public abstract class Configurer {
     changeSupport.removePropertyChangeListener(l);
   }
 
-  /**
-   * Repack the current configurer
-   */
+  /** Repack the current configurer */
   protected void repack() {
     repack(getControls());
   }
 
-  /**
-   * Repack a dialog or window
-   */
+  /** Repack a dialog or window */
   protected void repack(Component controls) {
     SwingUtils.repack(controls);
   }
-
 
   /**
    * Return the current screen size for use by List type configurers to allow them to take up
    * maximum screen real estate if needed.
    *
-   * The headless check is required in case any Configurers try to initialize during tests.
+   * <p>The headless check is required in case any Configurers try to initialize during tests.
    *
    * @return Screen Size.
    */
@@ -226,6 +216,7 @@ public abstract class Configurer {
 
   /**
    * Set the Hint String via a I18n key
+   *
    * @param hintKey I18n key for the hint
    */
   public void setHintKey(String hintKey) {
@@ -233,33 +224,32 @@ public abstract class Configurer {
   }
 
   /**
-   * Show/Hide the internal label maintained by this Configurer. It is up
-   * to individual Configurers to track and hide the label (if they can).
+   * Show/Hide the internal label maintained by this Configurer. It is up to individual Configurers
+   * to track and hide the label (if they can).
    *
-   * This method is currently only utilized by the Preference configs
-   * {@link VASSAL.preferences.PrefsEditor#addOption(String, Configurer)}
-   * to extract an existing label in a configurer, display correctly
-   * aligned and suppress the original label. This keeps compatibility with
-   * custom module code setting up preferences.
+   * <p>This method is currently only utilized by the Preference configs {@link
+   * VASSAL.preferences.PrefsEditor#addOption(String, Configurer)} to extract an existing label in a
+   * configurer, display correctly aligned and suppress the original label. This keeps compatibility
+   * with custom module code setting up preferences.
    *
-   * This method only needs to be implemented in Configurers that are
-   * added as preferences.
+   * <p>This method only needs to be implemented in Configurers that are added as preferences.
    *
    * @param visible Hide label if true
    */
-  public void setLabelVisible(boolean visible) {
-  }
+  public void setLabelVisible(boolean visible) {}
 
-  /** @deprecated Use {@link #setLabelVisible} instead. */
+  /**
+   * @deprecated Use {@link #setLabelVisible} instead.
+   */
   @Deprecated(since = "2023-01-14", forRemoval = true)
   public void setLabelVisibile(boolean visible) {
     setLabelVisible(visible);
   }
 
   /**
-   * Set the highlighted status of this configurer.
-   * It is up to individual Configurers to override this method and implement a suitable visual highlighting scheme
-   * Note: Cannot make this abstract as it will break custom code.
+   * Set the highlighted status of this configurer. It is up to individual Configurers to override
+   * this method and implement a suitable visual highlighting scheme Note: Cannot make this abstract
+   * as it will break custom code.
    *
    * @param highlighted New Highlighted status
    */
@@ -281,44 +271,32 @@ public abstract class Configurer {
    *
    * @param listener Focus Listener
    */
-  public void addFocusListener(FocusListener listener) {
-
-  }
+  public void addFocusListener(FocusListener listener) {}
 
   /**
    * Remove a FocusListener from the Swing Components that make up this Configurer.
    *
    * @param listener Focus Listener
    */
-  public void removeFocusListener(FocusListener listener) {
+  public void removeFocusListener(FocusListener listener) {}
 
-  }
+  /** Move the cursor to the first input field of this Configurer */
+  public void requestFocus() {}
 
-  /**
-   * Move the cursor to the first input field of this Configurer
-   */
-  public void requestFocus() {
-
-  }
-
-  /**
-   * Initialize any custom controls / keystrokes
-   */
-  public void initCustomControls(JDialog d, Configurable target) {
-
-  }
+  /** Initialize any custom controls / keystrokes */
+  public void initCustomControls(JDialog d, Configurable target) {}
 
   /**
    * Enable or Disable the action of this configurer/
+   *
    * @param enabled
    */
-  public void setEnabled(boolean enabled) {
-
-  }
+  public void setEnabled(boolean enabled) {}
 
   /**
    * Get the Context for this Configurer
-   * @return  Owning Configurable
+   *
+   * @return Owning Configurable
    */
   public AbstractBuildable getContext() {
     return context;
@@ -327,8 +305,8 @@ public abstract class Configurer {
   /**
    * Set the Context for this Configurer to the first ancestor that is of type GameModule or Map
    *
-   * NOTE: The ContextLevel may already have been preset by the ConfigureFactory when the Configurer was created.
-   *       Don't let the AutoConfigurer over-write this
+   * <p>NOTE: The ContextLevel may already have been preset by the ConfigureFactory when the
+   * Configurer was created. Don't let the AutoConfigurer over-write this
    *
    * @param context Owning Configurable
    */
@@ -348,7 +326,8 @@ public abstract class Configurer {
       if (c instanceof AbstractBuildable) {
         c = (AbstractBuildable) c.getAncestor();
       }
-      // If we hit a straight Buildable in the parent tree, can't go any further. Defer to GameModule
+      // If we hit a straight Buildable in the parent tree, can't go any further. Defer to
+      // GameModule
       else {
         c = null;
       }

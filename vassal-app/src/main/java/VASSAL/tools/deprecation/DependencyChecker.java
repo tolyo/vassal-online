@@ -17,8 +17,8 @@
 
 package VASSAL.tools.deprecation;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -43,8 +43,7 @@ public class DependencyChecker {
       outfile = args[1];
       compfile = args[2];
       infile = args[3];
-    }
-    else {
+    } else {
       outfile = null;
       compfile = args[0];
       infile = args[1];
@@ -60,29 +59,32 @@ public class DependencyChecker {
 
     final Set<String> deps = new HashSet<>();
 
-    final Consumer<String> collect = s -> {
-      if (comp.contains(s)) {
-        deps.add(s);
-      }
-    };
+    final Consumer<String> collect =
+        s -> {
+          if (comp.contains(s)) {
+            deps.add(s);
+          }
+        };
 
     walker.setClassCallback(collect);
     walker.setMethodCallback(collect);
     walker.setFieldCallback(collect);
 
-    try (PrintStream ps = outfile == null ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
-      walker.setThisClassEndCallback(s -> {
-        if (!deps.isEmpty()) {
-          ps.println(s);
-          final String[] darr = deps.toArray(new String[0]);
-          Arrays.sort(darr);
-          for (final String dep: darr) {
-            ps.println("  " + dep);
-          }
-          ps.println("");
-          deps.clear();
-        }
-      });
+    try (PrintStream ps =
+        outfile == null ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
+      walker.setThisClassEndCallback(
+          s -> {
+            if (!deps.isEmpty()) {
+              ps.println(s);
+              final String[] darr = deps.toArray(new String[0]);
+              Arrays.sort(darr);
+              for (final String dep : darr) {
+                ps.println("  " + dep);
+              }
+              ps.println("");
+              deps.clear();
+            }
+          });
 
       Processor.process(walker, infile);
     }

@@ -33,7 +33,13 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
 import VASSAL.tools.menu.MenuScroller;
-
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Objects;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,25 +49,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * d/b/a "Prototype"
  *
- * This trait is a placeholder for a pre-defined series of traits specified in a
- * {@link VASSAL.build.module.PrototypeDefinition} object. When a piece that uses a prototype is defined in a module, it
- * is simply assigned the name of a particular prototype definition. When that piece is during a game, the UsePrototype
- * trait is substituted for the list of traits in the prototype definition. From that point on, the piece has no record
- * that those traits were defined in a prototype instead of assigned to piece directly. This is necessary so that
- * subsequent changes to a prototype definition don't invalidate games that were saved using previous versions of the
+ * <p>This trait is a placeholder for a pre-defined series of traits specified in a {@link
+ * VASSAL.build.module.PrototypeDefinition} object. When a piece that uses a prototype is defined in
+ * a module, it is simply assigned the name of a particular prototype definition. When that piece is
+ * during a game, the UsePrototype trait is substituted for the list of traits in the prototype
+ * definition. From that point on, the piece has no record that those traits were defined in a
+ * prototype instead of assigned to piece directly. This is necessary so that subsequent changes to
+ * a prototype definition don't invalidate games that were saved using previous versions of the
  * module.
- *
  */
 public class UsePrototype extends Decorator implements EditablePiece, Loopable {
   public static final String ID = "prototype;"; // NON-NLS
@@ -98,7 +97,8 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
   @Override
   public void mySetType(String type) {
     this.type = type;
-    final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type.substring(ID.length()), ';');
+    final SequenceEncoder.Decoder st =
+        new SequenceEncoder.Decoder(type.substring(ID.length()), ';');
     prototypeName = st.nextToken("");
     if (st.hasMoreTokens()) {
       final java.util.Properties p = new java.util.Properties();
@@ -113,17 +113,18 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
           }
         }
       }
-      properties = new PropertySource() {
-        @Override
-        public Object getProperty(Object key) {
-          return p.getProperty(String.valueOf(key));
-        }
+      properties =
+          new PropertySource() {
+            @Override
+            public Object getProperty(Object key) {
+              return p.getProperty(String.valueOf(key));
+            }
 
-        @Override
-        public Object getLocalizedProperty(Object key) {
-          return getProperty(key);
-        }
-      };
+            @Override
+            public Object getLocalizedProperty(Object key) {
+              return getProperty(key);
+            }
+          };
     }
     lastCachedPrototype = null;
   }
@@ -145,8 +146,7 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
   }
 
   protected void buildPrototype() {
-    final PrototypeDefinition def =
-      PrototypesContainer.getPrototype(prototypeName);
+    final PrototypeDefinition def = PrototypesContainer.getPrototype(prototypeName);
     if (def != null) {
       try {
         RecursionLimiter.startExecution(this);
@@ -159,34 +159,29 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
           lastCachedPrototype = type.intern();
 
           prototype = PieceCloner.getInstance().clonePiece(expandedPrototype);
-          final Decorator outer = (Decorator)
-            getInnermost(prototype).getProperty(Properties.OUTER);
+          final Decorator outer = (Decorator) getInnermost(prototype).getProperty(Properties.OUTER);
           if (outer != null) { // Will be null for an empty prototype
             outer.setInner(piece);
             prototype.setProperty(Properties.OUTER, this);
-          }
-          else {
+          } else {
             prototype = null;
           }
         }
-      }
-      catch (RecursionLimitException e) {
+      } catch (RecursionLimitException e) {
         RecursionLimiter.infiniteLoop(e);
         prototype = null;
-      }
-      finally {
+      } finally {
         RecursionLimiter.endExecution();
       }
-    }
-    else {
+    } else {
       prototype = null;
     }
   }
 
   /**
-   * Build a new GamePiece instance based on the traits in the referenced {@link PrototypeDefinition}. Substitute the
-   * new instance for {@link #getInner} and return it. If the referenced definition does not exist, return the default
-   * inner piece.
+   * Build a new GamePiece instance based on the traits in the referenced {@link
+   * PrototypeDefinition}. Substitute the new instance for {@link #getInner} and return it. If the
+   * referenced definition does not exist, return the default inner piece.
    *
    * @return the new instance
    */
@@ -216,8 +211,7 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -245,7 +239,7 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
 
   @Override
   public boolean testEquals(Object o) {
-    if (! (o instanceof UsePrototype)) return false;
+    if (!(o instanceof UsePrototype)) return false;
     final UsePrototype c = (UsePrototype) o;
     return Objects.equals(prototypeName, c.prototypeName);
   }
@@ -261,9 +255,23 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
     private final Validator validator = new Validator(this);
 
     public Editor(UsePrototype up) {
-      controls = new TraitConfigPanel(new TraitLayout(false, TraitLayout.STANDARD_INSETS + "," +  TraitLayout.STANDARD_GAPY + ",hidemode 3,wrap 4", "[]rel[fill]2[]2[]"));
+      controls =
+          new TraitConfigPanel(
+              new TraitLayout(
+                  false,
+                  TraitLayout.STANDARD_INSETS
+                      + ","
+                      + TraitLayout.STANDARD_GAPY
+                      + ",hidemode 3,wrap 4",
+                  "[]rel[fill]2[]2[]"));
 
-      nameConfig = new StringConfigurer(null, "", 32, Resources.getString("Editor.UsePrototype.prototype_name"), up.type.substring(ID.length()));
+      nameConfig =
+          new StringConfigurer(
+              null,
+              "",
+              32,
+              Resources.getString("Editor.UsePrototype.prototype_name"),
+              up.type.substring(ID.length()));
       controls.add("Editor.UsePrototype.prototype_name", nameConfig, "growx");
 
       controls.add(validator);
@@ -281,14 +289,14 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
 
       for (final Buildable b : target.getBuildables()) {
         if (b instanceof AbstractFolder) {
-          final JMenu sub = subMenu((AbstractFolder)b);
+          final JMenu sub = subMenu((AbstractFolder) b);
           if (sub.getItemCount() > 0) {
             menu.add(sub);
           }
-        }
-        else if (b instanceof PrototypeDefinition) {
+        } else if (b instanceof PrototypeDefinition) {
           final JMenuItem item = new JMenuItem(((PrototypeDefinition) b).getConfigureName());
-          item.addActionListener(ev -> nameConfig.setValue(((PrototypeDefinition) b).getConfigureName()));
+          item.addActionListener(
+              ev -> nameConfig.setValue(((PrototypeDefinition) b).getConfigureName()));
           menu.add(item);
         }
       }
@@ -304,16 +312,16 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
 
       final JPopupMenu protoMenu = new JPopupMenu();
 
-      for (final Buildable b: protos.getBuildables()) {
+      for (final Buildable b : protos.getBuildables()) {
         if (b instanceof AbstractFolder) {
-          final JMenu menu = subMenu((AbstractFolder)b);
+          final JMenu menu = subMenu((AbstractFolder) b);
           if (menu.getItemCount() > 0) {
             protoMenu.add(menu);
           }
-        }
-        else if (b instanceof PrototypeDefinition) {
+        } else if (b instanceof PrototypeDefinition) {
           final JMenuItem item = new JMenuItem(((PrototypeDefinition) b).getConfigureName());
-          item.addActionListener(ev -> nameConfig.setValue(((PrototypeDefinition) b).getConfigureName()));
+          item.addActionListener(
+              ev -> nameConfig.setValue(((PrototypeDefinition) b).getConfigureName()));
           protoMenu.add(item);
         }
       }
@@ -359,10 +367,12 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
 
       private Validator(Editor editor) {
         this.editor = editor;
-        cross = IconFactory.getIcon("no", IconFamily.XSMALL);  //NON-NLS
-        tick = IconFactory.getIcon("yes", IconFamily.XSMALL); //NON-NLS
+        cross = IconFactory.getIcon("no", IconFamily.XSMALL); // NON-NLS
+        tick = IconFactory.getIcon("yes", IconFamily.XSMALL); // NON-NLS
 
-        final BufferedImage image = new BufferedImage(cross.getIconWidth(), cross.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage image =
+            new BufferedImage(
+                cross.getIconWidth(), cross.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         none = new ImageIcon(image);
 
         setStatus(UNKNOWN);
@@ -371,11 +381,9 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
       private void setStatus(int status) {
         if (status == VALID) {
           setIcon(tick);
-        }
-        else if (status == INVALID) {
+        } else if (status == INVALID) {
           setIcon(cross);
-        }
-        else {
+        } else {
           setIcon(none);
         }
         repaint();
@@ -389,8 +397,7 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
       public void validate() {
         if (validating) {
           dirty = true;
-        }
-        else {
+        } else {
           validating = true;
           setStatus(UNKNOWN);
           SwingUtilities.invokeLater(validationThread);
@@ -403,8 +410,7 @@ public class UsePrototype extends Decorator implements EditablePiece, Loopable {
         public void run() {
           if (editor.getValueString().isEmpty()) {
             setStatus(UNKNOWN);
-          }
-          else {
+          } else {
             final PrototypeDefinition p = PrototypesContainer.getPrototype(editor.getValueString());
             setStatus(p == null ? INVALID : VALID);
           }

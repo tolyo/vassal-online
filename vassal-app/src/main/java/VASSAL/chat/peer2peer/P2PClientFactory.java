@@ -18,50 +18,43 @@
  */
 package VASSAL.chat.peer2peer;
 
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.ChatServerFactory;
 import VASSAL.chat.CommandDecoder;
 import VASSAL.chat.DummyMessageServer;
+import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author rkinney
  */
 public class P2PClientFactory extends ChatServerFactory {
-  private static final Logger logger =
-    LoggerFactory.getLogger(ChatServerFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(ChatServerFactory.class);
 
-  public static final String P2P_TYPE = "peer2peer"; //$NON-NLS-1$
-  public static final String P2P_LISTEN_PORT = "listenPort"; //$NON-NLS-1$
-  public static final String P2P_SERVER_IP = "serverIp"; //$NON-NLS-1$
-  public static final String P2P_SERVER_PORT = "serverPort"; //$NON-NLS-1$
-  public static final String P2P_SERVER_NAME = "serverName"; //$NON-NLS-1$
-  public static final String P2P_SERVER_PW = "serverPw"; //$NON-NLS-1$
+  public static final String P2P_TYPE = "peer2peer"; // $NON-NLS-1$
+  public static final String P2P_LISTEN_PORT = "listenPort"; // $NON-NLS-1$
+  public static final String P2P_SERVER_IP = "serverIp"; // $NON-NLS-1$
+  public static final String P2P_SERVER_PORT = "serverPort"; // $NON-NLS-1$
+  public static final String P2P_SERVER_NAME = "serverName"; // $NON-NLS-1$
+  public static final String P2P_SERVER_PW = "serverPw"; // $NON-NLS-1$
 
   @Override
   public ChatServerConnection buildServer(Properties param) {
     final GameModule g = GameModule.getGameModule();
-    final P2PClient server = new P2PClient(
-      g,
-      new DummyMessageServer(),
-      new DirectPeerPool(param),
-      param
-    );
+    final P2PClient server =
+        new P2PClient(g, new DummyMessageServer(), new DirectPeerPool(param), param);
 
-    server.addPropertyChangeListener(ChatServerConnection.STATUS, e -> {
-      final String mess = (String) e.getNewValue();
-      g.warn(mess);
-      logger.info(mess);
-    });
     server.addPropertyChangeListener(
-      ChatServerConnection.INCOMING_MSG,
-      new CommandDecoder(g, g::executeIncomingCommand)
-    );
+        ChatServerConnection.STATUS,
+        e -> {
+          final String mess = (String) e.getNewValue();
+          g.warn(mess);
+          logger.info(mess);
+        });
+    server.addPropertyChangeListener(
+        ChatServerConnection.INCOMING_MSG, new CommandDecoder(g, g::executeIncomingCommand));
 
     return server;
   }

@@ -18,24 +18,21 @@
 
 package VASSAL.tools.image;
 
+import VASSAL.tools.io.TemporaryFileFactory;
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.tools.io.TemporaryFileFactory;
-import VASSAL.tools.lang.Reference;
-
 /**
- * Convert a {@link BufferedImage} to a different type, falling back to
- * conversion on disk if conversion in memory fails.
+ * Convert a {@link BufferedImage} to a different type, falling back to conversion on disk if
+ * conversion in memory fails.
  *
  * @since 3.2.0
  * @author Joel Uckelman
  */
 public class FallbackImageTypeConverter implements ImageTypeConverter {
-  private static final Logger logger =
-    LoggerFactory.getLogger(FallbackImageTypeConverter.class);
+  private static final Logger logger = LoggerFactory.getLogger(FallbackImageTypeConverter.class);
 
   protected final TemporaryFileFactory tfactory;
   protected final ImageTypeConverter memory_converter;
@@ -47,11 +44,7 @@ public class FallbackImageTypeConverter implements ImageTypeConverter {
    * @param tfactory the temporary file factory
    */
   public FallbackImageTypeConverter(TemporaryFileFactory tfactory) {
-    this(
-      tfactory,
-      new MemoryImageTypeConverter(),
-      new FileImageTypeConverter(tfactory)
-    );
+    this(tfactory, new MemoryImageTypeConverter(), new FileImageTypeConverter(tfactory));
   }
 
   /**
@@ -62,9 +55,9 @@ public class FallbackImageTypeConverter implements ImageTypeConverter {
    * @param file_converter the on-disk image converter
    */
   FallbackImageTypeConverter(
-    TemporaryFileFactory tfactory,
-    ImageTypeConverter memory_converter,
-    ImageTypeConverter file_converter) {
+      TemporaryFileFactory tfactory,
+      ImageTypeConverter memory_converter,
+      ImageTypeConverter file_converter) {
 
     this.tfactory = tfactory;
     this.memory_converter = memory_converter;
@@ -73,14 +66,12 @@ public class FallbackImageTypeConverter implements ImageTypeConverter {
 
   /** {@inheritDoc} */
   @Override
-  public BufferedImage convert(Reference<BufferedImage> ref, int type)
-                                                      throws ImageIOException {
+  public BufferedImage convert(Reference<BufferedImage> ref, int type) throws ImageIOException {
     try {
       return memory_converter.convert(ref, type);
-    }
-    catch (OutOfMemoryError e) {
+    } catch (OutOfMemoryError e) {
       // This is ok, we just don't have enough free heap for the conversion.
-      logger.info("Switching to FileImageTypeConverter..."); //NON-NLS
+      logger.info("Switching to FileImageTypeConverter..."); // NON-NLS
     }
 
     // Try converting on disk instead.

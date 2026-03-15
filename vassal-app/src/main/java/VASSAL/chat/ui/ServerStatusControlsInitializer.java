@@ -17,9 +17,8 @@
  */
 package VASSAL.chat.ui;
 
-import javax.swing.JButton;
-
 import VASSAL.chat.ServerStatus;
+import javax.swing.JButton;
 
 public class ServerStatusControlsInitializer implements ChatControlsInitializer {
   protected JButton showStatusButton;
@@ -32,7 +31,12 @@ public class ServerStatusControlsInitializer implements ChatControlsInitializer 
 
   @Override
   public void initializeControls(ChatServerControls controls) {
-    showStatusButton = controls.getToolbar().add(new ShowServerStatusAction(status, getClass().getResource("/images/status.gif"))); //$NON-NLS-1$
+    showStatusButton =
+        controls
+            .getToolbar()
+            .add(
+                new ShowServerStatusAction(
+                    status, getClass().getResource("/images/status.gif"))); // $NON-NLS-1$
   }
 
   @Override

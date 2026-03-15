@@ -22,9 +22,7 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.DoubleConfigurer;
 import VASSAL.i18n.Resources;
 
-/**
- * A Decimal Number Module Preference.
- */
+/** A Decimal Number Module Preference. */
 public class DoublePreference extends BasicPreference {
 
   protected double defaultValue = 0.0;
@@ -50,7 +48,6 @@ public class DoublePreference extends BasicPreference {
       value = Double.valueOf((String) value);
     }
     defaultValue = (Double) value;
-
   }
 
   @Override

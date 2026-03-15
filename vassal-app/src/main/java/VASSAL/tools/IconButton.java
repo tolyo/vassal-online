@@ -1,15 +1,13 @@
 package VASSAL.tools;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-
-import VASSAL.tools.image.ImageUtils;
 
 public class IconButton extends JButton {
   private static final long serialVersionUID = 1L;
@@ -29,12 +27,12 @@ public class IconButton extends JButton {
 
   public static Color getDefaultColor(int type) {
     switch (type) {
-    case TICK_ICON:
-      return Color.green;
-    case CROSS_ICON:
-      return Color.red;
-    default:
-      return Color.black;
+      case TICK_ICON:
+        return Color.green;
+      case CROSS_ICON:
+        return Color.red;
+      default:
+        return Color.black;
     }
   }
 
@@ -44,29 +42,28 @@ public class IconButton extends JButton {
     setMinimumSize(new Dimension(size, size));
     setPreferredSize(new Dimension(size, size));
 
-    final BufferedImage image =
-      ImageUtils.createCompatibleTranslucentImage(size, size);
+    final BufferedImage image = ImageUtils.createCompatibleTranslucentImage(size, size);
 
     final Graphics2D g = image.createGraphics();
     g.setStroke(new BasicStroke(width));
     g.setColor(color);
 
     switch (type) {
-    case PLUS_ICON:
-      g.drawLine(5, size / 2, size - 5, size / 2);
-      g.drawLine(size / 2, 5, size / 2, size - 5);
-      break;
-    case MINUS_ICON:
-      g.drawLine(5, size / 2, size - 5, size / 2);
-      break;
-    case TICK_ICON:
-      g.drawLine(5, size / 2, size / 2, size - 5);
-      g.drawLine(size / 2, size - 5, 5, size - 5);
-      break;
-    case CROSS_ICON:
-      g.drawLine(5, 5, size - 5, size - 5);
-      g.drawLine(5, size - 5, size - 5, 5);
-      break;
+      case PLUS_ICON:
+        g.drawLine(5, size / 2, size - 5, size / 2);
+        g.drawLine(size / 2, 5, size / 2, size - 5);
+        break;
+      case MINUS_ICON:
+        g.drawLine(5, size / 2, size - 5, size / 2);
+        break;
+      case TICK_ICON:
+        g.drawLine(5, size / 2, size / 2, size - 5);
+        g.drawLine(size / 2, size - 5, 5, size - 5);
+        break;
+      case CROSS_ICON:
+        g.drawLine(5, 5, size - 5, size - 5);
+        g.drawLine(5, size - 5, size - 5, 5);
+        break;
     }
     setIcon(new ImageIcon(image));
   }

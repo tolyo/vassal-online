@@ -18,6 +18,11 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.build.AutoConfigurable;
+import VASSAL.configure.TranslatableStringEnum;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -25,27 +30,20 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-
-import VASSAL.configure.TranslatableStringEnum;
-import VASSAL.i18n.Resources;
 import org.apache.commons.lang3.ArrayUtils;
-
-import VASSAL.build.AutoConfigurable;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.tools.SequenceEncoder;
 
 public class ShapeItem extends Item {
 
-  public static final String TYPE = "Box"; //$NON-NLS-1$
+  public static final String TYPE = "Box"; // $NON-NLS-1$
 
-  protected static final String WIDTH = "width"; //$NON-NLS-1$
-  protected static final String HEIGHT = "height"; //$NON-NLS-1$
-  protected static final String SHAPE = "shape"; //$NON-NLS-1$
-  protected static final String BEVEL = "bevel"; //$NON-NLS-1$
+  protected static final String WIDTH = "width"; // $NON-NLS-1$
+  protected static final String HEIGHT = "height"; // $NON-NLS-1$
+  protected static final String SHAPE = "shape"; // $NON-NLS-1$
+  protected static final String BEVEL = "bevel"; // $NON-NLS-1$
 
-  protected static final String RECT = "Rectangle"; //NON-NLS
-  protected static final String RRECT = "Rounded Rectangle"; //NON-NLS
-  protected static final String OVAL = "Oval"; //NON-NLS
+  protected static final String RECT = "Rectangle"; // NON-NLS
+  protected static final String RRECT = "Rounded Rectangle"; // NON-NLS
+  protected static final String OVAL = "Oval"; // NON-NLS
 
   protected int height = 30;
   protected int width = 40;
@@ -68,46 +66,42 @@ public class ShapeItem extends Item {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.insert(
-      2, super.getAttributeDescriptions(),
-      Resources.getString("Editor.width"),
-      Resources.getString("Editor.height"),
-      Resources.getString("Editor.ShapeItem.shape"),
-      Resources.getString("Editor.ShapeItem.bevel")
-    );
+        2,
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.width"),
+        Resources.getString("Editor.height"),
+        Resources.getString("Editor.ShapeItem.shape"),
+        Resources.getString("Editor.ShapeItem.bevel"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.insert(
-      2, super.getAttributeTypes(),
-      Integer.class,
-      Integer.class,
-      ShapeConfig.class,
-      Integer.class);
+        2,
+        super.getAttributeTypes(),
+        Integer.class,
+        Integer.class,
+        ShapeConfig.class,
+        Integer.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.insert(
-      2, super.getAttributeNames(),
-      WIDTH,
-      HEIGHT,
-      SHAPE,
-      BEVEL
-    );
+    return ArrayUtils.insert(2, super.getAttributeNames(), WIDTH, HEIGHT, SHAPE, BEVEL);
   }
 
   public static class ShapeConfig extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[] { RECT, RRECT, OVAL };
+      return new String[] {RECT, RRECT, OVAL};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[] { "Editor.ShapeItem.rectangle",
-                            "Editor.ShapeItem.rounded_rectangle",
-                            "Editor.ShapeItem.oval" }; }
+      return new String[] {
+        "Editor.ShapeItem.rectangle", "Editor.ShapeItem.rounded_rectangle", "Editor.ShapeItem.oval"
+      };
+    }
   }
 
   @Override
@@ -118,32 +112,27 @@ public class ShapeItem extends Item {
       }
       width = (Integer) o;
       if (width < 1) width = 1;
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       if (o instanceof String) {
         o = Integer.valueOf((String) o);
       }
       height = (Integer) o;
       if (height < 1) height = 1;
-    }
-    else if (SHAPE.equals(key)) {
+    } else if (SHAPE.equals(key)) {
       shape = (String) o;
-    }
-    else if (BEVEL.equals(key)) {
+    } else if (BEVEL.equals(key)) {
       if (o instanceof String) {
         o = Integer.valueOf((String) o);
       }
       bevel = (Integer) o;
       if (bevel < 0) bevel = 0;
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
 
     if (layout != null) {
       layout.refresh();
     }
-
   }
 
   @Override
@@ -151,17 +140,13 @@ public class ShapeItem extends Item {
 
     if (WIDTH.equals(key)) {
       return String.valueOf(width);
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       return String.valueOf(height);
-    }
-    else if (SHAPE.equals(key)) {
+    } else if (SHAPE.equals(key)) {
       return shape;
-    }
-    else if (BEVEL.equals(key)) {
+    } else if (BEVEL.equals(key)) {
       return String.valueOf(bevel);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -170,11 +155,9 @@ public class ShapeItem extends Item {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (ROTATION.equals(name)) {
       return falseCond;
-    }
-    else if (BEVEL.equals(name)) {
+    } else if (BEVEL.equals(name)) {
       return bevelCond;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -212,19 +195,15 @@ public class ShapeItem extends Item {
     final Object aa = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     g2d.setRenderingHint(
         RenderingHints.KEY_ANTIALIASING,
-        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON :
-                        RenderingHints.VALUE_ANTIALIAS_OFF
-    );
+        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
     if (fg != null) {
       g.setColor(fg);
       if (shape.equals(RECT)) {
         g.fillRect(r.x, r.y, r.width, r.height);
-      }
-      else if (shape.equals(RRECT)) {
+      } else if (shape.equals(RRECT)) {
         g.fillRoundRect(r.x, r.y, r.width, r.height, bevel * 2, bevel * 2);
-      }
-      else if (shape.equals(OVAL)) {
+      } else if (shape.equals(OVAL)) {
         g.fillOval(r.x, r.y, r.width, r.height);
       }
     }
@@ -233,11 +212,9 @@ public class ShapeItem extends Item {
       g.setColor(bg);
       if (shape.equals(RECT)) {
         g.drawRect(r.x, r.y, r.width, r.height);
-      }
-      else if (shape.equals(RRECT)) {
+      } else if (shape.equals(RRECT)) {
         g.drawRoundRect(r.x, r.y, r.width, r.height, bevel * 2, bevel * 2);
-      }
-      else if (shape.equals(OVAL)) {
+      } else if (shape.equals(OVAL)) {
         g.drawOval(r.x, r.y, r.width, r.height);
       }
     }
@@ -259,7 +236,6 @@ public class ShapeItem extends Item {
   public Dimension getSize() {
     return new Dimension(getWidth(), getHeight());
   }
-
 
   public static Item decode(GamePieceLayout l, String s) {
 

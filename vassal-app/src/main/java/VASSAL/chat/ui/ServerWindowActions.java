@@ -17,10 +17,9 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.chat.Room;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-
-import VASSAL.chat.Room;
 
 /*
  *
@@ -31,6 +30,8 @@ import VASSAL.chat.Room;
 /** Interface for user interaction with {org.vassalengine.module.ServerWindow} */
 public interface ServerWindowActions extends CurrentRoomActions {
   JPopupMenu buildPopupForRoom(Room r, JTree tree);
+
   void doubleClickRoom(Room r, JTree tree);
+
   void createRoom(String name);
 }

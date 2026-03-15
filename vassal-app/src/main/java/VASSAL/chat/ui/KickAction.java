@@ -17,21 +17,17 @@
  */
 package VASSAL.chat.ui;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JTree;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.LockableChatServerConnection;
 import VASSAL.chat.LockableRoom;
 import VASSAL.chat.Room;
 import VASSAL.chat.SimplePlayer;
 import VASSAL.i18n.Resources;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JTree;
 
-/**
- * When invoked, will Kick another player out of his current room back to the Main Room.
- */
+/** When invoked, will Kick another player out of his current room back to the Main Room. */
 public class KickAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -39,7 +35,7 @@ public class KickAction extends AbstractAction {
   private final LockableChatServerConnection client;
 
   public KickAction(LockableChatServerConnection client, SimplePlayer target) {
-    super(Resources.getString("Chat.kick")); //$NON-NLS-1$
+    super(Resources.getString("Chat.kick")); // $NON-NLS-1$
     this.kickee = target;
     this.client = client;
     setEnabled(client.isKickable(kickee));
@@ -49,7 +45,8 @@ public class KickAction extends AbstractAction {
   public void actionPerformed(ActionEvent evt) {
     if (isEnabled()) {
       client.doKick(kickee);
-      GameModule.getGameModule().warn(Resources.getString("Chat.kick_sent", kickee.getName())); //$NON-NLS-1$
+      GameModule.getGameModule()
+          .warn(Resources.getString("Chat.kick_sent", kickee.getName())); // $NON-NLS-1$
     }
   }
 

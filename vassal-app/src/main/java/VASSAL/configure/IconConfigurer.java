@@ -25,16 +25,15 @@ import VASSAL.tools.filechooser.ImageFileFilter;
 import VASSAL.tools.imageop.ImageOp;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.OwningOpMultiResolutionImage;
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.Component;
+import java.awt.Dimension;
+import java.io.File;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.File;
+import net.miginfocom.swing.MigLayout;
 
 public class IconConfigurer extends Configurer {
   private JPanel controls;
@@ -57,7 +56,6 @@ public class IconConfigurer extends Configurer {
   public String getValueString() {
     return imageName;
   }
-
 
   @Override
   public void setValue(Object o) {
@@ -89,7 +87,9 @@ public class IconConfigurer extends Configurer {
   @Override
   public Component getControls() {
     if (controls == null) {
-      controls = new ConfigurerPanel(getName(), "[]rel[]rel[]", "[]rel[]rel[]rel[]", "[fill,grow]"); // NON-NLS
+      controls =
+          new ConfigurerPanel(
+              getName(), "[]rel[]rel[]", "[]rel[]rel[]rel[]", "[fill,grow]"); // NON-NLS
       if (iconLabel == null) {
         iconLabel = new JLabel();
       }
@@ -104,10 +104,11 @@ public class IconConfigurer extends Configurer {
       controls.add(reset, "aligny center, growy 0"); // NON-NLS
       if (defaultImage != null) {
         final JButton useDefault = new JButton(Resources.getString("Editor.default"));
-        useDefault.addActionListener(e -> {
-          setValue(defaultImage);
-          setToolTipText(defaultImage);
-        });
+        useDefault.addActionListener(
+            e -> {
+              setValue(defaultImage);
+              setToolTipText(defaultImage);
+            });
         controls.add(useDefault, "aligny center, growy 0"); // NON-NLS
       }
     }
@@ -127,10 +128,12 @@ public class IconConfigurer extends Configurer {
       if (icon == null) {
         holdingPanel.setPreferredSize(new Dimension(32, 32));
         holdingPanel.setMinimumSize(new Dimension(32, 32));
-      }
-      else {
+      } else {
         holdingPanel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
-        holdingPanel.setMinimumSize(new Dimension(Math.min(icon.getIconWidth(), MAX_ICON_DISPLAY_SIZE), Math.min(icon.getIconHeight(), MAX_ICON_DISPLAY_SIZE)));
+        holdingPanel.setMinimumSize(
+            new Dimension(
+                Math.min(icon.getIconWidth(), MAX_ICON_DISPLAY_SIZE),
+                Math.min(icon.getIconHeight(), MAX_ICON_DISPLAY_SIZE)));
         holdingPanel.setMaximumSize(new Dimension(MAX_ICON_DISPLAY_SIZE, MAX_ICON_DISPLAY_SIZE));
       }
       repack();
@@ -148,8 +151,7 @@ public class IconConfigurer extends Configurer {
       return;
     }
     final File f = fc.getSelectedFile();
-    GameModule.getGameModule().getArchiveWriter()
-        .addImage(f.getPath(), f.getName());
+    GameModule.getGameModule().getArchiveWriter().addImage(f.getPath(), f.getName());
     setValue(f.getName());
     setToolTipText(f.getPath());
   }

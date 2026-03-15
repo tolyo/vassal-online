@@ -30,7 +30,6 @@ import VASSAL.tools.RecursionLimitException;
 import VASSAL.tools.RecursionLimiter;
 import VASSAL.tools.RecursionLimiter.Loopable;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -38,13 +37,9 @@ import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.KeyStroke;
 
-/**
- * Conditional Marker
- * A marker with a variable value depending on conditions.
- * */
+/** Conditional Marker A marker with a variable value depending on conditions. */
 public class CalculatedProperty extends Decorator implements EditablePiece, Loopable {
 
   public static final String ID = "calcProp;"; // NON-NLS
@@ -92,9 +87,7 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
   @Override
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
-    se.append(name)
-      .append(getExpression())
-      .append(description);
+    se.append(name).append(getExpression()).append(description);
     return ID + se.getValue();
   }
 
@@ -104,8 +97,7 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Shape getShape() {
@@ -145,7 +137,6 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
     return expression.getExpression();
   }
 
-
   /**
    * @return a list of the Decorator's string/expression fields if any (for search)
    */
@@ -162,11 +153,9 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
     return List.of(name);
   }
 
-
   /**
-   * Return the value of this trait's property.
-   * Evaluating Expressions can lead to infinite loops and
-   * eventually a Stack Overflow. Trap and report this
+   * Return the value of this trait's property. Evaluating Expressions can lead to infinite loops
+   * and eventually a Stack Overflow. Trap and report this
    */
   @Override
   public Object getProperty(Object key) {
@@ -182,11 +171,9 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
         RecursionLimiter.startExecution(this);
 
         result = evaluate();
-      }
-      catch (RecursionLimitException e) {
+      } catch (RecursionLimitException e) {
         RecursionLimiter.infiniteLoop(e);
-      }
-      finally {
+      } finally {
         RecursionLimiter.endExecution();
       }
 
@@ -212,18 +199,17 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
    */
   protected String evaluate() {
     // Suppress any generated error messages if the piece is not on a map.
-    return getMap() == null ?
-      expression.quietEvaluate(getOutermost(this), this, "Editor.CalculatedProperty.expression") :
-      expression.tryEvaluate(getOutermost(this), this, "Editor.CalculatedProperty.expression");
+    return getMap() == null
+        ? expression.quietEvaluate(getOutermost(this), this, "Editor.CalculatedProperty.expression")
+        : expression.tryEvaluate(getOutermost(this), this, "Editor.CalculatedProperty.expression");
   }
-
 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof CalculatedProperty)) return false;
+    if (!(o instanceof CalculatedProperty)) return false;
     final CalculatedProperty c = (CalculatedProperty) o;
-    if (! Objects.equals(name, c.name)) return false;
+    if (!Objects.equals(name, c.name)) return false;
     return Objects.equals(expression, c.expression);
   }
 
@@ -232,10 +218,7 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
     return new Ed(this);
   }
 
-  /**
-   * Trait Editor implementation
-   *
-   */
+  /** Trait Editor implementation */
   public static class Ed implements PieceEditor {
 
     protected StringConfigurer nameConfig;
@@ -255,10 +238,10 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
       nameConfig = new StringConfigurer(piece.name);
       box.add("Editor.CalculatedProperty.property_name", nameConfig);
 
-      expressionConfig = new BeanShellExpressionConfigurer(piece.getExpression(), getOutermost(piece));
+      expressionConfig =
+          new BeanShellExpressionConfigurer(piece.getExpression(), getOutermost(piece));
       expressionConfig.setContext((AbstractBuildable) null);
       box.add("Editor.CalculatedProperty.expression", expressionConfig);
-
     }
 
     @Override
@@ -275,20 +258,17 @@ public class CalculatedProperty extends Decorator implements EditablePiece, Loop
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(nameConfig.getValueString())
-        .append(expressionConfig.getValueString())
-        .append(descConfig.getValueString());
+          .append(expressionConfig.getValueString())
+          .append(descConfig.getValueString());
       return ID + se.getValue();
     }
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
     l.add(name);
     return l;
   }
-
 }

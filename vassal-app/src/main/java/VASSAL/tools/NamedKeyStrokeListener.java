@@ -18,13 +18,11 @@
 package VASSAL.tools;
 
 import java.awt.event.ActionListener;
-
 import javax.swing.KeyStroke;
+
 /**
- * Extension of KeyStrokeListener to support NamedKeyStroke's and
- * store the supplied NamedKeyStroke. Some components use KeyStrokeListeners
- * to store KeyStroke values.
- *
+ * Extension of KeyStrokeListener to support NamedKeyStroke's and store the supplied NamedKeyStroke.
+ * Some components use KeyStrokeListeners to store KeyStroke values.
  */
 public class NamedKeyStrokeListener extends KeyStrokeListener {
 

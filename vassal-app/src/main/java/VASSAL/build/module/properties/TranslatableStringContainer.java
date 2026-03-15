@@ -25,11 +25,11 @@ import java.util.Map;
  * A component that can contain mutable (updatable) properties
  *
  * @author rkinney
- *
  */
 public interface TranslatableStringContainer {
   /**
    * Add a property under the given key
+   *
    * @param key key
    * @param p property
    */
@@ -37,6 +37,7 @@ public interface TranslatableStringContainer {
 
   /**
    * Remove the property with the given key
+   *
    * @param key key
    */
   TranslatableString removeTranslatableString(String key);
@@ -45,12 +46,9 @@ public interface TranslatableStringContainer {
   TranslatableString getTranslatableString(String propertyName);
 
   /** Return a unique Id for the container */
-
   String getTranslatableStringContainerId();
 
-  /**
-   * Simple implementation of {@link TranslatableStringContainer}
-   */
+  /** Simple implementation of {@link TranslatableStringContainer} */
   class Impl implements TranslatableStringContainer {
     private final Map<String, TranslatableString> props = new HashMap<>();
     private final String id;

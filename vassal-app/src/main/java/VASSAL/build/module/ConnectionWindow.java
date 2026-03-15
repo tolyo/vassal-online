@@ -20,14 +20,10 @@ package VASSAL.build.module;
 import VASSAL.build.AbstractBuildable;
 import VASSAL.build.Buildable;
 
-/**
- * This is now a dummy class
- */
-
+/** This is now a dummy class */
 public class ConnectionWindow extends AbstractBuildable {
   @Override
-  public void addTo(Buildable b) {
-  }
+  public void addTo(Buildable b) {}
 
   @Override
   public String[] getAttributeNames() {
@@ -35,8 +31,7 @@ public class ConnectionWindow extends AbstractBuildable {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-  }
+  public void setAttribute(String name, Object value) {}
 
   @Override
   public String getAttributeValueString(String name) {

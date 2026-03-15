@@ -17,17 +17,13 @@
  */
 package VASSAL.script;
 
+import VASSAL.configure.Configurer;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import VASSAL.configure.Configurer;
-
-/**
- * A Configurer for a String that enforces the string to be a valid
- * Java name
- */
+/** A Configurer for a String that enforces the string to be a valid Java name */
 public class JavaNameConfigurer extends Configurer {
   protected JPanel p;
   protected JTextField nameField;
@@ -61,35 +57,36 @@ public class JavaNameConfigurer extends Configurer {
       p.add(new JLabel(getName()));
       nameField = buildTextField();
       nameField.setMaximumSize(
-        new java.awt.Dimension(nameField.getMaximumSize().width, nameField.getPreferredSize().height));
+          new java.awt.Dimension(
+              nameField.getMaximumSize().width, nameField.getPreferredSize().height));
       nameField.setText(getValueString());
       p.add(nameField);
-      nameField.addKeyListener(new java.awt.event.KeyAdapter() {
-        @Override
-        public void keyReleased(java.awt.event.KeyEvent evt) {
-          noUpdate = true;
-          final String v = nameField.getText();
-          int caret = nameField.getCaretPosition();
-          final StringBuilder sb = new StringBuilder();
-          for (int i = 0; i < v.length(); i++) {
-            final char c = v.charAt(i);
-            if (c == '$' || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-              sb.append(c);
+      nameField.addKeyListener(
+          new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+              noUpdate = true;
+              final String v = nameField.getText();
+              int caret = nameField.getCaretPosition();
+              final StringBuilder sb = new StringBuilder();
+              for (int i = 0; i < v.length(); i++) {
+                final char c = v.charAt(i);
+                if (c == '$' || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                  sb.append(c);
+                } else if (i > 0 && c >= '0' && c <= '9') {
+                  sb.append(c);
+                }
+              }
+              final String newString = sb.toString();
+              setValue(newString);
+              nameField.setText(newString);
+              if (newString.length() < v.length()) {
+                caret--;
+              }
+              nameField.setCaretPosition(caret);
+              noUpdate = false;
             }
-            else if (i > 0 && c >= '0' && c <= '9') {
-              sb.append(c);
-            }
-          }
-          final String newString = sb.toString();
-          setValue(newString);
-          nameField.setText(newString);
-          if (newString.length() < v.length()) {
-            caret--;
-          }
-          nameField.setCaretPosition(caret);
-          noUpdate = false;
-        }
-      });
+          });
     }
     return p;
   }

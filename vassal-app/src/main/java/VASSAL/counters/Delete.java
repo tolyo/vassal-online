@@ -18,18 +18,6 @@
 
 package VASSAL.counters;
 
-import VASSAL.i18n.Resources;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Arrays;
-import java.util.List;
-
-import java.util.Objects;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
@@ -37,13 +25,21 @@ import VASSAL.command.RemovePiece;
 import VASSAL.configure.NamedHotKeyConfigurer;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.PieceI18nData;
+import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
-/**
- * This trait adds a command that creates a duplicate of the selected Gamepiece
- */
+/** This trait adds a command that creates a duplicate of the selected Gamepiece */
 public class Delete extends Decorator implements TranslatablePiece {
   public static final String ID = "delete;"; // NON-NLS
   protected KeyCommand[] keyCommands;
@@ -82,10 +78,9 @@ public class Delete extends Decorator implements TranslatablePiece {
   protected KeyCommand[] myGetKeyCommands() {
     if (keyCommands == null) {
       deleteCommand = new KeyCommand(commandName, key, getOutermost(this), this);
-      if (commandName.length() > 0 && key != null && ! key.isNull()) {
-        keyCommands = new KeyCommand[]{deleteCommand};
-      }
-      else {
+      if (commandName.length() > 0 && key != null && !key.isNull()) {
+        keyCommands = new KeyCommand[] {deleteCommand};
+      } else {
         keyCommands = KeyCommand.NONE;
       }
     }
@@ -107,23 +102,24 @@ public class Delete extends Decorator implements TranslatablePiece {
       final GamePiece outer = getOutermost(this);
       if (getParent() != null) {
         GamePiece next = getParent().getPieceBeneath(outer);
-        if (next == null)
-          next = getParent().getPieceAbove(outer);
+        if (next == null) next = getParent().getPieceAbove(outer);
         if (next != null) {
           final GamePiece selected = next;
-          final Runnable runnable = () -> {
-            // Don't select if the next piece has itself been deleted
-            if (GameModule.getGameModule().getGameState().getPieceForId(selected.getId()) != null) {
-              KeyBuffer.getBuffer().add(selected);
-            }
-          };
+          final Runnable runnable =
+              () -> {
+                // Don't select if the next piece has itself been deleted
+                if (GameModule.getGameModule().getGameState().getPieceForId(selected.getId())
+                    != null) {
+                  KeyBuffer.getBuffer().add(selected);
+                }
+              };
           SwingUtilities.invokeLater(runnable);
         }
       }
 
       if (GameModule.getGameModule().isMatSupport()) {
         // If a cargo piece has been deleted remove it from any mat
-        if (Boolean.TRUE.equals(outer.getProperty(MatCargo.IS_CARGO))) { //NON-NLS
+        if (Boolean.TRUE.equals(outer.getProperty(MatCargo.IS_CARGO))) { // NON-NLS
           final MatCargo cargo = (MatCargo) getDecorator(outer, MatCargo.class);
           if (cargo != null) {
             c1 = cargo.makeClearMatCommand();
@@ -131,7 +127,7 @@ public class Delete extends Decorator implements TranslatablePiece {
         }
 
         // If a mat has been deleted remove any cargo from it
-        final String matName = (String)outer.getProperty(Mat.MAT_NAME);
+        final String matName = (String) outer.getProperty(Mat.MAT_NAME);
         if (matName != null && !"".equals(matName)) {
           final Mat mat = (Mat) getDecorator(outer, Mat.class);
           if (mat != null) {
@@ -141,12 +137,18 @@ public class Delete extends Decorator implements TranslatablePiece {
       }
 
       c = putOldProperties(getOutermost(this));
-      c = c.append(GameModule.getGameModule().getGameState().getAttachmentManager().removeAttachments(outer));
+      c =
+          c.append(
+              GameModule.getGameModule()
+                  .getGameState()
+                  .getAttachmentManager()
+                  .removeAttachments(outer));
       c = c.append(new RemovePiece(outer));
 
       c.execute();
 
-      // Any Mat commands will have already executed, so we "pre-pend" them after we get finished executing the delete command.
+      // Any Mat commands will have already executed, so we "pre-pend" them after we get finished
+      // executing the delete command.
       if (c1 != null) {
         c = c1.append(c);
       }
@@ -171,10 +173,8 @@ public class Delete extends Decorator implements TranslatablePiece {
     return List.of(commandName);
   }
 
-
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -225,15 +225,16 @@ public class Delete extends Decorator implements TranslatablePiece {
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(commandName, Resources.getString("Editor.Delete.delete_command_description"));
+    return getI18nData(
+        commandName, Resources.getString("Editor.Delete.delete_command_description"));
   }
 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Delete)) return false;
+    if (!(o instanceof Delete)) return false;
     final Delete c = (Delete) o;
-    if (! Objects.equals(commandName, c.commandName)) return false;
+    if (!Objects.equals(commandName, c.commandName)) return false;
     return Objects.equals(key, c.key);
   }
 
@@ -256,7 +257,6 @@ public class Delete extends Decorator implements TranslatablePiece {
 
       keyInput = new NamedHotKeyConfigurer(p.key);
       controls.add("Editor.keyboard_command", keyInput);
-
     }
 
     @Override
@@ -267,7 +267,9 @@ public class Delete extends Decorator implements TranslatablePiece {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(nameInput.getValueString()).append(keyInput.getValueString()).append(descInput.getValueString());
+      se.append(nameInput.getValueString())
+          .append(keyInput.getValueString())
+          .append(descInput.getValueString());
       return ID + se.getValue();
     }
 

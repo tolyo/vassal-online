@@ -17,12 +17,12 @@
  */
 package VASSAL.i18n;
 
-import java.util.SortedSet;
-import java.io.IOException;
-
 import VASSAL.build.GameModule;
-import VASSAL.tools.ResourcePathFinder;
 import VASSAL.tools.DataArchive;
+import VASSAL.tools.ResourcePathFinder;
+import java.io.IOException;
+import java.util.SortedSet;
+
 /*
  * Class to support lookup of resources based on language  */
 public class I18nResourcePathFinder implements ResourcePathFinder {
@@ -30,7 +30,7 @@ public class I18nResourcePathFinder implements ResourcePathFinder {
   private SortedSet<String> images = null;
   private final DataArchive archive;
   private String language = "en";
-  
+
   public I18nResourcePathFinder(DataArchive d, String l) {
     archive = d;
     language = l;
@@ -54,7 +54,7 @@ public class I18nResourcePathFinder implements ResourcePathFinder {
         return path;
       }
     }
-    //Not found or not localized
+    // Not found or not localized
     path = DataArchive.IMAGE_DIR + name;
     return path;
   }
@@ -65,14 +65,12 @@ public class I18nResourcePathFinder implements ResourcePathFinder {
     if (!language.equals("en")) {
       if (name.contains("help/")) {
         modifiedName = name.replace("help/", "help_" + language + "/");
-      }
-      else {
+      } else {
         modifiedName = "help_" + language + "/" + name;
       }
       try {
         GameModule.getGameModule().getDataArchive().getURL(modifiedName);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         modifiedName = name;
       }
     }

@@ -42,8 +42,7 @@ public class CompileResult {
     if (error != null) {
       if (error instanceof ParseException) {
         message = error.getMessage();
-      }
-      else {
+      } else {
         return error.getErrorLineNumber() + ": " + error.getErrorText();
       }
     }

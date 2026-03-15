@@ -24,8 +24,8 @@ import VASSAL.counters.GamePiece;
 
 /**
  * Used by the Bsh Plugin
- * @author Brent
  *
+ * @author Brent
  */
 public class BshCommandEncoder extends BasicCommandEncoder {
 

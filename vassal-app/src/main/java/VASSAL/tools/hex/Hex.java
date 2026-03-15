@@ -38,16 +38,17 @@ public class Hex {
     return new Hex(-r, -s, -q);
   }
 
-  public static final List<Hex> directions = new ArrayList<>() {
-    {
-      add(new Hex(1, 0, -1));
-      add(new Hex(1, -1, 0));
-      add(new Hex(0, -1, 1));
-      add(new Hex(-1, 0, 1));
-      add(new Hex(-1, 1, 0));
-      add(new Hex(0, 1, -1));
-    }
-  };
+  public static final List<Hex> directions =
+      new ArrayList<>() {
+        {
+          add(new Hex(1, 0, -1));
+          add(new Hex(1, -1, 0));
+          add(new Hex(0, -1, 1));
+          add(new Hex(-1, 0, 1));
+          add(new Hex(-1, 1, 0));
+          add(new Hex(0, 1, -1));
+        }
+      };
 
   public static Hex direction(int direction) {
     return directions.get(direction);
@@ -57,27 +58,27 @@ public class Hex {
     return add(direction(direction));
   }
 
-  public static final List<Hex> diagonals = new ArrayList<>() {
-    {
-      add(new Hex(2, -1, -1));
-      add(new Hex(1, -2, 1));
-      add(new Hex(-1, -1, 2));
-      add(new Hex(-2, 1, 1));
-      add(new Hex(-1, 2, -1));
-      add(new Hex(1, 1, -2));
-    }
-  };
+  public static final List<Hex> diagonals =
+      new ArrayList<>() {
+        {
+          add(new Hex(2, -1, -1));
+          add(new Hex(1, -2, 1));
+          add(new Hex(-1, -1, 2));
+          add(new Hex(-2, 1, 1));
+          add(new Hex(-1, 2, -1));
+          add(new Hex(1, 1, -2));
+        }
+      };
 
   public Hex diagonalNeighbor(int direction) {
     return add(diagonals.get(direction));
   }
 
   public int length() {
-    return (int)((Math.abs(q) + Math.abs(r) + Math.abs(s)) / 2);
+    return (int) ((Math.abs(q) + Math.abs(r) + Math.abs(s)) / 2);
   }
 
   public int distance(Hex b) {
     return subtract(b).length();
   }
-
 }

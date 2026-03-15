@@ -16,21 +16,19 @@
  */
 package VASSAL.chat;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
-
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Listens for incoming messages (PropertyChangeEvents with name {ChatServerConnection.INCOMING_MSG}) and
- * interprets the message as a command to be executed
+ * Listens for incoming messages (PropertyChangeEvents with name
+ * {ChatServerConnection.INCOMING_MSG}) and interprets the message as a command to be executed
  *
  * @author rodneykinney
- *
  */
 public class CommandDecoder implements PropertyChangeListener {
   private final CommandEncoder commandDecoder;

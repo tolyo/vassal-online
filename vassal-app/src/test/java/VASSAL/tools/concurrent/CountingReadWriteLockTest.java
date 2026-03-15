@@ -18,22 +18,22 @@
 
 package VASSAL.tools.concurrent;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CountingReadWriteLockTest {
   @Test
   void testReadLockReadUnlock() {
-    assertDoesNotThrow(() -> {
-      ReadWriteLock rwl = new CountingReadWriteLock();
-      Lock r = rwl.readLock();
-      r.lock();
-      r.unlock();
-    });
+    assertDoesNotThrow(
+        () -> {
+          ReadWriteLock rwl = new CountingReadWriteLock();
+          Lock r = rwl.readLock();
+          r.lock();
+          r.unlock();
+        });
   }
 
   @Test
@@ -45,12 +45,13 @@ public class CountingReadWriteLockTest {
 
   @Test
   public void testWriteLockWriteUnlock() {
-    assertDoesNotThrow(() -> {
-      final ReadWriteLock rwl = new CountingReadWriteLock();
-      final Lock w = rwl.writeLock();
-      w.lock();
-      w.unlock();
-    });
+    assertDoesNotThrow(
+        () -> {
+          final ReadWriteLock rwl = new CountingReadWriteLock();
+          final Lock w = rwl.writeLock();
+          w.lock();
+          w.unlock();
+        });
   }
 
   @Test

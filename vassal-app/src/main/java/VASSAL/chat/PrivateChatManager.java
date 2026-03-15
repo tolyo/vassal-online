@@ -18,24 +18,20 @@
 package VASSAL.chat;
 
 import VASSAL.build.GameModule;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.menu.MenuManager;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import VASSAL.i18n.Resources;
-import VASSAL.tools.menu.MenuManager;
-
-/**
- * Manages {@link PrivateChatter} instances
- */
+/** Manages {@link PrivateChatter} instances */
 public class PrivateChatManager {
   private final ChatServerConnection client;
 
@@ -62,29 +58,31 @@ public class PrivateChatManager {
       chatters.add(new Entry(sender, chat));
 
       final JFrame f = new JFrame();
-      f.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent e) {
-        }
-      });
+      f.addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {}
+          });
 
-      final JButton closeButton  = new JButton(Resources.getString(Resources.CLOSE));
-      closeButton.addActionListener(e -> {
-        f.setVisible(false);
-      });
+      final JButton closeButton = new JButton(Resources.getString(Resources.CLOSE));
+      closeButton.addActionListener(
+          e -> {
+            f.setVisible(false);
+          });
 
       final JButton ignoreButton = new JButton(Resources.getString("Chat.ignore"));
-      ignoreButton.addActionListener(e -> {
-        promptToBan(sender);
-        f.setVisible(false);
-      });
+      ignoreButton.addActionListener(
+          e -> {
+            promptToBan(sender);
+            f.setVisible(false);
+          });
 
       final Box box = Box.createHorizontalBox();
       box.add(ignoreButton, Box.LEFT_ALIGNMENT + Box.BOTTOM_ALIGNMENT);
       box.add(Box.createHorizontalGlue());
       box.add(closeButton, Box.RIGHT_ALIGNMENT + Box.BOTTOM_ALIGNMENT);
 
-      f.setTitle(Resources.getString("Chat.private_channel", sender.getName())); //$NON-NLS-1$
+      f.setTitle(Resources.getString("Chat.private_channel", sender.getName())); // $NON-NLS-1$
       f.setJMenuBar(MenuManager.getInstance().getMenuBarFor(f));
 
       chat.add(box);
@@ -92,18 +90,19 @@ public class PrivateChatManager {
       f.add(chat);
 
       f.setSize(640, 320);
-      f.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 -
-                    f.getSize().width / 2, 0);
+      f.setLocation(
+          Toolkit.getDefaultToolkit().getScreenSize().width / 2 - f.getSize().width / 2, 0);
     }
     return chat;
   }
 
   private void promptToBan(Player p) {
-    if (JOptionPane.YES_OPTION ==
-      JOptionPane.showConfirmDialog(GameModule.getGameModule().getPlayerWindow(),
-        Resources.getString("Chat.ignore_messages", p.getName()), //$NON-NLS-1$
-        null,
-        JOptionPane.YES_NO_OPTION)) {
+    if (JOptionPane.YES_OPTION
+        == JOptionPane.showConfirmDialog(
+            GameModule.getGameModule().getPlayerWindow(),
+            Resources.getString("Chat.ignore_messages", p.getName()), // $NON-NLS-1$
+            null,
+            JOptionPane.YES_NO_OPTION)) {
       banned.add(p);
     }
   }

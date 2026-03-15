@@ -35,9 +35,6 @@ import VASSAL.tools.menu.MenuItemProxy;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.menu.MenuProxy;
 import VASSAL.tools.menu.ParentProxy;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -46,18 +43,20 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 /**
- * Defines a saved game that is accessible from the File menu.
- * The game will be loaded in place of a normal New Game
+ * Defines a saved game that is accessible from the File menu. The game will be loaded in place of a
+ * normal New Game
  */
-public class PredefinedSetup extends AbstractConfigurable implements GameComponent, ComponentDescription {
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String FILE = "file"; //$NON-NLS-1$
-  public static final String USE_FILE = "useFile"; //$NON-NLS-1$
-  public static final String IS_MENU = "isMenu"; //$NON-NLS-1$
-  public static final String DESCRIPTION = "description"; //NON-NLS
+public class PredefinedSetup extends AbstractConfigurable
+    implements GameComponent, ComponentDescription {
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String FILE = "file"; // $NON-NLS-1$
+  public static final String USE_FILE = "useFile"; // $NON-NLS-1$
+  public static final String IS_MENU = "isMenu"; // $NON-NLS-1$
+  public static final String DESCRIPTION = "description"; // NON-NLS
 
   protected boolean isMenu;
   protected boolean useFile = true;
@@ -74,14 +73,15 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
   protected String description;
 
   public PredefinedSetup() {
-    launchAction = new AbstractAction() {
-      private static final long serialVersionUID = 1L;
+    launchAction =
+        new AbstractAction() {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        launch();
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            launch();
+          }
+        };
     menuItem = new MenuItemProxy(launchAction, true);
 
     menu = new MenuProxy(true);
@@ -93,55 +93,38 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString(Resources.NAME_LABEL),
       Resources.getString(Resources.DESCRIPTION),
-      Resources.getString("Editor.PredefinedSetup.parent_menu"), //$NON-NLS-1$
-      Resources.getString("Editor.PredefinedSetup.predefined_file"), //$NON-NLS-1$
-      Resources.getString("Editor.PredefinedSetup.saved_game") //$NON-NLS-1$
+      Resources.getString("Editor.PredefinedSetup.parent_menu"), // $NON-NLS-1$
+      Resources.getString("Editor.PredefinedSetup.predefined_file"), // $NON-NLS-1$
+      Resources.getString("Editor.PredefinedSetup.saved_game") // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
-      Boolean.class,
-      Boolean.class,
-      File.class
-    };
+    return new Class<?>[] {String.class, String.class, Boolean.class, Boolean.class, File.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      DESCRIPTION,
-      IS_MENU,
-      USE_FILE,
-      FILE
-    };
+    return new String[] {NAME, DESCRIPTION, IS_MENU, USE_FILE, FILE};
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (FILE.equals(key)) {
+    } else if (FILE.equals(key)) {
       return fileName;
-    }
-    else if (USE_FILE.equals(key)) {
+    } else if (USE_FILE.equals(key)) {
       return String.valueOf(useFile);
-    }
-    else if (IS_MENU.equals(key)) {
+    } else if (IS_MENU.equals(key)) {
       return String.valueOf(isMenu);
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -152,27 +135,23 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
       setConfigureName((String) value);
       menuItem.getAction().putValue(Action.NAME, value);
       menu.setText((String) value);
-    }
-    else if (USE_FILE.equals(key)) {
+    } else if (USE_FILE.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       useFile = (Boolean) value;
-    }
-    else if (FILE.equals(key)) {
+    } else if (FILE.equals(key)) {
       if (value instanceof File) {
         value = ((File) value).getName();
       }
       fileName = (String) value;
-    }
-    else if (IS_MENU.equals(key)) {
+    } else if (IS_MENU.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       setMenu((Boolean) value);
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)value;
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) value;
     }
   }
 
@@ -180,14 +159,11 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
   public VisibilityCondition getAttributeVisibility(String name) {
     if (FILE.equals(name)) {
       return showFile;
-    }
-    else if (USE_FILE.equals(name)) {
+    } else if (USE_FILE.equals(name)) {
       return showUseFile;
-    }
-    else if (IS_MENU.equals(name)) {
+    } else if (IS_MENU.equals(name)) {
       return () -> getBuildables().isEmpty();
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -205,16 +181,21 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
       try {
         g.getGameState().loadGameInBackground(fileName, getSavedGameContents(), true);
         g.setGameFile(fileName, GameModule.GameFileMode.LOADED_GAME);
+      } catch (IOException e) {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                this,
+                Resources.getString("Error.not_found", "Setup"),
+                fileName,
+                e)); //$NON-NLS-1$ //$NON-NLS-2$
       }
-      catch (IOException e) {
-        ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.not_found", "Setup"), fileName, e)); //$NON-NLS-1$ //$NON-NLS-2$
-      }
-    }
-    else {
+    } else {
       g.setGameFile(fileName, GameModule.GameFileMode.NEW_GAME);
       GameModule.getGameModule().getGameState().setup(false);
       GameModule.getGameModule().getGameState().setup(true);
-      GameModule.getGameModule().getGameState().freshenStartupGlobalKeyCommands(GameModule.getGameModule());
+      GameModule.getGameModule()
+          .getGameState()
+          .freshenStartupGlobalKeyCommands(GameModule.getGameModule());
     }
   }
 
@@ -246,13 +227,12 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
   @Override
   public void addTo(Buildable parent) {
     if (parent instanceof GameModule) {
-      MenuManager.getInstance().addToSection("PredefinedSetup", getMenuInUse()); //$NON-NLS-1$
-    }
-    else if (parent instanceof PredefinedSetup) {
+      MenuManager.getInstance().addToSection("PredefinedSetup", getMenuInUse()); // $NON-NLS-1$
+    } else if (parent instanceof PredefinedSetup) {
       final PredefinedSetup setup = (PredefinedSetup) parent;
       setup.menu.add(getMenuInUse());
     }
-    MenuManager.getInstance().removeAction("GameState.new_game"); //$NON-NLS-1$
+    MenuManager.getInstance().removeAction("GameState.new_game"); // $NON-NLS-1$
     GameModule.getGameModule().getGameState().addGameComponent(this);
     GameModule.getGameModule().getWizardSupport().addPredefinedSetup(this);
   }
@@ -260,10 +240,8 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
   @Override
   public void removeFrom(Buildable parent) {
     if (parent instanceof GameModule) {
-      MenuManager.getInstance()
-        .removeFromSection("PredefinedSetup", getMenuInUse()); //$NON-NLS-1$
-    }
-    else if (parent instanceof PredefinedSetup) {
+      MenuManager.getInstance().removeFromSection("PredefinedSetup", getMenuInUse()); // $NON-NLS-1$
+    } else if (parent instanceof PredefinedSetup) {
       final PredefinedSetup setup = (PredefinedSetup) parent;
       setup.menu.remove(getMenuInUse());
     }
@@ -273,11 +251,11 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return isMenu ? new Class<?>[]{PredefinedSetup.class} : new Class<?>[0];
+    return isMenu ? new Class<?>[] {PredefinedSetup.class} : new Class<?>[0];
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PredefinedSetup.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PredefinedSetup.component_type"); // $NON-NLS-1$
   }
 
   @Deprecated(since = "2023-11-10", forRemoval = true)
@@ -295,24 +273,26 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
     final GameRefresher gameRefresher = new GameRefresher(mod);
 
     // since we're going to block the GUI, let's give some feedback
-    gameRefresher.log(GameRefresher.SEPARATOR); //$NON-NLS-1$
-    gameRefresher.log(Resources.getString("Editor.PredefinedSetup.updating", this.getAttributeValueString(NAME), fileName));
+    gameRefresher.log(GameRefresher.SEPARATOR); // $NON-NLS-1$
+    gameRefresher.log(
+        Resources.getString(
+            "Editor.PredefinedSetup.updating", this.getAttributeValueString(NAME), fileName));
 
     // get a stream to the saved game in the module file
     gs.setupRefresh();
 
     try {
       gs.loadGameInForeground(fileName, getSavedGameContents());
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // It's possible to get I/O errors trying to load the setup out of the module.
       // Report these in the GameRefresher log rather than throwing a Vassal bug dialog.
       gameRefresher.log(Resources.getString("Editor.PredefinedSetup.io_error", e.getMessage()));
 
-      // Let the Refresh Dialog know there was an error so it can handle top-level reporting correctly.
+      // Let the Refresh Dialog know there was an error so it can handle top-level reporting
+      // correctly.
       throw e;
     }
-    
+
     // Resolve any Pending Attachments
     gs.getAttachmentManager().resolvePendingAttachments();
 
@@ -341,7 +321,8 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html", "PredefinedSetup"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GameModule.html", "PredefinedSetup"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   public boolean isMenu() {
@@ -368,14 +349,22 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
 
   @Override
   public String toString() {
-    return "PredefinedSetup{" + //NON-NLS
-      "name='" + name + '\'' + //NON-NLS
-      ", menu='" + isMenu + '\'' + //NON-NLS
-      '}';
+    return "PredefinedSetup{"
+        + // NON-NLS
+        "name='"
+        + name
+        + '\''
+        + // NON-NLS
+        ", menu='"
+        + isMenu
+        + '\''
+        + // NON-NLS
+        '}';
   }
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurable's string/expression fields if any (for search)
    */
   @Override
@@ -383,4 +372,3 @@ public class PredefinedSetup extends AbstractConfigurable implements GameCompone
     return List.of(name);
   }
 }
-  

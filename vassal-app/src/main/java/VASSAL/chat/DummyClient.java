@@ -17,8 +17,6 @@
  */
 package VASSAL.chat;
 
-import java.beans.PropertyChangeListener;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Chatter;
 import VASSAL.chat.peer2peer.PeerPoolInfo;
@@ -28,31 +26,43 @@ import VASSAL.chat.ui.MessageBoardControlsInitializer;
 import VASSAL.chat.ui.ServerStatusControlsInitializer;
 import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
+import java.beans.PropertyChangeListener;
 
 /**
  * Empty server
+ *
  * @author rkinney
  */
 public class DummyClient implements ChatServerConnection, ChatControlsInitializer {
-  private Player playerInfo = new SimplePlayer("[nobody]"); //$NON-NLS-1$
+  private Player playerInfo = new SimplePlayer("[nobody]"); // $NON-NLS-1$
   private final HttpMessageServer httpMessageServer;
-  private final  MessageBoardControlsInitializer msgControls;
+  private final MessageBoardControlsInitializer msgControls;
   private final ServerStatusControlsInitializer statusControls;
 
   public DummyClient() {
-    final PeerPoolInfo publicInfo = new PeerPoolInfo() {
-      @Override
-      public String getModuleName() {
-        return GameModule.getGameModule() == null ? "[unnamed module]" : GameModule.getGameModule().getGameName(); //$NON-NLS-1$
-      }
+    final PeerPoolInfo publicInfo =
+        new PeerPoolInfo() {
+          @Override
+          public String getModuleName() {
+            return GameModule.getGameModule() == null
+                ? "[unnamed module]"
+                : GameModule.getGameModule().getGameName(); // $NON-NLS-1$
+          }
 
-      @Override
-      public String getUserName() {
-        return GameModule.getGameModule() == null ? "<" + Chatter.getAnonymousUserName() + ">" : (String) GameModule.getGameModule().getPrefs().getValue(GameModule.REAL_NAME); //$NON-NLS-1$ //$NON-NLS-2$
-      }
-    };
+          @Override
+          public String getUserName() {
+            return GameModule.getGameModule() == null
+                ? "<" + Chatter.getAnonymousUserName() + ">"
+                : (String)
+                    GameModule.getGameModule()
+                        .getPrefs()
+                        .getValue(GameModule.REAL_NAME); // $NON-NLS-1$ //$NON-NLS-2$
+          }
+        };
     httpMessageServer = new HttpMessageServer(publicInfo);
-    msgControls = new MessageBoardControlsInitializer(Resources.getString("Chat.messages"), httpMessageServer); //$NON-NLS-1$
+    msgControls =
+        new MessageBoardControlsInitializer(
+            Resources.getString("Chat.messages"), httpMessageServer); // $NON-NLS-1$
     statusControls = new ServerStatusControlsInitializer(new CgiServerStatus());
   }
 
@@ -71,16 +81,13 @@ public class DummyClient implements ChatServerConnection, ChatControlsInitialize
   }
 
   @Override
-  public void sendTo(Player recipient, Command c) {
-  }
+  public void sendTo(Player recipient, Command c) {}
 
   @Override
-  public void setRoom(Room r) {
-  }
+  public void setRoom(Room r) {}
 
   @Override
-  public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
-  }
+  public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {}
 
   @Override
   public boolean isConnected() {
@@ -88,12 +95,10 @@ public class DummyClient implements ChatServerConnection, ChatControlsInitialize
   }
 
   @Override
-  public void sendToOthers(Command c) {
-  }
+  public void sendToOthers(Command c) {}
 
   @Override
-  public void setConnected(boolean connect) {
-  }
+  public void setConnected(boolean connect) {}
 
   @Override
   public Player getUserInfo() {
@@ -117,5 +122,4 @@ public class DummyClient implements ChatServerConnection, ChatControlsInitialize
     msgControls.uninitializeControls(controls);
     statusControls.uninitializeControls(controls);
   }
-
 }

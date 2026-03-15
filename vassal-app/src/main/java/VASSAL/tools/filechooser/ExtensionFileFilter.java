@@ -19,9 +19,7 @@ package VASSAL.tools.filechooser;
 
 import java.io.File;
 import java.util.Arrays;
-
 import org.apache.commons.lang3.StringUtils;
-
 
 /**
  * A generic by-extension FileFilter.

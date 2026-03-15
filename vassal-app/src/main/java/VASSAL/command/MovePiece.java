@@ -1,7 +1,5 @@
 package VASSAL.command;
 
-import java.awt.Point;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
@@ -14,6 +12,7 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.PieceVisitorDispatcher;
 import VASSAL.counters.Properties;
 import VASSAL.counters.Stack;
+import java.awt.Point;
 
 /*
  *
@@ -34,12 +33,12 @@ import VASSAL.counters.Stack;
  */
 
 /**
- * Command that moves a piece to a new location and position within a stack.
- * While this can be accomplished with a {@link ChangePiece} command, this
- * command is safer in terms of recovering from changes to the game state that may have occurred
- * since the command was created.  For instance, A {@link ChangePiece} command that adds
- * a piece to a {@link VASSAL.counters.Stack} will cause the piece to disappear if the
- * stack has been deleted.  This Command will recover more gracefully.
+ * Command that moves a piece to a new location and position within a stack. While this can be
+ * accomplished with a {@link ChangePiece} command, this command is safer in terms of recovering
+ * from changes to the game state that may have occurred since the command was created. For
+ * instance, A {@link ChangePiece} command that adds a piece to a {@link VASSAL.counters.Stack} will
+ * cause the piece to disappear if the stack has been deleted. This Command will recover more
+ * gracefully.
  */
 public class MovePiece extends Command {
   private final String id;
@@ -52,17 +51,26 @@ public class MovePiece extends Command {
   private final String playerId;
 
   /**
-   *
    * @param id The id of the piece being moved
    * @param newMapId The id of the map being moved to
    * @param newPosition the new position
-   * @param newUnderneathId The id of the piece which will be immediately beneath this piece in any containing Stack.  May be null
+   * @param newUnderneathId The id of the piece which will be immediately beneath this piece in any
+   *     containing Stack. May be null
    * @param oldMapId The id of the map being moved from
    * @param oldPosition the old position
-   * @param oldUnderneathId The id of the piece which was immediately beneath this piece in its original containing Stack.
+   * @param oldUnderneathId The id of the piece which was immediately beneath this piece in its
+   *     original containing Stack.
    * @param playerId the id of the player making this move
    */
-  public MovePiece(String id, String newMapId, Point newPosition, String newUnderneathId, String oldMapId, Point oldPosition, String oldUnderneathId, String playerId) {
+  public MovePiece(
+      String id,
+      String newMapId,
+      Point newPosition,
+      String newUnderneathId,
+      String oldMapId,
+      Point oldPosition,
+      String oldUnderneathId,
+      String playerId) {
     this.id = id;
     this.newMapId = newMapId;
     this.oldMapId = oldMapId;
@@ -107,15 +115,14 @@ public class MovePiece extends Command {
 
   private void stackOrPlacePiece(GamePiece piece, Map newMap, Point newPosition) {
     if (newMap.getStackMetrics().isStackingEnabled()
-      && !(piece instanceof Stack)
-      && (piece.getParent() == null)
-      && !Boolean.TRUE.equals(piece.getProperty(Properties.NO_STACK))) {
+        && !(piece instanceof Stack)
+        && (piece.getParent() == null)
+        && !Boolean.TRUE.equals(piece.getProperty(Properties.NO_STACK))) {
       final Stack s = new Stack();
       s.add(piece);
       GameModule.getGameModule().getGameState().addPiece(s);
       newMap.placeAt(s, newPosition);
-    }
-    else {
+    } else {
       newMap.placeAt(piece, newPosition);
     }
   }
@@ -130,19 +137,19 @@ public class MovePiece extends Command {
       if (newMap != null) {
         final PieceVisitorDispatcher mergeFinder = createMergeFinder(newMap, piece, newPosition);
         if (newUnderneathId != null) {
-          final GamePiece under = GameModule.getGameModule().getGameState().getPieceForId(newUnderneathId);
+          final GamePiece under =
+              GameModule.getGameModule().getGameState().getPieceForId(newUnderneathId);
           if (under != null
               && under.getPosition().equals(newPosition)
-              && under.getMap() == newMap) { //BR// lest someone have simultaneously moved or deleted the piece.
+              && under.getMap()
+                  == newMap) { // BR// lest someone have simultaneously moved or deleted the piece.
             newMap.getStackMetrics().merge(under, piece);
-          }
-          else {
+          } else {
             if (newMap.apply(mergeFinder) == null) {
               stackOrPlacePiece(piece, newMap, newPosition);
             }
           }
-        }
-        else {
+        } else {
           if (newMap.apply(mergeFinder) == null) {
             stackOrPlacePiece(piece, newMap, newPosition);
           }
@@ -150,8 +157,7 @@ public class MovePiece extends Command {
             piece.getParent().insert(piece, 0);
           }
         }
-      }
-      else {
+      } else {
         final Map oldMap = Map.getMapById(oldMapId);
         if (oldMap != null) {
           oldMap.removePiece(piece);
@@ -173,68 +179,83 @@ public class MovePiece extends Command {
 
   @Override
   protected Command myUndoCommand() {
-    return new MovePiece(id, oldMapId, oldPosition, oldUnderneathId, newMapId, newPosition, newUnderneathId, playerId);
+    return new MovePiece(
+        id,
+        oldMapId,
+        oldPosition,
+        oldUnderneathId,
+        newMapId,
+        newPosition,
+        newUnderneathId,
+        playerId);
   }
 
   /**
-   * Creates a new {@link PieceVisitorDispatcher} that will create a {@link Command} object
-   * to merge the target piece with any applicable pieces at the target location
+   * Creates a new {@link PieceVisitorDispatcher} that will create a {@link Command} object to merge
+   * the target piece with any applicable pieces at the target location
+   *
    * @param map
    * @param p
    * @param pt
    * @return
    */
-  protected PieceVisitorDispatcher createMergeFinder(final Map map, final GamePiece p, final Point pt) {
-    return new DeckVisitorDispatcher(new DeckVisitor() {
-      @Override
-      public Object visitDeck(Deck d) {
-        if (d.getPosition().equals(pt)) {
-          return map.getStackMetrics().merge(d, p);
-        }
-        else {
-          return null;
-        }
-      }
-
-      @Override
-      public Object visitStack(Stack s) {
-        if (s.getPosition().equals(pt)
-            && map.getStackMetrics().isStackingEnabled()
-            && !Boolean.TRUE.equals(p.getProperty(Properties.NO_STACK))
-            && s.topPiece(playerId) != null  //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
-            && map.getPieceCollection().canMerge(p, s)) {
-          return map.getStackMetrics().merge(s, p);
-        }
-        else {
-          return null;
-        }
-      }
-
-      @Override
-      public Object visitDefault(GamePiece piece) {
-        if (piece.getPosition().equals(pt)
-            && map.getStackMetrics().isStackingEnabled()
-            && !Boolean.TRUE.equals(p.getProperty(Properties.NO_STACK))
-            && !Boolean.TRUE.equals(piece.getProperty(Properties.NO_STACK))
-            && map.getPieceCollection().canMerge(p, piece)) {
-          final String hiddenBy = (String) piece.getProperty(Properties.HIDDEN_BY);
-          if (hiddenBy == null
-              || hiddenBy.equals(playerId)) {
-            return map.getStackMetrics().merge(piece, p);
+  protected PieceVisitorDispatcher createMergeFinder(
+      final Map map, final GamePiece p, final Point pt) {
+    return new DeckVisitorDispatcher(
+        new DeckVisitor() {
+          @Override
+          public Object visitDeck(Deck d) {
+            if (d.getPosition().equals(pt)) {
+              return map.getStackMetrics().merge(d, p);
+            } else {
+              return null;
+            }
           }
-          else {
-            return null;
+
+          @Override
+          public Object visitStack(Stack s) {
+            if (s.getPosition().equals(pt)
+                && map.getStackMetrics().isStackingEnabled()
+                && !Boolean.TRUE.equals(p.getProperty(Properties.NO_STACK))
+                && s.topPiece(playerId)
+                    != null // NOTE: topPiece() returns the top VISIBLE piece (not hidden by
+                // Invisible trait)
+                && map.getPieceCollection().canMerge(p, s)) {
+              return map.getStackMetrics().merge(s, p);
+            } else {
+              return null;
+            }
           }
-        }
-        else {
-          return null;
-        }
-      }
-    });
+
+          @Override
+          public Object visitDefault(GamePiece piece) {
+            if (piece.getPosition().equals(pt)
+                && map.getStackMetrics().isStackingEnabled()
+                && !Boolean.TRUE.equals(p.getProperty(Properties.NO_STACK))
+                && !Boolean.TRUE.equals(piece.getProperty(Properties.NO_STACK))
+                && map.getPieceCollection().canMerge(p, piece)) {
+              final String hiddenBy = (String) piece.getProperty(Properties.HIDDEN_BY);
+              if (hiddenBy == null || hiddenBy.equals(playerId)) {
+                return map.getStackMetrics().merge(piece, p);
+              } else {
+                return null;
+              }
+            } else {
+              return null;
+            }
+          }
+        });
   }
 
   @Override
   public String getDetails() {
-    return "id=" + id + ",map=" + newMapId + ",position=" + newPosition + ",under=" + newUnderneathId; //NON-NLS
+    return "id="
+        + id
+        + ",map="
+        + newMapId
+        + ",position="
+        + newPosition
+        + ",under="
+        + newUnderneathId; // NON-NLS
   }
 }

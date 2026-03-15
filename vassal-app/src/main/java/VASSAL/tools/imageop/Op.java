@@ -18,8 +18,6 @@
 
 package VASSAL.tools.imageop;
 
-import java.awt.image.BufferedImage;
-
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
 import VASSAL.counters.GamePiece;
@@ -29,6 +27,7 @@ import VASSAL.tools.image.ImageNotFoundException;
 import VASSAL.tools.image.UnrecognizedImageTypeException;
 import VASSAL.tools.image.tilecache.TileNotFoundException;
 import VASSAL.tools.opcache.OpFailedException;
+import java.awt.image.BufferedImage;
 
 public class Op {
   protected Op() {}
@@ -39,14 +38,13 @@ public class Op {
     }
     name = name.intern();
 
-    if (name.endsWith(".svg")) { //NON-NLS
+    if (name.endsWith(".svg")) { // NON-NLS
       return new SourceOpSVGImpl(name);
-    }
-    else {
+    } else {
       return new SourceOpBitmapImpl(name);
     }
   }
-  
+
   public static SourceOp load(BufferedImage image) {
     return new ImageSourceOpBitmapImpl(image);
   }
@@ -57,29 +55,23 @@ public class Op {
     }
     name = name.intern();
 
-    if (name.endsWith(".svg")) { //NON-NLS
+    if (name.endsWith(".svg")) { // NON-NLS
       return new SourceOpSVGImpl(name);
-    }
-    else {
+    } else {
       return new SourceOpTiledBitmapImpl(name);
     }
   }
-  
+
   public static ScaleOp scale(ImageOp sop, double scale) {
     if (sop instanceof RotateScaleOpSVGImpl) {
       final RotateScaleOpSVGImpl rsop = (RotateScaleOpSVGImpl) sop;
-      return new RotateScaleOpSVGImpl(
-        rsop, rsop.getAngle(), rsop.getScale() * scale
-      );
-    }
-    else if (sop instanceof SVGOp) {
+      return new RotateScaleOpSVGImpl(rsop, rsop.getAngle(), rsop.getScale() * scale);
+    } else if (sop instanceof SVGOp) {
       return new RotateScaleOpSVGImpl((SVGOp) sop, 0.0, scale);
-    }
-    else if (sop instanceof SourceOpTiledBitmapImpl) {
+    } else if (sop instanceof SourceOpTiledBitmapImpl) {
       // use the tiled version only for tiled sources
       return new ScaleOpTiledBitmapImpl(sop, scale);
-    }
-    else {
+    } else {
       return new ScaleOpBitmapImpl(sop, scale);
     }
   }
@@ -87,33 +79,23 @@ public class Op {
   public static RotateOp rotate(ImageOp sop, double angle) {
     if (sop instanceof RotateScaleOpSVGImpl) {
       final RotateScaleOpSVGImpl rsop = (RotateScaleOpSVGImpl) sop;
-      return new RotateScaleOpSVGImpl(
-        rsop, rsop.getAngle() + angle, rsop.getScale()
-      );
-    }
-    else if (sop instanceof SVGOp) {
+      return new RotateScaleOpSVGImpl(rsop, rsop.getAngle() + angle, rsop.getScale());
+    } else if (sop instanceof SVGOp) {
       return new RotateScaleOpSVGImpl((SVGOp) sop, angle, 1.0);
-    }
-    else if (angle % 90.0 == 0.0) {
+    } else if (angle % 90.0 == 0.0) {
       return new OrthoRotateOpBitmapImpl(sop, (int) angle);
-    }
-    else {
+    } else {
       return new RotateScaleOpBitmapImpl(sop, angle, 1.0);
     }
   }
 
-  public static RotateScaleOp rotateScale(ImageOp sop,
-                                          double angle, double scale) {
+  public static RotateScaleOp rotateScale(ImageOp sop, double angle, double scale) {
     if (sop instanceof RotateScaleOpSVGImpl) {
       final RotateScaleOpSVGImpl rsop = (RotateScaleOpSVGImpl) sop;
-      return new RotateScaleOpSVGImpl(
-        rsop, rsop.getAngle() + angle, rsop.getScale() * scale
-      );
-    }
-    else if (sop instanceof SVGOp) {
+      return new RotateScaleOpSVGImpl(rsop, rsop.getAngle() + angle, rsop.getScale() * scale);
+    } else if (sop instanceof SVGOp) {
       return new RotateScaleOpSVGImpl((SVGOp) sop, angle, scale);
-    }
-    else {
+    } else {
       return new RotateScaleOpBitmapImpl(sop, angle, scale);
     }
   }
@@ -136,36 +118,32 @@ public class Op {
         // We ignore OpFailedExceptions since the original exceptions
         // which caused them have already been reported.
         return true;
-      }
-      else if (c instanceof TileNotFoundException) {
-        ErrorDialog.tileWarning(new BadDataReport(
-          "Tile not found", //NON-NLS
-          ((TileNotFoundException) c).getFile().getName(),
-          null
-        ));
-      }
-      else if (c instanceof ImageNotFoundException) {
-        ErrorDialog.dataWarning(new BadDataReport(
-          "Image not found", //NON-NLS
-          ((ImageNotFoundException) c).getFile().getName(),
-          null
-        ));
+      } else if (c instanceof TileNotFoundException) {
+        ErrorDialog.tileWarning(
+            new BadDataReport(
+                "Tile not found", // NON-NLS
+                ((TileNotFoundException) c).getFile().getName(),
+                null));
+      } else if (c instanceof ImageNotFoundException) {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Image not found", // NON-NLS
+                ((ImageNotFoundException) c).getFile().getName(),
+                null));
         return true;
-      }
-      else if (c instanceof UnrecognizedImageTypeException) {
-        ErrorDialog.dataWarning(new BadDataReport(
-          "Unrecognized image type", //NON-NLS
-          ((UnrecognizedImageTypeException) c).getFile().getName(),
-          c
-        ));
+      } else if (c instanceof UnrecognizedImageTypeException) {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Unrecognized image type", // NON-NLS
+                ((UnrecognizedImageTypeException) c).getFile().getName(),
+                c));
         return true;
-      }
-      else if (c instanceof ImageIOException) {
-        ErrorDialog.dataWarning(new BadDataReport(
-          "Error reading image", //NON-NLS
-          ((ImageIOException) c).getFile().getName(),
-          c
-        ));
+      } else if (c instanceof ImageIOException) {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Error reading image", // NON-NLS
+                ((ImageIOException) c).getFile().getName(),
+                c));
         return true;
       }
     }

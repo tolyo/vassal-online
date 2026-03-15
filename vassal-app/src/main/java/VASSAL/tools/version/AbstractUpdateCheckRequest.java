@@ -16,17 +16,15 @@
  */
 package VASSAL.tools.version;
 
+import VASSAL.Info;
 import java.io.IOException;
 import javax.swing.SwingWorker;
-
-import VASSAL.Info;
 
 /**
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public abstract class AbstractUpdateCheckRequest
-                                      extends SwingWorker<Boolean, Void> {
+public abstract class AbstractUpdateCheckRequest extends SwingWorker<Boolean, Void> {
   @Override
   protected Boolean doInBackground() throws IOException {
     return !VersionUtils.isCurrent(Info.getVersion());

@@ -21,10 +21,11 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.Properties;
 
 /**
- * {@link VASSAL.build.module.Map}s now start with a Game Piece Layers component (i.e. {@link LayeredPieceCollection}) by default, and so
- * will use that more complex implementation of visual layers. However, the LayeredPieceCollection can be deleted, in
- * which case this simpler implementation is used. This fallback implementation of {@link PieceCollection} separates
- * pieces into two visual layers: stacking pieces always drawn above non-stacking pieces
+ * {@link VASSAL.build.module.Map}s now start with a Game Piece Layers component (i.e. {@link
+ * LayeredPieceCollection}) by default, and so will use that more complex implementation of visual
+ * layers. However, the LayeredPieceCollection can be deleted, in which case this simpler
+ * implementation is used. This fallback implementation of {@link PieceCollection} separates pieces
+ * into two visual layers: stacking pieces always drawn above non-stacking pieces
  */
 public class DefaultPieceCollection extends CompoundPieceCollection {
   public DefaultPieceCollection() {

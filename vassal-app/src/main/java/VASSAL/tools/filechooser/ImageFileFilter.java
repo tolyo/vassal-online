@@ -21,8 +21,8 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.image.ImageUtils;
 
 /**
- * A FileFilter for GIF, JPEG, PNG, and SVG images. Used by file choosers
- * to filter out files which aren't images.
+ * A FileFilter for GIF, JPEG, PNG, and SVG images. Used by file choosers to filter out files which
+ * aren't images.
  *
  * @author Joel Uckelman
  */

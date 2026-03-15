@@ -17,10 +17,7 @@
  */
 package VASSAL.script.expression;
 
-/**
- * An Empty Expression
- *
- */
+/** An Empty Expression */
 public class NullExpression extends Expression {
   private NullExpression() {
     super("");

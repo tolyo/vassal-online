@@ -35,12 +35,6 @@ import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -53,12 +47,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * d/b/a "Move Fixed Distance"
  *
- * Give a piece a command that moves it a fixed amount in a particular
- * direction, optionally tracking the current rotation of the piece.
+ * <p>Give a piece a command that moves it a fixed amount in a particular direction, optionally
+ * tracking the current rotation of the piece.
  */
 public class Translate extends Decorator implements TranslatablePiece {
   private static final String _0 = "0";
@@ -125,9 +124,8 @@ public class Translate extends Decorator implements TranslatablePiece {
     if (commands == null) {
       moveCommand = new KeyCommand(commandName, keyCommand, getOutermost(this), this);
       if (commandName.length() > 0 && keyCommand != null && !keyCommand.isNull()) {
-        commands = new KeyCommand[]{moveCommand};
-      }
-      else {
+        commands = new KeyCommand[] {moveCommand};
+      } else {
         commands = KeyCommand.NONE;
       }
     }
@@ -144,22 +142,24 @@ public class Translate extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(commandName)
-      .append(keyCommand)
-      .append(xDist.getFormat())
-      .append(yDist.getFormat())
-      .append(moveStack)
-      .append(xIndex.getFormat())
-      .append(yIndex.getFormat())
-      .append(xOffset.getFormat())
-      .append(yOffset.getFormat())
-      .append(description);
+        .append(keyCommand)
+        .append(xDist.getFormat())
+        .append(yDist.getFormat())
+        .append(moveStack)
+        .append(xIndex.getFormat())
+        .append(yIndex.getFormat())
+        .append(xOffset.getFormat())
+        .append(yOffset.getFormat())
+        .append(description);
     return ID + se.getValue();
   }
 
   @Override
   public Command keyEvent(KeyStroke stroke) {
-    // Classic MFD delays the execution of the inner piece's key event until after this piece has moved
-    // This unexpectedly changes the order of trait execution, but is required for the old Move Batcher to work correctly
+    // Classic MFD delays the execution of the inner piece's key event until after this piece has
+    // moved
+    // This unexpectedly changes the order of trait execution, but is required for the old Move
+    // Batcher to work correctly
     if (GlobalOptions.getInstance().isUseClassicMoveFixedDistance()) {
       myGetKeyCommands();
       if (moveCommand.matches(stroke)) {
@@ -174,7 +174,9 @@ public class Translate extends Decorator implements TranslatablePiece {
   public Command myKeyEvent(KeyStroke stroke) {
     myGetKeyCommands();
     if (moveCommand.matches(stroke)) {
-      return GlobalOptions.getInstance().isUseClassicMoveFixedDistance() ? classicTranslate(stroke) : newTranslate(stroke);
+      return GlobalOptions.getInstance().isUseClassicMoveFixedDistance()
+          ? classicTranslate(stroke)
+          : newTranslate(stroke);
     }
     return null;
   }
@@ -198,8 +200,7 @@ public class Translate extends Decorator implements TranslatablePiece {
     while (trait instanceof Decorator) {
       if (trait instanceof FreeRotator) {
         cumulative += ((FreeRotator) trait).getAngleInRadians();
-      }
-      else if (trait instanceof MatCargo) {
+      } else if (trait instanceof MatCargo) {
         cumulative += ((MatCargo) trait).getMatAngleInRadians();
       }
 
@@ -232,15 +233,16 @@ public class Translate extends Decorator implements TranslatablePiece {
     List<GamePiece> contents = null;
     List<Point> offsets = null;
 
-    // Mat Support: if we're about to move a Mat, establish the initial relative positions of all its "contents"
+    // Mat Support: if we're about to move a Mat, establish the initial relative positions of all
+    // its "contents"
     final GamePiece outer = getOutermost(target);
     if (GameModule.getGameModule().isMatSupport() && !(target instanceof Stack)) {
-      final String matName = (String)outer.getProperty(Mat.MAT_NAME);
+      final String matName = (String) outer.getProperty(Mat.MAT_NAME);
       if (matName != null && !"".equals(matName)) {
         mat = (Mat) getDecorator(outer, Mat.class);
         if (mat != null) {
           contents = mat.getContents();
-          offsets  = mat.getOffsets(p.x, p.y);
+          offsets = mat.getOffsets(p.x, p.y);
         }
       }
     }
@@ -249,7 +251,8 @@ public class Translate extends Decorator implements TranslatablePiece {
     translate(p);
 
     // Handle rotation of the piece, movement is relative to the current facing of the unit.
-    // Traverse any traits inward from this trait (because apparently Translate looks at inward traits only),
+    // Traverse any traits inward from this trait (because apparently Translate looks at inward
+    // traits only),
     // and find out what the cumulative rotation is
     final double cumulative = getCumulativeRotation();
 
@@ -257,8 +260,13 @@ public class Translate extends Decorator implements TranslatablePiece {
     if (cumulative != 0.0) {
       final Point2D myPosition = getPosition().getLocation();
       Point2D p2d = p.getLocation();
-      p2d = AffineTransform.getRotateInstance(cumulative, myPosition.getX(), myPosition.getY()).transform(p2d, null);
-      p = new Point((int) Math.round(p2d.getX()), (int) Math.round(p2d.getY())); // Use Round not Truncate to prevent drift
+      p2d =
+          AffineTransform.getRotateInstance(cumulative, myPosition.getX(), myPosition.getY())
+              .transform(p2d, null);
+      p =
+          new Point(
+              (int) Math.round(p2d.getX()),
+              (int) Math.round(p2d.getY())); // Use Round not Truncate to prevent drift
     }
 
     // And snap to the grid if required.
@@ -275,8 +283,7 @@ public class Translate extends Decorator implements TranslatablePiece {
           c = c.append(movePiece(gp, p));
         }
       }
-    }
-    else {
+    } else {
       c = c.append(movePiece(target, p));
 
       // Mat Support
@@ -319,7 +326,8 @@ public class Translate extends Decorator implements TranslatablePiece {
       return null;
     }
 
-    // Prepare the piece for move, writing "old location" properties, marking moved, and unlinking from any deck
+    // Prepare the piece for move, writing "old location" properties, marking moved, and unlinking
+    // from any deck
     Command c = gp.prepareMove(new NullCommand(), true);
 
     // Move the piece
@@ -332,10 +340,9 @@ public class Translate extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Classic Translate code.
-   * The original Move Fixed Distance code does not work properly in Triggers, creates additional Null
-   * actions and does not undo properly. Some modules may depend on this behaviour. Now depends on a Module level
-   * preference being turned on to use it.
+   * Classic Translate code. The original Move Fixed Distance code does not work properly in
+   * Triggers, creates additional Null actions and does not undo properly. Some modules may depend
+   * on this behaviour. Now depends on a Module level preference being turned on to use it.
    */
   protected Command classicTranslate(KeyStroke stroke) {
     Command c = new NullCommand();
@@ -352,13 +359,15 @@ public class Translate extends Decorator implements TranslatablePiece {
     }
     mover.addKeyEventTarget(piece);
     // Return a non-null command to indicate that a change actually happened
-    // Note: Looks weird to wipe out the Commands, but they have all been added to the Move Executor.
-    c = new NullCommand() {
-      @Override
-      public boolean isNull() {
-        return false;
-      }
-    };
+    // Note: Looks weird to wipe out the Commands, but they have all been added to the Move
+    // Executor.
+    c =
+        new NullCommand() {
+          @Override
+          public boolean isNull() {
+            return false;
+          }
+        };
 
     return c;
   }
@@ -382,7 +391,9 @@ public class Translate extends Decorator implements TranslatablePiece {
     if (cumulative != 0.0) {
       final Point2D myPosition = getPosition().getLocation();
       Point2D p2d = p.getLocation();
-      p2d = AffineTransform.getRotateInstance(cumulative, myPosition.getX(), myPosition.getY()).transform(p2d, null);
+      p2d =
+          AffineTransform.getRotateInstance(cumulative, myPosition.getX(), myPosition.getY())
+              .transform(p2d, null);
       p = new Point((int) p2d.getX(), (int) p2d.getY());
     }
 
@@ -402,22 +413,42 @@ public class Translate extends Decorator implements TranslatablePiece {
     final GamePiece outer = getOutermost(this);
     final Board b = outer.getMap().findBoard(p);
 
-    final int Xdist = xDist.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.distance_to_the_right"), this); // NON-NLS
-    final int Xindex = xIndex.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.additional_offset_to_the_right"), this); // NON-NLS
-    final int Xoffset = xOffset.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.times") + " X", this); // NON-NLS
+    final int Xdist =
+        xDist.getTextAsInt(
+            outer,
+            Resources.getString("Editor.MoveFixedDistance.distance_to_the_right"),
+            this); // NON-NLS
+    final int Xindex =
+        xIndex.getTextAsInt(
+            outer,
+            Resources.getString("Editor.MoveFixedDistance.additional_offset_to_the_right"),
+            this); // NON-NLS
+    final int Xoffset =
+        xOffset.getTextAsInt(
+            outer, Resources.getString("Editor.MoveFixedDistance.times") + " X", this); // NON-NLS
 
     x = Xdist + Xindex * Xoffset;
     if (b != null) {
-      x = (int)Math.round(b.getMagnification() * x);
+      x = (int) Math.round(b.getMagnification() * x);
     }
 
-    final int Ydist = yDist.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.distance_upwards"), this); // NON-NLS
-    final int Yindex = yIndex.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.additional_offset_upwards"), this); // NON-NLS
-    final int Yoffset = yOffset.getTextAsInt(outer, Resources.getString("Editor.MoveFixedDistance.times") + " Y", this); // NON-NLS
+    final int Ydist =
+        yDist.getTextAsInt(
+            outer,
+            Resources.getString("Editor.MoveFixedDistance.distance_upwards"),
+            this); // NON-NLS
+    final int Yindex =
+        yIndex.getTextAsInt(
+            outer,
+            Resources.getString("Editor.MoveFixedDistance.additional_offset_upwards"),
+            this); // NON-NLS
+    final int Yoffset =
+        yOffset.getTextAsInt(
+            outer, Resources.getString("Editor.MoveFixedDistance.times") + " Y", this); // NON-NLS
 
     y = Ydist + Yindex * Yoffset;
     if (b != null) {
-      y = (int)Math.round(b.getMagnification() * y);
+      y = (int) Math.round(b.getMagnification() * y);
     }
 
     p.translate(x, -y);
@@ -426,15 +457,18 @@ public class Translate extends Decorator implements TranslatablePiece {
   protected GamePiece findTarget(KeyStroke stroke) {
     final GamePiece outer = getOutermost(this);
     GamePiece target = outer;
-    if (moveStack
-        && outer.getParent() != null
-        && !outer.getParent().isExpanded()) {
+    if (moveStack && outer.getParent() != null && !outer.getParent().isExpanded()) {
       // Only move entire stack if this is the top piece
       // Otherwise moves the stack too far if the whole stack is multi-selected
-      if (outer != outer.getParent().topPiece(GameModule.getActiveUserId())) {  //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
+      if (outer
+          != outer
+              .getParent()
+              .topPiece(
+                  GameModule
+                      .getActiveUserId())) { // NOTE: topPiece() returns the top VISIBLE piece (not
+        // hidden by Invisible trait)
         target = null;
-      }
-      else {
+      } else {
         target = outer.getParent();
       }
     }
@@ -442,8 +476,7 @@ public class Translate extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -477,24 +510,27 @@ public class Translate extends Decorator implements TranslatablePiece {
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(commandName, getCommandDescription(description, Resources.getString("Editor.MoveFixedDistance.move_fixed_distance_command")));
+    return getI18nData(
+        commandName,
+        getCommandDescription(
+            description,
+            Resources.getString("Editor.MoveFixedDistance.move_fixed_distance_command")));
   }
-
 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Translate)) return false;
+    if (!(o instanceof Translate)) return false;
     final Translate c = (Translate) o;
-    if (! Objects.equals(commandName, c.commandName)) return false;
-    if (! Objects.equals(keyCommand, c.keyCommand)) return false;
-    if (! Objects.equals(xDist, c.xDist)) return false;
-    if (! Objects.equals(yDist, c.yDist)) return false;
-    if (! Objects.equals(moveStack, c.moveStack)) return false;
-    if (! Objects.equals(xIndex, c.xIndex)) return false;
-    if (! Objects.equals(yIndex, c.yIndex)) return false;
-    if (! Objects.equals(xOffset, c.xOffset)) return false;
-    if (! Objects.equals(yOffset, c.yOffset)) return false;
+    if (!Objects.equals(commandName, c.commandName)) return false;
+    if (!Objects.equals(keyCommand, c.keyCommand)) return false;
+    if (!Objects.equals(xDist, c.xDist)) return false;
+    if (!Objects.equals(yDist, c.yDist)) return false;
+    if (!Objects.equals(moveStack, c.moveStack)) return false;
+    if (!Objects.equals(xIndex, c.xIndex)) return false;
+    if (!Objects.equals(yIndex, c.yIndex)) return false;
+    if (!Objects.equals(xOffset, c.xOffset)) return false;
+    if (!Objects.equals(yOffset, c.yOffset)) return false;
     return Objects.equals(description, c.description);
   }
 
@@ -505,8 +541,10 @@ public class Translate extends Decorator implements TranslatablePiece {
     private final NamedHotKeyConfigurer key;
     private final TraitConfigPanel controls;
     private final BooleanConfigurer moveStack;
+
     @Deprecated(since = "2020-12-11", forRemoval = true)
     protected BooleanConfigurer advancedInput;
+
     protected FormattedExpressionConfigurer xIndexInput;
     protected FormattedExpressionConfigurer xOffsetInput;
     protected FormattedExpressionConfigurer yIndexInput;
@@ -537,8 +575,11 @@ public class Translate extends Decorator implements TranslatablePiece {
       moveStack = new BooleanConfigurer(Boolean.valueOf(t.moveStack));
       controls.add("Editor.MoveFixedDistance.move_entire_stack", moveStack);
 
-      final JLabel xLabel = new JLabel(Resources.getString("Editor.MoveFixedDistance.additional_offset_to_the_right"));
-      final JPanel xControls = new JPanel(new MigLayout("ins 0", "[fill,grow]rel[]rel[fill,grow]")); // NON-NLS
+      final JLabel xLabel =
+          new JLabel(
+              Resources.getString("Editor.MoveFixedDistance.additional_offset_to_the_right"));
+      final JPanel xControls =
+          new JPanel(new MigLayout("ins 0", "[fill,grow]rel[]rel[fill,grow]")); // NON-NLS
       xLabel.setLabelFor(xControls);
       xIndexInput = new FormattedExpressionConfigurer(t.xIndex.getFormat(), t);
       xControls.add(xIndexInput.getControls(), "grow"); // NON-NLS
@@ -551,8 +592,10 @@ public class Translate extends Decorator implements TranslatablePiece {
       controls.add(xLabel);
       controls.add(xControls, "grow,wrap"); // NON-NLS
 
-      final JLabel yLabel = new JLabel(Resources.getString("Editor.MoveFixedDistance.additional_offset_upwards"));
-      final JPanel yControls = new JPanel(new MigLayout("ins 0", "[fill,grow]rel[]rel[fill,grow]")); // NON-NLS
+      final JLabel yLabel =
+          new JLabel(Resources.getString("Editor.MoveFixedDistance.additional_offset_upwards"));
+      final JPanel yControls =
+          new JPanel(new MigLayout("ins 0", "[fill,grow]rel[]rel[fill,grow]")); // NON-NLS
       yLabel.setLabelFor(yControls);
       yIndexInput = new FormattedExpressionConfigurer(t.yIndex.getFormat(), t);
       yControls.add(yIndexInput.getControls());
@@ -564,7 +607,6 @@ public class Translate extends Decorator implements TranslatablePiece {
 
       controls.add(yLabel);
       controls.add(yControls, "grow,wrap"); // NON-NLS
-
     }
 
     @Override
@@ -581,23 +623,23 @@ public class Translate extends Decorator implements TranslatablePiece {
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(name.getValueString())
-        .append(key.getValueString())
-        .append(xDist.getValueString())
-        .append(yDist.getValueString())
-        .append(moveStack.getValueString())
-        .append(xIndexInput.getValueString())
-        .append(yIndexInput.getValueString())
-        .append(xOffsetInput.getValueString())
-        .append(yOffsetInput.getValueString())
-        .append(descInput.getValueString());
+          .append(key.getValueString())
+          .append(xDist.getValueString())
+          .append(yDist.getValueString())
+          .append(moveStack.getValueString())
+          .append(xIndexInput.getValueString())
+          .append(yIndexInput.getValueString())
+          .append(xOffsetInput.getValueString())
+          .append(yOffsetInput.getValueString())
+          .append(descInput.getValueString());
       return ID + se.getValue();
     }
   }
 
   /**
-   * Batches up all the movement commands resulting from a single KeyEvent
-   * and executes them at once. Ensures that pieces that are moving won't
-   * be merged with other moving pieces until they've been moved.
+   * Batches up all the movement commands resulting from a single KeyEvent and executes them at
+   * once. Ensures that pieces that are moving won't be merged with other moving pieces until
+   * they've been moved.
    */
   public static class MoveExecuter implements Runnable {
     private final List<Move> moves = new ArrayList<>();
@@ -613,36 +655,32 @@ public class Translate extends Decorator implements TranslatablePiece {
       comm = comm.append(additionalCommand);
 
       for (final Move move : moves) {
-        final Map.Merger merger =
-          new Map.Merger(move.map, move.pos, move.piece);
-        final DeckVisitor v = new DeckVisitor() {
-          @Override
-          public Object visitDeck(Deck d) {
-            return merger.visitDeck(d);
-          }
+        final Map.Merger merger = new Map.Merger(move.map, move.pos, move.piece);
+        final DeckVisitor v =
+            new DeckVisitor() {
+              @Override
+              public Object visitDeck(Deck d) {
+                return merger.visitDeck(d);
+              }
 
-          @Override
-          public Object visitStack(Stack s) {
-            if (!pieces.contains(s) &&
-                move.map.getPieceCollection().canMerge(s, move.piece)) {
-              return merger.visitStack(s);
-            }
-            else {
-              return null;
-            }
-          }
+              @Override
+              public Object visitStack(Stack s) {
+                if (!pieces.contains(s) && move.map.getPieceCollection().canMerge(s, move.piece)) {
+                  return merger.visitStack(s);
+                } else {
+                  return null;
+                }
+              }
 
-          @Override
-          public Object visitDefault(GamePiece p) {
-            if (!pieces.contains(p) &&
-                move.map.getPieceCollection().canMerge(p, move.piece)) {
-              return merger.visitDefault(p);
-            }
-            else {
-              return null;
-            }
-          }
-        };
+              @Override
+              public Object visitDefault(GamePiece p) {
+                if (!pieces.contains(p) && move.map.getPieceCollection().canMerge(p, move.piece)) {
+                  return merger.visitDefault(p);
+                } else {
+                  return null;
+                }
+              }
+            };
 
         final DeckVisitorDispatcher dispatch = new DeckVisitorDispatcher(v);
         Command c = move.map.apply(dispatch);
@@ -650,8 +688,7 @@ public class Translate extends Decorator implements TranslatablePiece {
           c = move.map.placeAt(move.piece, move.pos);
           // Apply Auto-move key
           if (move.map.getMoveKey() != null) {
-            c.append(getOutermost(move.piece)
-                              .keyEvent(move.map.getMoveKey()));
+            c.append(getOutermost(move.piece).keyEvent(move.map.getMoveKey()));
           }
         }
         comm.append(c);
@@ -698,9 +735,9 @@ public class Translate extends Decorator implements TranslatablePiece {
     public Command getAdditionalCommand() {
       return additionalCommand;
     }
+
     /**
-     * Return the updated position of a piece that has a move
-     * calculation recorded
+     * Return the updated position of a piece that has a move calculation recorded
      *
      * @param target piece to check
      * @return updated position

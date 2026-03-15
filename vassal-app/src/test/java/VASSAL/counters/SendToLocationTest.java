@@ -25,7 +25,11 @@ import org.junit.jupiter.api.Test;
 public class SendToLocationTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     SendToLocation trait = new SendToLocation();
 

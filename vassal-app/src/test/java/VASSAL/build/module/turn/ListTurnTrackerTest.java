@@ -1,38 +1,25 @@
 package VASSAL.build.module.turn;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
 import VASSAL.build.GameModule;
 import VASSAL.preferences.Prefs;
 import VASSAL.preferences.PrefsEditor;
+import java.util.Iterator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import java.util.Iterator;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 public class ListTurnTrackerTest {
 
-  private final List<String> turnList = List.of(
-          "alpha",
-          "beta",
-          "gamma"
-  );
+  private final List<String> turnList = List.of("alpha", "beta", "gamma");
 
   // A subset of days.
-  private final List<String> dayList = List.of(
-          "Monday",
-          "Tuesday",
-          "Wednesday"
-  );
+  private final List<String> dayList = List.of("Monday", "Tuesday", "Wednesday");
 
-  private final List<String> numbersList = List.of(
-          "one",
-          "two",
-          "three"
-  );
+  private final List<String> numbersList = List.of("one", "two", "three");
 
   // A helper class to access protected functions.
   static class TurnTrackerAccessor extends TurnTracker {
@@ -50,7 +37,9 @@ public class ListTurnTrackerTest {
       super.prev();
     }
 
-    public void reset() { super.reset(); }
+    public void reset() {
+      super.reset();
+    }
 
     public String getTurnString() {
       return super.getTurnString().trim();
@@ -230,7 +219,7 @@ public class ListTurnTrackerTest {
       assertEquals(turnList.get(0), tracker.getTurnString());
 
       // Reverse direction
-      for (int i = turnList.size()-1; i >= 0; --i) {
+      for (int i = turnList.size() - 1; i >= 0; --i) {
         tracker.prev();
         assertEquals(turnList.get(i), tracker.getTurnString());
       }
@@ -240,13 +229,13 @@ public class ListTurnTrackerTest {
       tracker.setState("0|1;0;0;false,false,false|0;1;0;false,false,false");
 
       // Forward
-      for (int i = 0; i < turnList.size() ; ++i) {
+      for (int i = 0; i < turnList.size(); ++i) {
         assertEquals(turnList.get(1), tracker.getTurnString());
         tracker.next();
       }
 
       // Reverse
-      for (int i = 0; i < turnList.size() ; ++i) {
+      for (int i = 0; i < turnList.size(); ++i) {
         assertEquals(turnList.get(1), tracker.getTurnString());
         tracker.prev();
       }
@@ -303,7 +292,6 @@ public class ListTurnTrackerTest {
       assertEquals("beta", level.getTurnString());
       tracker.next(); // skips gamma
       assertEquals("alpha", level.getTurnString());
-
     }
   }
 
@@ -471,7 +459,7 @@ public class ListTurnTrackerTest {
       }
 
       // Reverse
-      for (int i = turnList.size()-1; i >= 0; --i) {
+      for (int i = turnList.size() - 1; i >= 0; --i) {
         final String expected = turnList.get(i % turnList.size()) + " odd_ball";
         assertEquals(expected, tracker.getTurnString());
         tracker.prev();
@@ -506,7 +494,8 @@ public class ListTurnTrackerTest {
       level4.setAttribute("list", "golf,hotel");
       level3.addLevel(level4);
 
-      tracker.setState("0|1;0;0;true,true;1\\;0\\;0\\;true,true\\;1\\\\;0\\\\;0\\\\;true,true\\\\;1\\\\\\;0\\\\\\;0\\\\\\;true,true");
+      tracker.setState(
+          "0|1;0;0;true,true;1\\;0\\;0\\;true,true\\;1\\\\;0\\\\;0\\\\;true,true\\\\;1\\\\\\;0\\\\\\;0\\\\\\;true,true");
 
       assertEquals("bravo", level.getTurnString());
       assertEquals("delta", level2.getTurnString());

@@ -28,9 +28,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * A {@link ReadWriteLock} which counts locks held.
  *
- * Locks are not associated with particular threads as with
- * {@link ReentrantReadWriteLock}, so can be released from threads other
- * than the the ones which acquired them.
+ * <p>Locks are not associated with particular threads as with {@link ReentrantReadWriteLock}, so
+ * can be released from threads other than the the ones which acquired them.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -38,7 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class CountingReadWriteLock implements ReadWriteLock {
   /** {@inheritDoc} */
   @Override
-  public Lock readLock()  {
+  public Lock readLock() {
     return r;
   }
 
@@ -48,7 +47,7 @@ public class CountingReadWriteLock implements ReadWriteLock {
     return w;
   }
 
-  protected final ReadLock r  = new ReadLock();
+  protected final ReadLock r = new ReadLock();
   protected final WriteLock w = new WriteLock();
 
   protected final Sync sync = new Sync();
@@ -67,12 +66,12 @@ public class CountingReadWriteLock implements ReadWriteLock {
 
   protected class ReadLock extends BaseLock {
     @Override
-    public void lock()    {
+    public void lock() {
       sync.acquireShared(0);
     }
 
     @Override
-    public void unlock()  {
+    public void unlock() {
       sync.releaseShared(0);
     }
 
@@ -82,15 +81,14 @@ public class CountingReadWriteLock implements ReadWriteLock {
     }
 
     @Override
-    public boolean tryLock(long time, TimeUnit unit)
-                                                  throws InterruptedException {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
       return sync.tryAcquireSharedNanos(0, unit.toNanos(time));
     }
   }
 
   protected class WriteLock extends BaseLock {
     @Override
-    public void lock()   {
+    public void lock() {
       sync.acquire(0);
     }
 
@@ -105,8 +103,7 @@ public class CountingReadWriteLock implements ReadWriteLock {
     }
 
     @Override
-    public boolean tryLock(long time, TimeUnit unit)
-                                                  throws InterruptedException {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
       return sync.tryAcquireNanos(0, unit.toNanos(time));
     }
   }

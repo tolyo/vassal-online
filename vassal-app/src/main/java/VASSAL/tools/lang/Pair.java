@@ -23,7 +23,6 @@ package VASSAL.tools.lang;
  *
  * @param <A> the type of the first object
  * @param <B> the type of the second object
- *
  * @author Joel Uckelman
  * @since 3.2.0
  */
@@ -45,8 +44,7 @@ public final class Pair<A, B> {
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return (first  == null ? 0 : first.hashCode() * 31) +
-           (second == null ? 0 : second.hashCode());
+    return (first == null ? 0 : first.hashCode() * 31) + (second == null ? 0 : second.hashCode());
   }
 
   /** {@inheritDoc} */
@@ -56,8 +54,8 @@ public final class Pair<A, B> {
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final Pair<?, ?> p = (Pair<?, ?>) o;
-    return (first  == p.first  || (first  != null && first.equals(p.first))) &&
-           (second == p.second || (second != null && second.equals(p.second)));
+    return (first == p.first || (first != null && first.equals(p.first)))
+        && (second == p.second || (second != null && second.equals(p.second)));
   }
 
   /**

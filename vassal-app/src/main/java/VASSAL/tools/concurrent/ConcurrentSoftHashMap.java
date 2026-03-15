@@ -30,26 +30,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * A memory-sensitive {@link ConcurrentMap} which stores the values
- * in {@link SoftReference}s. This <code>ConcurrentMap</code> grows
- * without bound, but when the JVM is under memory pressure, values
+ * A memory-sensitive {@link ConcurrentMap} which stores the values in {@link SoftReference}s. This
+ * <code>ConcurrentMap</code> grows without bound, but when the JVM is under memory pressure, values
  * held by it may be garbage collected.
  *
- * <p>All methods except {@link #get} cause the <code>Map</code> to
- * be cleared of key-value pairs for which the value has been garbage
- * collected. Processing key-value pairs with dead values is <em>not</em>
- * an atomic operation. Thus, it is possible, though unlikely, that more
- * values will be garbage collected between the removal of dead key-value
- * pairs and the return of the method in which this takes place.</p>
+ * <p>All methods except {@link #get} cause the <code>Map</code> to be cleared of key-value pairs
+ * for which the value has been garbage collected. Processing key-value pairs with dead values is
+ * <em>not</em> an atomic operation. Thus, it is possible, though unlikely, that more values will be
+ * garbage collected between the removal of dead key-value pairs and the return of the method in
+ * which this takes place.
  *
- * <p>This implementation does not permit <code>null</code> keys or
- * values.</p>
+ * <p>This implementation does not permit <code>null</code> keys or values.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
-                                        implements ConcurrentMap<K, V> {
+public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
   private static final class SoftValue<K, V> extends SoftReference<V> {
     private final K key;
@@ -73,8 +69,7 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  private final ConcurrentMap<K, SoftValue<K, V>> map =
-    new ConcurrentHashMap<>();
+  private final ConcurrentMap<K, SoftValue<K, V>> map = new ConcurrentHashMap<>();
 
   private final ReferenceQueue<V> queue = new ReferenceQueue<>();
 
@@ -87,9 +82,9 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     // you put in?
     while ((sv = (SoftValue<K, V>) queue.poll()) != null) {
       map.remove(sv.key, sv);
-//      System.out.println("Hasta la vista, " + sv.key + ".");
+      //      System.out.println("Hasta la vista, " + sv.key + ".");
     }
-//    System.out.println("Cache size = " + map.size());
+    //    System.out.println("Cache size = " + map.size());
   }
 
   // Query Operations
@@ -135,8 +130,7 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     Objects.requireNonNull(value);
 
     processQueue();
-    final SoftValue<K, V> oldSV =
-      map.put(key, new SoftValue<>(key, value, queue));
+    final SoftValue<K, V> oldSV = map.put(key, new SoftValue<>(key, value, queue));
     return oldSV == null ? null : oldSV.get();
   }
 
@@ -156,7 +150,8 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
   @Override
   public void clear() {
     map.clear();
-    while (queue.poll() != null); // NOPMD
+    while (queue.poll() != null)
+      ; // NOPMD
   }
 
   // Views
@@ -164,20 +159,20 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
   private Set<Map.Entry<K, V>> entrySet;
 
   /**
-   * An implementation of {@link Map.Entry}. Remove this and use
-   * {@link AbstractMap.SimpleEntry} with 1.6+.
+   * An implementation of {@link Map.Entry}. Remove this and use {@link AbstractMap.SimpleEntry}
+   * with 1.6+.
    */
   public static class SimpleEntry<K, V> implements Entry<K, V> {
     private final K key;
     private V value;
 
     public SimpleEntry(K key, V value) {
-      this.key   = key;
+      this.key = key;
       this.value = value;
     }
 
     public SimpleEntry(Entry<? extends K, ? extends V> entry) {
-      this.key   = entry.getKey();
+      this.key = entry.getKey();
       this.value = entry.getValue();
     }
 
@@ -202,8 +197,7 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     public boolean equals(Object o) {
       if (!(o instanceof Map.Entry)) return false;
       final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-      return Objects.equals(key, e.getKey()) &&
-             Objects.equals(value, e.getValue());
+      return Objects.equals(key, e.getKey()) && Objects.equals(value, e.getValue());
     }
 
     @Override
@@ -223,41 +217,41 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     processQueue();
 
     if (entrySet == null) {
-      entrySet = new AbstractSet<>() {
-        @Override
-        public Iterator<Map.Entry<K, V>> iterator() {
-          return new Iterator<>() {
-            private final Iterator<Map.Entry<K, SoftValue<K, V>>> i =
-              map.entrySet().iterator();
-
+      entrySet =
+          new AbstractSet<>() {
             @Override
-            public boolean hasNext() {
-              return i.hasNext();
+            public Iterator<Map.Entry<K, V>> iterator() {
+              return new Iterator<>() {
+                private final Iterator<Map.Entry<K, SoftValue<K, V>>> i = map.entrySet().iterator();
+
+                @Override
+                public boolean hasNext() {
+                  return i.hasNext();
+                }
+
+                @Override
+                public Map.Entry<K, V> next() {
+                  final Map.Entry<K, SoftValue<K, V>> e = i.next();
+                  return new SimpleEntry<>(e.getKey(), e.getValue().get());
+                }
+
+                @Override
+                public void remove() {
+                  i.remove();
+                }
+              };
             }
 
             @Override
-            public Map.Entry<K, V> next() {
-              final Map.Entry<K, SoftValue<K, V>> e = i.next();
-              return new SimpleEntry<>(e.getKey(), e.getValue().get());
+            public int size() {
+              return ConcurrentSoftHashMap.this.size();
             }
 
             @Override
-            public void remove() {
-              i.remove();
+            public boolean contains(Object v) {
+              return ConcurrentSoftHashMap.this.containsValue(v);
             }
           };
-        }
-
-        @Override
-        public int size() {
-          return ConcurrentSoftHashMap.this.size();
-        }
-
-        @Override
-        public boolean contains(Object v) {
-          return ConcurrentSoftHashMap.this.containsValue(v);
-        }
-      };
     }
 
     return entrySet;
@@ -272,8 +266,7 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     Objects.requireNonNull(value);
 
     processQueue();
-    final SoftValue<K, V> oldSV =
-      map.putIfAbsent(key, new SoftValue<>(key, value, queue));
+    final SoftValue<K, V> oldSV = map.putIfAbsent(key, new SoftValue<>(key, value, queue));
     return oldSV == null ? null : oldSV.get();
   }
 
@@ -295,9 +288,8 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     Objects.requireNonNull(newValue);
 
     processQueue();
-    return map.replace(key,
-                       new SoftValue<>(key, oldValue, null),
-                       new SoftValue<>(key, newValue, queue));
+    return map.replace(
+        key, new SoftValue<>(key, oldValue, null), new SoftValue<>(key, newValue, queue));
   }
 
   /** {@inheritDoc} */
@@ -307,8 +299,7 @@ public class ConcurrentSoftHashMap<K, V> extends AbstractMap<K, V>
     Objects.requireNonNull(value);
 
     processQueue();
-    final SoftValue<K, V> oldSV =
-      map.replace(key, new SoftValue<>(key, value, queue));
+    final SoftValue<K, V> oldSV = map.replace(key, new SoftValue<>(key, value, queue));
     return oldSV == null ? null : oldSV.get();
   }
 }

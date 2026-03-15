@@ -17,11 +17,6 @@
  */
 package VASSAL.chat.ui;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JTree;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.LockableChatServerConnection;
@@ -32,13 +27,14 @@ import VASSAL.chat.SoundEncoder;
 import VASSAL.configure.SoundConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JTree;
 
 /**
- * Send a wake-up sound to another player
- * - Can't wake-up oneself
- * - No wake-ups in the default room
- * - No wake-ups to people in different rooms
- * - No wake-up to the same person in the same room until at least 5 seconds has passed.
+ * Send a wake-up sound to another player - Can't wake-up oneself - No wake-ups in the default room
+ * - No wake-ups to people in different rooms - No wake-up to the same person in the same room until
+ * at least 5 seconds has passed.
  */
 public class SendSoundAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
@@ -65,13 +61,14 @@ public class SendSoundAction extends AbstractAction {
     }
 
     setEnabled(
-      target != null
-      && GameModule.getGameModule() != null
-      && !target.equals(client.getUserInfo())
-      && client.getRoom() != null
-      && client.getRoom().equals(targetRoom)
-      && (!targetRoom.equals(lastRoom) || !target.equals(lastPlayer) ||
-      (System.currentTimeMillis() - lastSound) > SoundEncoder.Cmd.TOO_SOON));
+        target != null
+            && GameModule.getGameModule() != null
+            && !target.equals(client.getUserInfo())
+            && client.getRoom() != null
+            && client.getRoom().equals(targetRoom)
+            && (!targetRoom.equals(lastRoom)
+                || !target.equals(lastPlayer)
+                || (System.currentTimeMillis() - lastSound) > SoundEncoder.Cmd.TOO_SOON));
   }
 
   @Override
@@ -82,14 +79,22 @@ public class SendSoundAction extends AbstractAction {
     lastSound = System.currentTimeMillis();
   }
 
-  public static PlayerActionFactory factory(final ChatServerConnection client, final String name, final String soundKey, final String defaultSoundFile) {
+  public static PlayerActionFactory factory(
+      final ChatServerConnection client,
+      final String name,
+      final String soundKey,
+      final String defaultSoundFile) {
     if (GameModule.getGameModule() != null) {
-      Prefs.getGlobalPrefs().addOption(Resources.getString("Prefs.sounds_tab"), new SoundConfigurer(soundKey, name, defaultSoundFile)); //$NON-NLS-1$
+      Prefs.getGlobalPrefs()
+          .addOption(
+              Resources.getString("Prefs.sounds_tab"),
+              new SoundConfigurer(soundKey, name, defaultSoundFile)); // $NON-NLS-1$
     }
 
     return (SimplePlayer p, JTree tree) -> {
       final Room r = client.getRoom();
-      if (client instanceof LockableChatServerConnection && ((LockableChatServerConnection) client).isDefaultRoom(r)) {
+      if (client instanceof LockableChatServerConnection
+          && ((LockableChatServerConnection) client).isDefaultRoom(r)) {
         return null;
       }
       return new SendSoundAction(name, client, soundKey, p);

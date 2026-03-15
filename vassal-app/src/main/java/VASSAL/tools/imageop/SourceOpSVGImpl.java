@@ -18,6 +18,13 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.build.GameModule;
+import VASSAL.tools.DataArchive;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.image.ImageIOException;
+import VASSAL.tools.image.ImageNotFoundException;
+import VASSAL.tools.image.svg.SVGImageUtils;
+import VASSAL.tools.image.svg.SVGRenderer;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -28,22 +35,13 @@ import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
 
-import VASSAL.build.GameModule;
-import VASSAL.tools.DataArchive;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.image.ImageIOException;
-import VASSAL.tools.image.ImageNotFoundException;
-import VASSAL.tools.image.svg.SVGImageUtils;
-import VASSAL.tools.image.svg.SVGRenderer;
-
 /**
  * An {@link ImageOp} which loads an image from the {@link DataArchive}.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class SourceOpSVGImpl extends AbstractTiledOpImpl
-                             implements SourceOp, SVGOp {
+public class SourceOpSVGImpl extends AbstractTiledOpImpl implements SourceOp, SVGOp {
   /** The name of the image file. */
   protected final String name;
 
@@ -57,16 +55,14 @@ public class SourceOpSVGImpl extends AbstractTiledOpImpl
    * Constructs an <code>ImageOp</code> which will load the given file.
    *
    * @param name the name of the image to load
-   * @throws IllegalArgumentException
-   *    if <code>name</code> is <code>null</code>.
+   * @throws IllegalArgumentException if <code>name</code> is <code>null</code>.
    */
   public SourceOpSVGImpl(String name) {
     this(name, GameModule.getGameModule().getDataArchive());
   }
 
   public SourceOpSVGImpl(String name, DataArchive archive) {
-    if (name == null || name.length() == 0 || archive == null)
-      throw new IllegalArgumentException();
+    if (name == null || name.length() == 0 || archive == null) throw new IllegalArgumentException();
 
     this.name = name;
     this.archive = archive;
@@ -79,21 +75,19 @@ public class SourceOpSVGImpl extends AbstractTiledOpImpl
   }
 
   /**
-   *  {@inheritDoc}
+   * {@inheritDoc}
    *
    * @throws IOException if the image cannot be loaded from the image file.
    */
   @Override
   public BufferedImage eval() throws ImageIOException {
     try (InputStream in = archive.getInputStream(name);
-         BufferedInputStream bin = new BufferedInputStream(in)) {
+        BufferedInputStream bin = new BufferedInputStream(in)) {
       final SVGRenderer renderer = new SVGRenderer(archive.getURL(name), bin);
       return renderer.render();
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       throw new ImageNotFoundException(name, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(name, e);
     }
   }
@@ -113,19 +107,15 @@ public class SourceOpSVGImpl extends AbstractTiledOpImpl
     try {
       try (InputStream in = archive.getInputStream(name)) {
         return SVGImageUtils.getImageSize(name, in);
-      }
-      catch (ImageIOException e) {
+      } catch (ImageIOException e) {
         // Don't wrap, just rethrow.
         throw e;
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         throw new ImageNotFoundException(name, e);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         throw new ImageIOException(name, e);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       if (!Op.handleException(e)) ErrorDialog.bug(e);
     }
 

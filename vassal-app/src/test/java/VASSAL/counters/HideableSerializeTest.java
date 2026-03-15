@@ -2,12 +2,9 @@ package VASSAL.counters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.Color;
-
-import org.junit.jupiter.api.Test;
-
 import VASSAL.tools.NamedKeyStroke;
-
+import java.awt.Color;
+import org.junit.jupiter.api.Test;
 
 public class HideableSerializeTest extends SerializeTest<Hideable> {
   @Test

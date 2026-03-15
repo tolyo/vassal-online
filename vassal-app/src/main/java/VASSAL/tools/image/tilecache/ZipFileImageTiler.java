@@ -24,25 +24,6 @@ import static VASSAL.tools.image.tilecache.ZipFileImageTilerState.IMAGE_END;
 import static VASSAL.tools.image.tilecache.ZipFileImageTilerState.READY;
 import static VASSAL.tools.image.tilecache.ZipFileImageTilerState.TILE_END;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.LineIterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.tools.IteratorUtils;
 import VASSAL.tools.concurrent.DaemonThreadFactory;
 import VASSAL.tools.image.ImageIOImageLoader;
@@ -53,6 +34,22 @@ import VASSAL.tools.io.ArgEncoding;
 import VASSAL.tools.io.FileArchive;
 import VASSAL.tools.io.ZipArchive;
 import VASSAL.tools.lang.Callback;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.LineIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tiles images contained in a ZIP archive.
@@ -61,32 +58,27 @@ import VASSAL.tools.lang.Callback;
  * @author Joel Uckelman
  */
 public class ZipFileImageTiler {
-  private static final Logger logger =
-    LoggerFactory.getLogger(ZipFileImageTiler.class);
+  private static final Logger logger = LoggerFactory.getLogger(ZipFileImageTiler.class);
 
   private static String[] decodeArgs(String[] args) {
-    return "--encoded-args".equals(args[0]) ?  new String[] {
-      ArgEncoding.decode(args[1]),
-      ArgEncoding.decode(args[2]),
-      args[3],
-      args[4]
-    } : args;
+    return "--encoded-args".equals(args[0])
+        ? new String[] {ArgEncoding.decode(args[1]), ArgEncoding.decode(args[2]), args[3], args[4]}
+        : args;
   }
 
   public static void main(String[] args) {
     try {
-      logger.info("Starting"); //NON-NLS
+      logger.info("Starting"); // NON-NLS
 
       // Oh we have no heads, we have no HEADS!
       System.setProperty("java.awt.headless", "true");
 
       // Ensure that exceptions are logged.
       Thread.setDefaultUncaughtExceptionHandler(
-        (thread, thrown) -> {
-          logger.error(thread.getName(), thrown);
-          System.exit(thrown instanceof OutOfMemoryError ? 2 : 1);
-        }
-      );
+          (thread, thrown) -> {
+            logger.error(thread.getName(), thrown);
+            System.exit(thrown instanceof OutOfMemoryError ? 2 : 1);
+          });
 
       args = decodeArgs(args);
 
@@ -101,13 +93,11 @@ public class ZipFileImageTiler {
 
       if (portProp != null) {
         writeToSocket(portProp, zpath, tpath, tw, th);
-      }
-      else {
+      } else {
         writeToStream(System.out, zpath, tpath, tw, th);
       }
-    }
-    finally {
-      logger.info("Exiting"); //NON-NLS
+    } finally {
+      logger.info("Exiting"); // NON-NLS
     }
   }
 
@@ -116,9 +106,8 @@ public class ZipFileImageTiler {
     final InetAddress lo;
     try {
       lo = InetAddress.getByName(null);
-    }
-    catch (UnknownHostException e) {
-      logger.error("Could not determine local IP address", e); //NON-NLS
+    } catch (UnknownHostException e) {
+      logger.error("Could not determine local IP address", e); // NON-NLS
       return;
     }
 
@@ -126,9 +115,8 @@ public class ZipFileImageTiler {
     try (Socket sock = new Socket(lo, port)) {
       sock.shutdownInput();
       writeToStream(sock.getOutputStream(), zpath, tpath, tw, th);
-    }
-    catch (IOException e) {
-      logger.error("Error while setting up socket", e); //NON-NLS
+    } catch (IOException e) {
+      logger.error("Error while setting up socket", e); // NON-NLS
     }
   }
 
@@ -136,13 +124,14 @@ public class ZipFileImageTiler {
 
     // TODO: Determine what the optimal number of threads is.
     final Runtime runtime = Runtime.getRuntime();
-    final ExecutorService exec = new ThreadPoolExecutor(
-      runtime.availableProcessors(),
-      runtime.availableProcessors() + 1,
-      60, TimeUnit.SECONDS,
-      new LinkedBlockingQueue<>(),
-      new DaemonThreadFactory(ZipFileImageTiler.class.getSimpleName())
-    );
+    final ExecutorService exec =
+        new ThreadPoolExecutor(
+            runtime.availableProcessors(),
+            runtime.availableProcessors() + 1,
+            60,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new DaemonThreadFactory(ZipFileImageTiler.class.getSimpleName()));
 
     final ImageTypeConverter itc = new MemoryImageTypeConverter();
     final ImageLoader loader = new ImageIOImageLoader(itc);
@@ -151,47 +140,58 @@ public class ZipFileImageTiler {
     final FileArchiveImageTiler tiler = new FileArchiveImageTiler();
 
     // Get the image paths from stdin, one per line
-    try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+    try (BufferedReader stdin =
+        new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       final Iterable<String> ipaths = IteratorUtils.iterate(new LineIterator(stdin));
 
       try (PrintStream out = new PrintStream(os, false, StandardCharsets.UTF_8)) {
         out.println("\n" + READY);
         out.flush();
 
-        final Callback<String> imageStartL = ipath -> {
-          out.println("\n" + IMAGE_BEGIN + ipath);
-          out.flush();
-        };
+        final Callback<String> imageStartL =
+            ipath -> {
+              out.println("\n" + IMAGE_BEGIN + ipath);
+              out.flush();
+            };
 
-        final Callback<String> imageDoneL = ipath -> {
-          out.println("\n" + IMAGE_END + ipath);
-          out.flush();
-        };
+        final Callback<String> imageDoneL =
+            ipath -> {
+              out.println("\n" + IMAGE_END + ipath);
+              out.flush();
+            };
 
-        final Callback<Void> tileL = obj -> {
-          out.println("\n" + TILE_END);
-          out.flush();
-        };
+        final Callback<Void> tileL =
+            obj -> {
+              out.println("\n" + TILE_END);
+              out.flush();
+            };
 
-        final Callback<Void> doneL = obj -> {
-          out.println("\n" + DONE);
-          out.flush();
-        };
+        final Callback<Void> doneL =
+            obj -> {
+              out.println("\n" + DONE);
+              out.flush();
+            };
 
         try (FileArchive fa = new ZipArchive(zpath)) {
           // Tile the images
           tiler.run(
-            fa, tpath, tw, th, ipaths, exec,
-            loader, slicer,
-            imageStartL, imageDoneL, tileL, doneL
-          );
-        }
-        catch (IOException e) {
+              fa,
+              tpath,
+              tw,
+              th,
+              ipaths,
+              exec,
+              loader,
+              slicer,
+              imageStartL,
+              imageDoneL,
+              tileL,
+              doneL);
+        } catch (IOException e) {
           logger.error("", e);
         }
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       logger.error("Tiling I/O error", e);
     }
   }

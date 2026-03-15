@@ -18,21 +18,19 @@
 
 package VASSAL.tools.image;
 
+import static VASSAL.tools.image.AssertImage.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import javax.imageio.ImageIO;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static VASSAL.tools.image.AssertImage.*;
 
 public class ImageIOImageLoaderTest {
   private static final String jpg = "src/test/resources/test-images/rainbow.jpg";
@@ -44,13 +42,10 @@ public class ImageIOImageLoaderTest {
     src = ImageIO.read(new File(jpg));
   }
 
-  private BufferedImage read(ImageLoader loader, String file)
-                                                           throws IOException {
+  private BufferedImage read(ImageLoader loader, String file) throws IOException {
     try (InputStream in = Files.newInputStream(Path.of(file))) {
-      final BufferedImage img = loader.load(
-        file, in, BufferedImage.TYPE_INT_RGB,
-        BufferedImage.TYPE_INT_ARGB, false
-      );
+      final BufferedImage img =
+          loader.load(file, in, BufferedImage.TYPE_INT_RGB, BufferedImage.TYPE_INT_ARGB, false);
       return img;
     }
   }

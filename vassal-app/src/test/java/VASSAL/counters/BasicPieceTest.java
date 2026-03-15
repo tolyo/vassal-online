@@ -19,9 +19,9 @@ package VASSAL.counters;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doAnswer;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
@@ -45,11 +45,14 @@ public class BasicPieceTest {
         // Mock a map to handle having a piece added to it, and return an id
         final Map map = mock(Map.class);
         when(map.getIdentifier()).thenReturn(mapId);
-        doAnswer(invocation -> {
-          GamePiece p = (GamePiece) invocation.getArguments()[0];
-          p.setMap(map);
-          return null;
-        }).when(map).addPiece(t1);
+        doAnswer(
+                invocation -> {
+                  GamePiece p = (GamePiece) invocation.getArguments()[0];
+                  p.setMap(map);
+                  return null;
+                })
+            .when(map)
+            .addPiece(t1);
         staticMap.when(() -> Map.getMapById(mapId)).thenReturn(map);
 
         // Mock DataArchive to return a list of image names

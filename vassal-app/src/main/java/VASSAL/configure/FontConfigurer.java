@@ -18,21 +18,17 @@
 package VASSAL.configure;
 
 import VASSAL.tools.ScrollPane;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ItemListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-/**
- * A Configurer for {@link Font} values
- */
+/** A Configurer for {@link Font} values */
 public class FontConfigurer extends Configurer {
   private JPanel p;
   private JComboBox<Integer> size;
@@ -44,7 +40,7 @@ public class FontConfigurer extends Configurer {
   }
 
   public FontConfigurer(String key, String name, Font val) {
-    this(key, name, val, new int[]{9, 10, 11, 12, 15, 18});
+    this(key, name, val, new int[] {9, 10, 11, 12, 15, 18});
   }
 
   public FontConfigurer(String key, String name, Font val, int[] sizes) {
@@ -67,29 +63,33 @@ public class FontConfigurer extends Configurer {
     if (p == null) {
       p = new ConfigurerPanel(getName(), "[]rel[]", "[]rel[]rel[]"); // NON-NLS
       family = new JComboBox<>();
-      final String[] s = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+      final String[] s =
+          GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
       for (final String element : s) {
         family.addItem(element);
       }
-      family.setSelectedItem(value == null ? Font.SANS_SERIF : ((Font) value).getFamily()); //NON-NLS
-      family.setMaximumSize(new Dimension(family.getMaximumSize().width, family.getPreferredSize().height));
+      family.setSelectedItem(
+          value == null ? Font.SANS_SERIF : ((Font) value).getFamily()); // NON-NLS
+      family.setMaximumSize(
+          new Dimension(family.getMaximumSize().width, family.getPreferredSize().height));
       p.add(family);
 
       size = new JComboBox<>();
       for (final int item : sizes) {
         size.addItem(item);
       }
-      size.setSelectedItem(
-        value == null ? sizes[sizes.length / 2] : ((Font) value).getSize()
-      );
-      size.setMaximumSize(new Dimension(size.getMaximumSize().width, size.getPreferredSize().height));
+      size.setSelectedItem(value == null ? sizes[sizes.length / 2] : ((Font) value).getSize());
+      size.setMaximumSize(
+          new Dimension(size.getMaximumSize().width, size.getPreferredSize().height));
       p.add(size);
 
-      final ItemListener l = evt -> setValue(new Font(
-        (String) family.getSelectedItem(),
-        Font.PLAIN,
-        (Integer) size.getSelectedItem()
-      ));
+      final ItemListener l =
+          evt ->
+              setValue(
+                  new Font(
+                      (String) family.getSelectedItem(),
+                      Font.PLAIN,
+                      (Integer) size.getSelectedItem()));
       size.addItemListener(l);
       family.addItemListener(l);
     }
@@ -115,19 +115,21 @@ public class FontConfigurer extends Configurer {
   public static void main(String[] args) {
     final JFrame f = new JFrame();
     f.setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
-    final FontConfigurer c = new FontConfigurer("a", "Font: ", null, new int[]{4, 5, 6, 13}); //NON-NLS
+    final FontConfigurer c =
+        new FontConfigurer("a", "Font: ", null, new int[] {4, 5, 6, 13}); // NON-NLS
     f.add(c.getControls());
     final JTextArea tf = new JTextArea();
-    tf.setText("The quick brown fox jumps over the lazy dog."); //NON-NLS
+    tf.setText("The quick brown fox jumps over the lazy dog."); // NON-NLS
     f.add(new ScrollPane(tf));
-    c.addPropertyChangeListener(evt -> {
-      Font font = (Font) evt.getNewValue();
-      final FontConfigurer fc = new FontConfigurer(null, null, font);
-      fc.setValue(fc.getValueString());
-      font = (Font) fc.getValue();
-      tf.setFont(font);
-      f.pack();
-    });
+    c.addPropertyChangeListener(
+        evt -> {
+          Font font = (Font) evt.getNewValue();
+          final FontConfigurer fc = new FontConfigurer(null, null, font);
+          fc.setValue(fc.getValueString());
+          font = (Font) fc.getValue();
+          tf.setFont(font);
+          f.pack();
+        });
     f.pack();
     f.setVisible(true);
   }

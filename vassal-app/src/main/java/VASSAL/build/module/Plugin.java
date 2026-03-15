@@ -27,28 +27,26 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.PieceDefiner;
 
 /**
- * Plugin is a general purpose component for use by Module Plugins that
- * require some sort of initialisation. Module Plugins do not need
- * to include a Plugin component if they consist only of code and
- * image resources used by other parts of the module.
+ * Plugin is a general purpose component for use by Module Plugins that require some sort of
+ * initialisation. Module Plugins do not need to include a Plugin component if they consist only of
+ * code and image resources used by other parts of the module.
  *
- * Plugin should be subclassed and added to the Module Plugin.
+ * <p>Plugin should be subclassed and added to the Module Plugin.
  *
- * As the module has not been built yet, only minimal initialisation should
- * be performed in the constructor.
+ * <p>As the module has not been built yet, only minimal initialisation should be performed in the
+ * constructor.
  */
 public class Plugin extends AbstractConfigurable implements PluginsLoader.PluginElement {
   /**
-   * init() is called by the GameModule when the build of the module and
-   * all extensions is complete. Any initialisation that depends
-   * on other parts of the module should be implemented here
+   * init() is called by the GameModule when the build of the module and all extensions is complete.
+   * Any initialisation that depends on other parts of the module should be implemented here
    */
-  public void init() {
-  }
+  public void init() {}
 
   /**
-   * Utility routine to register a GamePiece with the PieceDefiner
-   * so that it appears as an option in the list of traits
+   * Utility routine to register a GamePiece with the PieceDefiner so that it appears as an option
+   * in the list of traits
+   *
    * @param p GamePiece to register
    */
   public void registerGamePiece(GamePiece p) {
@@ -57,6 +55,7 @@ public class Plugin extends AbstractConfigurable implements PluginsLoader.Plugin
 
   /**
    * Utility routine to register a CommandEncoder with the module
+   *
    * @param encoder
    */
   public void registerCommandEncoder(CommandEncoder encoder) {
@@ -64,14 +63,15 @@ public class Plugin extends AbstractConfigurable implements PluginsLoader.Plugin
   }
 
   /**
-   * Utility routine to register a new component with the module
-   * editor so that it appears in the right-click popup menu. To add
-   * components to the top module level, use BasicModule.class, not
+   * Utility routine to register a new component with the module editor so that it appears in the
+   * right-click popup menu. To add components to the top module level, use BasicModule.class, not
    * GameModule.class as the parent.
+   *
    * @param parent parent of the new component
    * @param child new component
    */
-  public void registerComponent(Class<? extends Buildable> parent, Class<? extends Buildable> child) {
+  public void registerComponent(
+      Class<? extends Buildable> parent, Class<? extends Buildable> child) {
     ConfigureTree.addAdditionalComponent(parent, child);
   }
 
@@ -96,9 +96,7 @@ public class Plugin extends AbstractConfigurable implements PluginsLoader.Plugin
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
@@ -111,12 +109,8 @@ public class Plugin extends AbstractConfigurable implements PluginsLoader.Plugin
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
-  public void addTo(Buildable parent) {
-
-  }
+  public void addTo(Buildable parent) {}
 }

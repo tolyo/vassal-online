@@ -25,11 +25,11 @@ import java.util.Map;
  * A component that can contain mutable (updatable) properties
  *
  * @author rkinney
- *
  */
 public interface MutablePropertiesContainer {
   /**
    * Add a property under the given key
+   *
    * @param key key
    * @param p property
    */
@@ -37,6 +37,7 @@ public interface MutablePropertiesContainer {
 
   /**
    * Remove the property with the given key
+   *
    * @param key key
    */
   MutableProperty removeMutableProperty(String key);
@@ -45,13 +46,12 @@ public interface MutablePropertiesContainer {
   MutableProperty getMutableProperty(String propertyName);
 
   /** Return a unique Id for the container */
-
   String getMutablePropertiesContainerId();
 
   /**
    * Simple implementation of {@link MutablePropertiesContainer}
-   * @author rkinney
    *
+   * @author rkinney
    */
   class Impl implements MutablePropertiesContainer {
     private final Map<String, MutableProperty> props = new HashMap<>();

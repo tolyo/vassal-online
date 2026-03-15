@@ -22,10 +22,6 @@ import VASSAL.build.Widget;
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
-
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -33,12 +29,14 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
- * A Widget that corresponds to a JPanel with a
- * GridLayout or BoxLayout layout.  Adding a Widget to a
- * PanelWidget adds the child Widget's component to the JPanel.  The
- * attributes of the PanelWidget determine the layout parameters
+ * A Widget that corresponds to a JPanel with a GridLayout or BoxLayout layout. Adding a Widget to a
+ * PanelWidget adds the child Widget's component to the JPanel. The attributes of the PanelWidget
+ * determine the layout parameters
  */
 public class PanelWidget extends Widget {
   private JPanel panel;
@@ -47,7 +45,7 @@ public class PanelWidget extends Widget {
   private boolean vertical = false;
   private boolean fixed = false;
   protected double scale;
-  public static final String SCALE = "scale"; //$NON-NLS-1$
+  public static final String SCALE = "scale"; // $NON-NLS-1$
 
   public PanelWidget() {
     scale = 1.0;
@@ -95,8 +93,7 @@ public class PanelWidget extends Widget {
   private LayoutManager getLayout(Container c) {
     if (fixed) {
       return new GridLayout(0, nColumns);
-    }
-    else {
+    } else {
       return new BoxLayout(c, vertical ? BoxLayout.Y_AXIS : BoxLayout.X_AXIS);
     }
   }
@@ -132,32 +129,27 @@ public class PanelWidget extends Widget {
     super.remove(b);
   }
 
-  public static final String FIXED = "fixed"; //NON-NLS
-  public static final String COLS = "nColumns"; //NON-NLS
-  public static final String VERTICAL = "vert"; //NON-NLS
+  public static final String FIXED = "fixed"; // NON-NLS
+  public static final String COLS = "nColumns"; // NON-NLS
+  public static final String VERTICAL = "vert"; // NON-NLS
 
   /**
-   * The attributes of a PanelWidget are:
-   * <code>NAME</code> for the name of the Widget
-   * <code>FIXED</code> uses GridLayout if <code>true</code>.  Otherwise uses BoxLayout
-   * <code>COLS</code> for the number of columns.  Ignored unless FIXED is true
-   * <code>VERTICAL</code> Uses a vertical BoxLayout if <code>true</code>.  otherwise uses a horizontal layout.  Ignored unless FIXED is false
+   * The attributes of a PanelWidget are: <code>NAME</code> for the name of the Widget <code>FIXED
+   * </code> uses GridLayout if <code>true</code>. Otherwise uses BoxLayout <code>COLS</code> for
+   * the number of columns. Ignored unless FIXED is true <code>VERTICAL</code> Uses a vertical
+   * BoxLayout if <code>true</code>. otherwise uses a horizontal layout. Ignored unless FIXED is
+   * false
    */
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      DESCRIPTION,
-      FIXED,
-      COLS,
-      VERTICAL,
-      SCALE,
+    return new String[] {
+      NAME, DESCRIPTION, FIXED, COLS, VERTICAL, SCALE,
     };
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString(Resources.DESCRIPTION),
       Resources.getString("Editor.PanelWidget.fixed_cell_size"),
@@ -169,13 +161,8 @@ public class PanelWidget extends Widget {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
-      Boolean.class,
-      Integer.class,
-      Boolean.class,
-      Double.class
+    return new Class<?>[] {
+      String.class, String.class, Boolean.class, Integer.class, Boolean.class, Double.class
     };
   }
 
@@ -183,14 +170,11 @@ public class PanelWidget extends Widget {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (SCALE.equals(name)) {
       return this::hasScalablePieces;
-    }
-    else if (COLS.equals(name)) {
+    } else if (COLS.equals(name)) {
       return () -> fixed;
-    }
-    else if (VERTICAL.equals(name)) {
+    } else if (VERTICAL.equals(name)) {
       return () -> !fixed;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -199,14 +183,12 @@ public class PanelWidget extends Widget {
   public void setAttribute(String name, Object value) {
     if (NAME.equals(name)) {
       setConfigureName((String) value);
-    }
-    else if (FIXED.equals(name)) {
+    } else if (FIXED.equals(name)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       fixed = (Boolean) value;
-    }
-    else if (COLS.equals(name)) {
+    } else if (COLS.equals(name)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -216,31 +198,27 @@ public class PanelWidget extends Widget {
       if (nColumns < 1) {
         // FIXME: also dialog should not permit values < 1 to be entered
         ErrorDialog.dataWarning(
-          new BadDataReport("Panel has &lt; 1 column:", getConfigureName()));  //NON-NLS
+            new BadDataReport("Panel has &lt; 1 column:", getConfigureName())); // NON-NLS
 
         nColumns = 1;
       }
-    }
-    else if (VERTICAL.equals(name)) {
+    } else if (VERTICAL.equals(name)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       vertical = (Boolean) value;
-    }
-    else if (SCALE.equals(name)) {
+    } else if (SCALE.equals(name)) {
       if (value instanceof String) {
         value = Double.valueOf((String) value);
       }
       scale = (Double) value;
-      if (scale < 0.01) { //BR// Just gonna go with some sanity.
+      if (scale < 0.01) { // BR// Just gonna go with some sanity.
         scale = 0.01;
-      }
-      else if (scale >= 4) {
+      } else if (scale >= 4) {
         scale = 4.0;
       }
-    }
-    else if (DESCRIPTION.equals(name)) {
-      description = (String)value;
+    } else if (DESCRIPTION.equals(name)) {
+      description = (String) value;
     }
 
     if (panel != null) {
@@ -253,23 +231,17 @@ public class PanelWidget extends Widget {
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (FIXED.equals(name)) {
+    } else if (FIXED.equals(name)) {
       return String.valueOf(fixed);
-    }
-    else if (COLS.equals(name)) {
+    } else if (COLS.equals(name)) {
       return String.valueOf(nColumns);
-    }
-    else if (VERTICAL.equals(name)) {
+    } else if (VERTICAL.equals(name)) {
       return String.valueOf(vertical);
-    }
-    else if (SCALE.equals(name)) {
+    } else if (SCALE.equals(name)) {
       return String.valueOf(scale);
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
     }
     return null;
   }
 }
-

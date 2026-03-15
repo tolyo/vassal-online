@@ -22,14 +22,11 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerLayout;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
-
 import java.awt.Component;
 import java.awt.event.FocusListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
 public class SortParameterConfigurer extends Configurer {
@@ -44,7 +41,7 @@ public class SortParameterConfigurer extends Configurer {
   }
 
   public SortParameterConfigurer(Object val) {
-    this("", "",  val);
+    this("", "", val);
   }
 
   public SortParameterConfigurer() {
@@ -91,20 +88,27 @@ public class SortParameterConfigurer extends Configurer {
   @Override
   public Component getControls() {
     if (controls == null) {
-      controls = new JPanel(new MigLayout("ins 2," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3", "[]rel[][]rel[][]rel[]")); // NON-NLS
+      controls =
+          new JPanel(
+              new MigLayout(
+                  "ins 2," + ConfigurerLayout.STANDARD_GAPY + ",hidemode 3",
+                  "[]rel[][]rel[][]rel[]")); // NON-NLS
       controls.setBorder(BorderFactory.createEtchedBorder());
 
-      final JLabel propertyLabel = new JLabel(Resources.getString("Editor.DeckSortKeyCommand.name"));
+      final JLabel propertyLabel =
+          new JLabel(Resources.getString("Editor.DeckSortKeyCommand.name"));
       propertyLabel.setLabelFor(propertyConfig.getControls());
       controls.add(propertyLabel);
       controls.add(propertyConfig.getControls());
 
-      final JLabel descendingLabel = new JLabel(Resources.getString("Editor.DeckSortKeyCommand.descending"));
+      final JLabel descendingLabel =
+          new JLabel(Resources.getString("Editor.DeckSortKeyCommand.descending"));
       descendingLabel.setLabelFor(descendingConfig.getControls());
       controls.add(descendingLabel);
       controls.add(descendingConfig.getControls());
 
-      final JLabel numericLabel = new JLabel(Resources.getString("Editor.DeckSortKeyCommand.numeric"));
+      final JLabel numericLabel =
+          new JLabel(Resources.getString("Editor.DeckSortKeyCommand.numeric"));
       numericLabel.setLabelFor(numericConfig.getControls());
       controls.add(numericLabel);
       controls.add(numericConfig.getControls());
@@ -118,7 +122,11 @@ public class SortParameterConfigurer extends Configurer {
 
   private void updateValue() {
     noUpdate = true;
-    setValue(new SortParameter(propertyConfig.getValueString(), descendingConfig.booleanValue(), numericConfig.booleanValue()));
+    setValue(
+        new SortParameter(
+            propertyConfig.getValueString(),
+            descendingConfig.booleanValue(),
+            numericConfig.booleanValue()));
     noUpdate = false;
   }
 
@@ -152,5 +160,4 @@ public class SortParameterConfigurer extends Configurer {
       propertyConfig.requestFocus();
     }
   }
-
 }

@@ -21,14 +21,10 @@ import VASSAL.build.module.properties.PropertySource;
 import VASSAL.counters.PieceFilter;
 import VASSAL.counters.PropertiesPieceFilter;
 import VASSAL.tools.FormattedString;
-
 import java.util.Map;
-
 import org.apache.commons.lang3.tuple.Pair;
 
-/**
- * An old-style Property Match expression.
- */
+/** An old-style Property Match expression. */
 public class PropertyMatchExpression extends Expression {
   protected PieceFilter filter;
 
@@ -36,14 +32,18 @@ public class PropertyMatchExpression extends Expression {
     super(s);
   }
 
-  /** @deprecated  */
+  /**
+   * @deprecated
+   */
   @Deprecated(since = "2021-06-11")
   @Override
   public String evaluate(PropertySource ps, Map<String, String> properties, boolean localized) {
     return null;
   }
 
-  /** @deprecated  */
+  /**
+   * @deprecated
+   */
   @Deprecated(since = "2021-06-11")
   @Override
   public PieceFilter getFilter(PropertySource ps) {
@@ -57,7 +57,8 @@ public class PropertyMatchExpression extends Expression {
       return filter;
     }
 
-    final PieceFilter pf = PropertiesPieceFilter.parse(new FormattedString(getExpression()).getText(ps, owner, audit));
+    final PieceFilter pf =
+        PropertiesPieceFilter.parse(new FormattedString(getExpression()).getText(ps, owner, audit));
     if (!isDynamic()) {
       filter = pf;
     }
@@ -75,6 +76,7 @@ public class PropertyMatchExpression extends Expression {
   }
 
   public static Expression instance(String s) {
-    return CACHE.computeIfAbsent(Pair.of(s, PropertyMatchExpression.class), k -> new PropertyMatchExpression(s));
+    return CACHE.computeIfAbsent(
+        Pair.of(s, PropertyMatchExpression.class), k -> new PropertyMatchExpression(s));
   }
 }

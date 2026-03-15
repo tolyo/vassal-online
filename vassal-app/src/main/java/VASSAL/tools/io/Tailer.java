@@ -18,25 +18,22 @@
 
 package VASSAL.tools.io;
 
+import VASSAL.tools.concurrent.listener.DefaultEventListenerSupport;
+import VASSAL.tools.concurrent.listener.EventListener;
+import VASSAL.tools.concurrent.listener.EventListenerSupport;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.tools.concurrent.listener.DefaultEventListenerSupport;
-import VASSAL.tools.concurrent.listener.EventListener;
-import VASSAL.tools.concurrent.listener.EventListenerSupport;
-
 /**
- * Tail a file. This class is designed to behave similarly to the UNIX
- * command <code>tail -f</code>, watching the file for changes and
- * reporting them to listeners. The tailer may be stopped when it is not
- * needed; if it is restarted, it will remember its last position and
- * resume reading where it left off.
+ * Tail a file. This class is designed to behave similarly to the UNIX command <code>tail -f</code>,
+ * watching the file for changes and reporting them to listeners. The tailer may be stopped when it
+ * is not needed; if it is restarted, it will remember its last position and resume reading where it
+ * left off.
  *
  * @author Joel Uckelman
  * @since 3.2.0
@@ -85,8 +82,7 @@ public class Tailer {
    * @param poll_interval the polling interval, in milliseconds
    * @param lsup the listener support
    */
-  public Tailer(File file, long poll_interval,
-                                           EventListenerSupport<String> lsup) {
+  public Tailer(File file, long poll_interval, EventListenerSupport<String> lsup) {
     if (file == null) throw new IllegalArgumentException("file == null");
     if (lsup == null) throw new IllegalArgumentException("lsup == null");
 
@@ -95,9 +91,7 @@ public class Tailer {
     this.lsup = lsup;
   }
 
-  /**
-   * Starts tailing the file.
-   */
+  /** Starts tailing the file. */
   public synchronized void start() throws IOException {
     // NB: This method is synchronized to ensure that there is never more
     // than one tailer thread at at time.
@@ -115,9 +109,7 @@ public class Tailer {
     }
   }
 
-  /**
-   * Stops tailing the file.
-   */
+  /** Stops tailing the file. */
   public void stop() {
     tailing = false;
   }
@@ -193,8 +185,7 @@ public class Tailer {
             // file has been truncated, reopen it
             raf = new RandomAccessFile(file, "r");
             position = 0L;
-          }
-          else if (length > position) {
+          } else if (length > position) {
             // new bytes have been written, read them
             raf.seek(position);
             final int rlen = raf.read(buf);
@@ -205,9 +196,8 @@ public class Tailer {
           // we have reached EOF, sleep
           Thread.sleep(poll_interval);
         }
-      }
-      catch (IOException | InterruptedException e) {
-// FIXME: there should be an error listener; we can't handle exceptions here
+      } catch (IOException | InterruptedException e) {
+        // FIXME: there should be an error listener; we can't handle exceptions here
         logger.error("", e);
       }
     }

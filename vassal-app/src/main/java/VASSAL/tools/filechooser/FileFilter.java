@@ -17,22 +17,21 @@
  */
 package VASSAL.tools.filechooser;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
- * The file filter abstract base class for {link VASSAL.tools.FileChooser}.
- * This class joins together the {@link javax.swing.filechooser.FileFilter}
- * class and the {link java.awt.FilenameFilter} interface so that a
- * uniform file chooser may be used  with {link VASSAL.tools.FileChooser},
- * regardless of the actual (i.e., naive or Swing) file chooser displayed.
+ * The file filter abstract base class for {link VASSAL.tools.FileChooser}. This class joins
+ * together the {@link javax.swing.filechooser.FileFilter} class and the {link
+ * java.awt.FilenameFilter} interface so that a uniform file chooser may be used with {link
+ * VASSAL.tools.FileChooser}, regardless of the actual (i.e., naive or Swing) file chooser
+ * displayed.
  *
  * @author uckelman
  */
 @SuppressFBWarnings(value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 public abstract class FileFilter extends javax.swing.filechooser.FileFilter
-                                 implements java.io.FilenameFilter {
+    implements java.io.FilenameFilter {
   /**
    * The accept test used by Swing file choosers.
    *

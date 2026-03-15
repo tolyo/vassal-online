@@ -20,9 +20,5 @@ package VASSAL.tools.concurrent;
 
 import java.util.concurrent.RunnableFuture;
 
-/**
- * A {@link SettableFuture} that is a {@link RunnableFuture}.
- */
-public interface SettableRunnableFuture<V> extends SettableFuture<V>,
-                                                   RunnableFuture<V> {
-}
+/** A {@link SettableFuture} that is a {@link RunnableFuture}. */
+public interface SettableRunnableFuture<V> extends SettableFuture<V>, RunnableFuture<V> {}

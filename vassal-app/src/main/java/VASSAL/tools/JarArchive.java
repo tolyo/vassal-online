@@ -43,32 +43,29 @@ public class JarArchive extends DataArchive {
     for (final DataArchive ext : extensions) {
       try {
         return ext.getURL(fileName);
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         // not found in this extension, try the next
       }
     }
 
-    throw new FileNotFoundException(
-      "'" + fileName + "' not found in " + getName());
+    throw new FileNotFoundException("'" + fileName + "' not found in " + getName());
   }
 
   @Override
   public InputStream getInputStream(String fileName) throws IOException {
-    final InputStream in =
-      getClass().getResourceAsStream(getAbsolutePath(fileName));
+    final InputStream in = getClass().getResourceAsStream(getAbsolutePath(fileName));
     if (in != null) return in;
 
     for (final DataArchive ext : extensions) {
       try {
         return ext.getInputStream(fileName);
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         // not found in this extension, try the next
       }
     }
 
-    throw new FileNotFoundException(String.format("'%s' not found in %s", fileName, getName())); //NON-NLS
+    throw new FileNotFoundException(
+        String.format("'%s' not found in %s", fileName, getName())); // NON-NLS
   }
 
   protected String getAbsolutePath(String file) {

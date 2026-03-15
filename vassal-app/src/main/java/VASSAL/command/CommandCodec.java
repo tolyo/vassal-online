@@ -18,13 +18,12 @@
 package VASSAL.command;
 
 import VASSAL.tools.SequenceEncoder;
+import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Objects;
-
 /**
- * Encodes and decodes compound VASSAL commands while managing the registered
- * single-command encoders that participate in the process.
+ * Encodes and decodes compound VASSAL commands while managing the registered single-command
+ * encoders that participate in the process.
  */
 public final class CommandCodec implements CommandEncoder {
   private final char commandSeparator;
@@ -53,14 +52,12 @@ public final class CommandCodec implements CommandEncoder {
     }
 
     Command decoded;
-    final SequenceEncoder.Decoder decoder =
-      new SequenceEncoder.Decoder(command, commandSeparator);
+    final SequenceEncoder.Decoder decoder = new SequenceEncoder.Decoder(command, commandSeparator);
     final String first = decoder.nextToken();
 
     if (command.equals(first)) {
       decoded = decodeSubCommand(first);
-    }
-    else {
+    } else {
       decoded = decode(first);
       while (decoder.hasMoreTokens()) {
         final Command next = decode(decoder.nextToken());
@@ -81,8 +78,7 @@ public final class CommandCodec implements CommandEncoder {
     final Command[] subCommands = command.getSubCommands();
 
     if (subCommands.length > 0) {
-      final SequenceEncoder sequenceEncoder =
-        new SequenceEncoder(encoded, commandSeparator);
+      final SequenceEncoder sequenceEncoder = new SequenceEncoder(encoded, commandSeparator);
       for (final Command subCommand : subCommands) {
         final String subCommandString = encode(subCommand);
         if (subCommandString != null) {

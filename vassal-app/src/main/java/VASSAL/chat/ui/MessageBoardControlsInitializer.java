@@ -17,10 +17,9 @@
  */
 package VASSAL.chat.ui;
 
-import javax.swing.JButton;
-
 import VASSAL.chat.messageboard.MessageBoard;
 import VASSAL.chat.messageboard.MessageBoardControls;
+import javax.swing.JButton;
 
 /** Adds controls to post/retrieve message from a message board */
 public class MessageBoardControlsInitializer implements ChatControlsInitializer {

@@ -17,16 +17,15 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
-
 import java.util.Collections;
 import java.util.List;
 
 public class TurnGlobalHotkey extends AbstractConfigurable {
 
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String HOTKEY = "hotkey"; //$NON-NLS-1$
-  public static final String MATCH = "match"; //$NON-NLS-1$
-  public static final String REPORT_FORMAT = "reportFormat"; //$NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
+  public static final String MATCH = "match"; // $NON-NLS-1$
+  public static final String REPORT_FORMAT = "reportFormat"; // $NON-NLS-1$
 
   protected PropertyExpression match = new PropertyExpression();
   protected NamedKeyStroke hotkey;
@@ -47,17 +46,14 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
   @Override
   public Class<?>[] getAttributeTypes() {
     return new Class<?>[] {
-      String.class,
-      NamedKeyStroke.class,
-      PropertyExpression.class,
-      ReportFormatConfig.class
+      String.class, NamedKeyStroke.class, PropertyExpression.class, ReportFormatConfig.class
     };
   }
 
   public static class ReportFormatConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[]{});
+      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[] {});
     }
   }
 
@@ -70,38 +66,29 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (HOTKEY.equals(key)) {
+    } else if (HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(hotkey);
-    }
-    else if (MATCH.equals(key)) {
+    } else if (MATCH.equals(key)) {
       return match.getExpression();
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       return format.getFormat();
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
   public void setAttribute(String key, Object value) {
     if (NAME.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (HOTKEY.equals(key)) {
+    } else if (HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       hotkey = (NamedKeyStroke) value;
-    }
-    else if (MATCH.equals(key)) {
+    } else if (MATCH.equals(key)) {
       match.setExpression((String) value);
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       format.setFormat((String) value);
     }
-
   }
 
   @Override
@@ -117,10 +104,10 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
   @Override
   public void addTo(Buildable parent) {
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
     if (parent instanceof TurnTracker) {
-      this.parent = (TurnTracker)parent;
+      this.parent = (TurnTracker) parent;
     }
   }
 
@@ -130,27 +117,30 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("TurnTracker.html", "Hotkey"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "TurnTracker.html", "Hotkey"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   public void apply() {
     if (match.isNull() || match.accept(checkPiece)) {
       GameModule.getGameModule().fireKeyStroke(hotkey);
       if (parent != null) {
-        parent.updateWidget(); // Our global hotkey may have updated properties that figure in our button label
+        parent.updateWidget(); // Our global hotkey may have updated properties that figure in our
+        // button label
       }
       final String reportText = format.getLocalizedText(this, "Editor.report_format");
       if (reportText.length() > 0) {
-        final Command c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+        final Command c =
+            new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
         c.execute();
         GameModule.getGameModule().sendAndLog(c);
       }
     }
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -160,7 +150,9 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -169,6 +161,7 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
@@ -178,6 +171,7 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override

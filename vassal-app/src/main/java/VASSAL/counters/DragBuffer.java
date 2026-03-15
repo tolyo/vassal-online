@@ -17,6 +17,7 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.module.Map;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -28,10 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.JFrame;
-
-import VASSAL.build.module.Map;
 
 public class DragBuffer {
   private static final DragBuffer THE_BUFFER = new DragBuffer();
@@ -42,22 +40,19 @@ public class DragBuffer {
   private MouseListener dropHandler;
   private Map dragFromMap;
 
-  private DragBuffer() {
-
-  }
+  private DragBuffer() {}
 
   public static DragBuffer getBuffer() {
     return THE_BUFFER;
   }
 
   public void add(GamePiece p) {
-    if (p != null &&
-        !pieces.contains(p) &&
-        !Boolean.TRUE.equals(p.getProperty(Properties.RESTRICTED_MOVEMENT))) {
+    if (p != null
+        && !pieces.contains(p)
+        && !Boolean.TRUE.equals(p.getProperty(Properties.RESTRICTED_MOVEMENT))) {
       if (p instanceof Stack) {
         for (final GamePiece gamePiece : ((Stack) p).asList()) {
-          if (Boolean.TRUE.equals(
-                gamePiece.getProperty(Properties.RESTRICTED_MOVEMENT))) {
+          if (Boolean.TRUE.equals(gamePiece.getProperty(Properties.RESTRICTED_MOVEMENT))) {
             return;
           }
         }
@@ -76,61 +71,58 @@ public class DragBuffer {
   }
 
   public void addDragSource(Component c) {
-    c.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        lastRelease = null;
-        dropTarget = null;
-        dropHandler = null;
-      }
+    c.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mousePressed(MouseEvent e) {
+            lastRelease = null;
+            dropTarget = null;
+            dropHandler = null;
+          }
 
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        e.getComponent().setCursor(null);
-        final Component source = (Component) e.getSource();
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            e.getComponent().setCursor(null);
+            final Component source = (Component) e.getSource();
 
-        e.translatePoint(source.getLocationOnScreen().x,
-                         source.getLocationOnScreen().y);
+            e.translatePoint(source.getLocationOnScreen().x, source.getLocationOnScreen().y);
 
-        if (dropTarget == null) {
-          lastRelease = e;
-        }
-        else {
-          e.translatePoint(-dropTarget.getLocationOnScreen().x,
-                           -dropTarget.getLocationOnScreen().y);
-          dropHandler.mouseReleased(e);
-        }
-      }
-    });
+            if (dropTarget == null) {
+              lastRelease = e;
+            } else {
+              e.translatePoint(
+                  -dropTarget.getLocationOnScreen().x, -dropTarget.getLocationOnScreen().y);
+              dropHandler.mouseReleased(e);
+            }
+          }
+        });
   }
 
   public void addDropTarget(final Component c, final MouseListener l) {
-    c.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        final Component source = (Component) e.getSource();
-        if (source.isShowing()) {
-          if (lastRelease != null) {
-            e.translatePoint(source.getLocationOnScreen().x,
-                             source.getLocationOnScreen().y);
-            if (isCloseEnough(e.getPoint(), lastRelease.getPoint())) {
-              e.translatePoint(-source.getLocationOnScreen().x,
-                               -source.getLocationOnScreen().y);
-              l.mouseReleased(e);
+    c.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseEntered(MouseEvent e) {
+            final Component source = (Component) e.getSource();
+            if (source.isShowing()) {
+              if (lastRelease != null) {
+                e.translatePoint(source.getLocationOnScreen().x, source.getLocationOnScreen().y);
+                if (isCloseEnough(e.getPoint(), lastRelease.getPoint())) {
+                  e.translatePoint(
+                      -source.getLocationOnScreen().x, -source.getLocationOnScreen().y);
+                  l.mouseReleased(e);
+                }
+              } else {
+                dropTarget = source;
+                dropHandler = l;
+              }
             }
           }
-          else {
-            dropTarget = source;
-            dropHandler = l;
-          }
-        }
-      }
-    });
+        });
   }
 
   private boolean isCloseEnough(Point p1, Point p2) {
-    return Math.abs(p1.x - p2.x) < 3
-        && Math.abs(p1.y - p2.y) < 3;
+    return Math.abs(p1.x - p2.x) < 3 && Math.abs(p1.y - p2.y) < 3;
   }
 
   public void remove(GamePiece p) {
@@ -156,8 +148,7 @@ public class DragBuffer {
   }
 
   /**
-   * @return an unmodifiable {@link List} of {@link GamePiece}s contained in
-   * this {@link DragBuffer}
+   * @return an unmodifiable {@link List} of {@link GamePiece}s contained in this {@link DragBuffer}
    */
   public List<GamePiece> asList() {
     return Collections.unmodifiableList(pieces);
@@ -175,8 +166,7 @@ public class DragBuffer {
     String s = "";
     for (final Iterator<GamePiece> i = pieces.iterator(); i.hasNext(); ) {
       s = s.concat(i.next().getName());
-      if (i.hasNext())
-        s = s.concat(",");
+      if (i.hasNext()) s = s.concat(",");
     }
     return s;
   }
@@ -189,25 +179,31 @@ public class DragBuffer {
     f2.setSize(200, 200);
     f2.setLocation(200, 0);
     f2.setVisible(true);
-    final MouseListener l = new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent evt) {
-        evt.translatePoint(((JFrame) evt.getSource()).getLocationOnScreen().x, ((JFrame) evt.getSource()).getLocationOnScreen().y);
-        System.err.println("Press at " + evt.getPoint()); //$NON-NLS-1$//
-      }
+    final MouseListener l =
+        new MouseAdapter() {
+          @Override
+          public void mousePressed(MouseEvent evt) {
+            evt.translatePoint(
+                ((JFrame) evt.getSource()).getLocationOnScreen().x,
+                ((JFrame) evt.getSource()).getLocationOnScreen().y);
+            System.err.println("Press at " + evt.getPoint()); // $NON-NLS-1$//
+          }
 
-      @Override
-      public void mouseReleased(MouseEvent evt) {
-        //        evt.translatePoint(((JFrame)evt.getSource()).getLocationOnScreen().x,((JFrame)evt.getSource()).getLocationOnScreen().y);
-        System.err.println("Release at " + evt.getPoint()); //$NON-NLS-1$//
-      }
+          @Override
+          public void mouseReleased(MouseEvent evt) {
+            //
+            // evt.translatePoint(((JFrame)evt.getSource()).getLocationOnScreen().x,((JFrame)evt.getSource()).getLocationOnScreen().y);
+            System.err.println("Release at " + evt.getPoint()); // $NON-NLS-1$//
+          }
 
-      @Override
-      public void mouseEntered(MouseEvent evt) {
-        evt.translatePoint(((JFrame) evt.getSource()).getLocationOnScreen().x, ((JFrame) evt.getSource()).getLocationOnScreen().y);
-        System.err.println("Enter at " + evt.getPoint()); //$NON-NLS-1$//
-      }
-    };
+          @Override
+          public void mouseEntered(MouseEvent evt) {
+            evt.translatePoint(
+                ((JFrame) evt.getSource()).getLocationOnScreen().x,
+                ((JFrame) evt.getSource()).getLocationOnScreen().y);
+            System.err.println("Enter at " + evt.getPoint()); // $NON-NLS-1$//
+          }
+        };
     getBuffer().addDragSource(f1);
     getBuffer().addDropTarget(f2, l);
   }

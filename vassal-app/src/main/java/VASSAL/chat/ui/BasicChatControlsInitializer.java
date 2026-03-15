@@ -17,21 +17,19 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.build.GameModule;
+import VASSAL.build.module.ServerConnection;
+import VASSAL.chat.ChatServerConnection;
+import VASSAL.i18n.Resources;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
-
-import VASSAL.build.GameModule;
-import VASSAL.build.module.ServerConnection;
-import VASSAL.chat.ChatServerConnection;
-import VASSAL.i18n.Resources;
 
 /** Adds Connect/Disconnect button to the server controls toolbar */
 public class BasicChatControlsInitializer implements ChatControlsInitializer {
@@ -51,39 +49,39 @@ public class BasicChatControlsInitializer implements ChatControlsInitializer {
   public void initializeControls(final ChatServerControls controls) {
     final JToolBar toolbar = controls.getToolbar();
 
-    connectAction = new AbstractAction(
-                          Resources.getString("Chat.connect")) {  //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
+    connectAction =
+        new AbstractAction(Resources.getString("Chat.connect")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        GameModule.getGameModule().warn(Resources.getString("Chat.connecting"));
-        client.setConnected(true);
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent evt) {
+            GameModule.getGameModule().warn(Resources.getString("Chat.connecting"));
+            client.setConnected(true);
+          }
+        };
 
-    URL imageURL = getClass().getResource("/images/connect.gif");  //$NON-NLS-1$
+    URL imageURL = getClass().getResource("/images/connect.gif"); // $NON-NLS-1$
     if (imageURL != null) {
       connectAction.putValue(Action.SHORT_DESCRIPTION, connectAction.getValue(Action.NAME));
-      connectAction.putValue(Action.NAME, "");  //$NON-NLS-1$
+      connectAction.putValue(Action.NAME, ""); // $NON-NLS-1$
       connectAction.putValue(Action.SMALL_ICON, new ImageIcon(imageURL));
     }
     connectAction.setEnabled(true);
 
-    disconnectAction = new AbstractAction(
-                        Resources.getString("Chat.disconnect")) {  //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
+    disconnectAction =
+        new AbstractAction(Resources.getString("Chat.disconnect")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        client.setConnected(false);
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent evt) {
+            client.setConnected(false);
+          }
+        };
 
-    imageURL = getClass().getResource("/images/disconnect.gif");  //$NON-NLS-1$
+    imageURL = getClass().getResource("/images/disconnect.gif"); // $NON-NLS-1$
     if (imageURL != null) {
       disconnectAction.putValue(Action.SHORT_DESCRIPTION, disconnectAction.getValue(Action.NAME));
-      disconnectAction.putValue(Action.NAME, "");  //$NON-NLS-1$
+      disconnectAction.putValue(Action.NAME, ""); // $NON-NLS-1$
       disconnectAction.putValue(Action.SMALL_ICON, new ImageIcon(imageURL));
     }
 
@@ -91,23 +89,24 @@ public class BasicChatControlsInitializer implements ChatControlsInitializer {
     connectButton = toolbar.add(connectAction);
     disconnectButton = toolbar.add(disconnectAction);
 
-    connectionListener = evt -> SwingUtilities.invokeLater(() -> {
-      final boolean connected = Boolean.TRUE.equals(evt.getNewValue());
-      connectAction.setEnabled(!connected);
-      disconnectAction.setEnabled(connected);
-      if (!connected) {
-        controls.getRoomTree().setRooms(new VASSAL.chat.Room[0]);
-        controls.getCurrentRoom().setRooms(new VASSAL.chat.Room[0]);
-        GameModule.getGameModule().warn(Resources.getString("Chat.disconnected")); 
-      }
-      else {
-        GameModule.getGameModule().warn(Resources.getString("Chat.joining_main_room"));
-        JoinRoomAction.explainMainRoom();
-      }
-    });
+    connectionListener =
+        evt ->
+            SwingUtilities.invokeLater(
+                () -> {
+                  final boolean connected = Boolean.TRUE.equals(evt.getNewValue());
+                  connectAction.setEnabled(!connected);
+                  disconnectAction.setEnabled(connected);
+                  if (!connected) {
+                    controls.getRoomTree().setRooms(new VASSAL.chat.Room[0]);
+                    controls.getCurrentRoom().setRooms(new VASSAL.chat.Room[0]);
+                    GameModule.getGameModule().warn(Resources.getString("Chat.disconnected"));
+                  } else {
+                    GameModule.getGameModule().warn(Resources.getString("Chat.joining_main_room"));
+                    JoinRoomAction.explainMainRoom();
+                  }
+                });
 
-    client.addPropertyChangeListener(
-      ServerConnection.CONNECTED, connectionListener);
+    client.addPropertyChangeListener(ServerConnection.CONNECTED, connectionListener);
   }
 
   @Override
@@ -115,5 +114,4 @@ public class BasicChatControlsInitializer implements ChatControlsInitializer {
     controls.getToolbar().remove(connectButton);
     controls.getToolbar().remove(disconnectButton);
   }
-
 }

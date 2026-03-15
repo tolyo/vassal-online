@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -41,10 +40,8 @@ public class TilesToImage {
   /**
    * Converts tile files to an image file.
    *
-   * @param args the first argument is the path of the basename of the tile
-   * files, the second argument is the scale factor, the third is the path
-   * of the PNG to write
-   *
+   * @param args the first argument is the path of the basename of the tile files, the second
+   *     argument is the scale factor, the third is the path of the PNG to write
    * @throws IOException if something goes wrong
    */
   public static void main(String[] args) throws IOException {
@@ -69,7 +66,7 @@ public class TilesToImage {
     final File bdir = new File(base).getParentFile();
     final FileFilter filter = pathname -> pathname.getPath().startsWith(base);
 
-    final Pattern p  = Pattern.compile(base + "\\((\\d+),(\\d+)\\)@1:");
+    final Pattern p = Pattern.compile(base + "\\((\\d+),(\\d+)\\)@1:");
     int max_row = 0;
     int max_col = 0;
     for (final File f : bdir.listFiles(filter)) {
@@ -95,8 +92,7 @@ public class TilesToImage {
     final int w = tw * (tcols - 1) + tw_last;
     final int h = th * (trows - 1) + th_last;
 
-    final BufferedImage img =
-      new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    final BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 
     final Graphics2D g = img.createGraphics();
 
@@ -104,8 +100,7 @@ public class TilesToImage {
     // writes to the destination image never overlap.
     for (int tx = 0; tx < tcols; ++tx) {
       for (int ty = 0; ty < trows; ++ty) {
-        final File tfile =
-          new File(base + "(" + tx + "," + ty + ")@1:" + scale);
+        final File tfile = new File(base + "(" + tx + "," + ty + ")@1:" + scale);
         final BufferedImage tile = TileUtils.read(tfile);
 
         g.drawImage(tile, tx * tw, ty * th, null);
@@ -113,6 +108,6 @@ public class TilesToImage {
     }
 
     // write the cobbled image
-    ImageIO.write(img, "PNG", Files.newOutputStream(Path.of(dpath))); //NON-NLS
+    ImageIO.write(img, "PNG", Files.newOutputStream(Path.of(dpath))); // NON-NLS
   }
 }

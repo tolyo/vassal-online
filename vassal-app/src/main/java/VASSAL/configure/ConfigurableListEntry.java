@@ -20,27 +20,28 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 
 /**
- * An interface to be implemented by Configurers that manage variable sized lists.
- * Each Configurable List entry maintains all info about a particular list entry
+ * An interface to be implemented by Configurers that manage variable sized lists. Each Configurable
+ * List entry maintains all info about a particular list entry
  *
- * See also {@link ConfigurableList}, {@link ConfigurableListController}, {@link AbstractConfigurableListEntry}
+ * <p>See also {@link ConfigurableList}, {@link ConfigurableListController}, {@link
+ * AbstractConfigurableListEntry}
  */
 public interface ConfigurableListEntry extends PropertyChangeListener {
   /**
    * Return the Remove button associated with this entry
+   *
    * @return Remove Button
    */
   JButton getRemoveButton();
 
   /**
    * Return the Configurer associated with this entry
+   *
    * @return Entry Configurer
    */
   Configurer getConfigurer();
 
-  /**
-   * Update the visibility of sub-items of this Entry
-   */
+  /** Update the visibility of sub-items of this Entry */
   void updateVisibility();
 
   /**
@@ -50,18 +51,15 @@ public interface ConfigurableListEntry extends PropertyChangeListener {
    */
   void setHighlighted(boolean b);
 
-  /**
-   * This Entry has gained the focus
-   */
+  /** This Entry has gained the focus */
   void focusGained();
 
-  /**
-   * Ensure this entry has the focus
-   */
+  /** Ensure this entry has the focus */
   void requestFocus();
 
   /**
    * Add a Property Change Listener to the Configurer for this Entru
+   *
    * @param l Listener
    */
   default void addPropertyChangeListener(PropertyChangeListener l) {
@@ -70,6 +68,7 @@ public interface ConfigurableListEntry extends PropertyChangeListener {
 
   /**
    * Remove a Property Change Listener from the Configurer for this Entru
+   *
    * @param l Listener
    */
   default void removePropertyChangeListener(PropertyChangeListener l) {

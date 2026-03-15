@@ -18,6 +18,11 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.counters.GamePiece;
+import VASSAL.counters.Properties;
+import VASSAL.tools.image.ImageUtils;
+import VASSAL.tools.opcache.Op;
+import VASSAL.tools.opcache.OpObserver;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -28,12 +33,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import VASSAL.counters.GamePiece;
-import VASSAL.counters.Properties;
-import VASSAL.tools.image.ImageUtils;
-import VASSAL.tools.opcache.Op;
-import VASSAL.tools.opcache.OpObserver;
-
 /**
  * An {@link ImageOp} which uses a {@link GamePiece} as its source.
  *
@@ -43,12 +42,13 @@ import VASSAL.tools.opcache.OpObserver;
 public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
   /** The image source for this <code>ImageOp</code>. */
   private final GamePiece piece;
+
   private final String state;
   private final int hash;
 
   /**
-   * Constructs an <code>ImageOp</code> which will produce an image
-   * from the given <code>GamePiece</code>.
+   * Constructs an <code>ImageOp</code> which will produce an image from the given <code>GamePiece
+   * </code>.
    *
    * @param gp the source
    * @throws IllegalArgumentException if <code>gp == null</code>.
@@ -62,7 +62,7 @@ public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
 
   @Override
   public BufferedImage get(OpObserver<BufferedImage> obs)
-    throws CancellationException, InterruptedException, ExecutionException {
+      throws CancellationException, InterruptedException, ExecutionException {
 
     // GamePieceOpImpl CANNOT be called asynchronously because it cannot
     // reliably report on its dependencies.
@@ -71,8 +71,7 @@ public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
   }
 
   @Override
-  public Future<BufferedImage> getFuture(OpObserver<BufferedImage> obs)
-                                                  throws ExecutionException {
+  public Future<BufferedImage> getFuture(OpObserver<BufferedImage> obs) throws ExecutionException {
     // GamePieceOpImpl CANNOT be called asynchronously because it cannot
     // reliably report on its dependencies.
     if (obs != null) throw new UnsupportedOperationException();
@@ -88,10 +87,8 @@ public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
   @Override
   public BufferedImage eval() {
     final Rectangle b = piece.boundingBox();
-    final BufferedImage im = ImageUtils.createCompatibleTranslucentImage(
-      Math.max(b.width, 1),
-      Math.max(b.height, 1)
-    );
+    final BufferedImage im =
+        ImageUtils.createCompatibleTranslucentImage(Math.max(b.width, 1), Math.max(b.height, 1));
     final Graphics2D g = im.createGraphics();
     piece.draw(g, -b.x, -b.y, null, 1.0);
     g.dispose();
@@ -124,8 +121,7 @@ public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
   }
 
   /**
-   * Returns <code>true</code> iff the source <code>GamePiece</code>
-   * has changed state.
+   * Returns <code>true</code> iff the source <code>GamePiece</code> has changed state.
    *
    * @return <code>true</code> iff the source has changed.
    */
@@ -141,8 +137,7 @@ public class GamePieceOpImpl extends AbstractTileOpImpl implements GamePieceOp {
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final GamePieceOp op = (GamePieceOp) o;
-    return piece.equals(op.getPiece()) &&
-           state.equals(op.getState());
+    return piece.equals(op.getPiece()) && state.equals(op.getState());
   }
 
   /** {@inheritDoc} */

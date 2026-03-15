@@ -23,7 +23,11 @@ import org.junit.jupiter.api.Test;
 public class NonRectangularTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     NonRectangular trait = new NonRectangular();
 
@@ -32,8 +36,8 @@ public class NonRectangularTest extends DecoratorTest {
 
     // Set a Command and Named KeyStroke
     trait = new NonRectangular();
-    trait.mySetType("nonRect2;1.0;dM -3.0 -9.0 L -3.0 -8.0 L -4.0 -8.0 L -4.0 -7.0 L -5.0 -7.0 L -5.0 -6.0 L -6.0 -6.0 L -6.0 -5.0 L -7.0 -5.0 L -7.0 -4.0 L -8.0 -4.0 L -8.0 -3.0 L -8.0 -2.0 L -8.0 -1.0 L -8.0 0.0 L -8.0 1.0 L -8.0 2.0 L -9.0 2.0 L -9.0 3.0 L -9.0 4.0 L -9.0 5.0 L -8.0 5.0 L -8.0 6.0 L -7.0 6.0 L -7.0 7.0 L -5.0 7.0 L -5.0 8.0 L -5.0 9.0 L -2.0 9.0 L -2.0 1.0 L 3.0 1.0 L 3.0 9.0 L 4.0 9.0 L 4.0 8.0 L 5.0 8.0 L 5.0 7.0 L 6.0 7.0 L 6.0 6.0 L 7.0 6.0 L 7.0 5.0 L 8.0 5.0 L 8.0 4.0 L 9.0 4.0 L 9.0 3.0 L 9.0 2.0 L 9.0 1.0 L 9.0 0.0 L 9.0 -1.0 L 9.0 -2.0 L 9.0 -3.0 L 9.0 -4.0 L 9.0 -5.0 L 7.0 -5.0 L 7.0 -6.0 L 6.0 -6.0 L 6.0 -7.0 L 4.0 -7.0 L 4.0 -8.0 L 2.0 -8.0 L 2.0 -9.0 Z N test.png"); // NON-NLS
+    trait.mySetType(
+        "nonRect2;1.0;dM -3.0 -9.0 L -3.0 -8.0 L -4.0 -8.0 L -4.0 -7.0 L -5.0 -7.0 L -5.0 -6.0 L -6.0 -6.0 L -6.0 -5.0 L -7.0 -5.0 L -7.0 -4.0 L -8.0 -4.0 L -8.0 -3.0 L -8.0 -2.0 L -8.0 -1.0 L -8.0 0.0 L -8.0 1.0 L -8.0 2.0 L -9.0 2.0 L -9.0 3.0 L -9.0 4.0 L -9.0 5.0 L -8.0 5.0 L -8.0 6.0 L -7.0 6.0 L -7.0 7.0 L -5.0 7.0 L -5.0 8.0 L -5.0 9.0 L -2.0 9.0 L -2.0 1.0 L 3.0 1.0 L 3.0 9.0 L 4.0 9.0 L 4.0 8.0 L 5.0 8.0 L 5.0 7.0 L 6.0 7.0 L 6.0 6.0 L 7.0 6.0 L 7.0 5.0 L 8.0 5.0 L 8.0 4.0 L 9.0 4.0 L 9.0 3.0 L 9.0 2.0 L 9.0 1.0 L 9.0 0.0 L 9.0 -1.0 L 9.0 -2.0 L 9.0 -3.0 L 9.0 -4.0 L 9.0 -5.0 L 7.0 -5.0 L 7.0 -6.0 L 6.0 -6.0 L 6.0 -7.0 L 4.0 -7.0 L 4.0 -8.0 L 2.0 -8.0 L 2.0 -9.0 Z N test.png"); // NON-NLS
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 }

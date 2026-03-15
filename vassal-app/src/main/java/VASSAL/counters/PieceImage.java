@@ -17,17 +17,16 @@
  */
 package VASSAL.counters;
 
+import VASSAL.tools.imageop.GamePieceOp;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import VASSAL.tools.imageop.GamePieceOp;
-
 /**
- * Maintains an {@link Image} built from the {@link GamePiece#draw}
- * method of a {@link GamePiece}
+ * Maintains an {@link Image} built from the {@link GamePiece#draw} method of a {@link GamePiece}
+ *
  * @deprecated Use {@link GamePieceOp} instead.
  */
 @Deprecated(since = "2021-12-01", forRemoval = true)
@@ -45,8 +44,11 @@ public class PieceImage {
       lastState = String.valueOf(piece.getProperty(Properties.VISIBLE_STATE));
 
       final Rectangle bbox = piece.boundingBox();
-      im = new BufferedImage(Math.max(bbox.width, 1), Math.max(bbox.height, 1), BufferedImage.TYPE_4BYTE_ABGR);
-      ((BufferedImage) im).setRGB(0, 0, bbox.width, bbox.height, new int[bbox.width * bbox.height], 0, bbox.width);
+      im =
+          new BufferedImage(
+              Math.max(bbox.width, 1), Math.max(bbox.height, 1), BufferedImage.TYPE_4BYTE_ABGR);
+      ((BufferedImage) im)
+          .setRGB(0, 0, bbox.width, bbox.height, new int[bbox.width * bbox.height], 0, bbox.width);
 
       final Graphics2D g = (Graphics2D) im.getGraphics();
       piece.draw(g, -bbox.x, -bbox.y, obs, 1.0);

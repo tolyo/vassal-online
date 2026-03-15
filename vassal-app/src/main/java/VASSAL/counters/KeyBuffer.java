@@ -22,8 +22,6 @@ import VASSAL.build.widget.PieceSlot;
 import VASSAL.command.Command;
 import VASSAL.command.NullCommand;
 import VASSAL.property.PersistentPropertyContainer;
-
-import javax.swing.Timer;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,20 +29,24 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.Timer;
 
 /**
- * The KeyBuffer is the list of "currently selected pieces" in the VASSAL UI (map windows). Its somewhat confusing name
- * derives from the idea that if the player then presses a key, a key command will be sent to all of the pieces in the
- * buffer. KeyBuffer is a "singleton", so there is one for the whole app, across all map windows.
+ * The KeyBuffer is the list of "currently selected pieces" in the VASSAL UI (map windows). Its
+ * somewhat confusing name derives from the idea that if the player then presses a key, a key
+ * command will be sent to all of the pieces in the buffer. KeyBuffer is a "singleton", so there is
+ * one for the whole app, across all map windows.
  */
 public class KeyBuffer {
-  private static KeyBuffer theBuffer;    // Our singleton buffer instance
-  private final List<GamePiece> pieces;  // Our list of currently selected pieces
-  private final Comparator<GamePiece> pieceSorter = new PieceSorter(); // Used to sort pieces in visual order
-  private final Point clickPoint;        // Most recent click point on the map (used to make this information
-                                         // available to traits of pieces)
+  private static KeyBuffer theBuffer; // Our singleton buffer instance
+  private final List<GamePiece> pieces; // Our list of currently selected pieces
+  private final Comparator<GamePiece> pieceSorter =
+      new PieceSorter(); // Used to sort pieces in visual order
+  private final Point
+      clickPoint; // Most recent click point on the map (used to make this information
+  // available to traits of pieces)
 
-  private final List<PieceSlot> slots;   // Piece Slots in palettes that we have selected
+  private final List<PieceSlot> slots; // Piece Slots in palettes that we have selected
 
   private boolean fromPalette = false; // True if we're selecting things from a Piece Palette
 
@@ -54,12 +56,11 @@ public class KeyBuffer {
     pieces = new ArrayList<>();
     clickPoint = new Point();
 
-    slots  = new ArrayList<>();
+    slots = new ArrayList<>();
   }
 
   public static void init(KeyBuffer kb) {
-    if (theBuffer == null)
-      theBuffer = kb;
+    if (theBuffer == null) theBuffer = kb;
   }
 
   public static KeyBuffer getBuffer() {
@@ -69,9 +70,8 @@ public class KeyBuffer {
     return theBuffer;
   }
 
-
-  private final Timer actionButtonTimer = new Timer(SUPPRESS_ACTION_BUTTONS_MILLISECONDS, e -> suppressActionButtons = false);
-
+  private final Timer actionButtonTimer =
+      new Timer(SUPPRESS_ACTION_BUTTONS_MILLISECONDS, e -> suppressActionButtons = false);
 
   private boolean suppressActionButtons = false;
 
@@ -80,15 +80,15 @@ public class KeyBuffer {
 
     actionButtonTimer.stop();
     if (suppress) {
-      actionButtonTimer.start(); // When we drag a group of pieces in Piece Mover, we briefly disable action buttons on any pieces that moved, to prevent too many "fat finger problems"
+      actionButtonTimer
+          .start(); // When we drag a group of pieces in Piece Mover, we briefly disable action
+      // buttons on any pieces that moved, to prevent too many "fat finger problems"
     }
   }
 
   public boolean isSuppressActionButtons() {
     return suppressActionButtons;
   }
-
-
 
   public PieceSlot getSlotForPiece(GamePiece piece) {
     if (!fromPalette) {
@@ -97,7 +97,6 @@ public class KeyBuffer {
     final int index = pieces.indexOf(piece);
     return (index >= 0) ? slots.get(index) : null;
   }
-
 
   public void setClickPoint(Point p) {
     clickPoint.setLocation(p);
@@ -108,12 +107,14 @@ public class KeyBuffer {
   }
 
   /**
-   * Adding a piece to the {@link KeyBuffer} "selects the piece" (and lets it know about in its SELECTED property)
+   * Adding a piece to the {@link KeyBuffer} "selects the piece" (and lets it know about in its
+   * SELECTED property)
+   *
    * @param p Piece to select
    */
   public void add(GamePiece p) {
-// FIXME: should we use a HashSet or LinkedHashSet instead to make contains()
-// checks faster? Is insertion order important?
+    // FIXME: should we use a HashSet or LinkedHashSet instead to make contains()
+    // checks faster? Is insertion order important?
     if (fromPalette) {
       clear();
     }
@@ -124,7 +125,6 @@ public class KeyBuffer {
   }
 
   /**
-   *
    * @param p piece to select
    * @param slot PieceSlot it comes from (so we can repaint it when selection later cleared)
    */
@@ -144,7 +144,8 @@ public class KeyBuffer {
   }
 
   /**
-   * If we had items selected from a palette, repaint them now that they aren't selected, and switch out of palette mode
+   * If we had items selected from a palette, repaint them now that they aren't selected, and switch
+   * out of palette mode
    */
   public void cleansePalette() {
     fromPalette = false;
@@ -154,9 +155,7 @@ public class KeyBuffer {
     slots.clear();
   }
 
-  /**
-   * Deselects all pieces (removes them all from the {@link KeyBuffer})
-   */
+  /** Deselects all pieces (removes them all from the {@link KeyBuffer}) */
   public void clear() {
     for (final GamePiece p : pieces) {
       p.setProperty(Properties.SELECTED, null);
@@ -167,6 +166,7 @@ public class KeyBuffer {
 
   /**
    * Deselect the specified piece -- removes it from the {@link KeyBuffer}
+   *
    * @param p piece to deselect
    */
   public void remove(GamePiece p) {
@@ -178,6 +178,7 @@ public class KeyBuffer {
 
   /**
    * Deselects a palette piece, repainting its palette slot
+   *
    * @param p piece
    * @param slot pieceSlot
    */
@@ -194,14 +195,14 @@ public class KeyBuffer {
 
   /**
    * Tells if a particular piece is selected (i.e. present in the KeyBuffer)
+   *
    * @param p piece to check
    * @return True if the piece is in the {@link KeyBuffer}, i.e. is selected
    */
   public boolean contains(GamePiece p) {
     if (p instanceof Stack) {
       return pieces.containsAll(((Stack) p).asList());
-    }
-    else {
+    } else {
       return pieces.contains(p);
     }
   }
@@ -215,8 +216,10 @@ public class KeyBuffer {
 
   /**
    * Applies a key command to every selected piece (i.e. to piece in the {@link KeyBuffer})
+   *
    * @param stroke Keystroke to apply
-   * @return Command that encapsulates any changes to the game state made while processing the key command, for replay on other clients or in logfile.
+   * @return Command that encapsulates any changes to the game state made while processing the key
+   *     command, for replay on other clients or in logfile.
    */
   public Command keyCommand(javax.swing.KeyStroke stroke) {
     sort(pieceSorter);
@@ -243,19 +246,27 @@ public class KeyBuffer {
     for (final GamePiece p : targets) {
       // Record next piece under way.
       gm.processNextUiPiece();
-      p.setProperty(Properties.SNAPSHOT, ((PropertyExporter) p).getProperties()); // save state prior to command
+      p.setProperty(
+          Properties.SNAPSHOT,
+          ((PropertyExporter) p).getProperties()); // save state prior to command
 
       // Send most recent click point location
       if (p instanceof PersistentPropertyContainer) {
-        comm = comm.append(((PersistentPropertyContainer) p).setPersistentProperty(BasicPiece.CLICKED_X, String.valueOf(clickPoint.x)))
-                   .append(((PersistentPropertyContainer) p).setPersistentProperty(BasicPiece.CLICKED_Y, String.valueOf(clickPoint.y)));
+        comm =
+            comm.append(
+                    ((PersistentPropertyContainer) p)
+                        .setPersistentProperty(BasicPiece.CLICKED_X, String.valueOf(clickPoint.x)))
+                .append(
+                    ((PersistentPropertyContainer) p)
+                        .setPersistentProperty(BasicPiece.CLICKED_Y, String.valueOf(clickPoint.y)));
       }
       comm = comm.append(p.keyEvent(stroke));
     }
 
     // Multi-piece processing finished
     gm.finalizeUiPieceProcessing();
-    // Refresh all visible Maps. Changes made to the pieces we affected may cause remote visual changes
+    // Refresh all visible Maps. Changes made to the pieces we affected may cause remote visual
+    // changes
     gm.refreshVisibleMaps();
 
     return comm;
@@ -263,8 +274,8 @@ public class KeyBuffer {
 
   /**
    * Returns a list of all selected pieces.
-   * @return an unmodifiable {@link List} of {@link GamePiece}s contained in
-   * this {@link KeyBuffer}
+   *
+   * @return an unmodifiable {@link List} of {@link GamePiece}s contained in this {@link KeyBuffer}
    */
   public List<GamePiece> asList() {
     return Collections.unmodifiableList(pieces);
@@ -272,13 +283,16 @@ public class KeyBuffer {
 
   /**
    * Returns an iterator for all selected pieces.
+   *
    * @return an iterator for the {@link GamePiece}s contained in the {@link KeyBuffer}
    */
   public Iterator<GamePiece> getPiecesIterator() {
     return pieces.iterator();
   }
 
-  /** @deprecated Use {@link #getPiecesIterator()} instead. */
+  /**
+   * @deprecated Use {@link #getPiecesIterator()} instead.
+   */
   @Deprecated(since = "2021-12-01", forRemoval = true)
   public Enumeration<GamePiece> getPieces() {
     return Collections.enumeration(pieces);
@@ -286,6 +300,7 @@ public class KeyBuffer {
 
   /**
    * Sorts the selected pieces based on a particular Comparator
+   *
    * @param comp Comparator to use
    */
   public void sort(Comparator<GamePiece> comp) {
@@ -294,6 +309,7 @@ public class KeyBuffer {
 
   /**
    * Check if any member of the specified Stack is currently selected
+   *
    * @param stack Stack to check
    * @return true if a child of the specified Stack is selected
    */

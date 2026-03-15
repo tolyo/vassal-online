@@ -23,9 +23,8 @@ import VASSAL.script.expression.Auditable;
 import VASSAL.script.expression.FormattedStringExpression;
 
 /**
- * Remote version of IncrementProperty, sets the value into a DP in a different piece,
- * replacing any $$ variables in the expression with values from the source piece.
- *
+ * Remote version of IncrementProperty, sets the value into a DP in a different piece, replacing any
+ * $$ variables in the expression with values from the source piece.
  */
 public class RemoteIncrementProperty extends IncrementProperty implements RemotePropertyChanger {
 
@@ -61,5 +60,4 @@ public class RemoteIncrementProperty extends IncrementProperty implements Remote
   public PropertySource getTargetPropertySource() {
     return targetPropertySource;
   }
-
 }

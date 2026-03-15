@@ -17,31 +17,30 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import VASSAL.build.AbstractBuildable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.configure.BooleanConfigurer;
 import VASSAL.i18n.Resources;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
- * This component listens to key events on a Map window and
- * scrolls the map.  Depending on the USE_ARROWS attribute,
- * will use number keypad or arrow keys, or will offer a
- * preferences setting for the user to choose
+ * This component listens to key events on a Map window and scrolls the map. Depending on the
+ * USE_ARROWS attribute, will use number keypad or arrow keys, or will offer a preferences setting
+ * for the user to choose
  */
 public class Scroller extends AbstractBuildable implements KeyListener {
   /**
-   * The attribute name for whether to use arrow keys
-   * instead of number keypad.  Should be one of ALWAYS, NEVER, or PROMPT
+   * The attribute name for whether to use arrow keys instead of number keypad. Should be one of
+   * ALWAYS, NEVER, or PROMPT
    */
-  public static final String USE_ARROWS = "useArrows"; //NON-NLS
-  public static final String ALWAYS = "always"; //NON-NLS
-  public static final String NEVER = "never"; //NON-NLS
-  public static final String PROMPT = "prompt"; //NON-NLS
+  public static final String USE_ARROWS = "useArrows"; // NON-NLS
+
+  public static final String ALWAYS = "always"; // NON-NLS
+  public static final String NEVER = "never"; // NON-NLS
+  public static final String PROMPT = "prompt"; // NON-NLS
 
   protected String usingArrows = PROMPT;
 
@@ -53,32 +52,27 @@ public class Scroller extends AbstractBuildable implements KeyListener {
     map = (Map) parent;
     map.getView().addKeyListener(this);
 
-    final BooleanConfigurer c = new BooleanConfigurer(
-      USE_ARROWS,
-      Resources.getString("Scroller.use_arrow_keys_preference"),
-      Boolean.FALSE
-    );
+    final BooleanConfigurer c =
+        new BooleanConfigurer(
+            USE_ARROWS, Resources.getString("Scroller.use_arrow_keys_preference"), Boolean.FALSE);
 
     if (ALWAYS.equals(usingArrows)) {
       GameModule.getGameModule().getPrefs().addOption(null, c);
       c.setValue(Boolean.TRUE);
-    }
-    else if (PROMPT.equals(usingArrows)) {
+    } else if (PROMPT.equals(usingArrows)) {
       GameModule.getGameModule().getPrefs().addOption(c);
-    }
-    else if (NEVER.equals(usingArrows)) {
+    } else if (NEVER.equals(usingArrows)) {
       GameModule.getGameModule().getPrefs().addOption(null, c);
       c.setValue(Boolean.FALSE);
     }
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{PROMPT};
+    return new String[] {PROMPT};
   }
 
   @Override
@@ -92,8 +86,7 @@ public class Scroller extends AbstractBuildable implements KeyListener {
   public String getAttributeValueString(String name) {
     if (USE_ARROWS.equals(name)) {
       return usingArrows;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -108,73 +101,71 @@ public class Scroller extends AbstractBuildable implements KeyListener {
     final int dx;
     final int dy;
 
-    if (Boolean.TRUE.equals(
-          GameModule.getGameModule().getPrefs().getValue(USE_ARROWS))) {
+    if (Boolean.TRUE.equals(GameModule.getGameModule().getPrefs().getValue(USE_ARROWS))) {
       switch (e.getKeyCode()) {
-      case KeyEvent.VK_UP:
-        dx =  0;
-        dy = -1;
-        break;
-      case KeyEvent.VK_DOWN:
-        dx =  0;
-        dy =  1;
-        break;
-      case KeyEvent.VK_RIGHT:
-        dx =  1;
-        dy =  0;
-        break;
-      case KeyEvent.VK_LEFT:
-        dx = -1;
-        dy =  0;
-        break;
-      default:
-        return;
+        case KeyEvent.VK_UP:
+          dx = 0;
+          dy = -1;
+          break;
+        case KeyEvent.VK_DOWN:
+          dx = 0;
+          dy = 1;
+          break;
+        case KeyEvent.VK_RIGHT:
+          dx = 1;
+          dy = 0;
+          break;
+        case KeyEvent.VK_LEFT:
+          dx = -1;
+          dy = 0;
+          break;
+        default:
+          return;
       }
-    }
-    else {
+    } else {
       switch (e.getKeyCode()) {
-      case KeyEvent.VK_NUMPAD1:
-        dx = -1;
-        dy =  1;
-        noEcho = '1';
-        break;
-      case KeyEvent.VK_NUMPAD2:
-        dx =  0;
-        dy =  1;
-        noEcho = '2';
-        break;
-      case KeyEvent.VK_NUMPAD3:
-        dx =  1;
-        dy =  1;
-        noEcho = '3';
-        break;
-      case KeyEvent.VK_NUMPAD4:
-        dx = -1;
-        dy =  0;
-        noEcho = '4';
-        break;
-      case KeyEvent.VK_NUMPAD6:
-        dx =  1;
-        dy =  0;
-        noEcho = '6';
-        break;
-      case KeyEvent.VK_NUMPAD7:
-        dx = -1;
-        dy = -1;
-        noEcho = '7';
-        break;
-      case KeyEvent.VK_NUMPAD8:
-        dx =  0;
-        dy = -1;
-        noEcho = '8';
-        break;
-      case KeyEvent.VK_NUMPAD9:
-        dx =  1;
-        dy = -1;
-        noEcho = '9';
-        break;
-      default:
-        return;
+        case KeyEvent.VK_NUMPAD1:
+          dx = -1;
+          dy = 1;
+          noEcho = '1';
+          break;
+        case KeyEvent.VK_NUMPAD2:
+          dx = 0;
+          dy = 1;
+          noEcho = '2';
+          break;
+        case KeyEvent.VK_NUMPAD3:
+          dx = 1;
+          dy = 1;
+          noEcho = '3';
+          break;
+        case KeyEvent.VK_NUMPAD4:
+          dx = -1;
+          dy = 0;
+          noEcho = '4';
+          break;
+        case KeyEvent.VK_NUMPAD6:
+          dx = 1;
+          dy = 0;
+          noEcho = '6';
+          break;
+        case KeyEvent.VK_NUMPAD7:
+          dx = -1;
+          dy = -1;
+          noEcho = '7';
+          break;
+        case KeyEvent.VK_NUMPAD8:
+          dx = 0;
+          dy = -1;
+          noEcho = '8';
+          break;
+        case KeyEvent.VK_NUMPAD9:
+          dx = 1;
+          dy = -1;
+          noEcho = '9';
+          break;
+        default:
+          return;
       }
     }
 
@@ -183,8 +174,7 @@ public class Scroller extends AbstractBuildable implements KeyListener {
   }
 
   @Override
-  public void keyReleased(KeyEvent e) {
-  }
+  public void keyReleased(KeyEvent e) {}
 
   @Override
   public void keyTyped(KeyEvent e) {

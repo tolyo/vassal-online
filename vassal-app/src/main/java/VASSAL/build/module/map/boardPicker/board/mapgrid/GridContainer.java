@@ -17,19 +17,20 @@
  */
 package VASSAL.build.module.map.boardPicker.board.mapgrid;
 
+import VASSAL.build.module.map.boardPicker.Board;
+import VASSAL.build.module.map.boardPicker.board.MapGrid;
 import java.awt.Dimension;
 import java.awt.Point;
 
-import VASSAL.build.module.map.boardPicker.Board;
-import VASSAL.build.module.map.boardPicker.board.MapGrid;
-
-/**
- * A Component that can contain a {@link VASSAL.build.module.map.boardPicker.board.MapGrid}
- */
+/** A Component that can contain a {@link VASSAL.build.module.map.boardPicker.board.MapGrid} */
 public interface GridContainer {
   void setGrid(MapGrid grid);
+
   void removeGrid(MapGrid grid);
+
   Board getBoard();
+
   Dimension getSize();
+
   boolean contains(Point point);
 }

@@ -17,10 +17,9 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.chat.Room;
 import javax.swing.Action;
 import javax.swing.JTree;
-
-import VASSAL.chat.Room;
 
 @FunctionalInterface
 public interface RoomActionFactory {

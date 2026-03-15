@@ -32,7 +32,11 @@ import org.mockito.Mockito;
 public class ObscurableTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Obscurable trait = creatObscurable();
 
@@ -80,9 +84,10 @@ public class ObscurableTest extends DecoratorTest {
   public Obscurable creatObscurable() {
     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
 
-       // Mock GameModule to create a BasicPiece when requested
+      // Mock GameModule to create a BasicPiece when requested
       final GameModule gm = mock(GameModule.class);
-      when(gm.createPiece(anyString())).thenAnswer(i -> new BasicPiece((String) i.getArguments()[0]));
+      when(gm.createPiece(anyString()))
+          .thenAnswer(i -> new BasicPiece((String) i.getArguments()[0]));
 
       staticGm.when(GameModule::getGameModule).thenReturn(gm);
       return new Obscurable();

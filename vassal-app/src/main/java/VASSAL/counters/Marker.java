@@ -17,7 +17,11 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.module.documentation.HelpFile;
+import VASSAL.command.Command;
+import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -26,19 +30,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.swing.KeyStroke;
 
-import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.command.Command;
-import VASSAL.configure.StringConfigurer;
-import VASSAL.tools.SequenceEncoder;
-
 /**
- * A generic Decorator that retains in its state the value of a property.
- * That is, if {@link #setProperty(Object,Object)} is invoked with a key
- * that is one of {@link #getKeys()}, the <code>String</code> value of that
- * property will be reflected in the #myGetState() method.
+ * A generic Decorator that retains in its state the value of a property. That is, if {@link
+ * #setProperty(Object,Object)} is invoked with a key that is one of {@link #getKeys()}, the <code>
+ * String</code> value of that property will be reflected in the #myGetState() method.
  */
 public class Marker extends Decorator implements EditablePiece {
   public static final String ID = "mark;"; // NON-NLS
@@ -193,9 +190,7 @@ public class Marker extends Decorator implements EditablePiece {
     return new Ed(this);
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -206,7 +201,7 @@ public class Marker extends Decorator implements EditablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Marker)) return false;
+    if (!(o instanceof Marker)) return false;
     final Marker c = (Marker) o;
     if (!Arrays.equals(keys, c.keys)) return false;
     return Arrays.equals(values, c.values);
@@ -252,7 +247,6 @@ public class Marker extends Decorator implements EditablePiece {
       return ID + propName.getValueString();
     }
   }
-
 
   /**
    * @return a list of the Decorator's string/expression fields if any (for search)

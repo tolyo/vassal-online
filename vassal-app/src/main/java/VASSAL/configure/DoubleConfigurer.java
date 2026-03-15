@@ -17,9 +17,7 @@
  */
 package VASSAL.configure;
 
-/**
- * A Configurer for Double values
- */
+/** A Configurer for Double values */
 public class DoubleConfigurer extends StringConfigurer {
   public DoubleConfigurer(String key, String name) {
     this(key, name, 0.0);
@@ -38,8 +36,7 @@ public class DoubleConfigurer extends StringConfigurer {
     Double d;
     try {
       d = Double.valueOf(s);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       d = null;
     }
 

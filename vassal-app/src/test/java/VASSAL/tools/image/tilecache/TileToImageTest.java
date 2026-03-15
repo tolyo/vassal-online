@@ -18,18 +18,16 @@
 
 package VASSAL.tools.image.tilecache;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.apache.commons.io.IOUtils;
-
 import org.junit.After;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TileToImageTest {
   private static final String in_dir = "src/test/resources/test-images";
@@ -42,10 +40,10 @@ public class TileToImageTest {
     final String out_actual = out_dir + "/out.png";
     final String out_expected = in_dir + "/in.png";
 
-    TileToImage.main(new String[] { tile, out_actual });
+    TileToImage.main(new String[] {tile, out_actual});
 
     try (InputStream expected = Files.newInputStream(Path.of(out_expected));
-         InputStream actual = Files.newInputStream(Path.of(out_actual))) {
+        InputStream actual = Files.newInputStream(Path.of(out_actual))) {
       assertTrue(IOUtils.contentEquals(expected, actual));
     }
   }

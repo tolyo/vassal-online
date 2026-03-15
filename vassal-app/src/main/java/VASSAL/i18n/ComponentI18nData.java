@@ -17,14 +17,6 @@
  */
 package VASSAL.i18n;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AbstractFolder;
 import VASSAL.build.AutoConfigurable;
@@ -33,16 +25,22 @@ import VASSAL.counters.BasicPiece;
 import VASSAL.counters.Decorator;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.PlaceMarker;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * Object encapsulating the internationalization information for a component.
- * The majority of translatable components subclass AbstractConfigurable,
- * but some extend JFrame or JDialog and implement Configurable or
- * AutoConfigurable.
+ * Object encapsulating the internationalization information for a component. The majority of
+ * translatable components subclass AbstractConfigurable, but some extend JFrame or JDialog and
+ * implement Configurable or AutoConfigurable.
  *
- * AbstractConfigurable components are almost completely handled within the
- * AbstractConfigurable base class. AutoConfigurable/Configurable components
- * must call a different constructor and supply additional information.
+ * <p>AbstractConfigurable components are almost completely handled within the AbstractConfigurable
+ * base class. AutoConfigurable/Configurable components must call a different constructor and supply
+ * additional information.
  *
  * @author Brent Easton
  */
@@ -55,54 +53,70 @@ public class ComponentI18nData {
   protected List<Translatable> children = new ArrayList<>();
 
   /**
-   * Build from an AbstractConfigurable. The parent will be set from
-   * AbstractConfigurable.add(). untranslatedValues will be filled in as
-   * attributes are translated.
+   * Build from an AbstractConfigurable. The parent will be set from AbstractConfigurable.add().
+   * untranslatedValues will be filled in as attributes are translated.
    *
-   * @param c
-   *          AbstractConfigurable component
-   * @param prefix
-   *          I18n Prefix
+   * @param c AbstractConfigurable component
+   * @param prefix I18n Prefix
    */
   public ComponentI18nData(AbstractConfigurable c, String prefix) {
     init(c, prefix, c.getAttributeNames(), c.getAttributeTypes(), c.getAttributeDescriptions());
   }
 
   @Deprecated(since = "2020-10-26", forRemoval = true)
-  public ComponentI18nData(AbstractConfigurable c, String prefix, ArrayList<String> names, ArrayList<Class<?>> types, ArrayList<String> descriptions) { //NOPMD
-    init(c, prefix, names.toArray(new String[0]), types.toArray(new Class<?>[0]), descriptions.toArray(new String[0]));
+  public ComponentI18nData(
+      AbstractConfigurable c,
+      String prefix,
+      ArrayList<String> names,
+      ArrayList<Class<?>> types,
+      ArrayList<String> descriptions) { // NOPMD
+    init(
+        c,
+        prefix,
+        names.toArray(new String[0]),
+        types.toArray(new Class<?>[0]),
+        descriptions.toArray(new String[0]));
   }
 
-  public ComponentI18nData(AbstractConfigurable c, String prefix, List<String> names, List<Class<?>> types, List<String> descriptions) {
-    init(c, prefix, names.toArray(new String[0]), types.toArray(new Class<?>[0]), descriptions.toArray(new String[0]));
+  public ComponentI18nData(
+      AbstractConfigurable c,
+      String prefix,
+      List<String> names,
+      List<Class<?>> types,
+      List<String> descriptions) {
+    init(
+        c,
+        prefix,
+        names.toArray(new String[0]),
+        types.toArray(new Class<?>[0]),
+        descriptions.toArray(new String[0]));
   }
 
-    /**
-     * Build from an AutoConfigurable
-     *
-     * @param c
-     *          AutoConfigurable component
-     * @param prefix
-     *          I18n prefix
-     */
+  /**
+   * Build from an AutoConfigurable
+   *
+   * @param c AutoConfigurable component
+   * @param prefix I18n prefix
+   */
   public ComponentI18nData(AutoConfigurable c, String prefix) {
     parent = null;
-    init(c, prefix, c.getAttributeNames(),
-         c.getAttributeTypes(), c.getAttributeDescriptions());
+    init(c, prefix, c.getAttributeNames(), c.getAttributeTypes(), c.getAttributeDescriptions());
   }
 
-  protected void init(Configurable c, String pfx, String[] names,
-                      Class<?>[] types, String[] descriptions) {
+  protected void init(
+      Configurable c, String pfx, String[] names, Class<?>[] types, String[] descriptions) {
     final boolean[] translatable = new boolean[types.length];
     for (int i = 0; i < types.length; i++) {
-      translatable[i] = types[i] != null &&
-        (types[i].equals(String.class) ||
-         TranslatableConfigurerFactory.class.isAssignableFrom(types[i]));
+      translatable[i] =
+          types[i] != null
+              && (types[i].equals(String.class)
+                  || TranslatableConfigurerFactory.class.isAssignableFrom(types[i]));
     }
     init(c, pfx, names, descriptions, translatable);
   }
 
-  protected void init(Configurable c, String pfx, String[] names, String[] descriptions, boolean[] translatable) {
+  protected void init(
+      Configurable c, String pfx, String[] names, String[] descriptions, boolean[] translatable) {
     setPrefix(pfx);
     myComponent = c;
     children.addAll(Arrays.asList(myComponent.getConfigureComponents()));
@@ -116,22 +130,22 @@ public class ComponentI18nData {
   }
 
   /**
-   * Build from a Configurable. Configurable does not support
-   * getAttributeNames() getAttributeTypes() or getAttributeValueString(),
-   * so more information must be supplied.
+   * Build from a Configurable. Configurable does not support getAttributeNames()
+   * getAttributeTypes() or getAttributeValueString(), so more information must be supplied.
    *
-   * @param c
-   *          Component
-   * @param prefix
-   *          I18n prefix
-   * @param parent
-   *          parent translatable
-   * @param names
-   *          Array of attribute names
-   * @param translatable
-   *          Array of Attribute translatable status
+   * @param c Component
+   * @param prefix I18n prefix
+   * @param parent parent translatable
+   * @param names Array of attribute names
+   * @param translatable Array of Attribute translatable status
    */
-  public ComponentI18nData(Configurable c, String prefix, Translatable parent, String[] names, boolean[] translatable, String[] descriptions) {
+  public ComponentI18nData(
+      Configurable c,
+      String prefix,
+      Translatable parent,
+      String[] names,
+      boolean[] translatable,
+      String[] descriptions) {
     myComponent = c;
     this.parent = parent;
     init(c, prefix, names, descriptions, translatable);
@@ -145,14 +159,12 @@ public class ComponentI18nData {
     this(c, prefix, null);
   }
 
-  /**
-   * Special build for PrototypeDefinition and PieceSlot
-   */
+  /** Special build for PrototypeDefinition and PieceSlot */
   public ComponentI18nData(Configurable c, GamePiece piece) {
     myComponent = c;
     setPrefix(TranslatablePiece.PREFIX);
     parent = null;
-    for (GamePiece p = piece; p != null;) {
+    for (GamePiece p = piece; p != null; ) {
       if (p instanceof TranslatablePiece) {
         final PieceI18nData pieceData = ((TranslatablePiece) p).getI18nData();
         for (final PieceI18nData.Property prop : pieceData.getProperties()) {
@@ -162,22 +174,19 @@ public class ComponentI18nData {
         }
       }
       if (p instanceof PlaceMarker) {
-        if (((PlaceMarker)p).isMarkerStandalone()) {
+        if (((PlaceMarker) p).isMarkerStandalone()) {
           children.add(new TranslatableMarker((PlaceMarker) p));
         }
       }
       if (p instanceof BasicPiece) {
         p = null;
-      }
-      else {
+      } else {
         p = ((Decorator) p).getInner();
       }
     }
   }
 
-  /**
-   * Return a unique Key prefix identifying this component
-   */
+  /** Return a unique Key prefix identifying this component */
   public String getPrefix() {
     return prefix;
   }
@@ -187,7 +196,8 @@ public class ComponentI18nData {
   }
 
   /**
-   * Return a unique key prefix including a full path of parent prefixes. All Translatable Pieces share a common prefix.
+   * Return a unique key prefix including a full path of parent prefixes. All Translatable Pieces
+   * share a common prefix.
    *
    * @return Full Prefix
    */
@@ -195,41 +205,41 @@ public class ComponentI18nData {
     if (TranslatablePiece.PREFIX.equals(prefix)) {
       return prefix;
     }
-    String fullPrefix = getOwningComponent() == null ? "" : getOwningComponent().getI18nData() //$NON-NLS-1$
-        .getFullPrefix();
+    String fullPrefix =
+        getOwningComponent() == null
+            ? ""
+            : getOwningComponent()
+                .getI18nData() //$NON-NLS-1$
+                .getFullPrefix();
     if (fullPrefix.length() > 0 && prefix.length() > 0) {
-      fullPrefix += "."; //$NON-NLS-1$
+      fullPrefix += "."; // $NON-NLS-1$
     }
     return fullPrefix + prefix;
   }
 
-  /**
-   * Return a list of all of the translatable Keys for attributes of this Translatable item.
-   */
+  /** Return a list of all of the translatable Keys for attributes of this Translatable item. */
   public Collection<String> getAttributeKeys() {
     return translatableProperties.keySet();
   }
 
-  /**
-   * Set the owning Translatable of this component
-   */
+  /** Set the owning Translatable of this component */
   public void setOwningComponent(Translatable t) {
     parent = t;
   }
 
-  /**
-   * Return the owning Translatable of this component
-   */
+  /** Return the owning Translatable of this component */
   public Translatable getOwningComponent() {
-    //BR// Ideally dragging components around between equivalent subfolders won't change their translation key
-    return (parent instanceof AbstractFolder) ? (Translatable)((AbstractFolder) parent).getNonFolderAncestor() : parent;
+    // BR// Ideally dragging components around between equivalent subfolders won't change their
+    // translation key
+    return (parent instanceof AbstractFolder)
+        ? (Translatable) ((AbstractFolder) parent).getNonFolderAncestor()
+        : parent;
   }
 
   /**
    * Is the specified attribute allowed to be translated?
    *
-   * @param attr
-   *          Attribute name
+   * @param attr Attribute name
    * @return is translatable
    */
   public boolean isAttributeTranslatable(String attr) {
@@ -237,7 +247,8 @@ public class ComponentI18nData {
   }
 
   /**
-   * Return true if this component has any translatable attributes, or if any of its children are translatable
+   * Return true if this component has any translatable attributes, or if any of its children are
+   * translatable
    *
    * @return component translatable status
    */
@@ -256,35 +267,28 @@ public class ComponentI18nData {
   /**
    * Force a specified attribute to be translatable/not translatable
    *
-   * @param attribute
-   *          Attribute name
-   * @param set
-   *          translatable status
+   * @param attribute Attribute name
+   * @param set translatable status
    */
   public void setAttributeTranslatable(String attribute, boolean set) {
     if (set) {
       translatableProperties.put(attribute, allProperties.get(attribute));
-    }
-    else {
+    } else {
       translatableProperties.remove(attribute);
     }
   }
 
-  /**
-   * Convenience method to force all attributes to be not translatable
-   */
+  /** Convenience method to force all attributes to be not translatable */
   public void setAllAttributesUntranslatable() {
     translatableProperties.clear();
   }
 
   /**
-   * Apply a translation to the specified attribute. Record the untranslated value in the untranslatedValues array and
-   * set the new value into the real attribute
+   * Apply a translation to the specified attribute. Record the untranslated value in the
+   * untranslatedValues array and set the new value into the real attribute
    *
-   * @param attr
-   *          Attribute name
-   * @param value
-   *          Translated value
+   * @param attr Attribute name
+   * @param value Translated value
    */
   public void applyTranslation(String attr, String value) {
     final Property p = translatableProperties.get(attr);
@@ -307,8 +311,7 @@ public class ComponentI18nData {
   /**
    * Return the pre-translation value stored in this Object.
    *
-   * @param attr
-   *          Attribute Name
+   * @param attr Attribute Name
    * @return untranslated value
    */
   public String getLocalUntranslatedValue(String attr) {
@@ -316,20 +319,18 @@ public class ComponentI18nData {
     final Property p = allProperties.get(attr);
     if (p == null || p.getUntranslatedValue() == null) {
       val = myComponent.getAttributeValueString(attr);
-    }
-    else {
+    } else {
       val = p.getUntranslatedValue();
     }
     return val;
   }
 
   /**
-   * Set an untranslatedValue for the specified attribute. Used by components that do not subclass AbstractConfigurable
+   * Set an untranslatedValue for the specified attribute. Used by components that do not subclass
+   * AbstractConfigurable
    *
-   * @param attr
-   *          Attribute name
-   * @param value
-   *          untranslated value
+   * @param attr Attribute name
+   * @param value untranslated value
    */
   public void setUntranslatedValue(String attr, String value) {
     allProperties.get(attr).setUntranslatedValue(value);
@@ -353,11 +354,10 @@ public class ComponentI18nData {
   }
 
   /**
-   * Return true if this component or any of its children have at least one translatable attribute with a non-null value
-   * that does not have a translation in the supplied translation.
+   * Return true if this component or any of its children have at least one translatable attribute
+   * with a non-null value that does not have a translation in the supplied translation.
    *
-   * @param t
-   *          Translation
+   * @param t Translation
    * @return true if translation of this component is not complete
    */
   public boolean hasUntranslatedAttributes(Translation t) {
@@ -389,6 +389,7 @@ public class ComponentI18nData {
      */
     return false;
   }
+
   /** An attribute of a Configurable component that can be translated into another language */
   public static class Property {
     private final String name;

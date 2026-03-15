@@ -18,6 +18,9 @@
 
 package VASSAL.tools.image.svg;
 
+import VASSAL.build.GameModule;
+import VASSAL.tools.DataArchive;
+import VASSAL.tools.image.ImageUtils;
 import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -33,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.BridgeException;
@@ -50,21 +52,14 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.transcoder.keys.BooleanKey;
 import org.apache.batik.transcoder.keys.PaintKey;
-
 import org.apache.commons.lang3.SystemUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
-
-import VASSAL.build.GameModule;
-import VASSAL.tools.DataArchive;
-import VASSAL.tools.image.ImageUtils;
 
 /**
  * Render an SVG image to a {@link BufferedImage}.
@@ -73,26 +68,20 @@ import VASSAL.tools.image.ImageUtils;
  * @since 3.1.0
  */
 public class SVGRenderer {
-  private static final Logger logger =
-    LoggerFactory.getLogger(SVGRenderer.class);
+  private static final Logger logger = LoggerFactory.getLogger(SVGRenderer.class);
 
-  private static final ImageRendererFactory rendFactory =
-    new ConcreteImageRendererFactory();
+  private static final ImageRendererFactory rendFactory = new ConcreteImageRendererFactory();
 
   private final SVGDocument doc;
   private final float defaultW, defaultH;
   private final Rasterizer r = new Rasterizer();
 
-  /**
-   * Closes the {@link InputStream}.
-   */
+  /** Closes the {@link InputStream}. */
   public SVGRenderer(URL file, InputStream in) throws IOException {
     this(file.toString(), in);
   }
 
-  /**
-   * Closes the {@link InputStream}.
-   */
+  /** Closes the {@link InputStream}. */
   public SVGRenderer(String file, InputStream in) throws IOException {
     // load the SVG
     doc = SVGImageUtils.getDocument(file, in);
@@ -112,8 +101,8 @@ public class SVGRenderer {
   public BufferedImage render(double angle, double scale) {
     // The renderer needs the bounds unscaled---scaling comes from the
     // width and height hints.
-    AffineTransform px = AffineTransform.getRotateInstance(
-      angle * DEGTORAD, defaultW / 2.0, defaultH / 2.0);
+    AffineTransform px =
+        AffineTransform.getRotateInstance(angle * DEGTORAD, defaultW / 2.0, defaultH / 2.0);
     r.setTransform(px);
 
     px = new AffineTransform(px);
@@ -140,8 +129,8 @@ public class SVGRenderer {
   public BufferedImage render(double angle, double scale, Rectangle2D aoi) {
     // The renderer needs the bounds unscaled---scaling comes from the
     // width and height hints.
-    AffineTransform px = AffineTransform.getRotateInstance(
-      angle * DEGTORAD, defaultW / 2.0, defaultH / 2.0);
+    AffineTransform px =
+        AffineTransform.getRotateInstance(angle * DEGTORAD, defaultW / 2.0, defaultH / 2.0);
     r.setTransform(px);
 
     px = new AffineTransform(px);
@@ -169,15 +158,13 @@ public class SVGRenderer {
     }
 
     @Override
-    public Document loadDocument(String uri)
-        throws MalformedURLException, IOException {
+    public Document loadDocument(String uri) throws MalformedURLException, IOException {
       final String file = new File((new URL(uri)).getPath()).getName();
       final DataArchive mda = GameModule.getGameModule().getDataArchive();
       try (InputStream inner = mda.getInputStream(file);
-           BufferedInputStream in = new BufferedInputStream(inner)) {
+          BufferedInputStream in = new BufferedInputStream(inner)) {
         return loadDocument(uri, in);
-      }
-      catch (DOMException e) {
+      } catch (DOMException e) {
         throw new IOException(e);
       }
     }
@@ -198,15 +185,14 @@ public class SVGRenderer {
     }
 
     @Override
-    protected void transcode(Document document,
-                             String uri,
-                             TranscoderOutput output)
-                             throws TranscoderException {
+    protected void transcode(Document document, String uri, TranscoderOutput output)
+        throws TranscoderException {
       if (SystemUtils.IS_OS_MAC) {
-        final Element g = document.createElementNS(
-          SVGDOMImplementation.SVG_NAMESPACE_URI, "g" //NON-NLS
-        );
-        g.setAttributeNS(null, "transform", "rotate(0.000001)"); //NON-NLS
+        final Element g =
+            document.createElementNS(
+                SVGDOMImplementation.SVG_NAMESPACE_URI, "g" // NON-NLS
+                );
+        g.setAttributeNS(null, "transform", "rotate(0.000001)"); // NON-NLS
 
         // interpose this <g> element between <svg> and its children
         final Element svg = document.getDocumentElement();
@@ -221,9 +207,9 @@ public class SVGRenderer {
       // Sets up root, curTxf & curAoi
       super.transcode(document, uri, output);
 
-       // prepare the image to be painted
-      final int w = (int)(width + 0.5);
-      final int h = (int)(height + 0.5);
+      // prepare the image to be painted
+      final int w = (int) (width + 0.5);
+      final int h = (int) (height + 0.5);
 
       if (w <= 0 || h <= 0) {
         writeImage(ImageUtils.NULL_IMAGE);
@@ -244,19 +230,17 @@ public class SVGRenderer {
       // Warning: the renderer's AOI must be in user space
       try {
         renderer.repaint(curTxf.createInverse().createTransformedShape(raoi));
-      }
-      catch (NoninvertibleTransformException e) {
+      } catch (NoninvertibleTransformException e) {
         throw new TranscoderException(e);
       }
 
-// FIXME: is this the image we want to use?
+      // FIXME: is this the image we want to use?
       BufferedImage rend = renderer.getOffScreen();
       renderer = null; // We're done with it...
 
       // produce an opaque image if our background color is set
-      final BufferedImage dest = ImageUtils.createCompatibleImage(
-        w, h, !hints.containsKey(KEY_BACKGROUND_COLOR)
-      );
+      final BufferedImage dest =
+          ImageUtils.createCompatibleImage(w, h, !hints.containsKey(KEY_BACKGROUND_COLOR));
 
       final Graphics2D g2d = GraphicsUtil.createGraphics(dest);
       if (hints.containsKey(KEY_BACKGROUND_COLOR)) {
@@ -288,9 +272,7 @@ public class SVGRenderer {
     }
   }
 
-  public static final TranscodingHints.Key KEY_BACKGROUND_COLOR =
-    new PaintKey();
+  public static final TranscodingHints.Key KEY_BACKGROUND_COLOR = new PaintKey();
 
-  public static final TranscodingHints.Key KEY_FORCE_TRANSPARENT_WHITE =
-    new BooleanKey();
+  public static final TranscodingHints.Key KEY_FORCE_TRANSPARENT_WHITE = new BooleanKey();
 }

@@ -30,7 +30,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.ToolBarComponent;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
   public static final String HOTKEY = "hotkey"; // NON-NLS
   public static final String SWITCH = "switch";
 
-  /** The Tab to which this Scenario Property belongs **/
+  /** The Tab to which this Scenario Property belongs * */
   protected ScenarioPropertiesOptionTab tab;
 
   protected NamedKeyStroke hotkey = NamedKeyStroke.NULL_KEYSTROKE;
@@ -70,7 +69,8 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
       propertySource = (PropertySource) parent;
     }
 
-    // For copy-pasting purposes this method may end up getting called twice on the same component. Only do this part once.
+    // For copy-pasting purposes this method may end up getting called twice on the same component.
+    // Only do this part once.
     final GameModule gm = GameModule.getGameModule();
     final GameState gs = gm.getGameState();
     if (!gs.getGameComponents().contains(this)) {
@@ -87,7 +87,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString("Editor.GlobalProperty.initial_value"),
       Resources.getString("Editor.ScenarioProperties.prompt"),
@@ -98,12 +98,8 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      getInitialValueClass(),
-      String.class,
-      NamedKeyStroke.class,
-      Boolean.class
+    return new Class<?>[] {
+      String.class, getInitialValueClass(), String.class, NamedKeyStroke.class, Boolean.class
     };
   }
 
@@ -111,7 +107,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, INITIAL_VALUE, DESCRIPTION, HOTKEY, SWITCH};
+    return new String[] {NAME, INITIAL_VALUE, DESCRIPTION, HOTKEY, SWITCH};
   }
 
   @Override
@@ -119,17 +115,14 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
     if (NAME.equals(key)) {
       super.setAttribute(key, value);
       property.setPropertyValue(initialValue);
-    }
-    else if (HOTKEY.equals(key)) {
+    } else if (HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       hotkey = (NamedKeyStroke) value;
-    }
-    else if (SWITCH.equals(key)) {
-      switchPosition = Boolean.TRUE.equals(value) || "true".equals(value); //NON-NLS
-    }
-    else {
+    } else if (SWITCH.equals(key)) {
+      switchPosition = Boolean.TRUE.equals(value) || "true".equals(value); // NON-NLS
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -138,8 +131,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
   public String getAttributeValueString(String key) {
     if (HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(hotkey);
-    }
-    else if (SWITCH.equals(key)) {
+    } else if (SWITCH.equals(key)) {
       return String.valueOf(switchPosition);
     }
     return super.getAttributeValueString(key);
@@ -150,7 +142,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ScenarioProperties.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("ScenarioProperties.html"); // NON-NLS
   }
 
   public void processOptionChange(Object newValue) {
@@ -168,7 +160,8 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
         reportFormat.setProperty(ScenarioPropertiesOptionTab.REPORT_TAB, tab.getConfigureName());
         reportFormat.setProperty(ScenarioPropertiesOptionTab.REPORT_OLD_VALUE, oldValue);
         reportFormat.setProperty(ScenarioPropertiesOptionTab.REPORT_NEW_VALUE, newValue.toString());
-        final String report = reportFormat.getLocalizedText(this, "Editor.ScenarioOption.report_format");
+        final String report =
+            reportFormat.getLocalizedText(this, "Editor.ScenarioOption.report_format");
         if (!report.isEmpty()) {
           c = c.append(new Chatter.DisplayText(gm.getChatter(), "* " + report));
         }
@@ -177,14 +170,15 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
       // Perform the property change and report on our client and save the command
       c.execute();
 
-      // Firing Hotkeys is different, they get executed directly and the Commands sent directly to the hosts.
-      // So pause logging so we can capture those commands, and append them to our Command stream so far
+      // Firing Hotkeys is different, they get executed directly and the Commands sent directly to
+      // the hosts.
+      // So pause logging so we can capture those commands, and append them to our Command stream so
+      // far
       if (!hotkey.isNull()) {
         final boolean loggingPaused = gm.pauseLogging();
         try {
           gm.fireKeyStroke(hotkey);
-        }
-        finally {
+        } finally {
           if (loggingPaused) {
             c.append(gm.resumeLogging());
           }
@@ -208,6 +202,4 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
   public List<String> getExpressionList() {
     return Collections.emptyList();
   }
-
-
 }

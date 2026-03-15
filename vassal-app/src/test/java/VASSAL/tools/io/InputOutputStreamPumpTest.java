@@ -18,22 +18,19 @@
 
 package VASSAL.tools.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.apache.commons.io.input.ClosedInputStream;
-import org.apache.commons.io.output.ClosedOutputStream;
-
-import VASSAL.tools.concurrent.listener.EventListener;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import VASSAL.tools.concurrent.listener.EventListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.commons.io.input.ClosedInputStream;
+import org.apache.commons.io.output.ClosedOutputStream;
+import org.junit.jupiter.api.Test;
 
 public class InputOutputStreamPumpTest {
 
@@ -54,14 +51,16 @@ public class InputOutputStreamPumpTest {
 
   @Test
   public void testSetInputStreamRunning() {
-    assertThrows(UnsupportedOperationException.class, () -> {
-      final InputOutputStreamPump p = new IOSP();
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> {
+          final InputOutputStreamPump p = new IOSP();
 
-      p.run();
+          p.run();
 
-      final InputStream in = new ClosedInputStream();
-      p.setInputStream(in);
-    });
+          final InputStream in = new ClosedInputStream();
+          p.setInputStream(in);
+        });
   }
 
   @Test
@@ -73,13 +72,15 @@ public class InputOutputStreamPumpTest {
 
   @Test
   public void testSetOutputStreamRunning() {
-    assertThrows(UnsupportedOperationException.class, () -> {
-      final InputOutputStreamPump p = new IOSP();
-      p.run();
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> {
+          final InputOutputStreamPump p = new IOSP();
+          p.run();
 
-      final OutputStream out = new ClosedOutputStream();
-      p.setOutputStream(out);
-    });
+          final OutputStream out = new ClosedOutputStream();
+          p.setOutputStream(out);
+        });
   }
 
   @Test
@@ -142,5 +143,4 @@ public class InputOutputStreamPumpTest {
 
     verify(el, never()).receive(any(Object.class), any(IOException.class));
   }
-
 }

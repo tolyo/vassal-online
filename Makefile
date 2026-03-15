@@ -78,6 +78,16 @@ version-set:
 test:
 	$(MVN) test
 
+lint:
+	$(MVN) spotless:check checkstyle:check
+
+format:
+	$(MVN) spotless:apply
+
+precommit:
+	$(MAKE) lint
+	$(MAKE) test
+
 $(TMPDIR) $(JDOCDIR):
 	mkdir -p $@
 
@@ -115,4 +125,4 @@ clean: clean-release
 # prevents make from trying to delete intermediate files
 .SECONDARY:
 
-.PHONY: compile test clean release-announcements clean-release post-release javadoc jar clean-javadoc version-set version-print
+.PHONY: compile test lint format precommit clean release-announcements clean-release post-release javadoc jar clean-javadoc version-set version-print

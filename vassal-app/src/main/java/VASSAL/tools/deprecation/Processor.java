@@ -19,9 +19,9 @@ package VASSAL.tools.deprecation;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,18 +35,15 @@ import java.util.zip.ZipFile;
 
 public class Processor {
 
-  private static final byte[] ZIPSIG = { 0x50, 0x4B, 0x03, 0x04 };
+  private static final byte[] ZIPSIG = {0x50, 0x4B, 0x03, 0x04};
 
   // oh seriously?! these have to be cast?
-  private static final byte[] CLASSSIG = {
-    (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE
-  };
+  private static final byte[] CLASSSIG = {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE};
 
   private static boolean checkSig(InputStream in, byte[] sig) {
     try {
       return Arrays.equals(in.readNBytes(sig.length), sig);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -54,8 +51,7 @@ public class Processor {
   private static boolean isZipArchive(Path p) {
     try (InputStream in = Files.newInputStream(p)) {
       return checkSig(in, ZIPSIG);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -63,8 +59,7 @@ public class Processor {
   private static boolean isClassFile(Path p) {
     try (InputStream in = Files.newInputStream(p)) {
       return checkSig(in, CLASSSIG);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -75,8 +70,7 @@ public class Processor {
       final boolean ret = checkSig(in, CLASSSIG);
       in.reset();
       return ret;
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -100,8 +94,7 @@ public class Processor {
           if (isClassFile(in)) {
             process(walker, in);
           }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           System.err.println("Failed reading " + ze.getName());
           throw e;
         }
@@ -111,23 +104,20 @@ public class Processor {
 
   public static void process(Walker walker, String src) throws IOException {
     // recursively walk the first arg, looking for class files
-    try (Stream<Path> s = Files.walk(Paths.get(src))
-                               .filter(Files::isRegularFile)) {
-      for (final Path p: (Iterable<Path>)s::iterator) {
+    try (Stream<Path> s = Files.walk(Paths.get(src)).filter(Files::isRegularFile)) {
+      for (final Path p : (Iterable<Path>) s::iterator) {
         if (p.getFileName().toString().endsWith(".class")) {
           if (isClassFile(p)) {
             try (InputStream in = new BufferedInputStream(Files.newInputStream(p))) {
               if (isClassFile(in)) {
                 process(walker, in);
               }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
               System.err.println("Failed reading " + p);
               throw e;
             }
           }
-        }
-        else if (isZipArchive(p)) {
+        } else if (isZipArchive(p)) {
           try (ZipFile zf = new ZipFile(p.toFile())) {
             process(walker, zf);
           }

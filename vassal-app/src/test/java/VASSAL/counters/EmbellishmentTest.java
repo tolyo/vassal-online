@@ -18,13 +18,16 @@
 package VASSAL.counters;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.junit.jupiter.api.Test;
 
 public class EmbellishmentTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Embellishment trait = new Embellishment();
 
@@ -33,7 +36,5 @@ public class EmbellishmentTest extends DecoratorTest {
 
     // TODO Need some more complex Embellishment tests here
     trait = new Embellishment();
-
-
   }
 }

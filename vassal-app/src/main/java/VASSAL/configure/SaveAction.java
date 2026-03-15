@@ -17,23 +17,19 @@
  */
 package VASSAL.configure;
 
+import VASSAL.i18n.Resources;
 import java.net.URL;
-
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
-import VASSAL.i18n.Resources;
-
-/**
- * General-purpose "Save" action
- */
+/** General-purpose "Save" action */
 public abstract class SaveAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
   protected String parentType = "";
 
   public SaveAction() {
-    final URL iconURL = getClass().getResource("/images/Save16.gif"); //NON-NLS
+    final URL iconURL = getClass().getResource("/images/Save16.gif"); // NON-NLS
     if (iconURL != null) {
       putValue(SMALL_ICON, new ImageIcon(iconURL));
     }

@@ -17,19 +17,14 @@
  */
 package VASSAL.configure;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.JDialog;
-
 import VASSAL.counters.EditablePiece;
 import VASSAL.counters.GamePiece;
 import VASSAL.script.expression.PropertyExpressionBuilder;
+import java.awt.event.ActionEvent;
+import javax.swing.JDialog;
 
-/**
- * A Configurer for Java Expressions
- */
+/** A Configurer for Java Expressions */
 public class PropertyExpressionConfigurer extends FormattedExpressionConfigurer {
-
 
   public PropertyExpressionConfigurer(String key, String name) {
     this(key, name, "");
@@ -47,7 +42,8 @@ public class PropertyExpressionConfigurer extends FormattedExpressionConfigurer 
     this(key, name, val.getExpression());
   }
 
-  public PropertyExpressionConfigurer(String key, String name, PropertyExpression val, GamePiece piece) {
+  public PropertyExpressionConfigurer(
+      String key, String name, PropertyExpression val, GamePiece piece) {
     this(key, name, val.getExpression(), piece);
   }
 
@@ -68,17 +64,14 @@ public class PropertyExpressionConfigurer extends FormattedExpressionConfigurer 
   public static class PropertyExpressionButton extends ExpressionButton {
     private static final long serialVersionUID = 1L;
 
-    public PropertyExpressionButton(Configurer config, int size,
-        EditablePiece piece) {
+    public PropertyExpressionButton(Configurer config, int size, EditablePiece piece) {
       super(config, size, piece);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      new PropertyExpressionBuilder(config, (JDialog) getTopLevelAncestor(), piece).setVisible(true);
+      new PropertyExpressionBuilder(config, (JDialog) getTopLevelAncestor(), piece)
+          .setVisible(true);
     }
-
-
   }
-
 }

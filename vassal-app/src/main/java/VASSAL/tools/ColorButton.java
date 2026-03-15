@@ -17,6 +17,7 @@
  */
 package VASSAL.tools;
 
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -24,12 +25,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.geom.AffineTransform;
-
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.UIManager;
-
-import VASSAL.tools.swing.SwingUtils;
 
 /**
  * A {@link JButton} which displays a color swatch.
@@ -43,18 +41,16 @@ public class ColorButton extends JButton {
 
   private Color color;
 
-  /**
-   * Create a button with no color.
-   */
+  /** Create a button with no color. */
   public ColorButton() {
     this(null);
   }
 
- /**
-  * Create a button with the specified color.
-  *
-  * @param c the color to set
-  */
+  /**
+   * Create a button with the specified color.
+   *
+   * @param c the color to set
+   */
   public ColorButton(Color c) {
     super();
     color = c;
@@ -89,8 +85,8 @@ public class ColorButton extends JButton {
 
       x *= os_scale;
       y *= os_scale;
-      final int w = (int)(swatchWidth * os_scale);
-      final int h = (int)(swatchHeight * os_scale);
+      final int w = (int) (swatchWidth * os_scale);
+      final int h = (int) (swatchHeight * os_scale);
 
       g.setColor(Color.black);
       g.drawRect(x, y, w - 1, h - 1);
@@ -98,16 +94,16 @@ public class ColorButton extends JButton {
       if (color != null) {
         g.setColor(color);
         g.fillRect(x + 1, y + 1, w - 2, h - 2);
-      }
-      else {
+      } else {
         // paint no color and a "nil" if the color is null
         g2d.addRenderingHints(SwingUtils.FONT_HINTS);
         g.setColor(UIManager.getColor("controlText"));
-        final Font font = FONT.deriveFont((float)(FONT.getSize() * os_scale));
+        final Font font = FONT.deriveFont((float) (FONT.getSize() * os_scale));
         g.setFont(font);
-        g.drawString("nil", //NON-NLS
-          x + (w - g.getFontMetrics(font).stringWidth("nil")) / 2, //NON-NLS
-          y + (h + g.getFontMetrics(font).getAscent()) / 2);
+        g.drawString(
+            "nil", // NON-NLS
+            x + (w - g.getFontMetrics(font).stringWidth("nil")) / 2, // NON-NLS
+            y + (h + g.getFontMetrics(font).getAscent()) / 2);
       }
 
       g2d.setTransform(orig_t);

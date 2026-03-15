@@ -16,6 +16,9 @@
  */
 package VASSAL.tools;
 
+import VASSAL.i18n.Resources;
+import VASSAL.tools.io.FileArchive;
+import VASSAL.tools.io.ZipArchive;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,36 +39,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.swing.JOptionPane;
 
-import VASSAL.i18n.Resources;
-import VASSAL.tools.io.FileArchive;
-import VASSAL.tools.io.ZipArchive;
-
-/**
- * Wrapper around a Zip archive with methods to cache images
- */
+/** Wrapper around a Zip archive with methods to cache images */
 public class DataArchive extends SecureClassLoader implements Closeable {
 
   protected FileArchive archive;
 
   protected List<DataArchive> extensions = new ArrayList<>();
 
-// FIXME: these should go into a cache, like images have
-  private final Map<String, AudioClip> soundCache =
-    new HashMap<>();
+  // FIXME: these should go into a cache, like images have
+  private final Map<String, AudioClip> soundCache = new HashMap<>();
 
   protected SortedSet<String> localImages = null;
   protected SortedSet<String>[] cachedLocalImages = new SortedSet[4];
 
-  public static final String IMAGE_DIR = "images/"; //NON-NLS
+  public static final String IMAGE_DIR = "images/"; // NON-NLS
   protected String imageDir = IMAGE_DIR;
 
-  public static final String SOUND_DIR = "sounds/"; //NON-NLS
+  public static final String SOUND_DIR = "sounds/"; // NON-NLS
   protected String soundDir = SOUND_DIR;
 
-  public static final String ICON_DIR = "icons/"; //NON-NLS
+  public static final String ICON_DIR = "icons/"; // NON-NLS
 
   protected DataArchive() {
     super(DataArchive.class.getClassLoader());
@@ -84,7 +79,7 @@ public class DataArchive extends SecureClassLoader implements Closeable {
 
   @Override
   public String getName() {
-    return archive == null ? "data archive" : archive.getName(); //NON-NLS
+    return archive == null ? "data archive" : archive.getName(); // NON-NLS
   }
 
   public FileArchive getArchive() {
@@ -99,10 +94,9 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     final String path = soundDir + name;
     AudioClip clip = soundCache.get(path);
     if (clip == null) {
-      if (name.toLowerCase().endsWith(".mp3")) { //NON-NLS
+      if (name.toLowerCase().endsWith(".mp3")) { // NON-NLS
         clip = new Mp3AudioClip(path);
-      }
-      else {
+      } else {
         try (InputStream stream = getInputStream(path)) {
           clip = new AudioSystemClip(stream);
         }
@@ -121,15 +115,14 @@ public class DataArchive extends SecureClassLoader implements Closeable {
    * @throws IOException if there is a problem reading the file
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public InputStream getInputStream(String fileName)
-                                    throws IOException, FileNotFoundException {
+  public InputStream getInputStream(String fileName) throws IOException, FileNotFoundException {
     // requested file is a resource, try our JARs
     if (fileName.startsWith("/")) {
       final InputStream in = getClass().getResourceAsStream(fileName);
       if (in != null) {
         return in;
       }
-      throw new FileNotFoundException("Resource not found: " + fileName); //NON-NLS
+      throw new FileNotFoundException("Resource not found: " + fileName); // NON-NLS
     }
 
     // Look in this archive and its extensions
@@ -160,13 +153,13 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     }
 
     // Maybe it's an extensionless GIF? Aauugh!
-    in = getInputStreamImpl(fileName + ".gif"); //NON-NLS
+    in = getInputStreamImpl(fileName + ".gif"); // NON-NLS
     if (in != null) {
       return in;
     }
 
     // Maybe it's an extensionless GIF resource. Aauugh!
-    in = getClass().getResourceAsStream("/" + fileName + ".gif"); //NON-NLS
+    in = getClass().getResourceAsStream("/" + fileName + ".gif"); // NON-NLS
     if (in != null) {
       return in;
     }
@@ -175,13 +168,10 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     // End of ridiculous crap
     //
 
-    throw new FileNotFoundException(
-      "'" + fileName + "' not found in " + getName()
-    );
+    throw new FileNotFoundException("'" + fileName + "' not found in " + getName());
   }
 
-  private InputStream getInputStreamImpl(String fileName)
-                                    throws IOException {
+  private InputStream getInputStreamImpl(String fileName) throws IOException {
     // requested file is in this archive
     if (archive != null && archive.contains(fileName)) {
       return archive.getInputStream(fileName);
@@ -191,8 +181,7 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     for (final DataArchive ext : extensions) {
       try {
         return ext.getInputStream(fileName);
-      }
-      catch (FileNotFoundException | NoSuchFileException ignored) {
+      } catch (FileNotFoundException | NoSuchFileException ignored) {
         // not found in this extension, try the next
       }
     }
@@ -239,14 +228,12 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     for (final DataArchive ext : extensions) {
       try {
         return ext.getURL(fileName);
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         // not found in this extension, try the next
       }
     }
 
-    throw new FileNotFoundException(
-      "'" + fileName + "' not found in " + getName());
+    throw new FileNotFoundException("'" + fileName + "' not found in " + getName());
   }
 
   public boolean contains(String fileName) throws IOException {
@@ -297,7 +284,8 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     return i;
   }
 
-  protected void getImageNamesRecursively(SortedSet<String> s, boolean localized, boolean fullPath) {
+  protected void getImageNamesRecursively(
+      SortedSet<String> s, boolean localized, boolean fullPath) {
     final int index = getLocalImagesCacheIndex(localized, fullPath);
     if (cachedLocalImages[index] == null) {
       cachedLocalImages[index] = getAllLocalImageNames(localized, fullPath);
@@ -325,8 +313,7 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     final List<String> files;
     try {
       files = archive.getFiles("");
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // FIXME: don't swallow this exception!
       e.printStackTrace();
       return;
@@ -351,7 +338,8 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     list.addAll(dirs);
   }
 
-  protected void getAllLocalImageNamesForDirectory(SortedSet<String> s, String directory, boolean fullPath) {
+  protected void getAllLocalImageNamesForDirectory(
+      SortedSet<String> s, String directory, boolean fullPath) {
     // trim the trailing slash
     final int trimlen = directory.length();
     final String root = directory.substring(0, trimlen - 1);
@@ -364,8 +352,7 @@ public class DataArchive extends SecureClassLoader implements Closeable {
           s.add(fn);
         }
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // FIXME: don't swallow this exception!
       e.printStackTrace();
     }
@@ -379,7 +366,7 @@ public class DataArchive extends SecureClassLoader implements Closeable {
       directories.add(imageDir);
       if (localized) {
         buildLocalizedDirectoryList(directories);
-      }      
+      }
       for (final String directory : directories) {
         getAllLocalImageNamesForDirectory(s, directory, fullPath);
       }
@@ -387,10 +374,9 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     return s;
   }
 
-
   /**
-   * DataArchives can extend other archives. The extensions will be
-   * searched for data if not found in the parent archive.
+   * DataArchives can extend other archives. The extensions will be searched for data if not found
+   * in the parent archive.
    *
    * @param ext the extension
    */
@@ -399,8 +385,8 @@ public class DataArchive extends SecureClassLoader implements Closeable {
   }
 
   /**
-   * Return the writeable instance of DataArchive, either this or one
-   * of its extensions. (At most one archive should be edited at a time.)
+   * Return the writeable instance of DataArchive, either this or one of its extensions. (At most
+   * one archive should be edited at a time.)
    *
    * @return writer
    */
@@ -415,20 +401,19 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     return null;
   }
 
-/////////////////////////////////////////////////////////////////////
-// Methods overridden from SecureClassLoader
-/////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
+  // Methods overridden from SecureClassLoader
+  /////////////////////////////////////////////////////////////////////
 
   @Override
   public synchronized Class<?> loadClass(String name, boolean resolve)
-                                         throws ClassNotFoundException {
-// FIXME: why is this method this way?
+      throws ClassNotFoundException {
+    // FIXME: why is this method this way?
     Class<?> c;
     try {
-//      c = findSystemClass(name);
+      //      c = findSystemClass(name);
       c = Class.forName(name);
-    }
-    catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       c = findLoadedClass(name);
     }
 
@@ -448,18 +433,16 @@ public class DataArchive extends SecureClassLoader implements Closeable {
     return p;
   }
 
-  private static final CodeSource cs =
-    new CodeSource(null, (Certificate[]) null);
+  private static final CodeSource cs = new CodeSource(null, (Certificate[]) null);
 
   @Override
   protected Class<?> findClass(String name) throws ClassNotFoundException {
     final String slashname = name.replace('.', '/');
     final byte[] data;
 
-    try (InputStream stream = getInputStream(slashname + ".class")) { //NON-NLS
+    try (InputStream stream = getInputStream(slashname + ".class")) { // NON-NLS
       data = stream.readAllBytes();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ClassNotFoundException("Unable to load class " + name, e);
     }
 
@@ -468,15 +451,15 @@ public class DataArchive extends SecureClassLoader implements Closeable {
 
     if (major > 55 || (major == 55 && minor != 0)) {
       ProblemDialog.showDisableable(
-        JOptionPane.WARNING_MESSAGE,
-        null,
-        null,
-        cs,
-        Resources.getString("Dialogs.incompatible.title"),
-        Resources.getString("Dialogs.incompatible.heading"),
-        Resources.getString("Dialogs.incompatible.message", name) + "\n\n"
-          + Resources.getString("Dialogs.check_for_updated_module")
-      );
+          JOptionPane.WARNING_MESSAGE,
+          null,
+          null,
+          cs,
+          Resources.getString("Dialogs.incompatible.title"),
+          Resources.getString("Dialogs.incompatible.heading"),
+          Resources.getString("Dialogs.incompatible.message", name)
+              + "\n\n"
+              + Resources.getString("Dialogs.check_for_updated_module"));
     }
 
     return defineClass(name, data, 0, data.length, cs);

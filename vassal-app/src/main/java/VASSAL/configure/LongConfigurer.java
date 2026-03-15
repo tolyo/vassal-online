@@ -40,8 +40,7 @@ public class LongConfigurer extends StringConfigurer {
     Long l;
     try {
       l = Long.valueOf(s);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       l = null;
     }
     if (l != null) {
@@ -52,8 +51,7 @@ public class LongConfigurer extends StringConfigurer {
   public long getLongValue(long defaultValue) {
     if (getValue() instanceof Long) {
       return (Long) getValue();
-    }
-    else {
+    } else {
       return defaultValue;
     }
   }

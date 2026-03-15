@@ -20,14 +20,12 @@ package VASSAL.i18n;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerPanel;
 import VASSAL.tools.SequenceEncoder;
-
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,10 +34,9 @@ import javax.swing.JPanel;
  * Configure a Locale Value using full, localized Language and Country names
  *
  * @author Brent Easton
- *
  */
 public class LocaleConfigurer extends Configurer {
-  //FIXME needs an i18n strategy
+  // FIXME needs an i18n strategy
   protected static final String ANY_COUNTRY = "[Any Country]";
   protected JPanel panel;
   protected static final Map<String, String> languages = new HashMap<>();
@@ -97,9 +94,9 @@ public class LocaleConfigurer extends Configurer {
     final String country;
     if (c.length() == 0) {
       country = ANY_COUNTRY;
-    }
-    else {
-      country = (new Locale(Locale.getDefault().getLanguage(), c)).getDisplayCountry(Locale.getDefault());
+    } else {
+      country =
+          (new Locale(Locale.getDefault().getLanguage(), c)).getDisplayCountry(Locale.getDefault());
     }
     countryBox.setSelectedItem(country);
   }
@@ -120,7 +117,6 @@ public class LocaleConfigurer extends Configurer {
       countryBox.addActionListener(e -> updateValue());
       panel.add(new JLabel((Resources.getString("Editor.LocaleConfigurer.country"))));
       panel.add(countryBox);
-
     }
     return panel;
   }
@@ -153,7 +149,7 @@ public class LocaleConfigurer extends Configurer {
       final List<String> sortedCountries = new ArrayList<>();
       for (final String s : c) {
         final String country =
-                (new Locale("en", s)).getDisplayCountry(Locale.getDefault()); //NON-NLS
+            (new Locale("en", s)).getDisplayCountry(Locale.getDefault()); // NON-NLS
         countries.put(country, s);
         sortedCountries.add(country);
       }

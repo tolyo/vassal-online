@@ -17,18 +17,19 @@
  */
 package VASSAL.tools.io;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.junit.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ObfuscatingOutputStreamTest {
   // A popular pangram.
   private final String plain = "All jackdaws love my great sphinx of quartz.";
 
   // The same pangram, obfuscated.
-  private final String obfus = "!VCSK581934347832393b333c392f2b7834372e3d783521783f2a3d392c782b283031362078373e78292d392a2c2276";
+  private final String obfus =
+      "!VCSK581934347832393b333c392f2b7834372e3d783521783f2a3d392c782b283031362078373e78292d392a2c2276";
 
   // The key used for the obfuscated text.
   private final byte key = (byte) 0x58;

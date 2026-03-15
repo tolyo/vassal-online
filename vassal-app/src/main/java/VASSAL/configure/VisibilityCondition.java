@@ -20,5 +20,4 @@ package VASSAL.configure;
 @FunctionalInterface
 public interface VisibilityCondition {
   boolean shouldBeVisible();
-
 }

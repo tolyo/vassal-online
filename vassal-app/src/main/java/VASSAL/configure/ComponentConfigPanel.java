@@ -2,15 +2,11 @@ package VASSAL.configure;
 
 import VASSAL.counters.TraitConfigPanel;
 
-/**
- * A standardised Panel for use by Component configurers
- */
+/** A standardised Panel for use by Component configurers */
 public class ComponentConfigPanel extends TraitConfigPanel {
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Create a new default Component Config Panel
-   */
+  /** Create a new default Component Config Panel */
   public ComponentConfigPanel() {
     this(false);
   }

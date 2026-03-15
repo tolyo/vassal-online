@@ -18,11 +18,10 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.lang.Callback;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-
-import VASSAL.tools.lang.Callback;
 
 /**
  * Slices an image into tiles.
@@ -44,12 +43,12 @@ public interface TileSlicer {
    * @param progress a callback for indicating progress
    */
   void slice(
-    BufferedImage src,
-    String iname,
-    String tpath,
-    int tw,
-    int th,
-    ExecutorService exec,
-    Callback<Void> progress
-  ) throws IOException;
+      BufferedImage src,
+      String iname,
+      String tpath,
+      int tw,
+      int th,
+      ExecutorService exec,
+      Callback<Void> progress)
+      throws IOException;
 }

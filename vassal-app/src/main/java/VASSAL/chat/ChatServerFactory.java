@@ -27,9 +27,8 @@ import java.util.Properties;
  * @author rkinney
  */
 public abstract class ChatServerFactory {
-  public static final String TYPE_KEY = "type"; //$NON-NLS-1$
-  private static final Map<String, ChatServerFactory> factories =
-    new HashMap<>();
+  public static final String TYPE_KEY = "type"; // $NON-NLS-1$
+  private static final Map<String, ChatServerFactory> factories = new HashMap<>();
 
   public abstract ChatServerConnection buildServer(Properties param);
 

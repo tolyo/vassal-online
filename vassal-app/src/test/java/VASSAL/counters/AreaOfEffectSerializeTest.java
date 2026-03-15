@@ -3,26 +3,23 @@ package VASSAL.counters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.awt.Color;
-
-import org.junit.jupiter.api.Test;
-
 import VASSAL.tools.NamedKeyStroke;
-
+import java.awt.Color;
+import org.junit.jupiter.api.Test;
 
 public class AreaOfEffectSerializeTest extends SerializeTest<AreaOfEffect> {
   @Test
   public void serialize() throws Exception {
     AreaOfEffect aoe = new AreaOfEffect();
     aoe.transparencyColor = Color.black;
-      aoe.transparencyLevel = (float)1.0;
-      aoe.radius = 2;
-      aoe.alwaysActive = true;
-      aoe.activateCommand = "testActivateCommand";
-      aoe.activateKey = NamedKeyStroke.of("A");
-      aoe.mapShaderName = "testMapShaderName";
-      aoe.fixedRadius = true;
-      aoe.radiusMarker = "testRadiusMarker";
+    aoe.transparencyLevel = (float) 1.0;
+    aoe.radius = 2;
+    aoe.alwaysActive = true;
+    aoe.activateCommand = "testActivateCommand";
+    aoe.activateKey = NamedKeyStroke.of("A");
+    aoe.mapShaderName = "testMapShaderName";
+    aoe.fixedRadius = true;
+    aoe.radiusMarker = "testRadiusMarker";
     aoe.description = "testDesc";
     super.serializeTest(AreaOfEffect.class, aoe);
   }

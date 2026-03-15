@@ -17,15 +17,12 @@
  */
 package VASSAL.counters;
 
-import java.awt.Point;
-
 import VASSAL.build.module.Map;
 import VASSAL.build.module.map.boardPicker.Board;
 import VASSAL.build.module.map.boardPicker.board.MapGrid;
+import java.awt.Point;
 
-/**
- * Accepts all pieces within a specified range of a given point on a map
- */
+/** Accepts all pieces within a specified range of a given point on a map */
 public class RangeFilter implements PieceFilter {
   private final Map map;
   private final Point position;
@@ -45,10 +42,10 @@ public class RangeFilter implements PieceFilter {
     boolean accept = false;
     if (piece.getMap() == map) {
       final Point pos = piece.getPosition();
-      final int theRange = grid != null ? grid.range(position, pos) : (int) Math.round(position.distance(pos));
+      final int theRange =
+          grid != null ? grid.range(position, pos) : (int) Math.round(position.distance(pos));
       accept = theRange <= range;
     }
     return accept;
   }
-
 }

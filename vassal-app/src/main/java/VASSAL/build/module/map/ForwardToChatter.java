@@ -17,26 +17,24 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
- * This KeyListener forwards key event from a {@link Map} to the
- * {@link VASSAL.build.module.Chatter} The event is forwarded only if
- * not consumed
+ * This KeyListener forwards key event from a {@link Map} to the {@link VASSAL.build.module.Chatter}
+ * The event is forwarded only if not consumed
  *
  * @see VASSAL.build.module.Chatter#keyCommand
- * @see InputEvent#isConsumed */
+ * @see InputEvent#isConsumed
+ */
 public class ForwardToChatter implements Buildable, KeyListener {
   @Override
-  public void build(org.w3c.dom.Element e) {
-  }
+  public void build(org.w3c.dom.Element e) {}
 
   @Override
   public void addTo(Buildable parent) {
@@ -45,8 +43,7 @@ public class ForwardToChatter implements Buildable, KeyListener {
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
   public org.w3c.dom.Element getBuildElement(org.w3c.dom.Document doc) {

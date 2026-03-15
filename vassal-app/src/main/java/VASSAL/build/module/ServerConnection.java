@@ -19,14 +19,15 @@ import VASSAL.command.Command;
  * License along with this library; if not, copies are available
  * at http://www.opensource.org.
  */
-/**
- * Represents the connection to a live server
- */
+/** Represents the connection to a live server */
 public interface ServerConnection {
-  /** Name of the property fired when the connection is opened/closed. Value is Boolean.TRUE or Boolean.FALSE */
-  String CONNECTED = "Connected"; //$NON-NLS-1$
+  /**
+   * Name of the property fired when the connection is opened/closed. Value is Boolean.TRUE or
+   * Boolean.FALSE
+   */
+  String CONNECTED = "Connected"; // $NON-NLS-1$
 
-  String CONNECTION_LOST = "Connection Lost"; //$NON-NLS-1$
+  String CONNECTION_LOST = "Connection Lost"; // $NON-NLS-1$
 
   /** Send a command to other players on the server */
   void sendToOthers(Command c);
@@ -36,8 +37,8 @@ public interface ServerConnection {
   boolean isConnected();
 
   /**
-   * Register a PropertyChangeListener. Changes to connection status triggers a PropertyChangeEvent, and concrete
-   * implementations may define other properties
+   * Register a PropertyChangeListener. Changes to connection status triggers a PropertyChangeEvent,
+   * and concrete implementations may define other properties
    */
   void addPropertyChangeListener(String propertyName, java.beans.PropertyChangeListener l);
 }

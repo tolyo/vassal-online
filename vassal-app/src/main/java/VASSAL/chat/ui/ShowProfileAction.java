@@ -17,20 +17,16 @@
  */
 package VASSAL.chat.ui;
 
+import VASSAL.chat.PlayerInfoWindow;
+import VASSAL.chat.SimplePlayer;
+import VASSAL.i18n.Resources;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
-import VASSAL.chat.PlayerInfoWindow;
-import VASSAL.chat.SimplePlayer;
-import VASSAL.i18n.Resources;
-
-/**
- * When invoked, will show profile information about another player
- */
+/** When invoked, will show profile information about another player */
 public class ShowProfileAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -38,7 +34,7 @@ public class ShowProfileAction extends AbstractAction {
   private final Frame f;
 
   public ShowProfileAction(SimplePlayer p, Frame f) {
-    super(Resources.getString("Chat.show_profile")); //$NON-NLS-1$
+    super(Resources.getString("Chat.show_profile")); // $NON-NLS-1$
     this.p = p;
     this.f = f;
   }
@@ -49,9 +45,7 @@ public class ShowProfileAction extends AbstractAction {
   }
 
   public static PlayerActionFactory factory() {
-    return (SimplePlayer p, JTree tree) -> new ShowProfileAction(
-      p,
-      (Frame) SwingUtilities.getAncestorOfClass(Frame.class, tree)
-    );
+    return (SimplePlayer p, JTree tree) ->
+        new ShowProfileAction(p, (Frame) SwingUtilities.getAncestorOfClass(Frame.class, tree));
   }
 }

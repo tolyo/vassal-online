@@ -18,6 +18,9 @@
 
 package VASSAL.tools.swing;
 
+import VASSAL.build.GameModule;
+import VASSAL.tools.ReadErrorDialog;
+import VASSAL.tools.ScrollPane;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -25,15 +28,10 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.io.IOException;
 import java.net.URL;
-
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
-import VASSAL.build.GameModule;
-import VASSAL.tools.ReadErrorDialog;
-import VASSAL.tools.ScrollPane;
 
 public class HTMLWindowHelper implements HyperlinkListener {
   private final JEditorPane pane = new JEditorPane();
@@ -63,12 +61,10 @@ public class HTMLWindowHelper implements HyperlinkListener {
     if (contents != null) {
       try {
         pane.setPage(contents);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, contents.toString());
       }
-    }
-    else {
+    } else {
       pane.setText("");
     }
   }
@@ -77,7 +73,9 @@ public class HTMLWindowHelper implements HyperlinkListener {
     final ScrollPane s = new ScrollPane(pane);
     final Font f = new JLabel().getFont();
     final FontMetrics fm = w.getFontMetrics(f);
-    s.getVerticalScrollBar().setUnitIncrement(fm.getHeight() * 3); //BR// Mousewheel scrolls 3 lines of default JLabel font height
+    s.getVerticalScrollBar()
+        .setUnitIncrement(
+            fm.getHeight() * 3); // BR// Mousewheel scrolls 3 lines of default JLabel font height
     w.add(s);
     update(contents);
     w.pack();

@@ -17,9 +17,10 @@
 
 package VASSAL.launch;
 
-/** This class exists solely for checking if Java can load classes compiled
-    with the class version we've used. Do not add code to this class. */
+/**
+ * This class exists solely for checking if Java can load classes compiled with the class version
+ * we've used. Do not add code to this class.
+ */
 public final class JavaVersionChecker {
-  public static void main(String[] args) {
-  }
+  public static void main(String[] args) {}
 }

@@ -19,13 +19,16 @@ package VASSAL.counters;
 
 import VASSAL.tools.NamedKeyStroke;
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 public class GlobalHotKeyTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     GlobalHotKey trait = new GlobalHotKey();
 
@@ -39,6 +42,5 @@ public class GlobalHotKeyTest extends DecoratorTest {
     trait.globalHotKey = NamedKeyStroke.of("Plugh"); // NON-NLS
     trait.description = "plover"; // NON-NLS
     serializeTest("Complex Test", trait); // NON-NLS
-
   }
 }

@@ -1,7 +1,6 @@
 package VASSAL.tools.swing;
 
 import VASSAL.tools.DataArchive;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
@@ -11,10 +10,10 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.InlineView;
 
 /**
- * Extended HTML Editor kit to let the <src> tag display images from the
- * module DataArchive where no pathname is included in the image name.
+ * Extended HTML Editor kit to let the <src> tag display images from the module DataArchive where no
+ * pathname is included in the image name.
  *
- * This version also allows the inline images to be vertically aligned w/r/t the text
+ * <p>This version also allows the inline images to be vertically aligned w/r/t the text
  */
 public class LabelerDataArchiveHTMLEditorKit extends DataArchiveHTMLEditorKit {
   private static final long serialVersionUID = 1L;
@@ -24,7 +23,7 @@ public class LabelerDataArchiveHTMLEditorKit extends DataArchiveHTMLEditorKit {
   }
 
   float valignImagesDefault = 0.5f;
-  float valignTextDefault   = 0.5f;
+  float valignTextDefault = 0.5f;
 
   public void setValignImagesDefault(float align) {
     valignImagesDefault = align;
@@ -38,13 +37,11 @@ public class LabelerDataArchiveHTMLEditorKit extends DataArchiveHTMLEditorKit {
     final AttributeSet attrs = e.getAttributes();
     final String v = (String) attrs.getAttribute(HTML.Attribute.VALIGN);
 
-    if ("top".equals(v)) { //NON-NLS
+    if ("top".equals(v)) { // NON-NLS
       return 0f;
-    }
-    else if ("middle".equals(v)) { //NON-NLS
+    } else if ("middle".equals(v)) { // NON-NLS
       return .5f;
-    }
-    else if ("bottom".equals(v)) { //NON-NLS
+    } else if ("bottom".equals(v)) { // NON-NLS
       return 1.0f;
     }
     return def;
@@ -66,10 +63,10 @@ public class LabelerDataArchiveHTMLEditorKit extends DataArchiveHTMLEditorKit {
     @Override
     public float getAlignment(int axis) {
       switch (axis) {
-      case Y_AXIS:
-        return valign;
-      default:
-        return super.getAlignment(axis);
+        case Y_AXIS:
+          return valign;
+        default:
+          return super.getAlignment(axis);
       }
     }
   }
@@ -79,17 +76,17 @@ public class LabelerDataArchiveHTMLEditorKit extends DataArchiveHTMLEditorKit {
 
     public LabelerDataArchiveImageView(Element e) {
       super(e);
-      setLoadsSynchronously(true); //BR// make sure these actually load
+      setLoadsSynchronously(true); // BR// make sure these actually load
       valign = getValign(e, valignImagesDefault);
     }
 
     @Override
     public float getAlignment(int axis) {
       switch (axis) {
-      case Y_AXIS:
-        return valign;
-      default:
-        return super.getAlignment(axis);
+        case Y_AXIS:
+          return valign;
+        default:
+          return super.getAlignment(axis);
       }
     }
   }

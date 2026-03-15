@@ -24,9 +24,7 @@ public class SortParameter {
   private boolean descendingSort = false;
   private boolean numericSort;
 
-  public SortParameter() {
-
-  }
+  public SortParameter() {}
 
   public SortParameter(String code) {
     this();

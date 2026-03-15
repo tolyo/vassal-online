@@ -18,13 +18,10 @@
 package VASSAL.build.module.map.deck;
 
 import VASSAL.counters.GamePiece;
-
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Compare 2 GamePieces based on a List of SortParameters
- */
+/** Compare 2 GamePieces based on a List of SortParameters */
 public class SortParameterComparator implements Comparator<GamePiece> {
 
   private final List<SortParameter> sortParameters;
@@ -35,7 +32,7 @@ public class SortParameterComparator implements Comparator<GamePiece> {
 
   @Override
   public int compare(GamePiece piece1, GamePiece piece2) {
-    boolean ascending = ! sortParameters.get(0).isDescendingSort();
+    boolean ascending = !sortParameters.get(0).isDescendingSort();
 
     if (piece2 == null) {
       return ascending ? -1 : 1;
@@ -44,7 +41,7 @@ public class SortParameterComparator implements Comparator<GamePiece> {
     // Loop through each level of Sort Parameters
     for (final SortParameter sp : sortParameters) {
       final String sortProperty = sp.getSortProperty();
-      ascending = ! sp.isDescendingSort();
+      ascending = !sp.isDescendingSort();
 
       final String property2 = (String) piece2.getProperty(sortProperty);
       if (property2 == null) return ascending ? -1 : 1;
@@ -60,12 +57,10 @@ public class SortParameterComparator implements Comparator<GamePiece> {
           final int result = num2.compareTo(num1);
           if (result == 0) {
             continue; // Equal, Check next level
-          }
-          else {
+          } else {
             return result * (ascending ? 1 : -1);
           }
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
           // no action, we revert to string.
         }
       }
@@ -74,15 +69,12 @@ public class SortParameterComparator implements Comparator<GamePiece> {
       final int result = property2.compareTo(property1);
       if (result == 0) {
         continue; // Equal, Check next level
-      }
-      else {
+      } else {
         return result * (ascending ? 1 : -1);
       }
-
     }
 
     // Drops through all comparisons, must be equal
     return 0;
   }
-
 }

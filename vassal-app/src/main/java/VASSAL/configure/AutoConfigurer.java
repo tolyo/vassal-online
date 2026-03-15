@@ -26,7 +26,6 @@ import VASSAL.script.expression.FormattedStringExpression;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.ReflectionUtils;
 import VASSAL.tools.swing.SwingUtils;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
@@ -38,23 +37,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-
 import net.miginfocom.swing.MigLayout;
 
 /**
- * A Configurer for configuring Configurable components
- * (Is that as redundant as it sounds?)
- * Automatically builds a property editor with controls for setting all
- * of the attributes of the target Configurable component
+ * A Configurer for configuring Configurable components (Is that as redundant as it sounds?)
+ * Automatically builds a property editor with controls for setting all of the attributes of the
+ * target Configurable component
  */
-public class AutoConfigurer extends Configurer
-  implements PropertyChangeListener {
+public class AutoConfigurer extends Configurer implements PropertyChangeListener {
   protected JPanel p;
   protected AutoConfigurable target;
   protected List<Configurer> configurers = new ArrayList<>();
@@ -66,14 +61,18 @@ public class AutoConfigurer extends Configurer
 
     target = c;
     setValue(target);
-    target.addPropertyChangeListener(evt -> {
-      if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
-        setName((String) evt.getNewValue());
-      }
-    });
+    target.addPropertyChangeListener(
+        evt -> {
+          if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
+            setName((String) evt.getNewValue());
+          }
+        });
 
     p = new JPanel();
-    p.setLayout(new MigLayout("ins panel," + ConfigurerLayout.STANDARD_GAPY + ", hidemode 3", "[align right]rel[fill,grow]")); // NON-NLS
+    p.setLayout(
+        new MigLayout(
+            "ins panel," + ConfigurerLayout.STANDARD_GAPY + ", hidemode 3",
+            "[align right]rel[fill,grow]")); // NON-NLS
 
     final String[] name = c.getAttributeNames();
     final String[] prompt = c.getAttributeDescriptions();
@@ -93,17 +92,13 @@ public class AutoConfigurer extends Configurer
         // Add field hints for common labels
         if (Resources.getString("Editor.menu_command").equals(prompt[i])) {
           config.setHintKey("Editor.menu_command_hint");
-        }
-        else if (Resources.getString("Editor.description_label").equals(prompt[i])) {
+        } else if (Resources.getString("Editor.description_label").equals(prompt[i])) {
           config.setHintKey("Editor.description_component_hint");
-        }
-        else if (Resources.getString("Editor.report_format").equals(prompt[i])) {
+        } else if (Resources.getString("Editor.report_format").equals(prompt[i])) {
           config.setHintKey("Editor.report_format_hint");
-        }
-        else if (Resources.getString("Editor.button_text_label").equals(prompt[i])) {
+        } else if (Resources.getString("Editor.button_text_label").equals(prompt[i])) {
           config.setHintKey("Editor.button_text_hint");
-        }
-        else if (Resources.getString("Editor.tooltip_text_label").equals(prompt[i])) {
+        } else if (Resources.getString("Editor.tooltip_text_label").equals(prompt[i])) {
           config.setHintKey("Editor.tooltip_text_hint");
         }
         final JLabel label = new JLabel(prompt[i]);
@@ -118,59 +113,41 @@ public class AutoConfigurer extends Configurer
     }
   }
 
-  public static Configurer createConfigurer(Class<?> type,
-                                            String key,
-                                            String prompt,
-                                            AutoConfigurable target) {
+  public static Configurer createConfigurer(
+      Class<?> type, String key, String prompt, AutoConfigurable target) {
     Configurer config = null;
 
     if (String.class.isAssignableFrom(type)) {
       config = new StringConfigurer(key, prompt);
-    }
-    else if (Integer.class.isAssignableFrom(type)) {
+    } else if (Integer.class.isAssignableFrom(type)) {
       config = new IntConfigurer(key, prompt);
-    }
-    else if (Double.class.isAssignableFrom(type)) {
+    } else if (Double.class.isAssignableFrom(type)) {
       config = new DoubleConfigurer(key, prompt);
-    }
-    else if (Boolean.class.isAssignableFrom(type)) {
+    } else if (Boolean.class.isAssignableFrom(type)) {
       config = new BooleanConfigurer(key, prompt);
-    }
-    else if (Image.class.isAssignableFrom(type)) {
-      config = new ImageConfigurer(key, prompt,
-        GameModule.getGameModule().getArchiveWriter());
-    }
-    else if (Color.class.isAssignableFrom(type)) {
+    } else if (Image.class.isAssignableFrom(type)) {
+      config = new ImageConfigurer(key, prompt, GameModule.getGameModule().getArchiveWriter());
+    } else if (Color.class.isAssignableFrom(type)) {
       config = new ColorConfigurer(key, prompt);
-    }
-    else if (KeyStroke.class.isAssignableFrom(type)) {
+    } else if (KeyStroke.class.isAssignableFrom(type)) {
       config = new HotKeyConfigurer(key, prompt);
-    }
-    else if (NamedKeyStroke.class.isAssignableFrom(type)) {
+    } else if (NamedKeyStroke.class.isAssignableFrom(type)) {
       config = new NamedHotKeyConfigurer(key, prompt);
-    }
-    else if (File.class.isAssignableFrom(type)) {
-      config = new FileConfigurer(key, prompt,
-        GameModule.getGameModule().getArchiveWriter());
-    }
-    else if (String[].class.isAssignableFrom(type)) {
+    } else if (File.class.isAssignableFrom(type)) {
+      config = new FileConfigurer(key, prompt, GameModule.getGameModule().getArchiveWriter());
+    } else if (String[].class.isAssignableFrom(type)) {
       config = new StringArrayConfigurer(key, prompt);
-    }
-    else if (Icon.class.isAssignableFrom(type)) {
+    } else if (Icon.class.isAssignableFrom(type)) {
       config = new IconConfigurer(key, prompt, null);
-    }
-    else if (PropertyExpression.class.isAssignableFrom(type)) {
+    } else if (PropertyExpression.class.isAssignableFrom(type)) {
       config = new PropertyExpressionConfigurer(key, prompt);
-    }
-    else if (FormattedStringExpression.class.isAssignableFrom(type)) {
+    } else if (FormattedStringExpression.class.isAssignableFrom(type)) {
       config = new FormattedExpressionConfigurer(key, prompt);
-    }
-    else if (TranslatableStringEnum.class.isAssignableFrom(type)) {
+    } else if (TranslatableStringEnum.class.isAssignableFrom(type)) {
       TranslatableStringEnum se = null;
       try {
         se = (TranslatableStringEnum) type.getConstructor().newInstance();
-      }
-      catch (Throwable t) {
+      } catch (Throwable t) {
         ReflectionUtils.handleNewInstanceFailure(t, type);
         config = new StringConfigurer(key, prompt);
       }
@@ -178,15 +155,15 @@ public class AutoConfigurer extends Configurer
       if (se != null) {
         final String[] validValues = se.getValidValues(target);
         final String[] i18nKeys = se.getI18nKeys(target);
-        config = new TranslatingStringEnumConfigurer(key, prompt, validValues, i18nKeys, se.isDisplayNames());
+        config =
+            new TranslatingStringEnumConfigurer(
+                key, prompt, validValues, i18nKeys, se.isDisplayNames());
       }
-    }
-    else if (StringEnum.class.isAssignableFrom(type)) {
+    } else if (StringEnum.class.isAssignableFrom(type)) {
       StringEnum se = null;
       try {
         se = (StringEnum) type.getConstructor().newInstance();
-      }
-      catch (Throwable t) {
+      } catch (Throwable t) {
         ReflectionUtils.handleNewInstanceFailure(t, type);
         config = new StringConfigurer(key, prompt);
       }
@@ -195,21 +172,18 @@ public class AutoConfigurer extends Configurer
         final String[] validValues = se.getValidValues(target);
         config = new StringEnumConfigurer(key, prompt, validValues);
       }
-    }
-    else if (ConfigurerFactory.class.isAssignableFrom(type)) {
+    } else if (ConfigurerFactory.class.isAssignableFrom(type)) {
       ConfigurerFactory cf = null;
       try {
         cf = (ConfigurerFactory) type.getConstructor().newInstance();
-      }
-      catch (Throwable t) {
+      } catch (Throwable t) {
         ReflectionUtils.handleNewInstanceFailure(t, type);
       }
 
       if (cf != null) {
         config = cf.getConfigurer(target, key, prompt);
       }
-    }
-    else {
+    } else {
       throw new IllegalArgumentException("Invalid class " + type.getName());
     }
     return config;
@@ -232,8 +206,7 @@ public class AutoConfigurer extends Configurer
 
   @Override
   public void setValue(String s) {
-    throw new UnsupportedOperationException(
-      "Can't set Configurable from String");
+    throw new UnsupportedOperationException("Can't set Configurable from String");
   }
 
   @Override

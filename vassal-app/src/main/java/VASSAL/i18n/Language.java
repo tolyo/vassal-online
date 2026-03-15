@@ -21,9 +21,7 @@ import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 
-/**
- * Container for definitions of Translations.
- */
+/** Container for definitions of Translations. */
 public class Language extends AbstractConfigurable {
 
   public boolean contains(Translation newTranslation) {
@@ -54,20 +52,18 @@ public class Language extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   protected String getDescription() {
     return "";
   }
 
   @Override
-  public void addTo(Buildable parent) {
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{Translation.class};
+    return new Class<?>[] {Translation.class};
   }
 
   public static String getConfigureTypeName() {
@@ -80,8 +76,7 @@ public class Language extends AbstractConfigurable {
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public boolean isMandatory() {

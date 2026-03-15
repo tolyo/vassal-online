@@ -38,50 +38,48 @@ import VASSAL.preferences.PositionOption;
 import VASSAL.tools.KeyStrokeSource;
 import VASSAL.tools.LaunchButton;
 import VASSAL.tools.NamedKeyStroke;
-
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 
-/**
- * A top-level Widget for displaying Charts
- */
+/** A top-level Widget for displaying Charts */
 public class ChartWindow extends Widget {
-  public static final String DESCRIPTION = "description"; //NON-NLS
-  public static final String DEPRECATED_NAME = "label"; //$NON-NLS-1$
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String BUTTON_TEXT = "text"; //$NON-NLS-1$
-  public static final String TOOLTIP = "tooltip"; //$NON-NLS-1$
-  public static final String ICON = "icon"; //$NON-NLS-1$
-  public static final String HOTKEY = "hotkey"; //$NON-NLS-1$
+  public static final String DESCRIPTION = "description"; // NON-NLS
+  public static final String DEPRECATED_NAME = "label"; // $NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String BUTTON_TEXT = "text"; // $NON-NLS-1$
+  public static final String TOOLTIP = "tooltip"; // $NON-NLS-1$
+  public static final String ICON = "icon"; // $NON-NLS-1$
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
   protected LaunchButton launch;
   protected JDialog frame;
   protected Container root;
-  protected String tooltip = ""; //$NON-NLS-1$
+  protected String tooltip = ""; // $NON-NLS-1$
   protected String id;
   protected String description;
 
   public ChartWindow() {
     root = new JPanel();
-    final ActionListener al = new ActionListener() {
-      boolean initialized;
+    final ActionListener al =
+        new ActionListener() {
+          boolean initialized;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (!initialized) {
-          final String key = PositionOption.key + id;
-          GameModule.getGameModule().getPrefs().addOption(new PositionOption(key, frame));
-          initialized = true;
-        }
-        frame.setVisible(!frame.isVisible());
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (!initialized) {
+              final String key = PositionOption.key + id;
+              GameModule.getGameModule().getPrefs().addOption(new PositionOption(key, frame));
+              initialized = true;
+            }
+            frame.setVisible(!frame.isVisible());
+          }
+        };
     launch = new LaunchButton(null, TOOLTIP, BUTTON_TEXT, HOTKEY, ICON, al);
     setAttribute(NAME, Resources.getString("Editor.ChartWindow.component_type"));
     setAttribute(BUTTON_TEXT, Resources.getString("Editor.ChartWindow.component_type"));
@@ -89,8 +87,8 @@ public class ChartWindow extends Widget {
   }
 
   /**
-   * Expects to be added to a GameModule. Adds a JButton to the control window's toolbar. Pushing the button displays
-   * the window
+   * Expects to be added to a GameModule. Adds a JButton to the control window's toolbar. Pushing
+   * the button displays the window
    */
   @Override
   public void addTo(Buildable b) {
@@ -98,14 +96,16 @@ public class ChartWindow extends Widget {
     launch.setAlignmentY(0.0F);
     GameModule.getGameModule().getToolBar().add(launch);
     frame = new JDialog(GameModule.getGameModule().getPlayerWindow());
-    GameModule.getGameModule().addKeyStrokeSource(new KeyStrokeSource(frame.getRootPane(), JComponent.WHEN_IN_FOCUSED_WINDOW));
+    GameModule.getGameModule()
+        .addKeyStrokeSource(
+            new KeyStrokeSource(frame.getRootPane(), JComponent.WHEN_IN_FOCUSED_WINDOW));
     while (root.getComponentCount() > 0) {
       frame.add(root.getComponent(0));
     }
     root = frame.getContentPane();
     frame.setTitle(getAttributeValueString(NAME));
     final int count = GameModule.getGameModule().getComponentsOf(ChartWindow.class).size();
-    id = "ChartWindow" + count; //$NON-NLS-1$
+    id = "ChartWindow" + count; // $NON-NLS-1$
   }
 
   @Override
@@ -118,8 +118,7 @@ public class ChartWindow extends Widget {
     if (DEPRECATED_NAME.equals(key)) {
       setAttribute(NAME, val);
       setAttribute(BUTTON_TEXT, val);
-    }
-    else if (NAME.equals(key)) {
+    } else if (NAME.equals(key)) {
       setConfigureName((String) val);
       if (tooltip.length() == 0) {
         launch.setToolTipText((String) val);
@@ -127,22 +126,19 @@ public class ChartWindow extends Widget {
       if (frame != null) {
         frame.setTitle((String) val);
       }
-    }
-    else if (TOOLTIP.equals(key)) {
+    } else if (TOOLTIP.equals(key)) {
       tooltip = (String) val;
       launch.setAttribute(key, val);
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)val;
-    }
-    else {
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) val;
+    } else {
       launch.setAttribute(key, val);
     }
   }
 
   /**
-   * The attributes of a ChartWindow are: <code>NAME</code> Appears as the name of the button in the toolbar and the
-   * window itself <code>HOTKEY</code> for the hotkey equivalent for the button
+   * The attributes of a ChartWindow are: <code>NAME</code> Appears as the name of the button in the
+   * toolbar and the window itself <code>HOTKEY</code> for the hotkey equivalent for the button
    */
   @Override
   public String[] getAttributeNames() {
@@ -153,21 +149,18 @@ public class ChartWindow extends Widget {
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (TOOLTIP.equals(name)) {
+    } else if (TOOLTIP.equals(name)) {
       return tooltip.length() == 0 ? launch.getAttributeValueString(name) : tooltip;
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
-    }
-    else {
+    } else {
       return launch.getAttributeValueString(name);
     }
   }
 
   @Override
   public Class<?>[] getChildAllowableConfigureComponents() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       Chart.class,
       HtmlChart.class,
       TabWidget.class,
@@ -210,48 +203,43 @@ public class ChartWindow extends Widget {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.ChartWindow.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.ChartWindow.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString(Resources.NAME_LABEL),
-        Resources.getString(Resources.DESCRIPTION),
-          Resources.getString(Resources.BUTTON_TEXT),
-          Resources.getString(Resources.TOOLTIP_TEXT),
-          Resources.getString(Resources.BUTTON_ICON),
-          Resources.getString(Resources.HOTKEY_LABEL)
+    return new String[] {
+      Resources.getString(Resources.NAME_LABEL),
+      Resources.getString(Resources.DESCRIPTION),
+      Resources.getString(Resources.BUTTON_TEXT),
+      Resources.getString(Resources.TOOLTIP_TEXT),
+      Resources.getString(Resources.BUTTON_ICON),
+      Resources.getString(Resources.HOTKEY_LABEL)
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
-      String.class,
-      String.class,
-      IconConfig.class,
-      NamedKeyStroke.class
+    return new Class<?>[] {
+      String.class, String.class, String.class, String.class, IconConfig.class, NamedKeyStroke.class
     };
   }
 
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new IconConfigurer(key, name, "/images/chart.gif"); //$NON-NLS-1$
+      return new IconConfigurer(key, name, "/images/chart.gif"); // $NON-NLS-1$
     }
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ChartWindow.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("ChartWindow.html"); // $NON-NLS-1$
   }
 
-
   /**
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -267,8 +255,9 @@ public class ChartWindow extends Widget {
   }
 
   /**
-   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order to add
-   * the names of any image files they use to the collection. For "find unused images" and "search".
+   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order
+   * to add the names of any image files they use to the collection. For "find unused images" and
+   * "search".
    *
    * @param s Collection to add image names to
    */

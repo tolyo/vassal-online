@@ -41,12 +41,6 @@ import VASSAL.tools.imageop.GamePieceOp;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.RotateScaleOp;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import java.awt.AlphaComposite;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -71,23 +65,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * d/b/a "Can Rotate"
  *
- * A Decorator that rotates a GamePiece to an arbitrary angle
+ * <p>A Decorator that rotates a GamePiece to an arbitrary angle
  */
 public class FreeRotator extends Decorator
-                         implements EditablePiece,
-                                    MouseListener,
-                                    MouseMotionListener,
-                                    Drawable,
-                                    TranslatablePiece {
-  public static final String ID = "rotate;"; //$NON-NLS-1$//
+    implements EditablePiece, MouseListener, MouseMotionListener, Drawable, TranslatablePiece {
+  public static final String ID = "rotate;"; // $NON-NLS-1$//
 
-  public static final String FACING = "_Facing"; //$NON-NLS-1$//
+  public static final String FACING = "_Facing"; // $NON-NLS-1$//
 
-  public static final String DEGREES = "_Degrees"; //$NON-NLS-1$//
+  public static final String DEGREES = "_Degrees"; // $NON-NLS-1$//
 
   public static final double PI_180 = Math.PI / 180.0;
 
@@ -98,9 +93,11 @@ public class FreeRotator extends Decorator
   protected NamedKeyStroke setAngleKey;
   protected String setAngleText = Resources.getString("Editor.FreeRotator.default_rotate_command");
   protected NamedKeyStroke rotateCWKey;
-  protected String rotateCWText = Resources.getString("Editor.FreeRotator.default_rotate_cw_command");
+  protected String rotateCWText =
+      Resources.getString("Editor.FreeRotator.default_rotate_cw_command");
   protected NamedKeyStroke rotateCCWKey;
-  protected String rotateCCWText = Resources.getString("Editor.FreeRotator.default_rotate_ccw_command");
+  protected String rotateCCWText =
+      Resources.getString("Editor.FreeRotator.default_rotate_ccw_command");
   protected String name = Resources.getString("Editor.FreeRotator.default_trait_name");
   protected String description = "";
 
@@ -113,7 +110,8 @@ public class FreeRotator extends Decorator
   // Direct Rotations
   protected KeyCommand rotateDirectCommand;
   protected NamedKeyStroke rotateDirectKey;
-  protected String rotateDirectText = Resources.getString("Editor.FreeRotator.default_rotate_direct_command");
+  protected String rotateDirectText =
+      Resources.getString("Editor.FreeRotator.default_rotate_direct_command");
   protected FormattedString directExpression = new FormattedString();
   protected boolean directTypeFacing = true;
 
@@ -136,7 +134,14 @@ public class FreeRotator extends Decorator
 
   public FreeRotator() {
     // modified for random rotation (added two ; )
-    this(ID + "6;];[;" + Resources.getString("Editor.FreeRotator.default_rotate_cw_command") + ";" + Resources.getString("Editor.FreeRotator.default_rotate_ccw_command") + ";;;;", null); //$NON-NLS-1$//
+    this(
+        ID
+            + "6;];[;"
+            + Resources.getString("Editor.FreeRotator.default_rotate_cw_command")
+            + ";"
+            + Resources.getString("Editor.FreeRotator.default_rotate_ccw_command")
+            + ";;;;",
+        null); //$NON-NLS-1$//
   }
 
   public FreeRotator(String type, GamePiece inner) {
@@ -177,13 +182,12 @@ public class FreeRotator extends Decorator
     }
 
     Rectangle r;
-    if ((getGpOp() != null && getGpOp().isChanged()) ||
-        (r = bounds.get(angle)) == null) {
+    if ((getGpOp() != null && getGpOp().isChanged()) || (r = bounds.get(angle)) == null) {
 
-      r = AffineTransform.getRotateInstance(getAngleInRadians(),
-                                            centerX(),
-                                            centerY())
-                         .createTransformedShape(b).getBounds();
+      r =
+          AffineTransform.getRotateInstance(getAngleInRadians(), centerX(), centerY())
+              .createTransformedShape(b)
+              .getBounds();
       bounds.put(angle, r);
     }
 
@@ -204,7 +208,7 @@ public class FreeRotator extends Decorator
   }
 
   // These are deprecated and also don't work because MatCargo also rotates things
-  @Deprecated (since = "2021-12-01", forRemoval = true)
+  @Deprecated(since = "2021-12-01", forRemoval = true)
   public double getCumulativeAngle() {
     double angle = getAngle();
     // Add cumulative angle of any other FreeRotator trait in this piece
@@ -216,7 +220,7 @@ public class FreeRotator extends Decorator
   }
 
   // These are deprecated and also don't work because MatCargo also rotates things
-  @Deprecated (since = "2021-12-01", forRemoval = true)
+  @Deprecated(since = "2021-12-01", forRemoval = true)
   public double getCumulativeAngleInRadians() {
     return -PI_180 * getCumulativeAngle();
   }
@@ -232,8 +236,7 @@ public class FreeRotator extends Decorator
 
     if (isFreeRotation()) {
       validAngles[angleIndex] = angle;
-    }
-    else {
+    } else {
       // ex is the expected index of the angle in angles array
       final double ex = (-angle / 360) * validAngles.length;
       angleIndex = ((int) Math.round(ex)) % validAngles.length;
@@ -248,10 +251,8 @@ public class FreeRotator extends Decorator
       return s;
     }
 
-    return AffineTransform.getRotateInstance(getAngleInRadians(),
-                                             centerX(),
-                                             centerY())
-                          .createTransformedShape(s);
+    return AffineTransform.getRotateInstance(getAngleInRadians(), centerX(), centerY())
+        .createTransformedShape(s);
   }
 
   public double getAngleInRadians() {
@@ -275,8 +276,7 @@ public class FreeRotator extends Decorator
       if (st.hasMoreTokens()) {
         setAngleText = st.nextToken();
       }
-    }
-    else {
+    } else {
       rotateCWKey = st.nextNamedKeyStroke(null);
       rotateCCWKey = st.nextNamedKeyStroke(null);
       rotateCWText = st.nextToken("");
@@ -299,15 +299,11 @@ public class FreeRotator extends Decorator
   }
 
   @Override
-  public void draw(final Graphics g,
-                   final int x,
-                   final int y,
-                   final Component obs,
-                   final double zoom) {
+  public void draw(
+      final Graphics g, final int x, final int y, final Component obs, final double zoom) {
     if (getAngle() == 0.0) {
       piece.draw(g, x, y, obs, zoom);
-    }
-    else {
+    } else {
       final double angle = getAngle();
       RotateScaleOp op;
 
@@ -317,8 +313,7 @@ public class FreeRotator extends Decorator
         rotOp.clear();
         op = Op.rotateScale(gpOp, angle, zoom);
         rotOp.put(angle, op);
-      }
-      else {
+      } else {
         op = rotOp.get(angle);
         if (op == null || op.getScale() != zoom) {
           op = Op.rotateScale(gpOp, angle, zoom);
@@ -347,15 +342,11 @@ public class FreeRotator extends Decorator
     final Point p = map.mapToDrawing(getGhostPosition(), os_scale);
 
     g2d.transform(
-       AffineTransform.getRotateInstance(-PI_180 * tempAngle,
-                                         p.x + centerX(),
-                                         p.y + centerY()));
-    g2d.setComposite(
-       AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                         RenderingHints.VALUE_ANTIALIAS_ON);
+        AffineTransform.getRotateInstance(-PI_180 * tempAngle, p.x + centerX(), p.y + centerY()));
+    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+    g2d.setRenderingHint(
+        RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     piece.draw(g2d, p.x, p.y, map.getView(), map.getZoom() * os_scale);
     g2d.dispose();
   }
@@ -367,14 +358,11 @@ public class FreeRotator extends Decorator
 
   private Point getGhostPosition() {
     final AffineTransform t =
-      AffineTransform.getRotateInstance(-PI_180 * (tempAngle - getAngle()),
-                                        pivot.x + centerX(),
-                                        pivot.y + centerY());
-    final Point2D newPos2D =
-      new Point2D.Float(getPosition().x, getPosition().y);
+        AffineTransform.getRotateInstance(
+            -PI_180 * (tempAngle - getAngle()), pivot.x + centerX(), pivot.y + centerY());
+    final Point2D newPos2D = new Point2D.Float(getPosition().x, getPosition().y);
     t.transform(newPos2D, newPos2D);
-    return new Point((int) Math.round(newPos2D.getX()),
-                     (int) Math.round(newPos2D.getY()));
+    return new Point((int) Math.round(newPos2D.getX()), (int) Math.round(newPos2D.getY()));
   }
 
   @Override
@@ -382,25 +370,19 @@ public class FreeRotator extends Decorator
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(validAngles.length);
     if (isFreeRotation()) {
-      se.append(setAngleKey)
-        .append(setAngleText);
-    }
-    else {
-      se.append(rotateCWKey)
-        .append(rotateCCWKey)
-        .append(rotateCWText)
-        .append(rotateCCWText);
+      se.append(setAngleKey).append(setAngleText);
+    } else {
+      se.append(rotateCWKey).append(rotateCCWKey).append(rotateCWText).append(rotateCCWText);
     }
     // for random rotation
-    se.append(rotateRNDKey)
-      .append(rotateRNDText);
+    se.append(rotateRNDKey).append(rotateRNDText);
     // end for random rotation
     se.append(name);
     se.append(description);
     se.append(rotateDirectKey)
-      .append(rotateDirectText)
-      .append(directExpression.getFormat())
-      .append(directTypeFacing);
+        .append(rotateDirectText)
+        .append(directExpression.getFormat())
+        .append(directTypeFacing);
 
     return ID + se.getValue();
   }
@@ -409,8 +391,7 @@ public class FreeRotator extends Decorator
   public String myGetState() {
     if (isFreeRotation()) {
       return String.valueOf(validAngles[0]);
-    }
-    else {
+    } else {
       return String.valueOf(angleIndex);
     }
   }
@@ -420,17 +401,19 @@ public class FreeRotator extends Decorator
     if (isFreeRotation()) {
       try {
         validAngles[0] = Double.parseDouble(state);
+      } catch (NumberFormatException e) {
+        reportDataError(
+            this, Resources.getString("Error.non_number_error"), "Angle=" + state, e); // NON-NLS
       }
-      catch (NumberFormatException e) {
-        reportDataError(this, Resources.getString("Error.non_number_error"), "Angle=" + state, e); // NON-NLS
-      }
-    }
-    else {
+    } else {
       try {
         angleIndex = Integer.parseInt(state);
-      }
-      catch (NumberFormatException e) {
-        reportDataError(this, Resources.getString("Error.non_number_error"), "Fixed Angle Index=" + state, e); // NON-NLS
+      } catch (NumberFormatException e) {
+        reportDataError(
+            this,
+            Resources.getString("Error.non_number_error"),
+            "Fixed Angle Index=" + state,
+            e); // NON-NLS
       }
     }
     // Has the piece been refreshed and now has fewer facings?
@@ -458,23 +441,19 @@ public class FreeRotator extends Decorator
       if (isFreeRotation()) {
         if (setAngleText.length() > 0) {
           l.add(setAngleCommand);
-        }
-        else {
+        } else {
           setAngleCommand.setEnabled(false);
         }
         rotateCWCommand.setEnabled(false);
         rotateCCWCommand.setEnabled(false);
-      }
-      else {
+      } else {
         if (rotateCWText.length() > 0 && rotateCCWText.length() > 0) {
           l.add(rotateCWCommand);
           l.add(rotateCCWCommand);
-        }
-        else if (rotateCWText.length() > 0) {
+        } else if (rotateCWText.length() > 0) {
           l.add(rotateCWCommand);
           rotateCCWCommand.setEnabled(rotateCCWKey != null);
-        }
-        else if (rotateCCWText.length() > 0) {
+        } else if (rotateCCWText.length() > 0) {
           l.add(rotateCCWCommand);
           rotateCWCommand.setEnabled(rotateCWKey != null);
         }
@@ -491,9 +470,7 @@ public class FreeRotator extends Decorator
 
       commands = l.toArray(new KeyCommand[0]);
     }
-    setAngleCommand.setEnabled(getMap() != null &&
-      isFreeRotation() &&
-      setAngleText.length() > 0);
+    setAngleCommand.setEnabled(getMap() != null && isFreeRotation() && setAngleText.length() > 0);
     return commands;
   }
 
@@ -501,7 +478,7 @@ public class FreeRotator extends Decorator
     return movePiece(gp, dest, false);
   }
 
-    /*
+  /*
    * Move a single piece to a destination
    */
   protected Command movePiece(GamePiece gp, Point dest, boolean cargoFollowup) {
@@ -511,7 +488,8 @@ public class FreeRotator extends Decorator
       return null;
     }
 
-    // Prepare the piece for move, writing "old location" properties, marking moved, and unlinking from any deck
+    // Prepare the piece for move, writing "old location" properties, marking moved, and unlinking
+    // from any deck
     Command c = prepareMove(new NullCommand(), true);
 
     // Move the piece
@@ -530,7 +508,7 @@ public class FreeRotator extends Decorator
 
     // check that we have a map and that the mat-ness is visible for us
     final GamePiece outer = getOutermost(this);
-    final String matName = (String)outer.getProperty(Mat.MAT_NAME);
+    final String matName = (String) outer.getProperty(Mat.MAT_NAME);
     if (outer.getMap() == null || matName == null || "".equals(outer.getProperty(Mat.MAT_NAME))) {
       return command;
     }
@@ -540,7 +518,8 @@ public class FreeRotator extends Decorator
       return command;
     }
 
-    final AffineTransform t = AffineTransform.getRotateInstance(dtheta * -PI_180, center.x, center.y);
+    final AffineTransform t =
+        AffineTransform.getRotateInstance(dtheta * -PI_180, center.x, center.y);
 
     // If a Mat has been rotated, make the contents orbit the center point
     for (final GamePiece piece : mat.getContents()) {
@@ -572,8 +551,7 @@ public class FreeRotator extends Decorator
       final ChangeTracker tracker = new ChangeTracker(this);
       angleIndex = (angleIndex + 1) % validAngles.length;
       c = tracker.getChangeCommand();
-    }
-    else if (rotateCCWCommand.matches(stroke)) {
+    } else if (rotateCCWCommand.matches(stroke)) {
       final ChangeTracker tracker = new ChangeTracker(this);
       angleIndex = (angleIndex - 1 + validAngles.length) % validAngles.length;
       c = tracker.getChangeCommand();
@@ -586,8 +564,7 @@ public class FreeRotator extends Decorator
       if (isFreeRotation()) {
         // we are a free rotate, set angle to 0-360 use setAngle(double)
         setAngle(rand.nextDouble() * 360);
-      }
-      else {
+      } else {
         // we are set rotate, set angleIndex to a number between 0 and
         // validAngles.length
         angleIndex = rand.nextInt(validAngles.length);
@@ -600,40 +577,48 @@ public class FreeRotator extends Decorator
     else if (rotateDirectCommand.matches(stroke)) {
       final ChangeTracker tracker = new ChangeTracker(this);
 
-      final AuditTrail audit = AuditTrail.create(this, directExpression, Resources.getString("Editor.FreeRotator.rotate_direct"));
-      final String targetAngleText = directExpression.getText(
-        getOutermost(this),
-        Resources.getString("Editor.FreeRotator.rotate_direct"),
-        this,
-        audit
-      );
+      final AuditTrail audit =
+          AuditTrail.create(
+              this, directExpression, Resources.getString("Editor.FreeRotator.rotate_direct"));
+      final String targetAngleText =
+          directExpression.getText(
+              getOutermost(this),
+              Resources.getString("Editor.FreeRotator.rotate_direct"),
+              this,
+              audit);
 
       // Try and convert to a float first, can always truncate to an integer later.
       double targetAngle;
       if (targetAngleText.isEmpty()) {
         // Convert empty string to 0 in Degree mode, 1 in facing mode
-        targetAngle = (isFreeRotation() || ! directTypeFacing) ? 0 : 1;
-      }
-      else {
+        targetAngle = (isFreeRotation() || !directTypeFacing) ? 0 : 1;
+      } else {
         try {
           targetAngle = Double.parseDouble(targetAngleText);
-        }
-        catch (NumberFormatException e) {
-          reportDataError(this, Resources.getString("Error.non_number_error"), "Invalid number: " + targetAngleText, new AuditableException(this, audit));
+        } catch (NumberFormatException e) {
+          reportDataError(
+              this,
+              Resources.getString("Error.non_number_error"),
+              "Invalid number: " + targetAngleText,
+              new AuditableException(this, audit));
           targetAngle = (isFreeRotation() || !directTypeFacing) ? 0 : 1;
         }
       }
 
       // Now have a valid numeric target angle
       if (isFreeRotation() || !directTypeFacing) {
-        // Set the angle in degrees, even if the rotator has facings, setAngle will deal with any angle you throw at it
+        // Set the angle in degrees, even if the rotator has facings, setAngle will deal with any
+        // angle you throw at it
         // setAngle will deal with any numeric angle
         setAngle(-targetAngle);
-      }
-      else {
-        // In Facing mode, modulo the supplied value into an integer in the range 1 to number of facings
-        // We also have to subtract 1 from the requested angle since angleIndexes actually start at 0
-        angleIndex = (((int) targetAngle - 1) % validAngles.length + validAngles.length) % validAngles.length;
+      } else {
+        // In Facing mode, modulo the supplied value into an integer in the range 1 to number of
+        // facings
+        // We also have to subtract 1 from the requested angle since angleIndexes actually start at
+        // 0
+        angleIndex =
+            (((int) targetAngle - 1) % validAngles.length + validAngles.length)
+                % validAngles.length;
       }
       c = tracker.getChangeCommand();
     }
@@ -674,8 +659,7 @@ public class FreeRotator extends Decorator
   }
 
   /**
-   * Has the piece been moved by a Global key command since interactive
-   * rotate mode was turned on?
+   * Has the piece been moved by a Global key command since interactive rotate mode was turned on?
    */
   public boolean hasPieceMoved() {
     final Map m = getMap();
@@ -689,16 +673,13 @@ public class FreeRotator extends Decorator
   }
 
   @Override
-  public void mouseClicked(MouseEvent e) {
-  }
+  public void mouseClicked(MouseEvent e) {}
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
   public void mousePressed(MouseEvent e) {
@@ -740,8 +721,7 @@ public class FreeRotator extends Decorator
         c = rotateCargo(c, pivot, tempAngle - origAngle);
 
         GameModule.getGameModule().sendAndLog(c);
-      }
-      finally {
+      } finally {
         endInteractiveRotate();
       }
     }
@@ -759,11 +739,9 @@ public class FreeRotator extends Decorator
   public Object getLocalizedProperty(Object key) {
     if ((name + FACING).equals(key)) {
       return String.valueOf(angleIndex + 1);
-    }
-    else if ((name + DEGREES).equals(key)) {
+    } else if ((name + DEGREES).equals(key)) {
       return String.valueOf((int) (Math.abs(validAngles[angleIndex])));
-    }
-    else {
+    } else {
       return super.getLocalizedProperty(key);
     }
   }
@@ -772,18 +750,17 @@ public class FreeRotator extends Decorator
   public Object getProperty(Object key) {
     if ((name + FACING).equals(key)) {
       return String.valueOf(angleIndex + 1);
-    }
-    else if ((name + DEGREES).equals(key)) {
+    } else if ((name + DEGREES).equals(key)) {
       return String.valueOf((int) Math.round(Math.abs(validAngles[angleIndex])) % 360);
-    }
-    else {
+    } else {
       return super.getProperty(key);
     }
   }
 
   @Override
   public void mouseDragged(MouseEvent e) {
-    if (SwingUtils.isMainMouseButtonDown(e) && !hasPieceMoved()) { // hasPieceMoved() protects from NPE if gone from map
+    if (SwingUtils.isMainMouseButtonDown(e)
+        && !hasPieceMoved()) { // hasPieceMoved() protects from NPE if gone from map
       if (drawGhost) {
         final Point mousePos = getMap().componentToMap(e.getPoint());
         final double myAngle = getRelativeAngle(mousePos, pivot);
@@ -798,13 +775,11 @@ public class FreeRotator extends Decorator
     if (p.y == origin.y) {
       if (p.x == origin.x) {
         myAngle = 0.0;
-      }
-      else {
+      } else {
         myAngle = p.x < origin.x ? -Math.PI / 2.0 : Math.PI / 2.0;
       }
-    }
-    else {
-      myAngle = Math.atan((double)(p.x - origin.x) / (origin.y - p.y));
+    } else {
+      myAngle = Math.atan((double) (p.x - origin.x) / (origin.y - p.y));
       if (origin.y < p.y) {
         myAngle += Math.PI;
       }
@@ -836,7 +811,7 @@ public class FreeRotator extends Decorator
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Rotate.html"); //$NON-NLS-1$//
+    return HelpFile.getReferenceManualPage("Rotate.html"); // $NON-NLS-1$//
   }
 
   @Override
@@ -847,26 +822,22 @@ public class FreeRotator extends Decorator
   @Override
   public PieceI18nData getI18nData() {
     return getI18nData(
-      new String[] {
-        setAngleText,
-        rotateCWText,
-        rotateCCWText,
-        rotateRNDText,
-        rotateDirectText
-      },
-      new String[] {
-        getCommandDescription(name, Resources.getString("Editor.FreeRotator.set_angle_command_description")),
-        getCommandDescription(name, Resources.getString("Editor.FreeRotator.rotate_cw_command_description")),
-        getCommandDescription(name, Resources.getString("Editor.FreeRotator.rotate_ccw_command_description")),
-        getCommandDescription(name, Resources.getString("Editor.FreeRotator.rotate_random_command_description")),
-        getCommandDescription(name, Resources.getString("Editor.FreeRotator.rotate_direct_command_description"))
-      }
-    );
+        new String[] {setAngleText, rotateCWText, rotateCCWText, rotateRNDText, rotateDirectText},
+        new String[] {
+          getCommandDescription(
+              name, Resources.getString("Editor.FreeRotator.set_angle_command_description")),
+          getCommandDescription(
+              name, Resources.getString("Editor.FreeRotator.rotate_cw_command_description")),
+          getCommandDescription(
+              name, Resources.getString("Editor.FreeRotator.rotate_ccw_command_description")),
+          getCommandDescription(
+              name, Resources.getString("Editor.FreeRotator.rotate_random_command_description")),
+          getCommandDescription(
+              name, Resources.getString("Editor.FreeRotator.rotate_direct_command_description"))
+        });
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -877,32 +848,32 @@ public class FreeRotator extends Decorator
 
   @Override
   public boolean testEquals(Object o) {
-    if (! (o instanceof FreeRotator)) return false;
+    if (!(o instanceof FreeRotator)) return false;
     final FreeRotator c = (FreeRotator) o;
-    if (! Objects.equals(validAngles.length, c.validAngles.length)) return false;
+    if (!Objects.equals(validAngles.length, c.validAngles.length)) return false;
 
     if (isFreeRotation()) {
-      if (! Objects.equals(setAngleKey, c.setAngleKey)) return false;
-      if (! Objects.equals(setAngleText, c.setAngleText)) return false;
-      if (! Objects.equals(directTypeFacing, c.directTypeFacing)) return false;
+      if (!Objects.equals(setAngleKey, c.setAngleKey)) return false;
+      if (!Objects.equals(setAngleText, c.setAngleText)) return false;
+      if (!Objects.equals(directTypeFacing, c.directTypeFacing)) return false;
+    } else {
+      if (!Objects.equals(rotateCWKey, c.rotateCWKey)) return false;
+      if (!Objects.equals(rotateCCWKey, c.rotateCCWKey)) return false;
+      if (!Objects.equals(rotateCWText, c.rotateCWText)) return false;
+      if (!Objects.equals(rotateCCWText, c.rotateCCWText)) return false;
     }
-    else {
-      if (! Objects.equals(rotateCWKey, c.rotateCWKey)) return false;
-      if (! Objects.equals(rotateCCWKey, c.rotateCCWKey)) return false;
-      if (! Objects.equals(rotateCWText, c.rotateCWText)) return false;
-      if (! Objects.equals(rotateCCWText, c.rotateCCWText)) return false;
-    }
 
-    if (! Objects.equals(rotateRNDKey, c.rotateRNDKey)) return false;
+    if (!Objects.equals(rotateRNDKey, c.rotateRNDKey)) return false;
 
-    if (! Objects.equals(rotateDirectKey, c.rotateDirectKey)) return false;
-    if (! Objects.equals(rotateDirectCommand, c.rotateDirectCommand)) return false;
-    if (! Objects.equals(directExpression, c.directExpression)) return false;
+    if (!Objects.equals(rotateDirectKey, c.rotateDirectKey)) return false;
+    if (!Objects.equals(rotateDirectCommand, c.rotateDirectCommand)) return false;
+    if (!Objects.equals(directExpression, c.directExpression)) return false;
 
-    if (! Objects.equals(name, c.name)) return false;
+    if (!Objects.equals(name, c.name)) return false;
 
-    return isFreeRotation() ? Objects.equals(validAngles[0], c.validAngles[0]) : Objects.equals(angleIndex, c.angleIndex);
-
+    return isFreeRotation()
+        ? Objects.equals(validAngles[0], c.validAngles[0])
+        : Objects.equals(angleIndex, c.angleIndex);
   }
 
   private static class Ed implements PieceEditor, PropertyChangeListener {
@@ -932,15 +903,19 @@ public class FreeRotator extends Decorator
     private final JLabel directTypeLabel = new JLabel();
     private final JLabel toFacingLabel;
 
-    private final  TraitConfigPanel panel;
+    private final TraitConfigPanel panel;
 
     public Ed(FreeRotator p) {
 
-      panel = new TraitConfigPanel(
-        new TraitLayout(
-          false,
-          TraitLayout.STANDARD_INSETS + "," + TraitLayout.STANDARD_GAPY + ",hidemode 3,wrap 3", // NON-NLS
-          "[right]rel[fill,grow 1]rel[fill,grow 2]")); // NON-NLS
+      panel =
+          new TraitConfigPanel(
+              new TraitLayout(
+                  false,
+                  TraitLayout.STANDARD_INSETS
+                      + ","
+                      + TraitLayout.STANDARD_GAPY
+                      + ",hidemode 3,wrap 3", // NON-NLS
+                  "[right]rel[fill,grow 1]rel[fill,grow 2]")); // NON-NLS
 
       descConfig = new StringConfigurer(p.description);
       descConfig.setHintKey("Editor.description_hint");
@@ -953,12 +928,14 @@ public class FreeRotator extends Decorator
       anyConfig = new BooleanConfigurer(p.isFreeRotation());
       panel.add("Editor.FreeRotator.allow_arbitrary_rotations", anyConfig, "wrap"); // NON-NLS
 
-      facingsLabel = new JLabel(Resources.getString("Editor.FreeRotator.number_of_allowed_facings"));
+      facingsLabel =
+          new JLabel(Resources.getString("Editor.FreeRotator.number_of_allowed_facings"));
       facingsConfig = new IntConfigurer(p.isFreeRotation() ? 6 : p.validAngles.length);
       panel.add(facingsLabel, facingsConfig, "wrap"); // NON-NLS
 
       final JLabel menuLabel = new JLabel(Resources.getString("Editor.menu_command"));
-      final Font boldFont = new Font(menuLabel.getFont().getFamily(), Font.BOLD, menuLabel.getFont().getSize());
+      final Font boldFont =
+          new Font(menuLabel.getFont().getFamily(), Font.BOLD, menuLabel.getFont().getSize());
       menuLabel.setFont(boldFont);
       panel.add(new JLabel(""));
       panel.add(menuLabel, "grow 0,align center"); // NON-NLS
@@ -1006,9 +983,11 @@ public class FreeRotator extends Decorator
       panel.add(directKeyConfig.getControls(), "wrap");
 
       panel.add(new JLabel(Resources.getString("Editor.FreeRotator.rotate_direct")));
-      directTargetConfig = new FormattedExpressionConfigurer(p.directExpression.getFormat(), getOutermost(p));
+      directTargetConfig =
+          new FormattedExpressionConfigurer(p.directExpression.getFormat(), getOutermost(p));
       panel.add(directTargetConfig.getControls());
-      final JPanel facingPanel = new JPanel(new MigLayout("ins 0", "[fill,grow,sg 1]0[fill,grow,sg 1]"));
+      final JPanel facingPanel =
+          new JPanel(new MigLayout("ins 0", "[fill,grow,sg 1]0[fill,grow,sg 1]"));
       facingPanel.add(directTypeLabel, "grow");
       facingConfig = new BooleanConfigurer(p.directTypeFacing);
       facingPanel.add(facingConfig.getControls(), "split");
@@ -1017,8 +996,8 @@ public class FreeRotator extends Decorator
       facingPanel.add(toFacingLabel, "grow");
       panel.add(facingPanel, "span 2,grow");
 
-
-      //BR// Make a copy of our original rotator (as the original will be getting written to before we can check its state later)
+      // BR// Make a copy of our original rotator (as the original will be getting written to before
+      // we can check its state later)
       rotator = new FreeRotator(p.getType(), null);
       rotator.mySetState(p.myGetState());
 
@@ -1048,10 +1027,9 @@ public class FreeRotator extends Decorator
       ccwLabel.setVisible(!any);
 
       directTypeLabel.setText(
-        (any || !facingConfig.getValueBoolean()) ?
-          Resources.getString("Editor.FreeRotator.rotate_degrees") :
-          Resources.getString("Editor.FreeRotator.rotate_facing")
-      );
+          (any || !facingConfig.getValueBoolean())
+              ? Resources.getString("Editor.FreeRotator.rotate_degrees")
+              : Resources.getString("Editor.FreeRotator.rotate_facing"));
       facingConfig.getControls().setVisible(!any);
       toFacingLabel.setVisible(!any);
 
@@ -1068,37 +1046,37 @@ public class FreeRotator extends Decorator
       final SequenceEncoder se = new SequenceEncoder(';');
       if (Boolean.TRUE.equals(anyConfig.getValue())) {
         se.append("1")
-          .append(anyKeyConfig.getValueString())
-          .append(anyCommand.getValueString() == null ? "" : anyCommand.getValueString().trim());
-      }
-      else {
+            .append(anyKeyConfig.getValueString())
+            .append(anyCommand.getValueString() == null ? "" : anyCommand.getValueString().trim());
+      } else {
         se.append(facingsConfig.getValueString())
-          .append(cwKeyConfig.getValueString())
-          .append(ccwKeyConfig.getValueString())
-          .append(cwCommand.getValueString() == null ? "" : cwCommand.getValueString().trim())
-          .append(ccwCommand.getValueString() == null ? "" : ccwCommand.getValueString().trim());
+            .append(cwKeyConfig.getValueString())
+            .append(ccwKeyConfig.getValueString())
+            .append(cwCommand.getValueString() == null ? "" : cwCommand.getValueString().trim())
+            .append(ccwCommand.getValueString() == null ? "" : ccwCommand.getValueString().trim());
       }
       se.append(rndKeyConfig.getValueString())
-        .append(rndCommand.getValueString() == null ? "" : rndCommand.getValueString().trim());
+          .append(rndCommand.getValueString() == null ? "" : rndCommand.getValueString().trim());
       se.append(nameConfig.getValueString());
       se.append(descConfig.getValueString());
 
       se.append(directKeyConfig.getValueString())
-        .append(directCommand.getValueString())
-        .append(directTargetConfig.getValueString())
-        .append(facingConfig.getValueString());
+          .append(directCommand.getValueString())
+          .append(directTargetConfig.getValueString())
+          .append(facingConfig.getValueString());
 
       return ID + se.getValue();
     }
 
     @Override
     public String getState() {
-      //BR// If our "arbitrary rotations" checkbox and number of valid angles are the same as what we started with,
-      //BR// return the original state. Otherwise clear the state.
-      if ((Boolean.TRUE.equals(anyConfig.getValue()) == (rotator.isFreeRotation())) && facingsConfig.getIntValue(0) == rotator.validAngles.length) {
+      // BR// If our "arbitrary rotations" checkbox and number of valid angles are the same as what
+      // we started with,
+      // BR// return the original state. Otherwise clear the state.
+      if ((Boolean.TRUE.equals(anyConfig.getValue()) == (rotator.isFreeRotation()))
+          && facingsConfig.getIntValue(0) == rotator.validAngles.length) {
         return rotator.myGetState();
-      }
-      else {
+      } else {
         return "0";
       }
     }
@@ -1120,5 +1098,3 @@ public class FreeRotator extends Decorator
     return List.of(setAngleText, rotateCWText, rotateCCWText, rotateRNDText);
   }
 }
-
-

@@ -27,38 +27,35 @@ import VASSAL.configure.StringConfigurer;
 import VASSAL.configure.TranslatingStringEnumConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
 /**
- * Configurer instance that allows a module editor to specify a
- * PropertyChanger, i.e. the way in which a dynamic property will be
- * updated by a player during a game
+ * Configurer instance that allows a module editor to specify a PropertyChanger, i.e. the way in
+ * which a dynamic property will be updated by a player during a game
  *
  * @author rkinney
- *
  */
 public class PropertyChangerConfigurer extends Configurer {
-  protected static final String PLAIN_TYPE = "Set value directly"; //NON-NLS (really)
-  protected static final String INCREMENT_TYPE = "Increment numeric value"; //NON-NLS (really)
-  protected static final String PROMPT_TYPE = "Prompt user"; //NON-NLS (really)
-  protected static final String SELECT_TYPE = "Prompt user to select from list"; //NON-NLS (really)
+  protected static final String PLAIN_TYPE = "Set value directly"; // NON-NLS (really)
+  protected static final String INCREMENT_TYPE = "Increment numeric value"; // NON-NLS (really)
+  protected static final String PROMPT_TYPE = "Prompt user"; // NON-NLS (really)
+  protected static final String SELECT_TYPE = "Prompt user to select from list"; // NON-NLS (really)
   protected static final char PLAIN_CODE = 'P';
   protected static final char PROMPT_CODE = 'R';
   protected static final char ENUM_CODE = 'E';
   protected static final char INCR_CODE = 'I';
-  protected static final Map<Class<? extends PropertyChanger>, Character> typeToCode = new HashMap<>();
-  protected static final Map<Class<? extends PropertyChanger>, String> typeToDescription = new HashMap<>();
+  protected static final Map<Class<? extends PropertyChanger>, Character> typeToCode =
+      new HashMap<>();
+  protected static final Map<Class<? extends PropertyChanger>, String> typeToDescription =
+      new HashMap<>();
   protected static final Map<String, Character> descriptionToCode = new HashMap<>();
 
   static {
@@ -77,6 +74,7 @@ public class PropertyChangerConfigurer extends Configurer {
     descriptionToCode.put(PROMPT_TYPE, PROMPT_CODE);
     descriptionToCode.put(SELECT_TYPE, ENUM_CODE);
   }
+
   protected Constraints constraints;
   protected JPanel controls;
   protected JLabel typeLabel;
@@ -102,30 +100,29 @@ public class PropertyChangerConfigurer extends Configurer {
   @Override
   public Component getControls() {
     if (controls == null) {
-      final PropertyChangeListener l = evt -> {
-        // Do not remove either of these calls to updateValue(). Both are required for correct operation
-        // and screen repacking.
-        updateValue();
-        updateControls();
-        updateValue();
-      };
+      final PropertyChangeListener l =
+          evt -> {
+            // Do not remove either of these calls to updateValue(). Both are required for correct
+            // operation
+            // and screen repacking.
+            updateValue();
+            updateControls();
+            updateValue();
+          };
       controls = new JPanel();
-      controls.setLayout(new MigLayout("ins 0,hidemode 3", "[]rel[][]rel[fill,grow][fill,grow]")); // NON-NLS
+      controls.setLayout(
+          new MigLayout("ins 0,hidemode 3", "[]rel[][]rel[fill,grow][fill,grow]")); // NON-NLS
 
       typeLabel = new JLabel(Resources.getString("Editor.PropertyChangeConfigurer.type"));
-      typeConfig = new TranslatingStringEnumConfigurer(
-        new String[]{
-          PLAIN_TYPE,
-          INCREMENT_TYPE,
-          PROMPT_TYPE,
-          SELECT_TYPE
-        },
-        new String[]{
-          "Editor.PropertyChangeConfigurer.plain_type",
-          "Editor.PropertyChangeConfigurer.increment_type",
-          "Editor.PropertyChangeConfigurer.prompt_type",
-          "Editor.PropertyChangeConfigurer.select_type",
-        });
+      typeConfig =
+          new TranslatingStringEnumConfigurer(
+              new String[] {PLAIN_TYPE, INCREMENT_TYPE, PROMPT_TYPE, SELECT_TYPE},
+              new String[] {
+                "Editor.PropertyChangeConfigurer.plain_type",
+                "Editor.PropertyChangeConfigurer.increment_type",
+                "Editor.PropertyChangeConfigurer.prompt_type",
+                "Editor.PropertyChangeConfigurer.select_type",
+              });
       typeConfig.addPropertyChangeListener(l);
       typeLabel.setLabelFor(typeConfig.getControls());
 
@@ -147,12 +144,19 @@ public class PropertyChangerConfigurer extends Configurer {
       incrLabel.setLabelFor(incrConfig.getControls());
       incrConfig.addPropertyChangeListener(l);
 
-      validValuesConfig = new NoUpdateFormattedStringArrayConfigurer(null, Resources.getString("Editor.PropertyChangeConfigurer.valid_values"), constraints);
-      validValuesConfig.setHint(Resources.getString("Editor.PropertyChangeConfigurer.valid_values_hint"));
+      validValuesConfig =
+          new NoUpdateFormattedStringArrayConfigurer(
+              null,
+              Resources.getString("Editor.PropertyChangeConfigurer.valid_values"),
+              constraints);
+      validValuesConfig.setHint(
+          Resources.getString("Editor.PropertyChangeConfigurer.valid_values_hint"));
       validValuesConfig.addPropertyChangeListener(l);
 
-      valueControlsPanel = new JPanel(new MigLayout("ins 0,hidemode 3", "[]rel[grow,fill]rel[]")); // NON-NLS
-      valueControlsPanel.add(new JLabel(Resources.getString("Editor.PropertyChangeConfigurer.values"))); // NON-NLS
+      valueControlsPanel =
+          new JPanel(new MigLayout("ins 0,hidemode 3", "[]rel[grow,fill]rel[]")); // NON-NLS
+      valueControlsPanel.add(
+          new JLabel(Resources.getString("Editor.PropertyChangeConfigurer.values"))); // NON-NLS
       valueControlsPanel.add(validValuesConfig.getControls(), "grow"); // NON-NLS
       valueControlsPanel.add(validValuesConfig.getListController(), "aligny center"); // NON-NLS
 
@@ -172,7 +176,8 @@ public class PropertyChangerConfigurer extends Configurer {
       controls.add(changerControls, "aligny center,growx"); // NON-NLS
       controls.add(valueControlsPanel, "aligny center,growx"); // NON-NLS
 
-      subConfigurers = List.of(typeConfig, incrConfig, valueConfig, promptConfig, validValuesConfig);
+      subConfigurers =
+          List.of(typeConfig, incrConfig, valueConfig, promptConfig, validValuesConfig);
 
       updateControls();
     }
@@ -211,8 +216,7 @@ public class PropertyChangerConfigurer extends Configurer {
       valueConfig.setValue(((PropertySetter) pc).getRawValue());
       valueConfig.getControls().setVisible(true);
       valueControlsPanel.setVisible(true);
-    }
-    else {
+    } else {
       valueConfig.getControls().setVisible(false);
       valueLabel.setVisible(false);
     }
@@ -220,8 +224,7 @@ public class PropertyChangerConfigurer extends Configurer {
       incrConfig.setValue(String.valueOf(((IncrementProperty) pc).getIncrement()));
       incrConfig.getControls().setVisible(true);
       incrLabel.setVisible(true);
-    }
-    else {
+    } else {
       incrConfig.getControls().setVisible(false);
       incrLabel.setVisible(false);
     }
@@ -229,16 +232,14 @@ public class PropertyChangerConfigurer extends Configurer {
       promptConfig.setValue(((PropertyPrompt) pc).getPrompt());
       promptConfig.getControls().setVisible(true);
       promptLabel.setVisible(true);
-    }
-    else {
+    } else {
       promptConfig.getControls().setVisible(false);
       promptLabel.setVisible(false);
     }
     if (pc instanceof EnumeratedPropertyPrompt) {
       validValuesConfig.setValue(((EnumeratedPropertyPrompt) pc).getValidValues());
       valueControlsPanel.setVisible(true);
-    }
-    else {
+    } else {
       valueControlsPanel.setVisible(false);
     }
     repack();
@@ -247,21 +248,23 @@ public class PropertyChangerConfigurer extends Configurer {
   protected void updateValue() {
     final PropertyChanger p;
     switch (descriptionToCode.get(typeConfig.getValueString())) {
-    case PROMPT_CODE:
-      p = new PropertyPrompt(constraints, promptConfig.getValueString());
-      break;
-    case INCR_CODE:
-      p = new IncrementProperty(this, incrConfig.getValueString(), constraints);
-      break;
-    case ENUM_CODE:
-      p = new EnumeratedPropertyPrompt(
-        constraints, promptConfig.getValueString(),
-        validValuesConfig.getStringArray(), constraints
-      );
-      break;
-    case PLAIN_CODE:
-    default:
-      p = new PropertySetter(valueConfig.getValueString(), constraints);
+      case PROMPT_CODE:
+        p = new PropertyPrompt(constraints, promptConfig.getValueString());
+        break;
+      case INCR_CODE:
+        p = new IncrementProperty(this, incrConfig.getValueString(), constraints);
+        break;
+      case ENUM_CODE:
+        p =
+            new EnumeratedPropertyPrompt(
+                constraints,
+                promptConfig.getValueString(),
+                validValuesConfig.getStringArray(),
+                constraints);
+        break;
+      case PLAIN_CODE:
+      default:
+        p = new PropertySetter(valueConfig.getValueString(), constraints);
     }
     setValue(p);
   }
@@ -272,22 +275,19 @@ public class PropertyChangerConfigurer extends Configurer {
     final SequenceEncoder se = new SequenceEncoder(',');
     if (propChanger != null) {
       switch (typeToCode.get(propChanger.getClass())) {
-      case PROMPT_CODE:
-        se.append(PROMPT_CODE)
-          .append(((PropertyPrompt) propChanger).getPrompt());
-        break;
-      case INCR_CODE:
-        se.append(INCR_CODE)
-          .append(((IncrementProperty) propChanger).getIncrement());
-        break;
-      case ENUM_CODE:
-        se.append(ENUM_CODE)
-          .append(((PropertyPrompt) propChanger).getPrompt())
-          .append(((EnumeratedPropertyPrompt) propChanger).getValidValues());
-        break;
-      case PLAIN_CODE:
-        se.append(PLAIN_CODE)
-          .append(((PropertySetter) propChanger).getRawValue());
+        case PROMPT_CODE:
+          se.append(PROMPT_CODE).append(((PropertyPrompt) propChanger).getPrompt());
+          break;
+        case INCR_CODE:
+          se.append(INCR_CODE).append(((IncrementProperty) propChanger).getIncrement());
+          break;
+        case ENUM_CODE:
+          se.append(ENUM_CODE)
+              .append(((PropertyPrompt) propChanger).getPrompt())
+              .append(((EnumeratedPropertyPrompt) propChanger).getValidValues());
+          break;
+        case PLAIN_CODE:
+          se.append(PLAIN_CODE).append(((PropertySetter) propChanger).getRawValue());
       }
     }
     return se.getValue();
@@ -309,24 +309,34 @@ public class PropertyChangerConfigurer extends Configurer {
     }
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s, ',');
     switch (sd.nextChar(PLAIN_CODE)) {
-    case PROMPT_CODE:
-      p = new PropertyPrompt(constraints, sd.nextToken(Resources.getString("Editor.PropertyChangeConfigurer.enter_new_value")));
-      break;
-    case INCR_CODE:
-      p = new IncrementProperty(this, sd.nextToken("1"), constraints);
-      break;
-    case ENUM_CODE:
-      p = new EnumeratedPropertyPrompt(constraints, sd.nextToken(Resources.getString("Editor.PropertyChangeConfigurer.select_new_value")), sd.nextStringArray(0), constraints);
-      break;
-    case PLAIN_CODE:
-    default:
-      p = new PropertySetter(sd.nextToken("new value"), constraints); //NON-NLS
+      case PROMPT_CODE:
+        p =
+            new PropertyPrompt(
+                constraints,
+                sd.nextToken(
+                    Resources.getString("Editor.PropertyChangeConfigurer.enter_new_value")));
+        break;
+      case INCR_CODE:
+        p = new IncrementProperty(this, sd.nextToken("1"), constraints);
+        break;
+      case ENUM_CODE:
+        p =
+            new EnumeratedPropertyPrompt(
+                constraints,
+                sd.nextToken(
+                    Resources.getString("Editor.PropertyChangeConfigurer.select_new_value")),
+                sd.nextStringArray(0),
+                constraints);
+        break;
+      case PLAIN_CODE:
+      default:
+        p = new PropertySetter(sd.nextToken("new value"), constraints); // NON-NLS
     }
     setValue(p);
   }
 
-  public interface Constraints extends PropertyPrompt.Constraints, IncrementProperty.Constraints, PropertySource {
-  }
+  public interface Constraints
+      extends PropertyPrompt.Constraints, IncrementProperty.Constraints, PropertySource {}
 
   @Override
   public void setHighlighted(boolean highlighted) {
@@ -358,7 +368,8 @@ public class PropertyChangerConfigurer extends Configurer {
     validValuesConfig.setContext(context);
   }
 
-  private static class NoUpdateFormattedStringArrayConfigurer extends FormattedStringArrayConfigurer {
+  private static class NoUpdateFormattedStringArrayConfigurer
+      extends FormattedStringArrayConfigurer {
 
     public NoUpdateFormattedStringArrayConfigurer(String key, String name, Constraints c) {
       super(key, name, c);
@@ -369,5 +380,4 @@ public class PropertyChangerConfigurer extends Configurer {
       getStringArray()[getEntries().indexOf(entry)] = entry.getConfigurer().getValueString();
     }
   }
-
 }

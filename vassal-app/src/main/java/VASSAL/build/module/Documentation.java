@@ -30,24 +30,21 @@ import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.menu.MenuManager;
-import org.w3c.dom.Element;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import java.io.File;
 import java.net.MalformedURLException;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import org.w3c.dom.Element;
 
-/**
- * Represents the <code>Help</code> menu of the controls window
- */
+/** Represents the <code>Help</code> menu of the controls window */
 public class Documentation extends AbstractConfigurable {
 
-  public static final String INTRO_FILE = "/help/Intro.html"; //NON-NLS
-  public static final String INTRO_FILENAME = "Intro.html"; //NON-NLS
+  public static final String INTRO_FILE = "/help/Intro.html"; // NON-NLS
+  public static final String INTRO_FILENAME = "Intro.html"; // NON-NLS
 
   public JMenu getHelpMenu() {
-    final JMenuBar mb = MenuManager.getInstance().getMenuBarFor(
-      GameModule.getGameModule().getPlayerWindow());
+    final JMenuBar mb =
+        MenuManager.getInstance().getMenuBarFor(GameModule.getGameModule().getPlayerWindow());
 
     return mb.getMenu(mb.getMenuCount() - 1);
   }
@@ -56,22 +53,21 @@ public class Documentation extends AbstractConfigurable {
   public void build(Element el) {
     if (el == null) {
       final AboutScreen about = new AboutScreen();
-      about.setAttribute(AboutScreen.TITLE,
-        Resources.getString("Documentation.about_module")); //$NON-NLS-1$
-      about.setAttribute(AboutScreen.FILE, "/images/Splash.png"); //$NON-NLS-1$
+      about.setAttribute(
+          AboutScreen.TITLE, Resources.getString("Documentation.about_module")); // $NON-NLS-1$
+      about.setAttribute(AboutScreen.FILE, "/images/Splash.png"); // $NON-NLS-1$
       about.addTo(this);
       add(about);
 
       final HelpFile intro = new HelpFile();
-      intro.setAttribute(HelpFile.TITLE,
-        Resources.getString("Documentation.quick_start")); //$NON-NLS-1$
-      intro.setAttribute(HelpFile.FILE, INTRO_FILE); //$NON-NLS-1$
+      intro.setAttribute(
+          HelpFile.TITLE, Resources.getString("Documentation.quick_start")); // $NON-NLS-1$
+      intro.setAttribute(HelpFile.FILE, INTRO_FILE); // $NON-NLS-1$
       intro.setAttribute(HelpFile.TYPE, HelpFile.RESOURCE);
       intro.setAttribute(HelpFile.VASSAL_DOC, HelpFile.VASSAL_SECTION);
       intro.addTo(this);
       add(intro);
-    }
-    else {
+    } else {
       super.build(el);
     }
   }
@@ -81,13 +77,10 @@ public class Documentation extends AbstractConfigurable {
   }
 
   @Override
-  public void addTo(Buildable b) {
-
-  }
+  public void addTo(Buildable b) {}
 
   @Override
-  public void removeFrom(Buildable b) {
-  }
+  public void removeFrom(Buildable b) {}
 
   @Override
   public String[] getAttributeDescriptions() {
@@ -106,7 +99,7 @@ public class Documentation extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       BrowserPDFFile.class,
       BrowserHelpFile.class,
       HelpFile.class,
@@ -116,8 +109,7 @@ public class Documentation extends AbstractConfigurable {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString(
-      "Editor.Documentation.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.Documentation.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -128,11 +120,10 @@ public class Documentation extends AbstractConfigurable {
   @Override
   public HelpFile getHelpFile() {
     File dir = getDocumentationBaseDir();
-    dir = new File(dir, "ReferenceManual"); //$NON-NLS-1$
+    dir = new File(dir, "ReferenceManual"); // $NON-NLS-1$
     try {
-      return new HelpFile(null, new File(dir, "HelpMenu.html")); //$NON-NLS-1$
-    }
-    catch (MalformedURLException ex) {
+      return new HelpFile(null, new File(dir, "HelpMenu.html")); // $NON-NLS-1$
+    } catch (MalformedURLException ex) {
       ErrorDialog.bug(ex);
       return null;
     }
@@ -144,8 +135,7 @@ public class Documentation extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-  }
+  public void setAttribute(String name, Object value) {}
 
   @Override
   public String getAttributeValueString(String name) {

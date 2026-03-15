@@ -21,9 +21,9 @@ import VASSAL.counters.Decorator;
 import VASSAL.counters.GamePiece;
 
 /**
- * Utility class for generating {@link ChangePiece} commands.
- * To use, construct a new ChangeTracker, make any changes
- * to the target {@link VASSAL.counters.GamePiece}, then invoke {@link #getChangeCommand}
+ * Utility class for generating {@link ChangePiece} commands. To use, construct a new ChangeTracker,
+ * make any changes to the target {@link VASSAL.counters.GamePiece}, then invoke {@link
+ * #getChangeCommand}
  */
 public class ChangeTracker {
   private final GamePiece piece;

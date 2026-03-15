@@ -25,12 +25,6 @@ import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.WriteErrorDialog;
 import VASSAL.tools.filechooser.ExtensionFileFilter;
 import VASSAL.tools.filechooser.FileChooser;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
@@ -44,6 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 public class TranslateVassalWindow extends TranslateWindow {
   private static final long serialVersionUID = 1L;
@@ -51,10 +50,8 @@ public class TranslateVassalWindow extends TranslateWindow {
 
   protected FileChooser fileChooser;
 
-  public TranslateVassalWindow(Frame owner,
-                               boolean modal,
-                               Translatable target,
-                               ConfigureTree tree) {
+  public TranslateVassalWindow(
+      Frame owner, boolean modal, Translatable target, ConfigureTree tree) {
     super(owner, modal, target, tree);
   }
 
@@ -68,8 +65,7 @@ public class TranslateVassalWindow extends TranslateWindow {
   protected FileChooser getFileChooser() {
     if (fileChooser == null) {
       fileChooser = FileChooser.createFileChooser(this, null);
-    }
-    else {
+    } else {
       fileChooser.resetChoosableFileFilters();
       fileChooser.rescanCurrentDirectory();
     }
@@ -85,37 +81,34 @@ public class TranslateVassalWindow extends TranslateWindow {
   @Override
   protected Component getHeaderPanel() {
     final JPanel headPanel = new JPanel();
-    localeConfig =
-      new LocaleConfigurer(null, "",
-        new Locale(Locale.getDefault().getLanguage()));
+    localeConfig = new LocaleConfigurer(null, "", new Locale(Locale.getDefault().getLanguage()));
 
-    localeConfig.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        Locale l = localeConfig.getValueLocale();
-        if (!Resources.getSupportedLocales().contains(l)) {
-          l = new Locale(l.getLanguage());
-        }
+    localeConfig.addPropertyChangeListener(
+        new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+            Locale l = localeConfig.getValueLocale();
+            if (!Resources.getSupportedLocales().contains(l)) {
+              l = new Locale(l.getLanguage());
+            }
 
-        if (Resources.getSupportedLocales().contains(l)) {
-          final String filename = "VASSAL_" + l + ".properties"; //NON-NLS
-          final InputStream is = getClass().getResourceAsStream(filename);
-          if (is != null) {
-            try (BufferedInputStream in = new BufferedInputStream(is)) {
-              ((VassalTranslation) target).loadProperties(in);
+            if (Resources.getSupportedLocales().contains(l)) {
+              final String filename = "VASSAL_" + l + ".properties"; // NON-NLS
+              final InputStream is = getClass().getResourceAsStream(filename);
+              if (is != null) {
+                try (BufferedInputStream in = new BufferedInputStream(is)) {
+                  ((VassalTranslation) target).loadProperties(in);
+                  ((MyTableModel) keyTable.getModel()).fireTableDataChanged();
+                } catch (IOException e) {
+                  ReadErrorDialog.error(e, filename);
+                }
+              }
+            } else {
+              ((VassalTranslation) target).clearProperties();
               ((MyTableModel) keyTable.getModel()).fireTableDataChanged();
             }
-            catch (IOException e) {
-              ReadErrorDialog.error(e, filename);
-            }
           }
-        }
-        else {
-          ((VassalTranslation) target).clearProperties();
-          ((MyTableModel) keyTable.getModel()).fireTableDataChanged();
-        }
-      }
-    });
+        });
 
     headPanel.add(localeConfig.getControls());
     return headPanel;
@@ -125,7 +118,10 @@ public class TranslateVassalWindow extends TranslateWindow {
   protected Component getButtonPanel() {
     final JPanel buttonBox = new JPanel();
     final JButton helpButton = new JButton(Resources.getString(Resources.HELP));
-    helpButton.addActionListener(new ShowHelpAction(HelpFile.getReferenceManualPage("Translations.html", "application").getContents(), null)); //NON-NLS
+    helpButton.addActionListener(
+        new ShowHelpAction(
+            HelpFile.getReferenceManualPage("Translations.html", "application").getContents(),
+            null)); // NON-NLS
 
     final JButton loadButton = new JButton(Resources.getString(Resources.LOAD));
     loadButton.addActionListener(e -> loadTranslation());
@@ -133,19 +129,18 @@ public class TranslateVassalWindow extends TranslateWindow {
     buttonBox.add(loadButton);
 
     okButton = new JButton(Resources.getString(Resources.SAVE));
-    okButton.addActionListener(e -> {
-      try {
-// FIXME: can this ever throw?
-        save();
-      }
-      catch (IOException e1) {
-// FIXME: error dialog
-      }
-    });
+    okButton.addActionListener(
+        e -> {
+          try {
+            // FIXME: can this ever throw?
+            save();
+          } catch (IOException e1) {
+            // FIXME: error dialog
+          }
+        });
     buttonBox.add(okButton);
 
-    cancelButton =
-      new JButton(Resources.getString(Resources.CANCEL));
+    cancelButton = new JButton(Resources.getString(Resources.CANCEL));
     cancelButton.addActionListener(e -> cancel());
     buttonBox.add(cancelButton);
     return buttonBox;
@@ -166,26 +161,26 @@ public class TranslateVassalWindow extends TranslateWindow {
         if (!querySave()) {
           return;
         }
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, currentTranslation.getBundleFileName());
         return;
       }
     }
 
     final FileChooser fc = getFileChooser();
-    fc.setFileFilter(new ExtensionFileFilter(Resources.getString("Editor.TranslateVassalWindow.property_files"),
-                     new String[]{".properties"}));  //NON-NLS
+    fc.setFileFilter(
+        new ExtensionFileFilter(
+            Resources.getString("Editor.TranslateVassalWindow.property_files"),
+            new String[] {".properties"})); // NON-NLS
     fc.setCurrentDirectory(Info.getConfDir());
     if (fc.showOpenDialog(this) != FileChooser.APPROVE_OPTION) return;
 
     final File file = fc.getSelectedFile();
-    if (!file.getName().endsWith(".properties")) {  //NON-NLS
-// FIXME: review error message
+    if (!file.getName().endsWith(".properties")) { // NON-NLS
+      // FIXME: review error message
       loadError(Resources.getString("Editor.TranslateVassalWindow.must_end_in"));
       return;
-    }
-    else {
+    } else {
       final String language = file.getName().substring(7, 9);
       String country = "";
       if (file.getName().charAt(9) == '_') {
@@ -196,10 +191,9 @@ public class TranslateVassalWindow extends TranslateWindow {
     }
 
     try (InputStream fin = Files.newInputStream(file.toPath());
-         BufferedInputStream in = new BufferedInputStream(fin)) {
+        BufferedInputStream in = new BufferedInputStream(fin)) {
       ((VassalTranslation) target).loadProperties(in);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, file);
     }
 
@@ -207,28 +201,30 @@ public class TranslateVassalWindow extends TranslateWindow {
   }
 
   protected void loadError(String mess) {
-    JOptionPane.showMessageDialog(this, mess, Resources.getString("Editor.TranslateVassalWindow.invalid"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(
+        this,
+        mess,
+        Resources.getString("Editor.TranslateVassalWindow.invalid"),
+        JOptionPane.ERROR_MESSAGE);
   }
 
   @Override
   protected boolean saveTranslation() {
     final FileChooser fc = getFileChooser();
     final Locale l = localeConfig.getValueLocale();
-    String bundle = "VASSAL_" + l.getLanguage();  //NON-NLS
+    String bundle = "VASSAL_" + l.getLanguage(); // NON-NLS
     if (l.getCountry() != null && l.getCountry().length() > 0) {
       bundle += "_" + l.getCountry();
     }
-    bundle += ".properties";  //NON-NLS
+    bundle += ".properties"; // NON-NLS
 
     fc.setSelectedFile(new File(Info.getConfDir(), bundle));
     if (fc.showSaveDialog(this) != FileChooser.APPROVE_OPTION) return false;
 
     final File outputFile = fc.getSelectedFile();
     try {
-      ((VassalTranslation) target).saveProperties(
-        outputFile, localeConfig.getValueLocale());
-    }
-    catch (IOException e) {
+      ((VassalTranslation) target).saveProperties(outputFile, localeConfig.getValueLocale());
+    } catch (IOException e) {
       WriteErrorDialog.error(e, outputFile);
       return false;
     }
@@ -237,9 +233,10 @@ public class TranslateVassalWindow extends TranslateWindow {
   }
 
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> {
-      final TranslateVassalWindow w = new TranslateVassalWindow(null);
-      w.setVisible(true);
-    });
+    SwingUtilities.invokeLater(
+        () -> {
+          final TranslateVassalWindow w = new TranslateVassalWindow(null);
+          w.setVisible(true);
+        });
   }
 }

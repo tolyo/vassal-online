@@ -24,4 +24,4 @@ package VASSAL.tools.imageop;
  * @author Joel Uckelman
  * @since 3.1.0
  */
-public interface RotateScaleOp extends RotateOp, ScaleOp { }
+public interface RotateScaleOp extends RotateOp, ScaleOp {}

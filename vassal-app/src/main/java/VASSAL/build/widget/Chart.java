@@ -17,15 +17,6 @@
  */
 package VASSAL.build.widget;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.io.File;
-import java.util.Collection;
-
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-
 import VASSAL.build.Buildable;
 import VASSAL.build.Widget;
 import VASSAL.build.module.documentation.HelpFile;
@@ -35,16 +26,22 @@ import VASSAL.tools.DataArchive;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.OpIcon;
 import VASSAL.tools.imageop.SourceOp;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.io.File;
+import java.util.Collection;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 /**
- * A Chart is used for displaying charts and tables for the module.
- * The charts are loaded as images stored in the DataArchive. As a subclass
- * of Widget, a Chart may be added to any Widget, but it may not contain
- * children of its own.
+ * A Chart is used for displaying charts and tables for the module. The charts are loaded as images
+ * stored in the DataArchive. As a subclass of Widget, a Chart may be added to any Widget, but it
+ * may not contain children of its own.
  */
 public class Chart extends Widget {
-  public static final String NAME = "chartName"; //NON-NLS
-  public static final String FILE = "fileName"; //NON-NLS
+  public static final String NAME = "chartName"; // NON-NLS
+  public static final String FILE = "fileName"; // NON-NLS
   private Component chart;
   private String fileName;
   private SourceOp srcOp;
@@ -64,8 +61,7 @@ public class Chart extends Widget {
         scroll.getViewport().setPreferredSize(label.getPreferredSize());
         scroll.getViewport().setAlignmentY(0.0F);
         chart = scroll;
-      }
-      else {
+      } else {
         chart = label;
       }
     }
@@ -77,24 +73,21 @@ public class Chart extends Widget {
   }
 
   @Override
-  public void addTo(Buildable parent) {
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ChartWindow.html", "Chart"); //NON-NLS
+    return HelpFile.getReferenceManualPage("ChartWindow.html", "Chart"); // NON-NLS
   }
 
   @Override
   public void setAttribute(String key, Object val) {
     if (NAME.equals(key)) {
       setConfigureName((String) val);
-    }
-    else if (FILE.equals(key)) {
+    } else if (FILE.equals(key)) {
       if (val instanceof File) {
         val = ((File) val).getName();
       }
@@ -106,9 +99,8 @@ public class Chart extends Widget {
           label.revalidate();
         }
       }
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)val;
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) val;
     }
   }
 
@@ -133,28 +125,30 @@ public class Chart extends Widget {
    */
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, DESCRIPTION, FILE};
+    return new String[] {NAME, DESCRIPTION, FILE};
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{Resources.getString("Editor.name_label"), Resources.getString(Resources.DESCRIPTION), Resources.getString("Editor.image_label")};
+    return new String[] {
+      Resources.getString("Editor.name_label"),
+      Resources.getString(Resources.DESCRIPTION),
+      Resources.getString("Editor.image_label")
+    };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{String.class, String.class, Image.class};
+    return new Class<?>[] {String.class, String.class, Image.class};
   }
 
   @Override
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (FILE.equals(name)) {
+    } else if (FILE.equals(name)) {
       return fileName;
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
     }
     return null;

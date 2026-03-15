@@ -19,17 +19,17 @@ package VASSAL.counters;
 
 import VASSAL.configure.PropertyExpression;
 import VASSAL.tools.NamedKeyStroke;
-import VASSAL.tools.icon.IconFactory;
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.ImageIcon;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 public class CounterGlobalKeyCommandTest extends DecoratorTest {
 
   @Test
-  public void serialize() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+  public void serialize()
+      throws NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException {
 
     // Default piece
     CounterGlobalKeyCommand trait = new CounterGlobalKeyCommand();

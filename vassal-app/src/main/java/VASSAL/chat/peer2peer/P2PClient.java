@@ -18,18 +18,6 @@
  */
 package VASSAL.chat.peer2peer;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.IOException;
-import java.util.Properties;
-
-import org.litesoft.p2pchat.ActivePeer;
-import org.litesoft.p2pchat.ActivePeerManager;
-import org.litesoft.p2pchat.MyInfo;
-import org.litesoft.p2pchat.PeerInfo;
-import org.litesoft.p2pchat.PendingPeerManager;
-import org.litesoft.p2pchat.UserDialog;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Chatter;
 import VASSAL.chat.ChatServerConnection;
@@ -53,8 +41,19 @@ import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.PropertiesEncoder;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.util.Properties;
+import org.litesoft.p2pchat.ActivePeer;
+import org.litesoft.p2pchat.ActivePeerManager;
+import org.litesoft.p2pchat.MyInfo;
+import org.litesoft.p2pchat.PeerInfo;
+import org.litesoft.p2pchat.PendingPeerManager;
+import org.litesoft.p2pchat.UserDialog;
 
-public class P2PClient implements ChatServerConnection, ChatControlsInitializer, UserDialog, PlayerEncoder {
+public class P2PClient
+    implements ChatServerConnection, ChatControlsInitializer, UserDialog, PlayerEncoder {
   private SimplePlayer me;
   private PendingPeerManager ppm;
   protected ActivePeerManager peerMgr;
@@ -73,20 +72,25 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
   private final PropertyChangeListener nameChangeListener;
   private final Properties params;
 
-  public P2PClient(CommandEncoder encoder, WelcomeMessageServer welcomeMessageServer, PeerPool pool) {
+  public P2PClient(
+      CommandEncoder encoder, WelcomeMessageServer welcomeMessageServer, PeerPool pool) {
     this(encoder, welcomeMessageServer, pool, new Properties());
   }
 
-  public P2PClient(CommandEncoder encoder, WelcomeMessageServer welcomeMessageServer, PeerPool pool, Properties param) {
+  public P2PClient(
+      CommandEncoder encoder,
+      WelcomeMessageServer welcomeMessageServer,
+      PeerPool pool,
+      Properties param) {
     this.encoder = encoder;
     this.welcomeMessageServer = welcomeMessageServer;
     this.pool = pool;
     this.params = param;
     ppm = new PendingPeerManager(this);
-    ppm.setName("Pending Peer Manager"); //$NON-NLS-1$
+    ppm.setName("Pending Peer Manager"); // $NON-NLS-1$
     roomMgr = new RoomManager();
     tracker = new RoomTracker();
-    me = new SimplePlayer("???"); //$NON-NLS-1$
+    me = new SimplePlayer("???"); // $NON-NLS-1$
     me.updateStatus();
     playerStatusControls = new SimpleStatusControlsInitializer(this, false);
     roomControls = new RoomInteractionControlsInitializer(this);
@@ -94,11 +98,12 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
     roomControls.addPlayerActionFactory(SynchAction.factory(this));
     synchEncoder = new SynchEncoder(this, this);
     soundEncoder = new SoundEncoder(this);
-    nameChangeListener = evt -> {
-      final SimplePlayer p = (SimplePlayer) getUserInfo();
-      p.setName((String) evt.getNewValue());
-      setUserInfo(p);
-    };
+    nameChangeListener =
+        evt -> {
+          final SimplePlayer p = (SimplePlayer) getUserInfo();
+          p.setName((String) evt.getNewValue());
+          setUserInfo(p);
+        };
   }
 
   public RoomManager getRoomMgr() {
@@ -126,8 +131,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
       final Player[] pl = myRoom.getPlayerList().toArray(new Player[0]);
       for (final Player p : pl) {
         if (!p.equals(me)) {
-          final ActivePeer peer =
-            peerMgr.getPeerListenerByID(((P2PPlayer) p).getInfo().getID());
+          final ActivePeer peer = peerMgr.getPeerListenerByID(((P2PPlayer) p).getInfo().getID());
           if (peer != null) {
             peer.sendCHAT(msg);
           }
@@ -154,7 +158,8 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
       ((P2PPlayer) me).setRoom(r.getName());
       if (isConnected()) {
         peerMgr.sendToAllNAME();
-        propSupport.firePropertyChange(AVAILABLE_ROOMS, null, roomMgr.update(((P2PPlayer) me).getInfo()));
+        propSupport.firePropertyChange(
+            AVAILABLE_ROOMS, null, roomMgr.update(((P2PPlayer) me).getInfo()));
         final Room newRoom = getRoom();
         propSupport.firePropertyChange(ROOM, null, newRoom);
       }
@@ -176,12 +181,12 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
     if (me instanceof P2PPlayer) {
       ((P2PPlayer) me).setStats(p);
       if (isConnected()) {
-        propSupport.firePropertyChange(AVAILABLE_ROOMS, null, roomMgr.update(((P2PPlayer) me).getInfo()));
+        propSupport.firePropertyChange(
+            AVAILABLE_ROOMS, null, roomMgr.update(((P2PPlayer) me).getInfo()));
         propSupport.firePropertyChange(ROOM, null, getRoom());
         peerMgr.sendToAllNAME();
       }
-    }
-    else {
+    } else {
       me = (SimplePlayer) p;
       me.updateStatus();
     }
@@ -195,8 +200,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
         int port;
         try {
           port = Integer.parseInt(params.getProperty(P2PClientFactory.P2P_LISTEN_PORT));
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
           port = 5050;
         }
         final MyInfo info = new MyInfo(null, port);
@@ -205,14 +209,17 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
         p.updateStatus();
         p.setName(me.getName());
         p.setRoom(roomMgr.getDefaultRoom().getName());
-        p.setId(GameModule.getUserId() + "." + System.currentTimeMillis()); //$NON-NLS-1$
+        p.setId(GameModule.getUserId() + "." + System.currentTimeMillis()); // $NON-NLS-1$
         setUserInfo(p);
         pool.initialize(p, ppm);
         if (peerMgr == null) {
           peerMgr = new ActivePeerManager(info, this, ppm);
         }
         roomMgr.update(((P2PPlayer) me).getInfo());
-        fireStatus(Resources.getString("Peer2Peer.server_connection_established", params.getProperty(P2PClientFactory.P2P_LISTEN_PORT))); //$NON-NLS-1$
+        fireStatus(
+            Resources.getString(
+                "Peer2Peer.server_connection_established",
+                params.getProperty(P2PClientFactory.P2P_LISTEN_PORT))); // $NON-NLS-1$
         propSupport.firePropertyChange(AVAILABLE_ROOMS, null, roomMgr.getRooms());
         propSupport.firePropertyChange(ROOM, null, getRoom());
         welcomeMessageServer.getWelcomeMessage().execute();
@@ -221,13 +228,13 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
       }
       // FIXME: review error message
       catch (IOException e) {
-        fireStatus(Resources.getString("Peer2Peer.connection_error", e.getMessage())); //$NON-NLS-1$
-        fireStatus(Resources.getString("Peer2Peer.disconnected")); //$NON-NLS-1$ //$NON-NLS-2$
+        fireStatus(
+            Resources.getString("Peer2Peer.connection_error", e.getMessage())); // $NON-NLS-1$
+        fireStatus(Resources.getString("Peer2Peer.disconnected")); // $NON-NLS-1$ //$NON-NLS-2$
         connected = false;
         propSupport.firePropertyChange(CONNECTED, null, Boolean.FALSE);
       }
-    }
-    else if (isConnected()) {
+    } else if (isConnected()) {
       if (peerMgr != null) {
         peerMgr.clear();
       }
@@ -237,7 +244,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
       propSupport.firePropertyChange(ROOM, new SimpleRoom(), null);
       connected = false;
       propSupport.firePropertyChange(CONNECTED, Boolean.TRUE, Boolean.FALSE);
-      fireStatus(Resources.getString("Peer2Peer.disconnected")); //$NON-NLS-1$ //$NON-NLS-2$
+      fireStatus(Resources.getString("Peer2Peer.disconnected")); // $NON-NLS-1$ //$NON-NLS-2$
       ppm.finish();
     }
   }
@@ -285,13 +292,13 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
   }
 
   @Override
-  public synchronized void showUnrecognized(PeerInfo pPeerInfo, String pBadMessage) {
-  }
+  public synchronized void showUnrecognized(PeerInfo pPeerInfo, String pBadMessage) {}
 
   @Override
   public synchronized void showStreamsFailed(PeerInfo pPeerInfo) {
     final P2PPlayer p = new P2PPlayer(pPeerInfo);
-    propSupport.firePropertyChange(STATUS, null, Resources.getString("Peer2Peer.connection_lost", p.getName())); //$NON-NLS-1$
+    propSupport.firePropertyChange(
+        STATUS, null, Resources.getString("Peer2Peer.connection_lost", p.getName())); // $NON-NLS-1$
   }
 
   @Override
@@ -300,8 +307,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
   }
 
   @Override
-  public synchronized void showConnect(PeerInfo pPeerInfo) {
-  }
+  public synchronized void showConnect(PeerInfo pPeerInfo) {}
 
   @Override
   public synchronized void showDisconnect(PeerInfo pPeerInfo) {
@@ -342,14 +348,14 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
       name = props.getProperty(SimpleStatus.NAME);
       ip = props.getProperty(SimpleStatus.IP);
       details = name + " (" + ip + ":" + pPeerInfo.getPort() + ")";
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       details = "";
     }
 
     // Does the password of the new Peer match ours?
-    if (! pPeerInfo.getNetworkPw().equals(params.getProperty(P2PClientFactory.P2P_SERVER_PW))) {
-      new Chatter.DisplayText(chatter, Resources.getString("Peer2Peer.bad_password", details)).execute();
+    if (!pPeerInfo.getNetworkPw().equals(params.getProperty(P2PClientFactory.P2P_SERVER_PW))) {
+      new Chatter.DisplayText(chatter, Resources.getString("Peer2Peer.bad_password", details))
+          .execute();
       peer.finish();
       return;
     }
@@ -371,7 +377,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
     g.addCommandEncoder(synchEncoder);
     g.addCommandEncoder(soundEncoder);
     if (pool instanceof ChatControlsInitializer) {
-      ((ChatControlsInitializer)pool).initializeControls(controls);
+      ((ChatControlsInitializer) pool).initializeControls(controls);
     }
   }
 
@@ -384,8 +390,7 @@ public class P2PClient implements ChatServerConnection, ChatControlsInitializer,
     g.removeCommandEncoder(synchEncoder);
     g.removeCommandEncoder(soundEncoder);
     if (pool instanceof ChatControlsInitializer) {
-      ((ChatControlsInitializer)pool).uninitializeControls(controls);
+      ((ChatControlsInitializer) pool).uninitializeControls(controls);
     }
   }
-
 }

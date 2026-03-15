@@ -19,39 +19,41 @@
 package VASSAL.build.module;
 
 import VASSAL.build.AbstractToolbarItem;
-import java.awt.Component;
-
-import javax.swing.JMenuItem;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.RecursionLimitException;
 import VASSAL.tools.RecursionLimiter;
 import VASSAL.tools.RecursionLimiter.Loopable;
+import java.awt.Component;
+import javax.swing.JMenuItem;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Combines multiple buttons from the toolbar into a single button. Pushing the single button is equivalent to pushing
- * the other buttons in order.
+ * Combines multiple buttons from the toolbar into a single button. Pushing the single button is
+ * equivalent to pushing the other buttons in order.
  *
  * @author rkinney
- *
  */
 public class MultiActionButton extends ToolbarMenu implements Loopable {
 
   public MultiActionButton() {
     super();
-    setAttribute(AbstractToolbarItem.BUTTON_TEXT, Resources.getString("Editor.MultiActionButton.component_type")); //$NON-NLS-1$
-    setAttribute(AbstractToolbarItem.TOOLTIP, Resources.getString("Editor.MultiActionButton.component_type")); //$NON-NLS-1$
+    setAttribute(
+        AbstractToolbarItem.BUTTON_TEXT,
+        Resources.getString("Editor.MultiActionButton.component_type")); // $NON-NLS-1$
+    setAttribute(
+        AbstractToolbarItem.TOOLTIP,
+        Resources.getString("Editor.MultiActionButton.component_type")); // $NON-NLS-1$
     getLaunchButton().putClientProperty(MENU_PROPERTY, null);
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return ArrayUtils.addAll(super.getAttributeDescriptions(),
-        Resources.getString("Editor.MultiActionButton.buttons") //$NON-NLS-1$
-    );
+    return ArrayUtils.addAll(
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.MultiActionButton.buttons") // $NON-NLS-1$
+        );
   }
 
   @Override
@@ -68,14 +70,12 @@ public class MultiActionButton extends ToolbarMenu implements Loopable {
       for (int i = 0; i < n; ++i) {
         final Component c = menu.getComponent(i);
         if (c instanceof JMenuItem) {
-          ((JMenuItem)c).doClick();
+          ((JMenuItem) c).doClick();
         }
       }
-    }
-    catch (RecursionLimitException e) {
+    } catch (RecursionLimitException e) {
       RecursionLimiter.infiniteLoop(e);
-    }
-    finally {
+    } finally {
       RecursionLimiter.endExecution();
       // If we are in control of logging, retrieve the accumulated Commands,
       // turn off pause and send the Commands to the log.
@@ -86,12 +86,12 @@ public class MultiActionButton extends ToolbarMenu implements Loopable {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.MultiActionButton.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.MultiActionButton.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("MultiActionButton.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("MultiActionButton.html"); // $NON-NLS-1$
   }
 
   // Implement Loopable

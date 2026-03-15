@@ -17,6 +17,14 @@
  */
 package VASSAL.build.module.map.boardPicker.board;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.round;
+import static java.lang.Math.sqrt;
+
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
@@ -30,8 +38,6 @@ import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.hex.Hex;
 import VASSAL.tools.hex.OffsetCoord;
-
-import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
@@ -43,23 +49,13 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JButton;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.round;
-import static java.lang.Math.sqrt;
-
-/**
- * A Hexgrid is a map grid composed of hexes.
- */
+/** A Hexgrid is a map grid composed of hexes. */
 public class HexGrid extends AbstractConfigurable
-                     implements GeometricGrid,
-                                GridEditor.EditableGrid {
+    implements GeometricGrid, GridEditor.EditableGrid {
   protected Point origin = new Point(0, 32);
 
   protected double dx;
@@ -80,18 +76,18 @@ public class HexGrid extends AbstractConfigurable
   protected Map<Integer, Area> shapeCache = new HashMap<>();
   protected HexGridEditor gridEditor;
 
-  public static final String X0 = "x0"; //$NON-NLS-1$
-  public static final String Y0 = "y0"; //$NON-NLS-1$
-  public static final String DY = "dy"; //$NON-NLS-1$
-  public static final String DX = "dx"; //$NON-NLS-1$
-  public static final String VISIBLE = "visible"; //$NON-NLS-1$
-  public static final String DOTS_VISIBLE = "dotsVisible"; //$NON-NLS-1$
-  public static final String CORNERS = "cornersLegal"; //$NON-NLS-1$
-  public static final String EDGES = "edgesLegal"; //$NON-NLS-1$
-  public static final String SIDEWAYS = "sideways"; //$NON-NLS-1$
-  public static final String COLOR = "color"; //$NON-NLS-1$
-  public static final String SNAP_SCALE = "snapscale"; //$NON-NLS-1$
-  public static final String SNAP_TO = "snapTo"; //$NON-NLS-1$
+  public static final String X0 = "x0"; // $NON-NLS-1$
+  public static final String Y0 = "y0"; // $NON-NLS-1$
+  public static final String DY = "dy"; // $NON-NLS-1$
+  public static final String DX = "dx"; // $NON-NLS-1$
+  public static final String VISIBLE = "visible"; // $NON-NLS-1$
+  public static final String DOTS_VISIBLE = "dotsVisible"; // $NON-NLS-1$
+  public static final String CORNERS = "cornersLegal"; // $NON-NLS-1$
+  public static final String EDGES = "edgesLegal"; // $NON-NLS-1$
+  public static final String SIDEWAYS = "sideways"; // $NON-NLS-1$
+  public static final String COLOR = "color"; // $NON-NLS-1$
+  public static final String SNAP_SCALE = "snapscale"; // $NON-NLS-1$
+  public static final String SNAP_TO = "snapTo"; // $NON-NLS-1$
 
   protected static final double sqrt3_2 = sqrt(3) / 2.;
 
@@ -101,40 +97,30 @@ public class HexGrid extends AbstractConfigurable
   @Override
   public String[] getAttributeNames() {
     return new String[] {
-      SIDEWAYS,
-      X0,
-      Y0,
-      DY,
-      DX,
-      SNAP_TO,
-      EDGES,
-      CORNERS,
-      VISIBLE,
-      DOTS_VISIBLE,
-      COLOR
+      SIDEWAYS, X0, Y0, DY, DX, SNAP_TO, EDGES, CORNERS, VISIBLE, DOTS_VISIBLE, COLOR
     };
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-      Resources.getString("Editor.HexGrid.sideways"), //$NON-NLS-1$
-      Resources.getString("Editor.x_offset"), //$NON-NLS-1$
-      Resources.getString("Editor.y_offset"), //$NON-NLS-1$
-      Resources.getString("Editor.HexGrid.hex_height"), //$NON-NLS-1$
-      Resources.getString("Editor.HexGrid.hex_width"), //$NON-NLS-1$
-      Resources.getString("Editor.Grid.snap"), //$NON-NLS-1$
-      Resources.getString("Editor.Grid.edges"), //$NON-NLS-1$
-      Resources.getString("Editor.HexGrid.vertices"), //$NON-NLS-1$
-      Resources.getString("Editor.Grid.show_grid"), //$NON-NLS-1$
-      Resources.getString("Editor.Grid.center_dots"), //$NON-NLS-1$
+    return new String[] {
+      Resources.getString("Editor.HexGrid.sideways"), // $NON-NLS-1$
+      Resources.getString("Editor.x_offset"), // $NON-NLS-1$
+      Resources.getString("Editor.y_offset"), // $NON-NLS-1$
+      Resources.getString("Editor.HexGrid.hex_height"), // $NON-NLS-1$
+      Resources.getString("Editor.HexGrid.hex_width"), // $NON-NLS-1$
+      Resources.getString("Editor.Grid.snap"), // $NON-NLS-1$
+      Resources.getString("Editor.Grid.edges"), // $NON-NLS-1$
+      Resources.getString("Editor.HexGrid.vertices"), // $NON-NLS-1$
+      Resources.getString("Editor.Grid.show_grid"), // $NON-NLS-1$
+      Resources.getString("Editor.Grid.center_dots"), // $NON-NLS-1$
       Resources.getString(Resources.COLOR_LABEL),
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       Boolean.class,
       Integer.class,
       Integer.class,
@@ -153,11 +139,9 @@ public class HexGrid extends AbstractConfigurable
   public VisibilityCondition getAttributeVisibility(String name) {
     if (COLOR.equals(name)) {
       return () -> (visible || dotsVisible);
-    }
-    else if (EDGES.equals(name) || CORNERS.equals(name)) {
+    } else if (EDGES.equals(name) || CORNERS.equals(name)) {
       return () -> snapTo;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -169,22 +153,23 @@ public class HexGrid extends AbstractConfigurable
 
     final AutoConfigurer c = (AutoConfigurer) super.getConfigurer();
     final Configurer dxConfig = c.getConfigurer(DX);
-    c.getConfigurer(DY).addPropertyChangeListener(evt -> {
-      if (evt.getNewValue() != null) {
-        final double hgt = (Double) evt.getNewValue();
-        dxConfig.setValue(Double.toString(sqrt3_2 * hgt));
-      }
-    });
+    c.getConfigurer(DY)
+        .addPropertyChangeListener(
+            evt -> {
+              if (evt.getNewValue() != null) {
+                final double hgt = (Double) evt.getNewValue();
+                dxConfig.setValue(Double.toString(sqrt3_2 * hgt));
+              }
+            });
 
     if (!buttonExists) {
-      final JButton b = new JButton(Resources.getString("Editor.Grid.edit_grid")); //$NON-NLS-1$
+      final JButton b = new JButton(Resources.getString("Editor.Grid.edit_grid")); // $NON-NLS-1$
       b.addActionListener(e -> editGrid());
       ((Container) c.getControls()).add(b);
     }
 
     return config;
   }
-
 
   protected boolean alternate; // true if hex B1 is above A1
 
@@ -293,7 +278,7 @@ public class HexGrid extends AbstractConfigurable
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.HexGrid.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.HexGrid.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -308,42 +293,32 @@ public class HexGrid extends AbstractConfigurable
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("HexGrid.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("HexGrid.html"); // $NON-NLS-1$
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (X0.equals(key)) {
       return String.valueOf(origin.x);
-    }
-    else if (Y0.equals(key)) {
+    } else if (Y0.equals(key)) {
       return String.valueOf(origin.y);
-    }
-    else if (DY.equals(key)) {
+    } else if (DY.equals(key)) {
       return String.valueOf(dy);
-    }
-    else if (DX.equals(key)) {
+    } else if (DX.equals(key)) {
       return String.valueOf(dx);
-    }
-    else if (SNAP_TO.equals(key)) {
+    } else if (SNAP_TO.equals(key)) {
       return String.valueOf(snapTo);
-    }
-    else if (CORNERS.equals(key)) {
+    } else if (CORNERS.equals(key)) {
       return String.valueOf(cornersLegal);
-    }
-    else if (EDGES.equals(key)) {
+    } else if (EDGES.equals(key)) {
       return String.valueOf(edgesLegal);
-    }
-    else if (SIDEWAYS.equals(key)) {
+    } else if (SIDEWAYS.equals(key)) {
       return String.valueOf(sideways);
-    }
-    else if (VISIBLE.equals(key)) {
+    } else if (VISIBLE.equals(key)) {
       return String.valueOf(visible);
-    }
-    else if (DOTS_VISIBLE.equals(key)) {
+    } else if (DOTS_VISIBLE.equals(key)) {
       return String.valueOf(dotsVisible);
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
     }
     return null;
@@ -356,14 +331,12 @@ public class HexGrid extends AbstractConfigurable
         val = Integer.valueOf((String) val);
       }
       origin.x = (Integer) val;
-    }
-    else if (Y0.equals(key)) {
+    } else if (Y0.equals(key)) {
       if (val instanceof String) {
         val = Integer.valueOf((String) val);
       }
       origin.y = (Integer) val;
-    }
-    else if (DY.equals(key)) {
+    } else if (DY.equals(key)) {
       if (val instanceof String) {
         val = Double.valueOf((String) val);
       }
@@ -371,67 +344,58 @@ public class HexGrid extends AbstractConfigurable
       if (Double.compare(dx, DEFAULT_WIDTH) == 0) {
         dx = sqrt3_2 * dy;
       }
-    }
-    else if (DX.equals(key)) {
+    } else if (DX.equals(key)) {
       if (val instanceof String) {
         val = Double.valueOf((String) val);
       }
       dx = (Double) val;
-    }
-    else if (SNAP_TO.equals(key)) {
+    } else if (SNAP_TO.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       snapTo = (Boolean) val;
-    }
-    else if (CORNERS.equals(key)) {
+    } else if (CORNERS.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       cornersLegal = (Boolean) val;
-    }
-    else if (EDGES.equals(key)) {
+    } else if (EDGES.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       edgesLegal = (Boolean) val;
-    }
-    else if (SIDEWAYS.equals(key)) {
+    } else if (SIDEWAYS.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       sideways = (Boolean) val;
-    }
-    else if (VISIBLE.equals(key)) {
+    } else if (VISIBLE.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       visible = (Boolean) val;
-    }
-    else if (DOTS_VISIBLE.equals(key)) {
+    } else if (DOTS_VISIBLE.equals(key)) {
       if (val instanceof String) {
         val = Boolean.valueOf((String) val);
       }
       dotsVisible = (Boolean) val;
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (val instanceof String) {
         val = ColorConfigurer.stringToColor((String) val);
       }
       color = (Color) val;
-    }
-    else if (SNAP_SCALE.equals(key)) {
+    } else if (SNAP_SCALE.equals(key)) {
       if (val instanceof String) {
-        val = Integer.valueOf((String)val);
+        val = Integer.valueOf((String) val);
       }
-      snapScale = (Integer)val;
+      snapScale = (Integer) val;
     }
     shapeCache.clear();
   }
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{HexGridNumbering.class};
+    return new Class<?>[] {HexGridNumbering.class};
   }
 
   @Override
@@ -446,10 +410,8 @@ public class HexGrid extends AbstractConfigurable
 
   @Override
   public Point getLocation(String location) throws BadCoords {
-    if (numbering == null)
-      throw new BadCoords();
-    else
-      return numbering.getLocation(location);
+    if (numbering == null) throw new BadCoords();
+    else return numbering.getLocation(location);
   }
 
   @Override
@@ -466,23 +428,17 @@ public class HexGrid extends AbstractConfigurable
     if (edgesLegal && cornersLegal) {
       final Point edge = snapToHexSide(p);
       final Point vertex = snapToHexVertex(p);
-      if ((p.x - edge.x) * (p.x - edge.x)
-          + (p.y - edge.y) * (p.y - edge.y)
-          < (p.x - vertex.x) * (p.x - vertex.x)
-          + (p.y - vertex.y) * (p.y - vertex.y)) {
+      if ((p.x - edge.x) * (p.x - edge.x) + (p.y - edge.y) * (p.y - edge.y)
+          < (p.x - vertex.x) * (p.x - vertex.x) + (p.y - vertex.y) * (p.y - vertex.y)) {
         return checkCenter(center, edge);
-      }
-      else {
+      } else {
         return checkCenter(center, vertex);
       }
-    }
-    else if (edgesLegal) {
+    } else if (edgesLegal) {
       return checkCenter(center, snapToHexSide(p));
-    }
-    else if (cornersLegal) {
+    } else if (cornersLegal) {
       return checkCenter(center, snapToHexVertex(p));
-    }
-    else {
+    } else {
       return snapToHex(p);
     }
   }
@@ -502,10 +458,10 @@ public class HexGrid extends AbstractConfigurable
   // the real hex center if it is within 1 pixel x/y
   protected Point checkCenter(Point center, Point target) {
     if ((center.x - target.x) * (center.x - target.x)
-          + (center.y - target.y) * (center.y - target.y) <= 2) {
+            + (center.y - target.y) * (center.y - target.y)
+        <= 2) {
       return center;
-    }
-    else {
+    } else {
       return target;
     }
   }
@@ -582,12 +538,11 @@ public class HexGrid extends AbstractConfigurable
     }
   }
 
-
   @Override
   public Area getGridShape(Point center, int range) {
     Area shape = shapeCache.get(range);
     if (shape == null) {
-      //Choose a starting point
+      // Choose a starting point
       final Point origin = new Point(0, 0);
       shape = getSingleHexShape(origin.x, origin.y, false);
 
@@ -599,8 +554,7 @@ public class HexGrid extends AbstractConfigurable
         final int startY;
         if (length % 2 == 1) {
           startY = origin.y - (int) (dy * (length - 1) / 2);
-        }
-        else {
+        } else {
           startY = origin.y - (int) (dy * (0.5 + (length - 2) / 2));
         }
 
@@ -614,16 +568,18 @@ public class HexGrid extends AbstractConfigurable
       }
 
       rotateIfSideways(origin);
-      shape.transform(
-        AffineTransform.getTranslateInstance(0 - origin.x, 0 - origin.y));
+      shape.transform(AffineTransform.getTranslateInstance(0 - origin.x, 0 - origin.y));
       shapeCache.put(range, shape);
     }
-    shape = new Area(AffineTransform.getTranslateInstance(center.x, center.y).createTransformedShape(shape));
+    shape =
+        new Area(
+            AffineTransform.getTranslateInstance(center.x, center.y).createTransformedShape(shape));
     return shape;
   }
 
   /**
    * Return the Shape of a single hex
+   *
    * @param centerX X co-ord of hex centre .
    * @param centerY Y co-ord of hex centre .
    * @param reversed ?
@@ -633,7 +589,7 @@ public class HexGrid extends AbstractConfigurable
    * @return Hex Shape
    */
   private static Area getSingleHexShape(
-          int centerX, int centerY, boolean reversed, boolean sideways, double dx, double dy) {
+      int centerX, int centerY, boolean reversed, boolean sideways, double dx, double dy) {
 
     final Polygon poly = new Polygon();
 
@@ -738,37 +694,39 @@ public class HexGrid extends AbstractConfigurable
     final int ny;
     if (nx % 2 == 0) {
       ny = (int) round((p.y - origin.y) / dy);
-    }
-    else {
+    } else {
       ny = (int) round((p.y - origin.y - dy / 2) / dy);
     }
     return ny;
   }
 
-  /**
-   * Calculate the correct Manhattan range in hexes between 2 points.
-   */
+  /** Calculate the correct Manhattan range in hexes between 2 points. */
   @Override
   public int range(Point p1, Point p2) {
 
     final VASSAL.build.module.Map m = getContainer().getBoard().getMap();
 
-    // Snap the points to the HexGrid before calculating range. Note: snap via the Map to get correct handling of board offets.
+    // Snap the points to the HexGrid before calculating range. Note: snap via the Map to get
+    // correct handling of board offets.
     final Point pp1 = m.snapTo(p1);
     final Point pp2 = m.snapTo(p2);
 
     // Create two Hex Coordinate references
-    final Hex h1 = OffsetCoord.qoffsetToCube(OffsetCoord.ODD, new OffsetCoord(getRawColumn(pp1), getRawRow(pp1)));
-    final Hex h2 = OffsetCoord.qoffsetToCube(OffsetCoord.ODD, new OffsetCoord(getRawColumn(pp2), getRawRow(pp2)));
+    final Hex h1 =
+        OffsetCoord.qoffsetToCube(
+            OffsetCoord.ODD, new OffsetCoord(getRawColumn(pp1), getRawRow(pp1)));
+    final Hex h2 =
+        OffsetCoord.qoffsetToCube(
+            OffsetCoord.ODD, new OffsetCoord(getRawColumn(pp2), getRawRow(pp2)));
 
     // And return the difference
     return h1.distance(h2);
   }
 
   /**
-   * Return the largest number of pixels that a range unit can have
-   * NOTE this is just an estimate and is used as a heuristic in the GKC fast match process, so it MUST encompass all
-   * units that could be in range, but may be larger. The range of selected pieces will be accurately checked.
+   * Return the largest number of pixels that a range unit can have NOTE this is just an estimate
+   * and is used as a heuristic in the GKC fast match process, so it MUST encompass all units that
+   * could be in range, but may be larger. The range of selected pieces will be accurately checked.
    *
    * @return max pixels per range
    */
@@ -790,26 +748,17 @@ public class HexGrid extends AbstractConfigurable
   private Point hexPointCenterFromRawIndex(int nx, int ny) {
 
     final int xLoc = ((int) (dx * nx + origin.x));
-    final int yLoc = nx % 2 == 0
-        ? (int) (dy * ny + origin.y)
-        : (int) (dy * ny + (int) (dy / 2) + origin.y);
+    final int yLoc =
+        nx % 2 == 0 ? (int) (dy * ny + origin.y) : (int) (dy * ny + (int) (dy / 2) + origin.y);
 
     return new Point(xLoc, yLoc);
   }
 
-  private static final List<Point> hexPointRawIndexOffsets1 = List.of(
-          new Point(-1, -1),
-          new Point(-1, 0),
-          new Point(1, -1),
-          new Point(1, 0)
-  );
+  private static final List<Point> hexPointRawIndexOffsets1 =
+      List.of(new Point(-1, -1), new Point(-1, 0), new Point(1, -1), new Point(1, 0));
 
-  private static final List<Point> hexPointRawIndexOffsets2 = List.of(
-          new Point(-1, 0),
-          new Point(-1, 1),
-          new Point(1, 0),
-          new Point(1, 1)
-  );
+  private static final List<Point> hexPointRawIndexOffsets2 =
+      List.of(new Point(-1, 0), new Point(-1, 1), new Point(1, 0), new Point(1, 1));
 
   // Assumes that the point has already been rotated by callers if sideways.
   private Point hexPoint(int x, int y) {
@@ -819,9 +768,8 @@ public class HexGrid extends AbstractConfigurable
     ////////////////////////////////////////////////////////////////////////////
 
     final int nx = (int) floor((x - origin.x + dx / 2) / dx);
-    final int ny = nx % 2 == 0
-        ? (int) floor((y - origin.y + dy / 2) / dy)
-        : (int) floor((y - origin.y) / dy);
+    final int ny =
+        nx % 2 == 0 ? (int) floor((y - origin.y + dy / 2) / dy) : (int) floor((y - origin.y) / dy);
 
     final Point firstCenter = hexPointCenterFromRawIndex(nx, ny);
     // Start off with using the first candidate hex.
@@ -833,7 +781,8 @@ public class HexGrid extends AbstractConfigurable
     // first candidate hex, and then checking the neighboring hexes.          //
     ////////////////////////////////////////////////////////////////////////////
 
-    // Always pass 'false' for 'sideways', since the input point has already been rotated by callers of 'hexPoint'.
+    // Always pass 'false' for 'sideways', since the input point has already been rotated by callers
+    // of 'hexPoint'.
     final Area firstHex = getSingleHexShape(xLoc, yLoc, false, false, dx, dy);
 
     // In case the first candidate hex apparently does not contain the
@@ -845,9 +794,8 @@ public class HexGrid extends AbstractConfigurable
       // use the first candidate hex - presumably the point lies on the edge or corner of
       // the originally found hex.
 
-      final var hexPointRawIndexOffsets = nx % 2 == 0
-              ? hexPointRawIndexOffsets1
-              : hexPointRawIndexOffsets2;
+      final var hexPointRawIndexOffsets =
+          nx % 2 == 0 ? hexPointRawIndexOffsets1 : hexPointRawIndexOffsets2;
 
       for (final var offset : hexPointRawIndexOffsets) {
 
@@ -870,18 +818,18 @@ public class HexGrid extends AbstractConfigurable
     if (snapScale > 0) {
       {
         int delta = x - xLoc;
-        delta = (int)round(delta / (0.5 * dx / snapScale));
+        delta = (int) round(delta / (0.5 * dx / snapScale));
         delta = max(delta, 1 - snapScale);
         delta = min(delta, snapScale - 1);
-        delta = (int)round(delta * 0.5 * dx / snapScale);
+        delta = (int) round(delta * 0.5 * dx / snapScale);
         xLoc += delta;
       }
       {
         int delta = y - yLoc;
-        delta = (int)round(delta / (0.5 * dy / snapScale));
+        delta = (int) round(delta / (0.5 * dy / snapScale));
         delta = max(delta, 1 - snapScale);
         delta = min(delta, snapScale - 1);
-        delta = (int)round(delta * 0.5 * dy / snapScale);
+        delta = (int) round(delta * 0.5 * dy / snapScale);
         yLoc += delta;
       }
     }
@@ -901,8 +849,7 @@ public class HexGrid extends AbstractConfigurable
     final int nx = (int) floor((x - origin.x + dx / 4) * 2 / dx);
     if (nx % 2 == 0) {
       return ((int) (dy / 2 * (int) floor((y - origin.y + dy / 4) * 2 / dy) + origin.y));
-    }
-    else {
+    } else {
       return ((int) ((dy / 2) * (int) floor((y - origin.y) * 2 / dy) + (int) (dy / 4) + origin.y));
     }
   }
@@ -915,10 +862,11 @@ public class HexGrid extends AbstractConfigurable
     final int ny = (int) floor((y - origin.y + dy / 4) * 2 / dy);
     if (ny % 2 == 0) {
       return ((int) (2 * dx / 3 * (int) (floor(x - origin.x + dx / 3) * 3 / (2 * dx)) + origin.x));
-    }
-    else {
-      return ((int) (2 * dx / 3 * (int) (floor(x - origin.x + dx / 3 + dx / 3) * 3 / (2 * dx))
-          - (int) (dx / 3) + origin.x));
+    } else {
+      return ((int)
+          (2 * dx / 3 * (int) (floor(x - origin.x + dx / 3 + dx / 3) * 3 / (2 * dx))
+              - (int) (dx / 3)
+              + origin.x));
     }
   }
 
@@ -928,7 +876,8 @@ public class HexGrid extends AbstractConfigurable
 
   /** Draw the grid, if visible, and the accompanying numbering */
   @Override
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double zoom, boolean reversed) {
+  public void draw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double zoom, boolean reversed) {
     if (visible || dotsVisible) {
       forceDraw(g, bounds, visibleRect, zoom, reversed);
     }
@@ -938,7 +887,8 @@ public class HexGrid extends AbstractConfigurable
   }
 
   /** Draw the grid even if set to be not visible */
-  public void forceDraw(Graphics g, Rectangle bounds, Rectangle visibleRect, double zoom, boolean reversed) {
+  public void forceDraw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double zoom, boolean reversed) {
     if (!bounds.intersects(visibleRect) || color == null) {
       return;
     }
@@ -967,11 +917,31 @@ public class HexGrid extends AbstractConfigurable
       region = new Rectangle(region.y, region.x, region.height, region.width);
     }
 
-    final float xmin = reversed ? bounds.x + (float) zoom * origin.x + bounds.width - 2 * deltaX * (float) ceil((bounds.x + zoom * origin.x + bounds.width - region.x) / (2 * deltaX))
-        : bounds.x + (float) zoom * origin.x + 2 * deltaX * (float) floor((region.x - bounds.x - zoom * origin.x) / (2 * deltaX));
+    final float xmin =
+        reversed
+            ? bounds.x
+                + (float) zoom * origin.x
+                + bounds.width
+                - 2
+                    * deltaX
+                    * (float)
+                        ceil((bounds.x + zoom * origin.x + bounds.width - region.x) / (2 * deltaX))
+            : bounds.x
+                + (float) zoom * origin.x
+                + 2
+                    * deltaX
+                    * (float) floor((region.x - bounds.x - zoom * origin.x) / (2 * deltaX));
     final float xmax = region.x + region.width + 2 * deltaX;
-    final float ymin = reversed ? bounds.y + (float) zoom * origin.y + bounds.height - deltaY * (float) ceil((bounds.y + zoom * origin.y + bounds.height - region.y) / deltaY)
-        : bounds.y + (float) zoom * origin.y + deltaY * (float) floor((region.y - bounds.y - zoom * origin.y) / deltaY);
+    final float ymin =
+        reversed
+            ? bounds.y
+                + (float) zoom * origin.y
+                + bounds.height
+                - deltaY
+                    * (float) ceil((bounds.y + zoom * origin.y + bounds.height - region.y) / deltaY)
+            : bounds.y
+                + (float) zoom * origin.y
+                + deltaY * (float) floor((region.y - bounds.y - zoom * origin.y) / deltaY);
     final float ymax = region.y + region.height + deltaY;
 
     final Point center = new Point();
@@ -1056,12 +1026,10 @@ public class HexGrid extends AbstractConfigurable
     this.numbering = numbering;
   }
 
-
   @Override
   public GridNumbering getGridNumbering() {
     return numbering;
   }
-
 
   @Override
   public Point getOrigin() {
@@ -1111,14 +1079,11 @@ public class HexGrid extends AbstractConfigurable
 
       if (isPerpendicular(hp1, hp2)) {
         calculate_step2(hp1, hp2, hp3);
-      }
-      else if (isPerpendicular(hp1, hp3)) {
+      } else if (isPerpendicular(hp1, hp3)) {
         calculate_step2(hp1, hp3, hp2);
-      }
-      else if (isPerpendicular(hp2, hp3)) {
+      } else if (isPerpendicular(hp2, hp3)) {
         calculate_step2(hp2, hp3, hp1);
-      }
-      else {
+      } else {
         reportShapeError();
       }
     }
@@ -1133,21 +1098,17 @@ public class HexGrid extends AbstractConfigurable
         if (isHorizontal(p1, p2)) {
           if ((p3.x < p1.x && p3.x < p2.x) || (p3.x > p1.x && p3.x > p2.x)) {
             check(false, p1, p2, p3);
-          }
-          else {
+          } else {
             checkEnd(true, p1, p2, p3);
           }
-        }
-        else {
+        } else {
           if ((p3.y < p1.y && p3.y < p2.y) || (p3.y > p1.y && p3.y > p2.y)) {
             check(true, reverse(p1), reverse(p2), reverse(p3));
-          }
-          else {
+          } else {
             checkEnd(false, reverse(p1), reverse(p2), reverse(p3));
           }
         }
-      }
-      else {
+      } else {
         reportShapeError();
       }
     }
@@ -1198,9 +1159,7 @@ public class HexGrid extends AbstractConfigurable
       grid.setDy(height);
       grid.setOrigin(new Point(xoff, yoff));
       grid.setSideways(b);
-
     }
-
   }
 
   public int getSnapScale() {

@@ -213,52 +213,54 @@ public class BeanShellExpressionValidator {
    * Assignments are not allowed in an expression, so flag as an error
    * @param node Parser Node
    */
-  protected boolean processNode (SimpleNode node) {
+  protected boolean processNode(SimpleNode node) {
     if (node == null) {
       return true;
     }
-    
-    if (node instanceof BSHAmbiguousName) {
-      final String name = node.getText().trim();
-      if ((node.parent instanceof BSHMethodInvocation)) {
-        if (! methods.contains(name)) {
-          // Check for x.y() where y is a String method. x will be a property name we need to report
-          // node.getText() returns the unknown method name with parts split by spaces. Break this into an array of tokens
-          String[] tokens = name.split(" ");
-          // Only 1 Token, it's a straight method, we're not interested.
-          if (tokens.length == 1) {
-            if (! methods.contains(name)) {
-              methods.add(name);
-            }
-          }
-          else {
-            // If Token 2 is one of the String methods, then token 1 is a property name we need to report as a String variable
-            if (supportedStringFunctions.contains(tokens[1])) {
-              if (! stringVariables.contains(tokens[0])) {
-                stringVariables.add(tokens[0]);
-              }
-            }
-          }
+
+    return switch (node) {
+      case BSHAmbiguousName ambiguousName -> processAmbiguousName(ambiguousName);
+      case BSHAssignment ignored -> {
+        setError("Assignments (=) not allowed in Expressions. See Help");
+        yield false;
+      }
+      default -> processChildren(node);
+    };
+  }
+
+  private boolean processAmbiguousName(BSHAmbiguousName ambiguousName) {
+    final String name = ambiguousName.getText().trim();
+    if (ambiguousName.parent instanceof BSHMethodInvocation) {
+      if (!methods.contains(name)) {
+        // Check for x.y() where y is a String method. x will be a property name we need to report.
+        final String[] tokens = name.split(" ");
+        if (tokens.length == 1) {
+          methods.add(name);
         }
-      }
-      else if (! variables.contains(name)) {
-        variables.add(name);
-      }
-    }
-    else if (node instanceof BSHAssignment) {
-      setError("Assignments (=) not allowed in Expressions. See Help");
-      return false;
-    }
-    else {
-      if (node.children != null) {
-        for (int i = 0; i < node.children.length; i++) {
-          if (! processNode(node.getChild(i))) {
-            return false;
-          }
+        else if (supportedStringFunctions.contains(tokens[1]) && !stringVariables.contains(tokens[0])) {
+          stringVariables.add(tokens[0]);
         }
       }
     }
+    else if (!variables.contains(name)) {
+      variables.add(name);
+    }
+
     return true;
-  }  
-  
+  }
+
+  private boolean processChildren(SimpleNode node) {
+    if (node.children == null) {
+      return true;
+    }
+
+    for (int i = 0; i < node.children.length; i++) {
+      if (!processNode(node.getChild(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }

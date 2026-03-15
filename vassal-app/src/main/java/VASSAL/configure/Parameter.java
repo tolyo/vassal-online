@@ -21,9 +21,8 @@ package VASSAL.configure;
 import VASSAL.tools.SequenceEncoder;
 
 /**
- * A Description of a Parameter to be set in a target gamepiece
- * - A Dynamic property name
- * - A value, which may be an expression and contain $$ variables.
+ * A Description of a Parameter to be set in a target gamepiece - A Dynamic property name - A value,
+ * which may be an expression and contain $$ variables.
  */
 public class Parameter {
   public static final char DELIMITER = ':';
@@ -58,7 +57,6 @@ public class Parameter {
   public String encode() {
     return encode(this);
   }
-
 
   @Override
   public boolean equals(Object obj) {

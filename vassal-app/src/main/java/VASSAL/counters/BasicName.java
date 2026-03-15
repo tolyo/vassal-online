@@ -23,8 +23,6 @@ import VASSAL.i18n.PieceI18nData;
 import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -32,10 +30,12 @@ import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
 /**
- * This trait overrides the $BasicName$ property provided by the "Basic Piece", allowing a module designer
- * decking to define pieces entirely by prototype to safely ignore and leave empty the Basic Piece.
+ * This trait overrides the $BasicName$ property provided by the "Basic Piece", allowing a module
+ * designer decking to define pieces entirely by prototype to safely ignore and leave empty the
+ * Basic Piece.
  */
 public class BasicName extends Decorator implements TranslatablePiece {
   public static final String ID = "basicName;"; // NON-NLS
@@ -74,8 +74,7 @@ public class BasicName extends Decorator implements TranslatablePiece {
   public Object getProperty(Object key) {
     if (BasicPiece.BASIC_NAME.equals(key)) {
       return name;
-    }
-    else if (BasicPiece.LOCALIZED_BASIC_NAME.equals(key)) {
+    } else if (BasicPiece.LOCALIZED_BASIC_NAME.equals(key)) {
       return getLocalizedProperty(BasicPiece.BASIC_NAME);
     }
     return super.getProperty(key);
@@ -95,6 +94,7 @@ public class BasicName extends Decorator implements TranslatablePiece {
 
   /**
    * For editor methods to auto-set the name
+   *
    * @param newName new name
    */
   public void setName(String newName) {
@@ -117,10 +117,10 @@ public class BasicName extends Decorator implements TranslatablePiece {
   @Override
   public PieceI18nData getI18nData() {
     return getI18nData(
-      new String[] { name },
-      new String[] {
-        Resources.getString("Editor.BasicName.trait_description"),
-      });
+        new String[] {name},
+        new String[] {
+          Resources.getString("Editor.BasicName.trait_description"),
+        });
   }
 
   @Override
@@ -134,8 +134,7 @@ public class BasicName extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -174,7 +173,7 @@ public class BasicName extends Decorator implements TranslatablePiece {
 
   @Override
   public boolean testEquals(Object o) {
-    if (! (o instanceof BasicName)) return false;
+    if (!(o instanceof BasicName)) return false;
     final BasicName c = (BasicName) o;
     return Objects.equals(name, c.name);
   }

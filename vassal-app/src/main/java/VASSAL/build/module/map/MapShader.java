@@ -46,9 +46,6 @@ import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.imageop.AbstractTileOpImpl;
 import VASSAL.tools.imageop.ImageOp;
 import VASSAL.tools.imageop.Op;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -70,36 +67,40 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Draw shaded regions on a map.
  *
  * @author Brent Easton
  */
-public class MapShader extends AbstractToolbarItem implements GameComponent, Drawable, UniqueIdManager.Identifyable {
+public class MapShader extends AbstractToolbarItem
+    implements GameComponent, Drawable, UniqueIdManager.Identifyable {
 
-  public static final String NAME = "name"; //NON-NLS
-  public static final String HOT_KEY = "hotkey"; //NON-NLS
-  public static final String BUTTON_TEXT = "buttonText"; //NON-NLS
-  public static final String ICON = "icon"; //NON-NLS
-  public static final String TOOLTIP = "tooltip"; //NON-NLS
+  public static final String NAME = "name"; // NON-NLS
+  public static final String HOT_KEY = "hotkey"; // NON-NLS
+  public static final String BUTTON_TEXT = "buttonText"; // NON-NLS
+  public static final String ICON = "icon"; // NON-NLS
+  public static final String TOOLTIP = "tooltip"; // NON-NLS
 
-  public static final String ALWAYS_ON = "alwaysOn"; //NON-NLS
-  public static final String STARTS_ON = "startsOn"; //NON-NLS
-  public static final String BOARDS = "boards"; //NON-NLS
-  public static final String BOARD_LIST = "boardList"; //NON-NLS
+  public static final String ALWAYS_ON = "alwaysOn"; // NON-NLS
+  public static final String STARTS_ON = "startsOn"; // NON-NLS
+  public static final String BOARDS = "boards"; // NON-NLS
+  public static final String BOARD_LIST = "boardList"; // NON-NLS
 
-  public static final String ALL_BOARDS = "Yes"; //NON-NLS (really)
-  public static final String EXC_BOARDS = "No, exclude Boards in list"; //NON-NLS (really)
-  public static final String INC_BOARDS = "No, only shade Boards in List"; //NON-NLS (really)
+  public static final String ALL_BOARDS = "Yes"; // NON-NLS (really)
+  public static final String EXC_BOARDS = "No, exclude Boards in list"; // NON-NLS (really)
+  public static final String INC_BOARDS = "No, only shade Boards in List"; // NON-NLS (really)
 
   public static final String ADD_TO_MAP_TOOLBAR = "addToMapToolbar";
 
   // No longer used but maintained in case class has been referenced in custom code
   @Deprecated(since = "2023-08-13")
-  protected static final UniqueIdManager idMgr = new UniqueIdManager("MapShader"); //NON-NLS
+  protected static final UniqueIdManager idMgr = new UniqueIdManager("MapShader"); // NON-NLS
 
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
@@ -114,26 +115,26 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   protected Area boardClip = null;
 
-  public static final String TYPE = "type"; //NON-NLS
-  public static final String DRAW_OVER = "drawOver"; //NON-NLS
-  public static final String PATTERN = "pattern"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String IMAGE = "image"; //NON-NLS
-  public static final String SCALE_IMAGE = "scaleImage"; //NON-NLS
-  public static final String OPACITY = "opacity"; //NON-NLS
-  public static final String BORDER = "border"; //NON-NLS
-  public static final String BORDER_COLOR = "borderColor"; //NON-NLS
-  public static final String BORDER_WIDTH = "borderWidth"; //NON-NLS
-  public static final String BORDER_OPACITY = "borderOpacity"; //NON-NLS
+  public static final String TYPE = "type"; // NON-NLS
+  public static final String DRAW_OVER = "drawOver"; // NON-NLS
+  public static final String PATTERN = "pattern"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String IMAGE = "image"; // NON-NLS
+  public static final String SCALE_IMAGE = "scaleImage"; // NON-NLS
+  public static final String OPACITY = "opacity"; // NON-NLS
+  public static final String BORDER = "border"; // NON-NLS
+  public static final String BORDER_COLOR = "borderColor"; // NON-NLS
+  public static final String BORDER_WIDTH = "borderWidth"; // NON-NLS
+  public static final String BORDER_OPACITY = "borderOpacity"; // NON-NLS
 
-  public static final String BG_TYPE = "Background"; //NON-NLS (really)
-  public static final String FG_TYPE = "Foreground"; //NON-NLS (really)
+  public static final String BG_TYPE = "Background"; // NON-NLS (really)
+  public static final String FG_TYPE = "Foreground"; // NON-NLS (really)
 
-  public static final String TYPE_25_PERCENT = "25%"; //NON-NLS (really)
-  public static final String TYPE_50_PERCENT = "50%"; //NON-NLS (really)
-  public static final String TYPE_75_PERCENT = "75%"; //NON-NLS (really)
-  public static final String TYPE_SOLID = "100% (Solid)"; //NON-NLS (really)
-  public static final String TYPE_IMAGE = "Custom Image"; //NON-NLS (really)
+  public static final String TYPE_25_PERCENT = "25%"; // NON-NLS (really)
+  public static final String TYPE_50_PERCENT = "50%"; // NON-NLS (really)
+  public static final String TYPE_75_PERCENT = "75%"; // NON-NLS (really)
+  public static final String TYPE_SOLID = "100% (Solid)"; // NON-NLS (really)
+  public static final String TYPE_IMAGE = "Custom Image"; // NON-NLS (really)
 
   protected String imageName;
   protected Color color = Color.BLACK;
@@ -157,29 +158,26 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   protected AlphaComposite borderComposite = null;
   protected BasicStroke stroke = null;
 
-  protected String version = ""; //NON-NLS
+  protected String version = ""; // NON-NLS
 
   /**
-   * Should the toolbar button for this shader be added to the Map toolbar instead of the Global toolbar?
-   * Map Shader buttons SHOULD be added to the Map Toolbar, but have mistakenly been added to the GLobal
-   * Toolbar since before the dawn of time. Changing this will break existing module that have already
-   * added Shader buttons to global toolbar menus.
-   * Existing Map Shaders will have addToMapToolbar default to false to maintain compatibility
-   * New Map Shaders will have addToMapToolbar set to True
+   * Should the toolbar button for this shader be added to the Map toolbar instead of the Global
+   * toolbar? Map Shader buttons SHOULD be added to the Map Toolbar, but have mistakenly been added
+   * to the GLobal Toolbar since before the dawn of time. Changing this will break existing module
+   * that have already added Shader buttons to global toolbar menus. Existing Map Shaders will have
+   * addToMapToolbar default to false to maintain compatibility New Map Shaders will have
+   * addToMapToolbar set to True
    */
   protected boolean addToMapToolbar = false;
 
   public MapShader() {
     setButtonTextKey(BUTTON_TEXT);
 
-    setShowDisabledOptions(false); //AbstractToolbarItem
+    setShowDisabledOptions(false); // AbstractToolbarItem
 
-    setLaunchButton(makeLaunchButton(
-      "",
-      Resources.getString("Editor.MapShader.shade"),
-      "",
-      e -> toggleShading()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            "", Resources.getString("Editor.MapShader.shade"), "", e -> toggleShading()));
     launch = getLaunchButton(); // for compatibility
 
     getLaunchButton().setEnabled(false);
@@ -204,8 +202,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     final double zoom = map.getZoom() * os_scale;
 
     if (zoom != 1.0) {
-      area = new Area(AffineTransform.getScaleInstance(zoom, zoom)
-                                     .createTransformedShape(area));
+      area = new Area(AffineTransform.getScaleInstance(zoom, zoom).createTransformedShape(area));
     }
 
     final Composite oldComposite = g2d.getComposite();
@@ -234,9 +231,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     g2d.setPaint(oldPaint);
   }
 
-  /**
-   * Get/Build the AlphaComposite used to draw the semi-transparent shade/
-   */
+  /** Get/Build the AlphaComposite used to draw the semi-transparent shade/ */
   protected AlphaComposite getComposite() {
     if (composite == null) {
       buildComposite();
@@ -245,8 +240,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   }
 
   protected void buildComposite() {
-    composite =
-      AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity / 100.0f);
+    composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity / 100.0f);
   }
 
   protected AlphaComposite getBorderComposite() {
@@ -257,16 +251,12 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   }
 
   protected AlphaComposite buildBorderComposite() {
-    return AlphaComposite.getInstance(
-      AlphaComposite.SRC_OVER, borderOpacity / 100.0f);
+    return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, borderOpacity / 100.0f);
   }
 
-  /**
-   * Get/Build the shape of the shade.
-   */
+  /** Get/Build the shape of the shade. */
   protected Area getShadeShape(Map map) {
-    final Area myShape = type.equals(FG_TYPE) ?
-      new Area() : new Area(getBoardClip());
+    final Area myShape = type.equals(FG_TYPE) ? new Area() : new Area(getBoardClip());
     Arrays.stream(map.getPieces()).forEach(p -> checkPiece(myShape, p));
     return myShape;
   }
@@ -275,16 +265,14 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     if (piece instanceof Stack) {
       final Stack s = (Stack) piece;
       s.asList().forEach(gamePiece -> checkPiece(area, gamePiece));
-    }
-    else {
+    } else {
       final ShadedPiece shaded = (ShadedPiece) Decorator.getDecorator(piece, ShadedPiece.class);
       if (shaded != null) {
         final Area shape = shaded.getArea(this);
         if (shape != null) {
           if (type.equals(FG_TYPE)) {
             area.add(shape);
-          }
-          else {
+          } else {
             area.subtract(shape);
           }
         }
@@ -299,23 +287,27 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
     final BufferedImage src = (zoom == 1.0 ? srcOp : Op.scale(srcOp, zoom)).getImage();
     if (src == null) {
-      return null; // The only method that calls us apparently expects the possibility of receiving null, and the getImage() can return null when filename is still blank (or file is missing) 
+      return null; // The only method that calls us apparently expects the possibility of receiving
+      // null, and the getImage() can return null when filename is still blank (or file
+      // is missing)
     }
     // Linux xrender apparently requires translucency and its own copy
     return ImageUtils.toType(src, ImageUtils.getCompatibleTranslucentImageType());
   }
 
   protected Rectangle getPatternRect(double zoom) {
-    return zoom == 1.0 ? patternRect :
-      new Rectangle(
-        (int)Math.round(zoom * patternRect.width),
-        (int)Math.round(zoom * patternRect.height)
-      );
+    return zoom == 1.0
+        ? patternRect
+        : new Rectangle(
+            (int) Math.round(zoom * patternRect.width),
+            (int) Math.round(zoom * patternRect.height));
   }
 
   protected void buildShadePattern() {
-    srcOp = pattern.equals(TYPE_IMAGE) && imageName != null
-          ? Op.load(imageName) : new PatternOp(color, pattern);
+    srcOp =
+        pattern.equals(TYPE_IMAGE) && imageName != null
+            ? Op.load(imageName)
+            : new PatternOp(color, pattern);
     patternRect = new Rectangle(srcOp.getSize());
   }
 
@@ -325,8 +317,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     private final int hash;
 
     public PatternOp(Color color, String pattern) {
-      if (color == null || pattern == null)
-        throw new IllegalArgumentException();
+      if (color == null || pattern == null) throw new IllegalArgumentException();
       this.color = color;
       this.pattern = pattern;
 
@@ -335,22 +326,18 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
     @Override
     public BufferedImage eval() throws Exception {
-      final BufferedImage im =
-        ImageUtils.createCompatibleTranslucentImage(2, 2);
+      final BufferedImage im = ImageUtils.createCompatibleTranslucentImage(2, 2);
       final Graphics2D g = im.createGraphics();
       g.setColor(color);
       if (TYPE_25_PERCENT.equals(pattern)) {
         g.drawLine(0, 0, 0, 0);
-      }
-      else if (TYPE_50_PERCENT.equals(pattern)) {
+      } else if (TYPE_50_PERCENT.equals(pattern)) {
         g.drawLine(0, 0, 0, 0);
         g.drawLine(1, 1, 1, 1);
-      }
-      else if (TYPE_75_PERCENT.equals(pattern)) {
+      } else if (TYPE_75_PERCENT.equals(pattern)) {
         g.drawLine(0, 0, 1, 0);
         g.drawLine(1, 1, 1, 1);
-      }
-      else {
+      } else {
         g.drawLine(0, 0, 1, 0);
         g.drawLine(0, 1, 1, 1);
       }
@@ -359,7 +346,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     }
 
     @Override
-    protected void fixSize() { }
+    protected void fixSize() {}
 
     @Override
     public Dimension getSize() {
@@ -385,8 +372,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     public boolean equals(Object o) {
       if (this == o) return true;
       if (!(o instanceof PatternOp)) return false;
-      return color.equals(((PatternOp) o).color) &&
-             pattern.equals(((PatternOp) o).pattern);
+      return color.equals(((PatternOp) o).color) && pattern.equals(((PatternOp) o).pattern);
     }
 
     @Override
@@ -403,9 +389,11 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   }
 
   protected void buildStroke(double zoom) {
-    stroke = new BasicStroke((float) Math.min(borderWidth * zoom, 1.0),
-                             BasicStroke.CAP_ROUND,
-                             BasicStroke.JOIN_ROUND);
+    stroke =
+        new BasicStroke(
+            (float) Math.min(borderWidth * zoom, 1.0),
+            BasicStroke.CAP_ROUND,
+            BasicStroke.JOIN_ROUND);
   }
 
   public Color getBorderColor() {
@@ -413,8 +401,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   }
 
   protected TexturePaint getTexture(double zoom) {
-    final boolean usingScaledImage =
-      scaleImage && imageName != null && pattern.equals(TYPE_IMAGE);
+    final boolean usingScaledImage = scaleImage && imageName != null && pattern.equals(TYPE_IMAGE);
 
     if (!usingScaledImage) {
       zoom = 1.0;
@@ -437,9 +424,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     return color;
   }
 
-  /**
-   * Is this Shade drawn over or under counters?
-   */
+  /** Is this Shade drawn over or under counters? */
   @Override
   public boolean drawAboveCounters() {
     return drawOver;
@@ -447,7 +432,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
+    return new String[] {
       NAME,
       ALWAYS_ON,
       STARTS_ON,
@@ -474,7 +459,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       Boolean.class,
       Boolean.class,
@@ -501,50 +486,49 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString(Resources.NAME_LABEL),
-      Resources.getString("Editor.MapShader.shading_on"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.shading_start"), //$NON-NLS-1$
+      Resources.getString("Editor.MapShader.shading_on"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.shading_start"), // $NON-NLS-1$
       Resources.getString(Resources.BUTTON_TEXT),
       Resources.getString(Resources.TOOLTIP_TEXT),
       Resources.getString(Resources.BUTTON_ICON),
       Resources.getString("Editor.MapShader.addToMapToolbar"),
       Resources.getString(Resources.HOTKEY_LABEL),
-      Resources.getString("Editor.MapShader.shade_boards"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.board_list"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.type"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.shade_top"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.pattern"), //$NON-NLS-1$
+      Resources.getString("Editor.MapShader.shade_boards"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.board_list"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.type"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.shade_top"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.pattern"), // $NON-NLS-1$
       Resources.getString(Resources.COLOR_LABEL),
-      Resources.getString("Editor.image_label"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.scale"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.opacity"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.border"), //$NON-NLS-1$
-      Resources.getString("Editor.border_color"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.border_width"), //$NON-NLS-1$
-      Resources.getString("Editor.MapShader.border_opacity"), //$NON-NLS-1$
+      Resources.getString("Editor.image_label"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.scale"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.opacity"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.border"), // $NON-NLS-1$
+      Resources.getString("Editor.border_color"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.border_width"), // $NON-NLS-1$
+      Resources.getString("Editor.MapShader.border_opacity"), // $NON-NLS-1$
     };
   }
 
   public static class TypePrompt extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{FG_TYPE, BG_TYPE};
+      return new String[] {FG_TYPE, BG_TYPE};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[] {
-        "Editor.MapShader.foreground",
-        "Editor.MapShader.background"
-      };
+      return new String[] {"Editor.MapShader.foreground", "Editor.MapShader.background"};
     }
   }
 
   public static class PatternPrompt extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{TYPE_25_PERCENT, TYPE_50_PERCENT, TYPE_75_PERCENT, TYPE_SOLID, TYPE_IMAGE};
+      return new String[] {
+        TYPE_25_PERCENT, TYPE_50_PERCENT, TYPE_75_PERCENT, TYPE_SOLID, TYPE_IMAGE
+      };
     }
 
     @Override
@@ -567,15 +551,13 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   public static class BoardPrompt extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{ALL_BOARDS, EXC_BOARDS, INC_BOARDS};
+      return new String[] {ALL_BOARDS, EXC_BOARDS, INC_BOARDS};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
       return new String[] {
-        "Editor.MapShader.all_boards",
-        "Editor.MapShader.exc_boards",
-        "Editor.MapShader.inc_boards"
+        "Editor.MapShader.all_boards", "Editor.MapShader.exc_boards", "Editor.MapShader.inc_boards"
       };
     }
   }
@@ -610,9 +592,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     return boardClip;
   }
 
-  /**
-   * Build a clipping region excluding boards that do not needed to be Shaded.
-   */
+  /** Build a clipping region excluding boards that do not needed to be Shaded. */
   protected void buildBoardClip() {
     if (boardClip == null) {
       boardClip = new Area();
@@ -620,20 +600,20 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
         final String boardName = b.getName();
         boolean doShade = false;
         switch (boardSelection) {
-        case ALL_BOARDS:
-          doShade = true;
-          break;
-        case EXC_BOARDS:
-          doShade = true;
-          for (int i = 0; i < boardList.length && doShade; i++) {
-            doShade = !boardList[i].equals(boardName);
-          }
-          break;
-        case INC_BOARDS:
-          for (int i = 0; i < boardList.length && !doShade; i++) {
-            doShade = boardList[i].equals(boardName);
-          }
-          break;
+          case ALL_BOARDS:
+            doShade = true;
+            break;
+          case EXC_BOARDS:
+            doShade = true;
+            for (int i = 0; i < boardList.length && doShade; i++) {
+              doShade = !boardList[i].equals(boardName);
+            }
+            break;
+          case INC_BOARDS:
+            for (int i = 0; i < boardList.length && !doShade; i++) {
+              doShade = boardList[i].equals(boardName);
+            }
+            break;
         }
         if (doShade) {
           boardClip.add(new Area(b.bounds()));
@@ -665,15 +645,15 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     return null;
   }
 
-  /** @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead. */
+  /**
+   * @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead.
+   */
   @Deprecated(since = "2020-10-01", forRemoval = true)
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
       return new IconConfigurer(
-        key, name,
-        ((MapShader) c).getLaunchButton().getAttributeValueString(ICON)
-      );
+          key, name, ((MapShader) c).getLaunchButton().getAttributeValueString(ICON));
     }
   }
 
@@ -690,46 +670,38 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
       if (super.getAttributeValueString(TOOLTIP) == null) {
         super.setAttribute(TOOLTIP, value);
       }
-    }
-    else if (ALWAYS_ON.equals(key)) {
+    } else if (ALWAYS_ON.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       alwaysOn = (Boolean) value;
       setLaunchButtonVisibility();
       reset();
-    }
-    else if (STARTS_ON.equals(key)) {
+    } else if (STARTS_ON.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       startsOn = (Boolean) value;
       setLaunchButtonVisibility();
       reset();
-    }
-    else if (BOARDS.equals(key)) {
+    } else if (BOARDS.equals(key)) {
       boardSelection = (String) value;
-    }
-    else if (BOARD_LIST.equals(key)) {
+    } else if (BOARD_LIST.equals(key)) {
       if (value instanceof String) {
         value = StringArrayConfigurer.stringToArray((String) value);
       }
       boardList = (String[]) value;
-    }
-    else if (TYPE.equals(key)) {
+    } else if (TYPE.equals(key)) {
       type = (String) value;
-    }
-    else if (DRAW_OVER.equals(key)) {
+    } else if (DRAW_OVER.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       drawOver = (Boolean) value;
-    }
-    else if (PATTERN.equals(key)) {
+    } else if (PATTERN.equals(key)) {
       pattern = (String) value;
       buildPatternAndTexture();
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
@@ -739,33 +711,28 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
         color = (Color) value;
         buildPatternAndTexture();
       }
-    }
-    else if (IMAGE.equals(key)) {
+    } else if (IMAGE.equals(key)) {
       if (value instanceof File) {
         value = ((File) value).getName();
       }
       imageName = (String) value;
       buildPatternAndTexture();
-    }
-    else if (SCALE_IMAGE.equals(key)) {
+    } else if (SCALE_IMAGE.equals(key)) {
       if (value instanceof String) {
-        value = Boolean.valueOf((String)value);
+        value = Boolean.valueOf((String) value);
       }
       scaleImage = (Boolean) value;
-    }
-    else if (BORDER.equals(key)) {
+    } else if (BORDER.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       border = (Boolean) value;
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
       borderColor = (Color) value;
-    }
-    else if (BORDER_WIDTH.equals(key)) {
+    } else if (BORDER_WIDTH.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -774,8 +741,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
         borderWidth = 0;
       }
       stroke = null;
-    }
-    else if (OPACITY.equals(key)) {
+    } else if (OPACITY.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -784,8 +750,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
         opacity = 100;
       }
       buildComposite();
-    }
-    else if (BORDER_OPACITY.equals(key)) {
+    } else if (BORDER_OPACITY.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -794,14 +759,12 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
         borderOpacity = 100;
       }
       buildBorderComposite();
-    }
-    else if (ADD_TO_MAP_TOOLBAR.equals(key)) {
+    } else if (ADD_TO_MAP_TOOLBAR.equals(key)) {
       if (value instanceof String) {
-        value = Boolean.valueOf((String)value);
+        value = Boolean.valueOf((String) value);
       }
       addToMapToolbar = (Boolean) value;
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -810,56 +773,39 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (ALWAYS_ON.equals(key)) {
+    } else if (ALWAYS_ON.equals(key)) {
       return String.valueOf(isAlwaysOn());
-    }
-    else if (STARTS_ON.equals(key)) {
+    } else if (STARTS_ON.equals(key)) {
       return String.valueOf(isStartsOn());
-    }
-    else if (BOARDS.equals(key)) {
+    } else if (BOARDS.equals(key)) {
       return boardSelection;
-    }
-    else if (BOARD_LIST.equals(key)) {
+    } else if (BOARD_LIST.equals(key)) {
       return StringArrayConfigurer.arrayToString(boardList);
-    }
-    else if (TYPE.equals(key)) {
+    } else if (TYPE.equals(key)) {
       return type;
-    }
-    else if (DRAW_OVER.equals(key)) {
+    } else if (DRAW_OVER.equals(key)) {
       return String.valueOf(drawOver);
-    }
-    else if (PATTERN.equals(key)) {
+    } else if (PATTERN.equals(key)) {
       return pattern;
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else if (IMAGE.equals(key)) {
+    } else if (IMAGE.equals(key)) {
       return imageName;
-    }
-    else if (SCALE_IMAGE.equals(key)) {
+    } else if (SCALE_IMAGE.equals(key)) {
       return String.valueOf(scaleImage);
-    }
-    else if (BORDER.equals(key)) {
+    } else if (BORDER.equals(key)) {
       return String.valueOf(border);
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       return ColorConfigurer.colorToString(borderColor);
-    }
-    else if (BORDER_WIDTH.equals(key)) {
+    } else if (BORDER_WIDTH.equals(key)) {
       return Integer.toString(borderWidth);
-    }
-    else if (OPACITY.equals(key)) {
+    } else if (OPACITY.equals(key)) {
       return Integer.toString(opacity);
-    }
-    else if (BORDER_OPACITY.equals(key)) {
+    } else if (BORDER_OPACITY.equals(key)) {
       return Integer.toString(borderOpacity);
-    }
-    else if (ADD_TO_MAP_TOOLBAR.equals(key)) {
+    } else if (ADD_TO_MAP_TOOLBAR.equals(key)) {
       return String.valueOf(addToMapToolbar);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -868,23 +814,17 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   public VisibilityCondition getAttributeVisibility(String name) {
     if (List.of(ICON, HOT_KEY, BUTTON_TEXT, STARTS_ON, TOOLTIP).contains(name)) {
       return () -> !isAlwaysOn();
-    }
-    else if (BOARD_LIST.equals(name)) {
+    } else if (BOARD_LIST.equals(name)) {
       return () -> !boardSelection.equals(ALL_BOARDS);
-    }
-    else if (COLOR.equals(name)) {
+    } else if (COLOR.equals(name)) {
       return () -> !pattern.equals(TYPE_IMAGE);
-    }
-    else if (IMAGE.equals(name)) {
+    } else if (IMAGE.equals(name)) {
       return () -> pattern.equals(TYPE_IMAGE);
-    }
-    else if (SCALE_IMAGE.equals(name)) {
+    } else if (SCALE_IMAGE.equals(name)) {
       return () -> pattern.equals(TYPE_IMAGE);
-    }
-    else if (List.of(BORDER_COLOR, BORDER_WIDTH, BORDER_OPACITY).contains(name)) {
+    } else if (List.of(BORDER_COLOR, BORDER_WIDTH, BORDER_OPACITY).contains(name)) {
       return () -> border;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -895,7 +835,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.MapShader.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.MapShader.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -907,13 +847,13 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "MapShading"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "MapShading"); // NON-NLS
   }
 
   @Override
   public void addTo(Buildable parent) {
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     map = (Map) parent;
@@ -923,8 +863,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     lb.setAlignmentY(0.0F);
     if (addToMapToolbar) {
       map.getToolBar().add(lb);
-    }
-    else {
+    } else {
       GameModule.getGameModule().getToolBar().add(lb);
     }
 
@@ -944,14 +883,13 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
     this.id = id;
   }
 
-  /**
-   * Pieces that contribute to shading must implement this interface
-   */
+  /** Pieces that contribute to shading must implement this interface */
   @FunctionalInterface
   public interface ShadedPiece {
     /**
-     * Returns the Area to add to (or subtract from) the area drawn by the MapShader's.
-     * Area is assumed to be at zoom factor 1.0
+     * Returns the Area to add to (or subtract from) the area drawn by the MapShader's. Area is
+     * assumed to be at zoom factor 1.0
+     *
      * @param shader Map Shader
      * @return the Area contributed by the piece
      */
@@ -960,6 +898,7 @@ public class MapShader extends AbstractToolbarItem implements GameComponent, Dra
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override

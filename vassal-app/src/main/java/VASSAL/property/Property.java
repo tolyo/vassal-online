@@ -23,8 +23,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 /**
  * Represents a named property with a specified type.
  *
- * A {@code Property} may optionally specify a default value, to be
- * used when no other value is available.
+ * <p>A {@code Property} may optionally specify a default value, to be used when no other value is
+ * available.
  *
  * @param <T> the class of the value of this {@code Property}
  * @since 3.2.0
@@ -47,8 +47,7 @@ public final class Property<T> {
    *
    * @param name the name of the property
    * @param type the class of the value of the property
-   * @throws IllegalArgumentException if {@code name} or {@code type}
-   * is {@code null}
+   * @throws IllegalArgumentException if {@code name} or {@code type} is {@code null}
    */
   public Property(String name, Class<T> type) {
     this(name, type, null);
@@ -59,9 +58,8 @@ public final class Property<T> {
    *
    * @param name the name of the property
    * @param type the class of the value of the property
-   * @param def  the default value of the property
-   * @throws IllegalArgumentException if {@code name} or {@code type}
-   * is {code{ null}
+   * @param def the default value of the property
+   * @throws IllegalArgumentException if {@code name} or {@code type} is {code{ null}
    */
   public Property(String name, Class<T> type, T def) {
     if (name == null) throw new IllegalArgumentException();
@@ -69,7 +67,7 @@ public final class Property<T> {
 
     this.name = name;
     this.type = type;
-    this.def  = def;
+    this.def = def;
 
     // Note: The default value for a Property does not take part in
     // equality comparisons, so is not included in the hash code.

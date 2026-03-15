@@ -21,13 +21,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.commons.io.IOUtils;
-
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -40,9 +38,7 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 
-/**
- * Performs Get and Post operations to a given URL
- */
+/** Performs Get and Post operations to a given URL */
 public class HttpRequestWrapper {
   private final String baseURL;
 
@@ -51,14 +47,14 @@ public class HttpRequestWrapper {
   }
 
   public List<String> doGet(Properties p) throws IOException {
-    return doGet("", p); //$NON-NLS-1$
+    return doGet("", p); // $NON-NLS-1$
   }
 
   private URI buildGet(String path, Properties props) throws IOException {
     try {
       final URIBuilder b = new URIBuilder(baseURL + path);
       if (props != null) {
-        for (final Enumeration<?> e = props.keys(); e.hasMoreElements();) {
+        for (final Enumeration<?> e = props.keys(); e.hasMoreElements(); ) {
           final String key = (String) e.nextElement();
           final String value = props.getProperty(key);
           b.addParameter(key, value);
@@ -66,8 +62,7 @@ public class HttpRequestWrapper {
       }
 
       return b.build();
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       // this should not happen
       throw new IOException(e);
     }
@@ -79,8 +74,7 @@ public class HttpRequestWrapper {
     String responseText = null;
     try {
       responseText = EntityUtils.toString(response.getEntity());
-    }
-    catch (ParseException e) {
+    } catch (ParseException e) {
       throw new IOException(msg, e);
     }
 
@@ -89,30 +83,29 @@ public class HttpRequestWrapper {
 
   /**
    * Perform a GET request
+   *
    * @param path the URL relative to the base URL
    * @param props additional query parameters
    * @return a List of Strings, one for each line in the response
    * @throws IOException
    */
-  public List<String> doGet(String path,
-                            Properties props) throws IOException {
+  public List<String> doGet(String path, Properties props) throws IOException {
     final HttpGet httpGet = new HttpGet(buildGet(path, props));
     try (CloseableHttpClient client = HttpClients.createMinimal()) {
       return client.execute(httpGet, response -> getLinesOk(response, 200));
-    }
-    catch (final IOException e) {
+    } catch (final IOException e) {
       throw new IOException("Failed to " + httpGet.toString(), e);
     }
   }
 
   public List<String> doPost(Properties p) throws IOException {
-    return doPost("", p); //$NON-NLS-1$
+    return doPost("", p); // $NON-NLS-1$
   }
 
   private HttpPost buildPost(String path, Properties props) throws IOException {
     final HttpPost httpPost = new HttpPost(baseURL + path);
     final List<NameValuePair> params = new ArrayList<>();
-    for (final Enumeration<?> e = props.keys(); e.hasMoreElements();) {
+    for (final Enumeration<?> e = props.keys(); e.hasMoreElements(); ) {
       final String key = (String) e.nextElement();
       final String value = props.getProperty(key);
       params.add(new BasicNameValuePair(key, value));
@@ -121,8 +114,7 @@ public class HttpRequestWrapper {
     return httpPost;
   }
 
-  public List<String> doPost(String path,
-                             Properties props) throws IOException {
+  public List<String> doPost(String path, Properties props) throws IOException {
     final HttpPost httpPost = buildPost(path, props);
     try (CloseableHttpClient client = HttpClients.createDefault()) {
       return client.execute(httpPost, response -> getLinesOk(response, 201));
@@ -132,16 +124,11 @@ public class HttpRequestWrapper {
   private List<String> getLinesOk(ClassicHttpResponse response, int ok_code) throws IOException {
     if (response.getCode() == ok_code) {
       try {
-        return IOUtils.readLines(
-          response.getEntity().getContent(),
-          StandardCharsets.UTF_8
-        );
-      }
-      catch (UnsupportedOperationException e) {
+        return IOUtils.readLines(response.getEntity().getContent(), StandardCharsets.UTF_8);
+      } catch (UnsupportedOperationException e) {
         throw new IOException(e);
       }
-    }
-    else {
+    } else {
       throw new IOException(errorMessage(response));
     }
   }

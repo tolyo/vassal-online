@@ -26,21 +26,19 @@ import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Localization;
 import VASSAL.i18n.Resources;
 import VASSAL.script.expression.Auditable;
-import org.apache.commons.lang3.StringUtils;
-
+import java.awt.event.ActionListener;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.KeyStroke;
-import java.awt.event.ActionListener;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * A JButton for placing into a VASSAL component's toolbar.
- * Handles configuration of a hotkey shortcut, maintains appropriate
- * tooltip text, etc.
+ * A JButton for placing into a VASSAL component's toolbar. Handles configuration of a hotkey
+ * shortcut, maintains appropriate tooltip text, etc.
  */
 public class LaunchButton extends JButton implements Auditable {
   private static final long serialVersionUID = 1L;
-  public static final String UNTRANSLATED_TEXT = "unTranslatedText"; //$NON-NLS-1$
+  public static final String UNTRANSLATED_TEXT = "unTranslatedText"; // $NON-NLS-1$
   protected String tooltipAtt;
   protected String nameAtt;
   protected String keyAtt;
@@ -56,29 +54,50 @@ public class LaunchButton extends JButton implements Auditable {
   protected boolean usesExpression = false;
   protected FormattedString formatted = new FormattedString("");
 
-  public LaunchButton(String text, String textAttribute,
-                      String hotkeyAttribute, ActionListener al) {
+  public LaunchButton(
+      String text, String textAttribute, String hotkeyAttribute, ActionListener al) {
     this(text, textAttribute, hotkeyAttribute, null, al);
   }
 
-  public LaunchButton(String text, String tooltipAttribute,
-                      String textAttribute, String hotkeyAttribute,
-                      String iconAttribute, final ActionListener al) {
+  public LaunchButton(
+      String text,
+      String tooltipAttribute,
+      String textAttribute,
+      String hotkeyAttribute,
+      String iconAttribute,
+      final ActionListener al) {
     this(text, textAttribute, hotkeyAttribute, iconAttribute, al);
     tooltipAtt = tooltipAttribute;
   }
 
-  public LaunchButton(String text, String textAttribute, String hotkeyAttribute, String iconAttribute, final ActionListener al) {
+  public LaunchButton(
+      String text,
+      String textAttribute,
+      String hotkeyAttribute,
+      String iconAttribute,
+      final ActionListener al) {
     this(text, textAttribute, hotkeyAttribute, iconAttribute, al, false);
   }
 
-  public LaunchButton(String text, String tooltipAttribute, String textAttribute, String hotkeyAttribute, String iconAttribute, final ActionListener al, boolean allowExpression) {
+  public LaunchButton(
+      String text,
+      String tooltipAttribute,
+      String textAttribute,
+      String hotkeyAttribute,
+      String iconAttribute,
+      final ActionListener al,
+      boolean allowExpression) {
     this(text, textAttribute, hotkeyAttribute, iconAttribute, al, allowExpression);
     tooltipAtt = tooltipAttribute;
   }
 
-
-  public LaunchButton(String text, String textAttribute, String hotkeyAttribute, String iconAttribute, final ActionListener al, boolean allowExpression) {
+  public LaunchButton(
+      String text,
+      String textAttribute,
+      String hotkeyAttribute,
+      String iconAttribute,
+      final ActionListener al,
+      boolean allowExpression) {
     super(text);
 
     this.allowExpression = allowExpression;
@@ -92,11 +111,15 @@ public class LaunchButton extends JButton implements Auditable {
     iconAtt = iconAttribute;
     iconConfig = new IconConfigurer(iconAtt, null, null);
     setAlignmentY(0.0F);
-    keyListener = new NamedKeyStrokeListener(e -> {
-      if ((isEnabled() || isAlwaysAcceptKeystroke()) && (GlobalOptions.getInstance().isHotKeysOnClosedWindows() || (getParent() != null && getParent().isShowing()))) {
-        al.actionPerformed(e);
-      }
-    });
+    keyListener =
+        new NamedKeyStrokeListener(
+            e -> {
+              if ((isEnabled() || isAlwaysAcceptKeystroke())
+                  && (GlobalOptions.getInstance().isHotKeysOnClosedWindows()
+                      || (getParent() != null && getParent().isShowing()))) {
+                al.actionPerformed(e);
+              }
+            });
     if (al != null) {
       GameModule.getGameModule().addKeyStrokeListener(keyListener);
       addActionListener(al);
@@ -115,7 +138,8 @@ public class LaunchButton extends JButton implements Auditable {
     updateText();
     usesExpression = text.contains("$") || text.contains("{");
     if (usesExpression) {
-      GameModule.getGameModule().setMutableButtonSupport(true); // We're gonna need a bigger updater...
+      GameModule.getGameModule()
+          .setMutableButtonSupport(true); // We're gonna need a bigger updater...
     }
   }
 
@@ -126,7 +150,8 @@ public class LaunchButton extends JButton implements Auditable {
   }
 
   /**
-   * @return Our current icon (used when we're a ToolbarMenu that's a submenu of another ToolbarMenu so that we keep our icon)
+   * @return Our current icon (used when we're a ToolbarMenu that's a submenu of another ToolbarMenu
+   *     so that we keep our icon)
    */
   public Icon getLaunchIcon() {
     return iconConfig.getIconValue();
@@ -181,21 +206,16 @@ public class LaunchButton extends JButton implements Auditable {
     if (key.equals(nameAtt)) {
       if (allowExpression) {
         return formatted.getFormat();
-      }
-      else {
+      } else {
         return getText();
       }
-    }
-    else if (key.equals(keyAtt)) {
+    } else if (key.equals(keyAtt)) {
       return NamedHotKeyConfigurer.encode(keyListener.getNamedKeyStroke());
-    }
-    else if (key.equals(iconAtt)) {
+    } else if (key.equals(iconAtt)) {
       return iconConfig.getValueString();
-    }
-    else if (key.equals(tooltipAtt)) {
+    } else if (key.equals(tooltipAtt)) {
       return toolTipText;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -208,30 +228,25 @@ public class LaunchButton extends JButton implements Auditable {
         }
 
         if (allowExpression) {
-          setFormat((String)value);
-        }
-        else {
+          setFormat((String) value);
+        } else {
           setText((String) value);
         }
         checkVisibility();
-      }
-      else if (key.equals(keyAtt)) {
+      } else if (key.equals(keyAtt)) {
         if (value instanceof String) {
           value = NamedHotKeyConfigurer.decode((String) value);
         }
         if (value instanceof NamedKeyStroke) {
           keyListener.setKeyStroke((NamedKeyStroke) value);
-        }
-        else {
+        } else {
           keyListener.setKeyStroke((KeyStroke) value); // Compatibility - custom code
         }
         setToolTipText(toolTipText);
-      }
-      else if (key.equals(tooltipAtt)) {
+      } else if (key.equals(tooltipAtt)) {
         toolTipText = (String) value;
         setToolTipText(toolTipText);
-      }
-      else if (key.equals(iconAtt)) {
+      } else if (key.equals(iconAtt)) {
         if (value instanceof String) {
           iconConfig.setValue((String) value);
           setIcon(iconConfig.getIconValue());
@@ -245,9 +260,12 @@ public class LaunchButton extends JButton implements Auditable {
   public void setToolTipText(String text) {
     toolTipText = text;
     if (keyListener.getKeyStroke() != null) {
-      text = (text == null ? "" : text + " "); //$NON-NLS-1$ //$NON-NLS-2$
+      text = (text == null ? "" : text + " "); // $NON-NLS-1$ //$NON-NLS-2$
       if (!keyListener.getNamedKeyStroke().isNamed()) {
-        text += "[" + NamedHotKeyConfigurer.getString(keyListener.getKeyStroke()) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+        text +=
+            "["
+                + NamedHotKeyConfigurer.getString(keyListener.getKeyStroke())
+                + "]"; //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
     // Don't show empty tooltips
@@ -259,14 +277,20 @@ public class LaunchButton extends JButton implements Auditable {
 
   public Configurer getNameConfigurer() {
     if (nameConfig == null && nameAtt != null) {
-      nameConfig = new StringConfigurer(nameAtt, Resources.getString("Editor.button_text_label"), getText()); //$NON-NLS-1$
+      nameConfig =
+          new StringConfigurer(
+              nameAtt, Resources.getString("Editor.button_text_label"), getText()); // $NON-NLS-1$
     }
     return nameConfig;
   }
 
   public Configurer getHotkeyConfigurer() {
     if (keyConfig == null && keyAtt != null) {
-      keyConfig = new NamedHotKeyConfigurer(keyAtt, Resources.getString("Editor.hotkey_label"), keyListener.getNamedKeyStroke()); //$NON-NLS-1$
+      keyConfig =
+          new NamedHotKeyConfigurer(
+              keyAtt,
+              Resources.getString("Editor.hotkey_label"),
+              keyListener.getNamedKeyStroke()); // $NON-NLS-1$
     }
     return keyConfig;
   }
@@ -282,14 +306,17 @@ public class LaunchButton extends JButton implements Auditable {
   @Override
   public String getComponentTypeName() {
     return "Launch Button";
-  };
+  }
+  ;
 
   /**
    * Return the name of the trait or Component an Auditable is
+   *
    * @return Component name
    */
   @Override
   public String getComponentName() {
     return "Launch Button";
-  };
+  }
+  ;
 }

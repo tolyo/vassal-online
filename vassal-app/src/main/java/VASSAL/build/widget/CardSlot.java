@@ -25,12 +25,10 @@ import VASSAL.counters.Obscurable;
 import VASSAL.i18n.Resources;
 
 /**
- * A CardSlot is identical to a PieceSlot except that it is initialized
- * with a card-like GamePiece.
+ * A CardSlot is identical to a PieceSlot except that it is initialized with a card-like GamePiece.
  */
 public class CardSlot extends PieceSlot {
-  public CardSlot() {
-  }
+  public CardSlot() {}
 
   public CardSlot(PieceSlot piece) {
     this();
@@ -45,7 +43,14 @@ public class CardSlot extends PieceSlot {
   public Configurer getConfigurer() {
     if (getPiece() == null) {
       GamePiece theCard = GameModule.getGameModule().createPiece(BasicPiece.ID + ";;;;");
-      theCard = GameModule.getGameModule().createPiece(Obscurable.ID + "F;;" + Resources.getString("Editor.CardSlot.default_hide_command") + ";B", theCard); //NON-NLS
+      theCard =
+          GameModule.getGameModule()
+              .createPiece(
+                  Obscurable.ID
+                      + "F;;"
+                      + Resources.getString("Editor.CardSlot.default_hide_command")
+                      + ";B",
+                  theCard); // NON-NLS
       setPiece(theCard);
     }
     return super.getConfigurer();

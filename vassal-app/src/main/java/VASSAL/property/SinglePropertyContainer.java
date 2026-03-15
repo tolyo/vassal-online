@@ -26,9 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A {@link PropertyContainer} which holds one {@link Property}.
  *
- * This class is intended for testing purposes only. It will not
- * generally be useful to have a dedicated container which holds only
- * one {@code Property}.
+ * <p>This class is intended for testing purposes only. It will not generally be useful to have a
+ * dedicated container which holds only one {@code Property}.
  *
  * @param <V> the class of the value of the contained {@link Property}
  * @since 3.2.0
@@ -44,8 +43,7 @@ public class SinglePropertyContainer<V> implements PropertyContainer {
    *
    * @param prop the property
    * @param value the initial value of the property
-   * @throws IllegalArgumentException if {@code prop} or {@code value} is
-   * {@code null}
+   * @throws IllegalArgumentException if {@code prop} or {@code value} is {@code null}
    */
   public SinglePropertyContainer(Property<V> prop, V value) {
     if (prop == null) throw new IllegalArgumentException();
@@ -92,11 +90,11 @@ public class SinglePropertyContainer<V> implements PropertyContainer {
 
   @SuppressWarnings("PMD.LooseCoupling")
   protected final CopyOnWriteArrayList<PropertyListener<Object>> listeners =
-    new CopyOnWriteArrayList<>();
+      new CopyOnWriteArrayList<>();
 
   @SuppressWarnings("PMD.LooseCoupling")
   protected final CopyOnWriteArrayList<PropertyListener<? super V>> plisteners =
-    new CopyOnWriteArrayList<>();
+      new CopyOnWriteArrayList<>();
 
   /** {@inheritDoc} */
   @Override
@@ -107,8 +105,7 @@ public class SinglePropertyContainer<V> implements PropertyContainer {
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> void addPropertyListener(Property<T> prop,
-                                      PropertyListener<? super T> l) {
+  public <T> void addPropertyListener(Property<T> prop, PropertyListener<? super T> l) {
     if (!this.prop.equals(prop)) throw new IllegalArgumentException();
     plisteners.add((PropertyListener<? super V>) l);
   }
@@ -122,8 +119,7 @@ public class SinglePropertyContainer<V> implements PropertyContainer {
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> void removePropertyListener(Property<T> prop,
-                                         PropertyListener<? super T> l) {
+  public <T> void removePropertyListener(Property<T> prop, PropertyListener<? super T> l) {
     if (!this.prop.equals(prop)) throw new IllegalArgumentException();
     plisteners.remove(l);
   }
@@ -131,20 +127,17 @@ public class SinglePropertyContainer<V> implements PropertyContainer {
   /** {@inheritDoc} */
   @Override
   public List<PropertyListener<Object>> getPropertyListeners() {
-    return listeners.isEmpty() ?
-      Collections.emptyList() :
-      new ArrayList<>(listeners);
+    return listeners.isEmpty() ? Collections.emptyList() : new ArrayList<>(listeners);
   }
 
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> List<PropertyListener<? super T>>
-                                       getPropertyListeners(Property<T> prop) {
+  public <T> List<PropertyListener<? super T>> getPropertyListeners(Property<T> prop) {
     if (!this.prop.equals(prop)) throw new IllegalArgumentException();
-    return plisteners.isEmpty() ?
-      Collections.emptyList() :
-      new ArrayList<PropertyListener<? super T>>((List) plisteners);
+    return plisteners.isEmpty()
+        ? Collections.emptyList()
+        : new ArrayList<PropertyListener<? super T>>((List) plisteners);
   }
 
   /** {@inheritDoc} */

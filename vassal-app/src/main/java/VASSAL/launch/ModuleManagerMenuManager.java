@@ -16,11 +16,10 @@
  */
 package VASSAL.launch;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-
 import VASSAL.tools.menu.MenuBarProxy;
 import VASSAL.tools.menu.MenuManager;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 
 public final class ModuleManagerMenuManager extends MenuManager {
   private final MenuBarProxy menuBar = new MenuBarProxy();

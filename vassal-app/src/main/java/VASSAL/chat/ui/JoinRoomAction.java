@@ -24,16 +24,13 @@ import VASSAL.chat.node.NodeClient;
 import VASSAL.chat.node.NodeRoom;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.swing.Dialogs;
-
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-/**
- * When invoked, will join a game room on the server
- */
+/** When invoked, will join a game room on the server */
 public class JoinRoomAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -41,7 +38,7 @@ public class JoinRoomAction extends AbstractAction {
   private final ChatServerConnection client;
 
   public JoinRoomAction(Room r, ChatServerConnection client) {
-    super(Resources.getString("Chat.join_room")); //$NON-NLS-1$
+    super(Resources.getString("Chat.join_room")); // $NON-NLS-1$
     this.r = r;
     this.client = client;
     setEnabled(r != null && !r.equals(client.getRoom()));
@@ -63,11 +60,12 @@ public class JoinRoomAction extends AbstractAction {
           sb.append(" - ").append(error).append('\n');
         }
         sb.append('\n').append(Resources.getString("Chat.are_you_sure"));
-        Dialogs.showMessageDialog(GameModule.getGameModule().getPlayerWindow(),
-          Resources.getString("Chat.vassal_configuration_error"),
-          Resources.getString("Chat.vassal_configuration_error"),
-          sb.toString(),
-          JOptionPane.INFORMATION_MESSAGE);
+        Dialogs.showMessageDialog(
+            GameModule.getGameModule().getPlayerWindow(),
+            Resources.getString("Chat.vassal_configuration_error"),
+            Resources.getString("Chat.vassal_configuration_error"),
+            sb.toString(),
+            JOptionPane.INFORMATION_MESSAGE);
       }
     }
 
@@ -78,8 +76,7 @@ public class JoinRoomAction extends AbstractAction {
 
       if (Resources.getString("Chat.main_room").equals(r.getName())) {
         explainMainRoom();
-      }
-      else {
+      } else {
         gm.warn(Resources.getString("Chat.explain_joined_room"));
       }
     }

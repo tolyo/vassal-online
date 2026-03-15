@@ -22,7 +22,8 @@ import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
 import VASSAL.tools.ArchiveWriter;
 import VASSAL.tools.filechooser.FileChooser;
-
+import java.awt.Component;
+import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -30,12 +31,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.Component;
-import java.io.File;
 
-/**
- * A Configurer for java.io.File values
- */
+/** A Configurer for java.io.File values */
 public class FileConfigurer extends Configurer {
   protected ArchiveWriter archive;
   protected JPanel p;
@@ -45,14 +42,14 @@ public class FileConfigurer extends Configurer {
   protected DirectoryConfigurer startingDirectory;
 
   public FileConfigurer(String key, String name) {
-    this(key, name, (DirectoryConfigurer)null);
+    this(key, name, (DirectoryConfigurer) null);
   }
 
   /**
-   *
    * @param key Configurer key
    * @param name Configurer label
-   * @param startingDirectory If non-null, points to a preferences setting that specifies the starting directory for the "Select" button
+   * @param startingDirectory If non-null, points to a preferences setting that specifies the
+   *     starting directory for the "Select" button
    */
   public FileConfigurer(String key, String name, DirectoryConfigurer startingDirectory) {
     super(key, name);
@@ -71,8 +68,8 @@ public class FileConfigurer extends Configurer {
   }
 
   /**
-   * If a non-null {@link ArchiveWriter} is used in the constructor, then invoking {@link #setValue} on this
-   * FileConfigurer will automatically add the file to the archive
+   * If a non-null {@link ArchiveWriter} is used in the constructor, then invoking {@link #setValue}
+   * on this FileConfigurer will automatically add the file to the archive
    */
   public FileConfigurer(String key, String name, ArchiveWriter archive) {
     this(key, name);
@@ -83,15 +80,14 @@ public class FileConfigurer extends Configurer {
   public String getValueString() {
     if (archive == null) {
       return getFileValue() == null ? "null" : getFileValue().getPath(); // NON-NLS
-    }
-    else {
+    } else {
       return getFileValue() == null ? "null" : getFileValue().getName(); // NON-NLS
     }
   }
 
   @Override
   public void setValue(Object o) {
-// FIXME: this creates a problem when the referenced file is in the JAR
+    // FIXME: this creates a problem when the referenced file is in the JAR
     final File f = (File) o;
     if (f != null && !f.getPath().isEmpty() && f.exists()) {
       if (archive != null) {
@@ -110,8 +106,7 @@ public class FileConfigurer extends Configurer {
 
   @Override
   public void setValue(String s) {
-    if (s == null || s.isEmpty())
-      setValue((Object) null);
+    if (s == null || s.isEmpty()) setValue((Object) null);
     else {
       setValue(new File(s));
     }
@@ -136,44 +131,51 @@ public class FileConfigurer extends Configurer {
       tf.setEditable(editable);
       if (editable) {
         // Edit box selects all text when first focused
-        tf.addFocusListener(new java.awt.event.FocusAdapter() {
-          @Override
-          public void focusGained(java.awt.event.FocusEvent evt) {
-            SwingUtilities.invokeLater(new Runnable() {
+        tf.addFocusListener(
+            new java.awt.event.FocusAdapter() {
               @Override
-              public void run() {
-                tf.selectAll();
+              public void focusGained(java.awt.event.FocusEvent evt) {
+                SwingUtilities.invokeLater(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        tf.selectAll();
+                      }
+                    });
               }
             });
-          }
-        });
       }
-      tf.setMaximumSize(new java.awt.Dimension(tf.getMaximumSize().width,
-                                               tf.getPreferredSize().height));
-      tf.getDocument().addDocumentListener(new DocumentListener() {
-        @Override
-        public void changedUpdate(DocumentEvent evt) {
-          update();
-        }
+      tf.setMaximumSize(
+          new java.awt.Dimension(tf.getMaximumSize().width, tf.getPreferredSize().height));
+      tf.getDocument()
+          .addDocumentListener(
+              new DocumentListener() {
+                @Override
+                public void changedUpdate(DocumentEvent evt) {
+                  update();
+                }
 
-        @Override
-        public void insertUpdate(DocumentEvent evt) {
-          update();
-        }
+                @Override
+                public void insertUpdate(DocumentEvent evt) {
+                  update();
+                }
 
-        @Override
-        public void removeUpdate(DocumentEvent evt) {
-          update();
-        }
+                @Override
+                public void removeUpdate(DocumentEvent evt) {
+                  update();
+                }
 
-        public void update() {
-          final String text = tf.getText();
-          final File f = text != null && text.length() > 0 && !"null".equals(text) ? new File(text) : null; // NON-NLS
-          noUpdate = true;
-          setValue(f);
-          noUpdate = false;
-        }
-      });
+                public void update() {
+                  final String text = tf.getText();
+                  final File f =
+                      text != null && text.length() > 0 && !"null".equals(text)
+                          ? new File(text)
+                          : null; // NON-NLS
+                  noUpdate = true;
+                  setValue(f);
+                  noUpdate = false;
+                }
+              });
       p.add(tf);
       b.addActionListener(e -> chooseNewValue());
     }
@@ -183,8 +185,7 @@ public class FileConfigurer extends Configurer {
   public void chooseNewValue() {
     if (fc.showOpenDialog(getControls()) != FileChooser.APPROVE_OPTION) {
       setValue((Object) null);
-    }
-    else {
+    } else {
       setValue(fc.getSelectedFile().exists() ? fc.getSelectedFile() : null);
     }
   }
@@ -196,7 +197,7 @@ public class FileConfigurer extends Configurer {
   public static void main(String[] args) {
     final JFrame f = new JFrame();
     final FileConfigurer c =
-      new ImageConfigurer(null, "Test file", new ArchiveWriter("testArchive")); // NON-NLS
+        new ImageConfigurer(null, "Test file", new ArchiveWriter("testArchive")); // NON-NLS
     c.addPropertyChangeListener(evt -> System.err.println(evt.getNewValue()));
     f.getContentPane().add(c.getControls());
     f.pack();

@@ -17,23 +17,18 @@
  */
 package VASSAL.tools;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import VASSAL.configure.PropertyExpression;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.NoSuchElementException;
 import javax.swing.KeyStroke;
-
-import VASSAL.configure.PropertyExpression;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SequenceEncoderTest {
 
-  /**
-   * Test basic Sequence Encoder/Decoder functionality
-   */
-
+  /** Test basic Sequence Encoder/Decoder functionality */
   @Test
   public void testEncodeDecodeBoolean() {
     final boolean VALUE = true;
@@ -117,7 +112,8 @@ public class SequenceEncoderTest {
 
   @Test
   public void testEncodeDecodeNamedKeyStroke_1() {
-    final NamedKeyStroke VALUE = NamedKeyStroke.of(KeyStroke.getKeyStroke(KeyEvent.VK_F10, KeyEvent.CTRL_DOWN_MASK));
+    final NamedKeyStroke VALUE =
+        NamedKeyStroke.of(KeyStroke.getKeyStroke(KeyEvent.VK_F10, KeyEvent.CTRL_DOWN_MASK));
     final SequenceEncoder se = new SequenceEncoder(',').append(VALUE);
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(se.getValue(), ',');
     assertEquals(VALUE, sd.nextNamedKeyStroke());
@@ -135,7 +131,8 @@ public class SequenceEncoderTest {
   @SuppressWarnings("deprecation")
   public void testDecodeNamedKeyStrokeWithDeprecatedModifier() {
     final String IN = KeyEvent.VK_F10 + "\\," + KeyEvent.CTRL_MASK;
-    final NamedKeyStroke OUT = NamedKeyStroke.of(KeyStroke.getKeyStroke(KeyEvent.VK_F10, KeyEvent.CTRL_DOWN_MASK));
+    final NamedKeyStroke OUT =
+        NamedKeyStroke.of(KeyStroke.getKeyStroke(KeyEvent.VK_F10, KeyEvent.CTRL_DOWN_MASK));
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(IN, ',');
     assertEquals(OUT, sd.nextNamedKeyStroke('X'));
   }
@@ -189,23 +186,22 @@ public class SequenceEncoderTest {
 
     final SequenceEncoder se = new SequenceEncoder(',');
     se.append(booleanIn)
-      .append(intIn)
-      .append(doubleIn)
-      .append(longIn)
-      .append(colorIn)
-      .append(keyStrokeIn)
-      .append(namedKeyStrokein1)
-      .append(namedKeyStrokein2)
-      .append(stringIn)
-      .append(stringArrayIn)
-      .append(propertyExpressionIn);
+        .append(intIn)
+        .append(doubleIn)
+        .append(longIn)
+        .append(colorIn)
+        .append(keyStrokeIn)
+        .append(namedKeyStrokein1)
+        .append(namedKeyStrokein2)
+        .append(stringIn)
+        .append(stringArrayIn)
+        .append(propertyExpressionIn);
 
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(se.getValue(), ',');
 
     assertEquals(booleanIn, sd.nextBoolean(false));
     assertEquals(intIn, sd.nextInt(999));
-    assertEquals(Double.toString(doubleIn),
-                 Double.toString(sd.nextDouble(99.9)));
+    assertEquals(Double.toString(doubleIn), Double.toString(sd.nextDouble(99.9)));
     assertEquals(longIn, sd.nextLong(999));
     assertEquals(colorIn, sd.nextColor(Color.RED));
     assertEquals(keyStrokeIn, sd.nextKeyStroke('X'));
@@ -241,8 +237,7 @@ public class SequenceEncoderTest {
     final SequenceEncoder se = new SequenceEncoder(null, delim);
     se.append(value2);
 
-    final SequenceEncoder.Decoder sd =
-      new SequenceEncoder.Decoder(se.getValue(), delim);
+    final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(se.getValue(), delim);
 
     assertEquals("", sd.nextToken());
     assertEquals(value2, sd.nextToken());
@@ -250,7 +245,7 @@ public class SequenceEncoderTest {
 
   @Test
   public void testUnquote() {
-     final String q = "'12345'";
+    final String q = "'12345'";
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(q, ',');
     assertEquals("12345", sd.nextToken());
   }
@@ -262,8 +257,7 @@ public class SequenceEncoderTest {
     final SequenceEncoder se = new SequenceEncoder(delim);
     se.append(1).append("blah blah blah,,,").append((String) null).append(42);
 
-    final SequenceEncoder.Decoder sd1 =
-      new SequenceEncoder.Decoder(se.getValue(), delim);
+    final SequenceEncoder.Decoder sd1 = new SequenceEncoder.Decoder(se.getValue(), delim);
 
     final SequenceEncoder.Decoder sd2 = sd1.copy();
 
@@ -282,8 +276,7 @@ public class SequenceEncoderTest {
     final SequenceEncoder se = new SequenceEncoder(delim);
     se.append(1).append("blah blah blah,,,").append((String) null).append(42);
 
-    final SequenceEncoder.Decoder sd1 =
-      new SequenceEncoder.Decoder(se.getValue(), delim);
+    final SequenceEncoder.Decoder sd1 = new SequenceEncoder.Decoder(se.getValue(), delim);
 
     sd1.nextToken();
     sd1.nextToken();

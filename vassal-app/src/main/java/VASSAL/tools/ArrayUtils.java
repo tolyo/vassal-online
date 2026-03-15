@@ -91,10 +91,8 @@ public class ArrayUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, X extends T, Y extends T> T[] prepend(Class<T[]> type,
-                                                        X[] orig, Y e) {
-    final T[] tmp =
-      (T[]) Array.newInstance(type.getComponentType(), orig.length + 1);
+  public static <T, X extends T, Y extends T> T[] prepend(Class<T[]> type, X[] orig, Y e) {
+    final T[] tmp = (T[]) Array.newInstance(type.getComponentType(), orig.length + 1);
     tmp[0] = e;
     System.arraycopy(orig, 0, tmp, 1, orig.length);
     return tmp;
@@ -153,8 +151,7 @@ public class ArrayUtils {
     return append((Class<T[]>) orig.getClass(), orig, e);
   }
 
-  public static <T, X extends T, Y extends T> T[] append(Class<T[]> type,
-                                                       X[] orig, Y e) {
+  public static <T, X extends T, Y extends T> T[] append(Class<T[]> type, X[] orig, Y e) {
     final T[] tmp = Arrays.copyOf(orig, orig.length + 1, type);
     tmp[orig.length] = e;
     return tmp;
@@ -222,10 +219,8 @@ public class ArrayUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, X extends T, Y extends T> T[] append(Class<T[]> type,
-                                                       X[] a, Y... b) {
-    final T[] tmp = (T[]) Array.newInstance(type.getComponentType(),
-                                            a.length + b.length);
+  public static <T, X extends T, Y extends T> T[] append(Class<T[]> type, X[] a, Y... b) {
+    final T[] tmp = (T[]) Array.newInstance(type.getComponentType(), a.length + b.length);
     System.arraycopy(a, 0, tmp, 0, a.length);
     System.arraycopy(b, 0, tmp, a.length, b.length);
     return tmp;
@@ -301,10 +296,8 @@ public class ArrayUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, X extends T, Y extends T> T[] insert(Class<T[]> type,
-                                                       X[] orig, int pos, Y e) {
-    final T[] tmp =
-      (T[]) Array.newInstance(type.getComponentType(), orig.length + 1);
+  public static <T, X extends T, Y extends T> T[] insert(Class<T[]> type, X[] orig, int pos, Y e) {
+    final T[] tmp = (T[]) Array.newInstance(type.getComponentType(), orig.length + 1);
     System.arraycopy(orig, 0, tmp, 0, pos);
     tmp[pos] = e;
     System.arraycopy(orig, pos, tmp, pos + 1, orig.length - pos);
@@ -381,10 +374,8 @@ public class ArrayUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, X extends T, Y extends T> T[] insert(Class<T[]> type,
-                                                       X[] a, int pos, Y... b) {
-    final T[] tmp =
-      (T[]) Array.newInstance(type.getComponentType(), a.length + b.length);
+  public static <T, X extends T, Y extends T> T[] insert(Class<T[]> type, X[] a, int pos, Y... b) {
+    final T[] tmp = (T[]) Array.newInstance(type.getComponentType(), a.length + b.length);
     System.arraycopy(a, 0, tmp, 0, pos);
     System.arraycopy(b, 0, tmp, pos, b.length);
     System.arraycopy(a, pos, tmp, pos + b.length, a.length - pos);
@@ -396,8 +387,7 @@ public class ArrayUtils {
       if (orig[i] == e) {
         final float[] tmp = new float[orig.length - 1];
         System.arraycopy(orig, 0, tmp, 0, i);
-        if (i < tmp.length)
-          System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
+        if (i < tmp.length) System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
         return tmp;
       }
     }
@@ -409,8 +399,7 @@ public class ArrayUtils {
       if (orig[i] == e) {
         final int[] tmp = new int[orig.length - 1];
         System.arraycopy(orig, 0, tmp, 0, i);
-        if (i < tmp.length)
-          System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
+        if (i < tmp.length) System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
         return tmp;
       }
     }
@@ -422,8 +411,7 @@ public class ArrayUtils {
       if (orig[i] == e) {
         final long[] tmp = new long[orig.length - 1];
         System.arraycopy(orig, 0, tmp, 0, i);
-        if (i < tmp.length)
-          System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
+        if (i < tmp.length) System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
         return tmp;
       }
     }
@@ -435,8 +423,7 @@ public class ArrayUtils {
       if (orig[i] == e) {
         final short[] tmp = new short[orig.length - 1];
         System.arraycopy(orig, 0, tmp, 0, i);
-        if (i < tmp.length)
-          System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
+        if (i < tmp.length) System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
         return tmp;
       }
     }
@@ -447,11 +434,10 @@ public class ArrayUtils {
   public static <T> T[] remove(T[] orig, T e) {
     for (int i = 0; i < orig.length; i++) {
       if (orig[i].equals(e)) {
-        final T[] tmp = (T[]) Array.newInstance(
-          orig.getClass().getComponentType(), orig.length - 1);
+        final T[] tmp =
+            (T[]) Array.newInstance(orig.getClass().getComponentType(), orig.length - 1);
         System.arraycopy(orig, 0, tmp, 0, i);
-        if (i < tmp.length)
-          System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
+        if (i < tmp.length) System.arraycopy(orig, i + 1, tmp, i, orig.length - i - 1);
         return tmp;
       }
     }

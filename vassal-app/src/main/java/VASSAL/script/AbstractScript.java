@@ -22,9 +22,9 @@ import VASSAL.i18n.ComponentI18nData;
 
 public abstract class AbstractScript extends AbstractConfigurable {
 
-  public static final String NAME = "name"; //NON-NLS
-  public static final String DESC = "desc"; //NON-NLS
-  public static final String SCRIPT = "script"; //NON-NLS
+  public static final String NAME = "name"; // NON-NLS
+  public static final String DESC = "desc"; // NON-NLS
+  public static final String SCRIPT = "script"; // NON-NLS
 
   private String description = "";
   private String script = "";
@@ -82,11 +82,9 @@ public abstract class AbstractScript extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (DESC.equals(key)) {
+    } else if (DESC.equals(key)) {
       return getDescription();
-    }
-    else if (SCRIPT.equals(key)) {
+    } else if (SCRIPT.equals(key)) {
       return getScript();
     }
     return null;
@@ -96,11 +94,9 @@ public abstract class AbstractScript extends AbstractConfigurable {
   public void setAttribute(String key, Object value) {
     if (NAME.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (DESC.equals(key)) {
+    } else if (DESC.equals(key)) {
       setDescription((String) value);
-    }
-    else if (SCRIPT.equals(key)) {
+    } else if (SCRIPT.equals(key)) {
       setScript((String) value);
     }
   }

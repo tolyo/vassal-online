@@ -22,9 +22,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import javax.swing.JButton;
 
-/**
- * A button with no insets to be as small as possible
- */
+/** A button with no insets to be as small as possible */
 public class NoInsetButton extends JButton {
   private static final long serialVersionUID = 1L;
   final Insets NO_INSETS = new Insets(0, 0, 0, 0);

@@ -22,9 +22,7 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
 
-/**
- * A String Module Preference.
- */
+/** A String Module Preference. */
 public class StringPreference extends BasicPreference {
 
   protected String defaultValue = "";
@@ -59,5 +57,4 @@ public class StringPreference extends BasicPreference {
     }
     return config;
   }
-
 }

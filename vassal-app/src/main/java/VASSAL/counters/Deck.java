@@ -51,17 +51,6 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.WriteErrorDialog;
 import VASSAL.tools.filechooser.FileChooser;
 import VASSAL.tools.swing.SwingUtils;
-
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -84,17 +73,27 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 /**
- * A collection of pieces that behaves like a deck, i.e.: Doesn't move.
- * Can't be expanded. Can be shuffled. Can be turned face-up and face-down.
+ * A collection of pieces that behaves like a deck, i.e.: Doesn't move. Can't be expanded. Can be
+ * shuffled. Can be turned face-up and face-down.
  */
 public class Deck extends Stack implements PlayerRoster.SideChangeListener {
-  public static final String ID = "deck;"; //$NON-NLS-1$
+  public static final String ID = "deck;"; // $NON-NLS-1$
   public static final String ALWAYS = "Always"; // NON-NLS
   public static final String NEVER = "Never"; // NON-NLS
   public static final String USE_MENU = "Via right-click Menu"; // NON-NLS
-  public static final String USE_MENU_UP = "MenuDefaultUp"; //NON-NLS
+  public static final String USE_MENU_UP = "MenuDefaultUp"; // NON-NLS
   public static final String NO_USER = "nobody"; // Dummy user ID for turning // NON-NLS
   protected static final StackMetrics deckStackMetrics = new StackMetrics(false, 2, 2, 2, 2);
   // cards face down
@@ -109,7 +108,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   protected boolean allowMultipleDraw = false;
   protected boolean allowSelectDraw = false;
   protected boolean reversible = false;
-  protected String reshuffleCommand = ""; //$NON-NLS-1$
+  protected String reshuffleCommand = ""; // $NON-NLS-1$
   protected String reshuffleTarget;
   protected String reshuffleMsgFormat;
   protected NamedKeyStrokeListener reshuffleListener;
@@ -124,10 +123,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   protected String faceDownMsgFormat;
   protected boolean drawFaceUp;
   protected boolean persistable;
-  protected FormattedString selectDisplayProperty = new FormattedString("$" + BasicPiece.BASIC_NAME + "$");
+  protected FormattedString selectDisplayProperty =
+      new FormattedString("$" + BasicPiece.BASIC_NAME + "$");
   protected String selectSortProperty = "";
-  protected MutableProperty.Impl countProperty =
-    new MutableProperty.Impl("", this);
+  protected MutableProperty.Impl countProperty = new MutableProperty.Impl("", this);
   protected List<MutableProperty.Impl> expressionProperties = new ArrayList<>();
 
   protected String deckName;
@@ -178,42 +177,44 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   protected DrawPile myPile;
 
   /**
-   * Sends the I-am-empty key for this deck (whether to send it was already determined when the last piece was removed)
+   * Sends the I-am-empty key for this deck (whether to send it was already determined when the last
+   * piece was removed)
    */
   protected void sendEmptyKey() {
     gameModule.fireKeyStroke(emptyKey);
   }
 
-  /**
-   * Special {@link CommandEncoder} to handle loading/saving Decks from files.
-   */
-  protected CommandEncoder commandEncoder = new CommandEncoder() {
-    /**
-     * Deserializes a Deck loaded from a file, turning it into a LoadDeckCommand.
-     * @param command String contents of deck
-     * @return {@link LoadDeckCommand} to put the specified contents in the deck
-     */
-    @Override
-    public Command decode(String command) {
-      if (!command.startsWith(LoadDeckCommand.PREFIX)) {
-        return null;
-      }
-      return new LoadDeckCommand(Deck.this);
-    }
+  /** Special {@link CommandEncoder} to handle loading/saving Decks from files. */
+  protected CommandEncoder commandEncoder =
+      new CommandEncoder() {
+        /**
+         * Deserializes a Deck loaded from a file, turning it into a LoadDeckCommand.
+         *
+         * @param command String contents of deck
+         * @return {@link LoadDeckCommand} to put the specified contents in the deck
+         */
+        @Override
+        public Command decode(String command) {
+          if (!command.startsWith(LoadDeckCommand.PREFIX)) {
+            return null;
+          }
+          return new LoadDeckCommand(Deck.this);
+        }
 
-    /**
-     * Serializes a LoadDeckCommand
-     * @param c LoadDeckCommand
-     * @return string form of command
-     */
-    @Override
-    public String encode(Command c) {
-      if (!(c instanceof LoadDeckCommand)) {
-        return null;
-      }
-      return LoadDeckCommand.PREFIX;
-    }
-  };
+        /**
+         * Serializes a LoadDeckCommand
+         *
+         * @param c LoadDeckCommand
+         * @return string form of command
+         */
+        @Override
+        public String encode(Command c) {
+          if (!(c instanceof LoadDeckCommand)) {
+            return null;
+          }
+          return LoadDeckCommand.PREFIX;
+        }
+      };
 
   private final GameModule gameModule;
 
@@ -229,6 +230,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Create an empty deck
+   *
    * @param gameModule The game module
    */
   public Deck(GameModule gameModule) {
@@ -237,8 +239,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Creates an empty deck using specified type information
+   *
    * @param gameModule The game module
-   * @param type Type information for the deck (the configuration information that does not change during the game)
+   * @param type Type information for the deck (the configuration information that does not change
+   *     during the game)
    */
   public Deck(GameModule gameModule, String type) {
     this.gameModule = gameModule;
@@ -247,8 +251,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Creates an empty deck using specified type information
+   *
    * @param gameModule The game module
-   * @param type Type information for the deck (the configuration information that does not change during the game)
+   * @param type Type information for the deck (the configuration information that does not change
+   *     during the game)
    * @param source PropertySource
    */
   public Deck(GameModule gameModule, String type, PropertySource source) {
@@ -268,6 +274,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Sets the Deck's property source
+   *
    * @param source PropertySource
    */
   public void setPropertySource(PropertySource source) {
@@ -278,7 +285,6 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       }
     }
   }
-
 
   public String[] getOwners() {
     return owners;
@@ -297,7 +303,9 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-   * Listener for when the local player changes side. Updates all of our counts of expressions of pieces configured to be counted.
+   * Listener for when the local player changes side. Updates all of our counts of expressions of
+   * pieces configured to be counted.
+   *
    * @param oldSide local player's old side
    * @param newSide local player's new side
    */
@@ -308,6 +316,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Adds a Deck Global Key Command (DGKC).
+   *
    * @param globalCommand The command to add
    */
   public void addGlobalKeyCommand(DeckGlobalKeyCommand globalCommand) {
@@ -316,6 +325,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Removes a Deck Global Key Command (DGKC).
+   *
    * @param globalCommand The command to remove
    */
   public void removeGlobalKeyCommand(DeckGlobalKeyCommand globalCommand) {
@@ -335,6 +345,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Sets the list of Deck Global Key Commands for this deck
+   *
    * @param commands The list of commands to set (in serialized string form)
    */
   protected void setGlobalCommands(String[] commands) {
@@ -345,25 +356,24 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-  * Update map-level count properties for all "expressions" of pieces that are configured
-  * to be counted.  These are held in the String[] countExpressions.
-  */
+   * Update map-level count properties for all "expressions" of pieces that are configured to be
+   * counted. These are held in the String[] countExpressions.
+   */
   private void updateCountsAll() {
     if (!doesExpressionCounting() || getMap() == null) {
       return;
     }
-    //Clear out all of the registered count expressions
+    // Clear out all of the registered count expressions
     for (int index = 0; index < countExpressions.length; index++) {
-      expressionProperties.get(index).setPropertyValue("0"); //$NON-NLS-1$
+      expressionProperties.get(index).setPropertyValue("0"); // $NON-NLS-1$
     }
-    //Increase all of the pieces with expressions specified in this deck
-    asList().stream()
-            .filter(Objects::nonNull)
-            .forEach(p -> updateCounts(p, true));
+    // Increase all of the pieces with expressions specified in this deck
+    asList().stream().filter(Objects::nonNull).forEach(p -> updateCounts(p, true));
   }
 
   /**
    * Update map-level count property for a piece located at index
+   *
    * @param index Index (within the Deck, counting from the top) of the piece whose count to update
    */
   private void updateCounts(int index) {
@@ -373,21 +383,20 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     if (index >= 0 && index < getPieceCount()) {
       final GamePiece p = getPieceAt(index);
       if (p == null) {
-        //can't figure out the piece, do a full update
+        // can't figure out the piece, do a full update
         updateCountsAll();
-      }
-      else {
+      } else {
         updateCounts(p, false);
       }
-    }
-    else {
-      //can't figure out the piece, do a full update
+    } else {
+      // can't figure out the piece, do a full update
       updateCountsAll();
     }
   }
 
   /**
    * Update map-level count property for a piece
+   *
    * @param p Game piece to update counts for
    * @param increase if true, increase the count; if false, decrease.
    */
@@ -395,27 +404,31 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     if (!doesExpressionCounting() || getMap() == null) {
       return;
     }
-    //test all the expressions for this deck
+    // test all the expressions for this deck
     for (int index = 0; index < countExpressions.length; index++) {
       final MutableProperty.Impl prop = expressionProperties.get(index);
-      final FormattedString formatted = new FormattedString(countExpressions[index].getExpression());
-      final String evaluated = formatted.getText(p, (Auditable) this, "Editor.DrawPile.count_express");
-      // If result is "true" then there was a beanshell expression and it evaluated to true. Otherwise try old-style.
-      // We also have to check explicitly against "false" because the PropertiesPieceFilter apparently accepts that as a match - old-style expressions are so cute
-      if ("true".equals(evaluated) || (!"false".equals(evaluated) && PropertiesPieceFilter.parse(evaluated).accept(p))) { //NON-NLS
+      final FormattedString formatted =
+          new FormattedString(countExpressions[index].getExpression());
+      final String evaluated =
+          formatted.getText(p, (Auditable) this, "Editor.DrawPile.count_express");
+      // If result is "true" then there was a beanshell expression and it evaluated to true.
+      // Otherwise try old-style.
+      // We also have to check explicitly against "false" because the PropertiesPieceFilter
+      // apparently accepts that as a match - old-style expressions are so cute
+      if ("true".equals(evaluated)
+          || (!"false".equals(evaluated)
+              && PropertiesPieceFilter.parse(evaluated).accept(p))) { // NON-NLS
         final String mapProperty = prop.getPropertyValue();
         if (mapProperty != null) {
           int newValue;
           try {
             newValue = Integer.decode(mapProperty);
-          }
-          catch (NumberFormatException ignored) {
+          } catch (NumberFormatException ignored) {
             newValue = 0;
           }
           if (increase) {
             newValue++;
-          }
-          else {
+          } else {
             newValue--;
           }
           prop.setPropertyValue(String.valueOf(newValue));
@@ -424,15 +437,14 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
   }
 
-  /**
-   * Set the <deckName>_numPieces property in the containing Map
-   */
+  /** Set the <deckName>_numPieces property in the containing Map */
   protected void fireNumCardsProperty() {
     countProperty.setPropertyValue(String.valueOf(pieceCount));
   }
 
   /**
    * Inserts a piece into a specific position into the Deck (counting down from the top)
+   *
    * @param p Piece to insert
    * @param index "How many cards down into the Deck" to put it.
    */
@@ -443,9 +455,12 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Inserts a piece into a specific position into the Deck (counting down from the top)
+   *
    * @param p Piece to insert
    * @param index "How many cards down into the Deck" to put it.
-   * @param suppressDeckCounts true if ONLY the Stack part of the operation should be performed (we're just rearranging deck order and so don't want extra property updates). Ignored at Stack level.
+   * @param suppressDeckCounts true if ONLY the Stack part of the operation should be performed
+   *     (we're just rearranging deck order and so don't want extra property updates). Ignored at
+   *     Stack level.
    */
   @Override
   protected void insertPieceAt(GamePiece p, int index, boolean suppressDeckCounts) {
@@ -456,9 +471,9 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
   }
 
-
   /**
    * Removes a piece from a specific location in the deck
+   *
    * @param index Piece to remove, counting down from the top
    */
   @Override
@@ -468,8 +483,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Removes a piece from a specific location in the deck
+   *
    * @param index Piece to remove, counting down from the top
-   * @param suppressDeckCounts true if deck counts and firing last card keystroke should be suppressed (because we're actually just rearranging deck order)
+   * @param suppressDeckCounts true if deck counts and firing last card keystroke should be
+   *     suppressed (because we're actually just rearranging deck order)
    */
   @Override
   protected void removePieceAt(int index, boolean suppressDeckCounts) {
@@ -490,10 +507,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
   }
 
-
-  /**
-   * Removes all pieces from the Deck.
-   */
+  /** Removes all pieces from the Deck. */
   @Override
   public void removeAll() {
     super.removeAll();
@@ -503,6 +517,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Sets the Map this Deck appears on
+   *
    * @param map Map to assign Deck to
    */
   @Override
@@ -520,33 +535,38 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     fireNumCardsProperty();
   }
 
-
   public void addListeners() {
     if (shuffleListener == null) {
-      shuffleListener = new NamedKeyStrokeListener(e -> {
-        gameModule.sendAndLog(shuffle());
-        repaintMap();
-      });
+      shuffleListener =
+          new NamedKeyStrokeListener(
+              e -> {
+                gameModule.sendAndLog(shuffle());
+                repaintMap();
+              });
 
       gameModule.addKeyStrokeListener(shuffleListener);
       shuffleListener.setKeyStroke(getShuffleKey());
     }
 
     if (reshuffleListener == null) {
-      reshuffleListener = new NamedKeyStrokeListener(e -> {
-        gameModule.sendAndLog(sendToDeck());
-        repaintMap();
-      });
+      reshuffleListener =
+          new NamedKeyStrokeListener(
+              e -> {
+                gameModule.sendAndLog(sendToDeck());
+                repaintMap();
+              });
 
       gameModule.addKeyStrokeListener(reshuffleListener);
       reshuffleListener.setKeyStroke(getReshuffleKey());
     }
 
     if (reverseListener == null) {
-      reverseListener = new NamedKeyStrokeListener(e -> {
-        gameModule.sendAndLog(reverse());
-        repaintMap();
-      });
+      reverseListener =
+          new NamedKeyStrokeListener(
+              e -> {
+                gameModule.sendAndLog(reverse());
+                repaintMap();
+              });
 
       gameModule.addKeyStrokeListener(reverseListener);
       reverseListener.setKeyStroke(getReverseKey());
@@ -643,33 +663,32 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     gameModule.removeSideChangeListenerFromPlayerRoster(this);
   }
 
-
-  /** Sets or refreshes the information for this Deck.  See {@link Decorator#myGetType}
-   *  @param type a serialized configuration string to
-   *              set the "type information" of this Deck, which is
-   *              information that doesn't change during the course of
-   *              a single game (e.g. Image Files, Context Menu strings,
-   *              etc, rules about when deck is shuffled, whether it is
-   *              face-up or face down, etc).
+  /**
+   * Sets or refreshes the information for this Deck. See {@link Decorator#myGetType}
+   *
+   * @param type a serialized configuration string to set the "type information" of this Deck, which
+   *     is information that doesn't change during the course of a single game (e.g. Image Files,
+   *     Context Menu strings, etc, rules about when deck is shuffled, whether it is face-up or face
+   *     down, etc).
    */
   public void myRefreshType(String type) {
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type, ';');
     st.nextToken();
     drawOutline = st.nextBoolean(true);
-    outlineColor = ColorConfigurer.stringToColor(st.nextToken("0,0,0")); //$NON-NLS-1$
+    outlineColor = ColorConfigurer.stringToColor(st.nextToken("0,0,0")); // $NON-NLS-1$
     size.setSize(st.nextInt(40), st.nextInt(40));
-    faceDownOption = st.nextToken("Always"); //$NON-NLS-1$
-    shuffleOption = st.nextToken("Always"); //$NON-NLS-1$
+    faceDownOption = st.nextToken("Always"); // $NON-NLS-1$
+    shuffleOption = st.nextToken("Always"); // $NON-NLS-1$
     allowMultipleDraw = st.nextBoolean(true);
     allowSelectDraw = st.nextBoolean(true);
     reversible = st.nextBoolean(true);
-    reshuffleCommand = st.nextToken(""); //$NON-NLS-1$
-    reshuffleTarget = st.nextToken(""); //$NON-NLS-1$
-    reshuffleMsgFormat = st.nextToken(""); //$NON-NLS-1$
+    reshuffleCommand = st.nextToken(""); // $NON-NLS-1$
+    reshuffleTarget = st.nextToken(""); // $NON-NLS-1$
+    reshuffleMsgFormat = st.nextToken(""); // $NON-NLS-1$
     setDeckName(st.nextToken(Resources.getString("Deck.deck")));
-    shuffleMsgFormat = st.nextToken(""); //$NON-NLS-1$
-    reverseMsgFormat = st.nextToken(""); //$NON-NLS-1$
-    faceDownMsgFormat = st.nextToken(""); //$NON-NLS-1$
+    shuffleMsgFormat = st.nextToken(""); // $NON-NLS-1$
+    reverseMsgFormat = st.nextToken(""); // $NON-NLS-1$
+    faceDownMsgFormat = st.nextToken(""); // $NON-NLS-1$
     drawFaceUp = st.nextBoolean(false);
     persistable = st.nextBoolean(false);
     shuffleKey = st.nextNamedKeyStroke(null);
@@ -690,22 +709,22 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
     drawMultipleMessage = st.nextToken(Resources.getString("Deck.draw_multiple"));
     drawSpecificMessage = st.nextToken(Resources.getString("Deck.draw_specific"));
-    faceUpMessage       = st.nextToken(Resources.getString("Deck.face_up"));
-    faceDownMessage     = st.nextToken(Resources.getString("Deck.face_down"));
+    faceUpMessage = st.nextToken(Resources.getString("Deck.face_up"));
+    faceDownMessage = st.nextToken(Resources.getString("Deck.face_down"));
 
     faceUpKey = st.nextNamedKeyStroke(null);
     faceUpMsgFormat = st.nextToken("");
-    faceFlipKey     = st.nextNamedKeyStroke(null);
-    faceDownKey     = st.nextNamedKeyStroke(null);
-    saveMessage     = st.nextToken(Resources.getString("Editor.Deck.save_deck"));
-    saveKey         = st.nextNamedKeyStroke(null);
-    saveReport      = st.nextToken(Resources.getString("Deck.deck_saved"));
-    loadMessage     = st.nextToken(Resources.getString("Editor.Deck.load_deck"));
-    loadKey         = st.nextNamedKeyStroke(null);
-    loadReport      = st.nextToken(Resources.getString("Deck.deck_loaded"));
+    faceFlipKey = st.nextNamedKeyStroke(null);
+    faceDownKey = st.nextNamedKeyStroke(null);
+    saveMessage = st.nextToken(Resources.getString("Editor.Deck.save_deck"));
+    saveKey = st.nextNamedKeyStroke(null);
+    saveReport = st.nextToken(Resources.getString("Deck.deck_saved"));
+    loadMessage = st.nextToken(Resources.getString("Editor.Deck.load_deck"));
+    loadKey = st.nextNamedKeyStroke(null);
+    loadReport = st.nextToken(Resources.getString("Deck.deck_loaded"));
 
-    restrictAccess  = st.nextBoolean(false);
-    owners          = st.nextStringArray(0);
+    restrictAccess = st.nextBoolean(false);
+    owners = st.nextStringArray(0);
 
     commands = null;
   }
@@ -721,9 +740,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     myPile = DrawPile.findDrawPile(getDeckName());
 
     // If a New game/Load Game is starting, set this Deck into the matching DrawPile
-    // If a Load Continuation is starting, ignore this Deck and let the DrawPile continue with the existing Deck.
+    // If a Load Continuation is starting, ignore this Deck and let the DrawPile continue with the
+    // existing Deck.
     // Combined fix for bugs 4507, 10249 & 13461
-    if (myPile != null && ! GameModule.getGameModule().getGameState().isGameStarted()) {
+    if (myPile != null && !GameModule.getGameModule().getGameState().isGameStarted()) {
       myPile.setDeck(this);
     }
   }
@@ -880,8 +900,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       expressionProperties.add(new MutableProperty.Impl("", this));
     }
     for (int i = 0; i < countExpressions.length; i++) {
-      expressionProperties.get(i).setPropertyName(
-        deckName + "_" + countExpressions[i].getName());
+      expressionProperties.get(i).setPropertyName(deckName + "_" + countExpressions[i].getName());
     }
   }
 
@@ -904,14 +923,12 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   public void setDeckName(String n) {
     if (Localization.getInstance().isTranslationInProgress()) {
       localizedDeckName = n;
-    }
-    else {
+    } else {
       deckName = n;
     }
     countProperty.setPropertyName(deckName + "_numPieces"); // NON-NLS
     for (int i = 0; i < countExpressions.length; ++i) {
-      expressionProperties.get(i).setPropertyName(
-        deckName + "_" + countExpressions[i].getName());
+      expressionProperties.get(i).setPropertyName(deckName + "_" + countExpressions[i].getName());
     }
   }
 
@@ -943,8 +960,8 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-   * The name of the {@link VASSAL.build.module.map.DrawPile} to which the
-   * contents of this deck will be sent when the reshuffle command is selected
+   * The name of the {@link VASSAL.build.module.map.DrawPile} to which the contents of this deck
+   * will be sent when the reshuffle command is selected
    */
   public String getReshuffleTarget() {
     return reshuffleTarget;
@@ -1109,15 +1126,11 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     return restrictExpression;
   }
 
-  /**
-   * Does the specified GamePiece meet the rules to be contained
-   * in this Deck.
-   */
+  /** Does the specified GamePiece meet the rules to be contained in this Deck. */
   public boolean mayContain(GamePiece piece) {
-    if (! restrictOption || restrictExpression.isNull()) {
+    if (!restrictOption || restrictExpression.isNull()) {
       return true;
-    }
-    else {
+    } else {
       return restrictExpression.accept(piece);
     }
   }
@@ -1126,54 +1139,54 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   public String getType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(drawOutline)
-      .append(ColorConfigurer.colorToString(outlineColor))
-      .append(String.valueOf(size.width))
-      .append(String.valueOf(size.height))
-      .append(faceDownOption)
-      .append(shuffleOption)
-      .append(String.valueOf(allowMultipleDraw))
-      .append(String.valueOf(allowSelectDraw))
-      .append(String.valueOf(reversible))
-      .append(reshuffleCommand)
-      .append(reshuffleTarget)
-      .append(reshuffleMsgFormat)
-      .append(deckName)
-      .append(shuffleMsgFormat)
-      .append(reverseMsgFormat)
-      .append(faceDownMsgFormat)
-      .append(drawFaceUp)
-      .append(persistable)
-      .append(shuffleKey)
-      .append(reshuffleKey)
-      .append(String.valueOf(maxStack))
-      .append(getCountExpressions())
-      .append(expressionCounting)
-      .append(getGlobalCommands())
-      .append(hotkeyOnEmpty)
-      .append(emptyKey)
-      .append(selectDisplayProperty.getFormat())
-      .append(selectSortProperty)
-      .append(restrictOption)
-      .append(restrictExpression)
-      .append(shuffleCommand)
-      .append(reverseCommand)
-      .append(reverseKey)
-      .append(drawMultipleMessage)
-      .append(drawSpecificMessage)
-      .append(faceUpMessage)
-      .append(faceDownMessage)
-      .append(faceUpKey)
-      .append(faceUpMsgFormat)
-      .append(faceFlipKey)
-      .append(faceDownKey)
-      .append(saveMessage)
-      .append(saveKey)
-      .append(saveReport)
-      .append(loadMessage)
-      .append(loadKey)
-      .append(loadReport)
-      .append(restrictAccess)
-      .append(owners);
+        .append(ColorConfigurer.colorToString(outlineColor))
+        .append(String.valueOf(size.width))
+        .append(String.valueOf(size.height))
+        .append(faceDownOption)
+        .append(shuffleOption)
+        .append(String.valueOf(allowMultipleDraw))
+        .append(String.valueOf(allowSelectDraw))
+        .append(String.valueOf(reversible))
+        .append(reshuffleCommand)
+        .append(reshuffleTarget)
+        .append(reshuffleMsgFormat)
+        .append(deckName)
+        .append(shuffleMsgFormat)
+        .append(reverseMsgFormat)
+        .append(faceDownMsgFormat)
+        .append(drawFaceUp)
+        .append(persistable)
+        .append(shuffleKey)
+        .append(reshuffleKey)
+        .append(String.valueOf(maxStack))
+        .append(getCountExpressions())
+        .append(expressionCounting)
+        .append(getGlobalCommands())
+        .append(hotkeyOnEmpty)
+        .append(emptyKey)
+        .append(selectDisplayProperty.getFormat())
+        .append(selectSortProperty)
+        .append(restrictOption)
+        .append(restrictExpression)
+        .append(shuffleCommand)
+        .append(reverseCommand)
+        .append(reverseKey)
+        .append(drawMultipleMessage)
+        .append(drawSpecificMessage)
+        .append(faceUpMessage)
+        .append(faceDownMessage)
+        .append(faceUpKey)
+        .append(faceUpMsgFormat)
+        .append(faceFlipKey)
+        .append(faceDownKey)
+        .append(saveMessage)
+        .append(saveKey)
+        .append(saveReport)
+        .append(loadMessage)
+        .append(loadKey)
+        .append(loadReport)
+        .append(restrictAccess)
+        .append(owners);
 
     return ID + se.getValue();
   }
@@ -1187,15 +1200,16 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     Collections.shuffle(l, gameModule.getRNG());
     Command c = setContents(l);
     if (Map.isChangeReportingEnabled()) {
-      c = c.append(reportCommand(shuffleMsgFormat, Resources.getString("Deck.shuffle"))); //$NON-NLS-1$
+      c =
+          c.append(
+              reportCommand(shuffleMsgFormat, Resources.getString("Deck.shuffle"))); // $NON-NLS-1$
     }
     return c;
   }
 
   /**
-   * Return a list if pieces in the Deck in Dealable order.
-   * If this is an Always shuffle Deck, then shuffle the list of pieces, otherwise just
-   * reverse the list order so that we deal from the top.
+   * Return a list if pieces in the Deck in Dealable order. If this is an Always shuffle Deck, then
+   * shuffle the list of pieces, otherwise just reverse the list order so that we deal from the top.
    *
    * @return List of pieces in Dealable order
    */
@@ -1203,28 +1217,24 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final List<GamePiece> pieces = asList();
     if (ALWAYS.equals(shuffleOption)) {
       Collections.shuffle(pieces, GameModule.getGameModule().getRNG());
-    }
-    else {
+    } else {
       Collections.reverse(pieces);
     }
     return pieces;
   }
 
   /**
-   * Return an iterator of pieces to be drawn from the Deck. Normally, a random
-   * piece will be drawn, but if the Deck supports it, the user may have
-   * specified a particular set of pieces or a fixed number of pieces to select
-   * with the next draw.
+   * Return an iterator of pieces to be drawn from the Deck. Normally, a random piece will be drawn,
+   * but if the Deck supports it, the user may have specified a particular set of pieces or a fixed
+   * number of pieces to select with the next draw.
    */
   public PieceIterator drawCards() {
     final Iterator<GamePiece> it;
     if (nextDraw != null) {
       it = nextDraw.iterator();
-    }
-    else if (getPieceCount() == 0) {
+    } else if (getPieceCount() == 0) {
       it = Collections.emptyIterator();
-    }
-    else {
+    } else {
       int count = Math.max(dragCount, Math.min(1, getPieceCount()));
       final List<GamePiece> pieces = new ArrayList<>();
       if (ALWAYS.equals(shuffleOption)) {
@@ -1243,8 +1253,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
           final GamePiece p = getPieceAt(index);
           pieces.add(p);
         }
-      }
-      else {
+      } else {
         final Iterator<GamePiece> i = getPiecesReverseIterator();
         while (count-- > 0 && i.hasNext()) pieces.add(i.next());
       }
@@ -1289,7 +1298,9 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   @Override
   public String getState() {
     final SequenceEncoder se = new SequenceEncoder(';');
-    se.append(getMap() == null ? "null" : getMap().getIdentifier()).append(getPosition().x).append(getPosition().y); //$NON-NLS-1$
+    se.append(getMap() == null ? "null" : getMap().getIdentifier())
+        .append(getPosition().x)
+        .append(getPosition().y); // $NON-NLS-1$
     se.append(faceDown);
     final SequenceEncoder se2 = new SequenceEncoder(',');
     asList().forEach(gamePiece -> se2.append(gamePiece.getId()));
@@ -1306,7 +1317,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     setPosition(new Point(st.nextInt(0), st.nextInt(0)));
 
     Map m = null;
-    if (!"null".equals(mapId)) { //$NON-NLS-1$
+    if (!"null".equals(mapId)) { // $NON-NLS-1$
       m = Map.getMapById(mapId);
       if (m == null) {
         ErrorDialog.dataWarning(new BadDataReport("No such map", mapId, null)); // NON-NLS
@@ -1316,20 +1327,17 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     if (m != getMap()) {
       if (m != null) {
         m.addPiece(this);
-      }
-      else {
+      } else {
         setMap(null);
       }
     }
 
-    faceDown = "true".equals(st.nextToken()); //$NON-NLS-1$
+    faceDown = "true".equals(st.nextToken()); // $NON-NLS-1$
     final List<GamePiece> l = new ArrayList<>();
     if (st.hasMoreTokens()) {
-      final SequenceEncoder.Decoder st2 =
-        new SequenceEncoder.Decoder(st.nextToken(), ',');
+      final SequenceEncoder.Decoder st2 = new SequenceEncoder.Decoder(st.nextToken(), ',');
       while (st2.hasMoreTokens()) {
-        final GamePiece p = gameModule.getGameState()
-                                      .getPieceForId(st2.nextToken());
+        final GamePiece p = gameModule.getGameState().getPieceForId(st2.nextToken());
         if (p != null) {
           l.add(p);
         }
@@ -1349,7 +1357,13 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     faceDown = value;
     commands = null; // Force rebuild of popup menu
     if (Map.isChangeReportingEnabled()) {
-      c = c.append(reportCommand(faceDown ? faceDownMsgFormat : faceUpMsgFormat, value ? Resources.getString("Deck.face_down") : Resources.getString("Deck.face_up")));
+      c =
+          c.append(
+              reportCommand(
+                  faceDown ? faceDownMsgFormat : faceUpMsgFormat,
+                  value
+                      ? Resources.getString("Deck.face_down")
+                      : Resources.getString("Deck.face_up")));
     }
     return t.getChangeCommand().append(c);
   }
@@ -1408,8 +1422,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   public void draw(java.awt.Graphics g, int x, int y, Component obs, double zoom) {
     final int count = Math.min(getPieceCount(), maxStack);
     int bottomIndex = Math.max(getPieceCount() - maxStack, 0);
-    final GamePiece top = (nextDraw != null && !nextDraw.isEmpty()) ?
-      nextDraw.get(0) : topPiece();
+    final GamePiece top = (nextDraw != null && !nextDraw.isEmpty()) ? nextDraw.get(0) : topPiece();
 
     if (top != null) {
       final Object owner = top.getProperty(Properties.OBSCURED_BY);
@@ -1424,18 +1437,17 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
           g.fillRect(r.x + (int) (zoom * 2 * i), r.y - (int) (zoom * 2 * i), r.width, r.height);
           g.setColor(Color.black);
           g.drawRect(r.x + (int) (zoom * 2 * i), r.y - (int) (zoom * 2 * i), r.width, r.height);
-        }
-        else if (faceDown) {
+        } else if (faceDown) {
           top.draw(g, x + (int) (zoom * 2 * i), y - (int) (zoom * 2 * i), obs, zoom);
-        }
-        else {
-          getPieceAt(bottomIndex).draw(g, x + (int) (zoom * 2 * i), y - (int) (zoom * 2 * i), obs, zoom);
+        } else {
+          getPieceAt(bottomIndex)
+              .draw(g, x + (int) (zoom * 2 * i), y - (int) (zoom * 2 * i), obs, zoom);
         }
       }
-      top.draw(g, x + (int) (zoom * 2 * (count - 1)), y - (int) (zoom * 2 * (count - 1)), obs, zoom);
+      top.draw(
+          g, x + (int) (zoom * 2 * (count - 1)), y - (int) (zoom * 2 * (count - 1)), obs, zoom);
       top.setProperty(Properties.OBSCURED_BY, owner);
-    }
-    else {
+    } else {
       if (drawOutline) {
         final Rectangle r = boundingBox();
         r.setLocation(x + (int) (zoom * r.x), y + (int) (zoom * r.y));
@@ -1447,9 +1459,8 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-   * The color used to draw boxes representing cards underneath the top one. If
-   * null, then draw each card normally for face-up decks, and duplicate the top
-   * card for face-down decks
+   * The color used to draw boxes representing cards underneath the top one. If null, then draw each
+   * card normally for face-up decks, and duplicate the top card for face-down decks
    */
   protected Color getBlankColor() {
     Color c = Color.white;
@@ -1489,8 +1500,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     Object value = null;
     if (Properties.NO_STACK.equals(key)) {
       value = Boolean.TRUE;
-    }
-    else if (Properties.KEY_COMMANDS.equals(key)) {
+    } else if (Properties.KEY_COMMANDS.equals(key)) {
       value = getKeyCommands();
     }
     return value;
@@ -1539,114 +1549,126 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       final List<KeyCommand> l = new ArrayList<>();
       KeyCommand c;
       if (USE_MENU.equals(shuffleOption)) {
-        c = new KeyCommand(shuffleCommand, getShuffleKey(), this) {
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(shuffleCommand, getShuffleKey(), this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            gameModule.sendAndLog(shuffle());
-            repaintMap();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                gameModule.sendAndLog(shuffle());
+                repaintMap();
+              }
+            };
         l.add(c);
       }
       if (reshuffleCommand.length() > 0) {
-        c = new KeyCommand(reshuffleCommand, getReshuffleKey(), this) {
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(reshuffleCommand, getReshuffleKey(), this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent evt) {
-            gameModule.sendAndLog(sendToDeck());
-            repaintMap();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent evt) {
+                gameModule.sendAndLog(sendToDeck());
+                repaintMap();
+              }
+            };
         l.add(c);
       }
       if (USE_MENU.equals(faceDownOption) || USE_MENU_UP.equals(faceDownOption)) {
-        final KeyCommand faceFlipAction = new KeyCommand(faceDown ? faceUpMessage : faceDownMessage, getFaceFlipKey(), this) {
-          private static final long serialVersionUID = 1L;
+        final KeyCommand faceFlipAction =
+            new KeyCommand(faceDown ? faceUpMessage : faceDownMessage, getFaceFlipKey(), this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            doFaceFlip();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doFaceFlip();
+              }
+            };
         l.add(faceFlipAction);
 
-        final KeyCommand faceDownAction = new KeyCommand("", getFaceDownKey(), this) {
-          private static final long serialVersionUID = 1L;
+        final KeyCommand faceDownAction =
+            new KeyCommand("", getFaceDownKey(), this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            doFaceDown();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doFaceDown();
+              }
+            };
         l.add(faceDownAction);
 
-        final KeyCommand faceUpAction = new KeyCommand("", getFaceUpKey(), this) {
-          private static final long serialVersionUID = 1L;
+        final KeyCommand faceUpAction =
+            new KeyCommand("", getFaceUpKey(), this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            doFaceUp();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doFaceUp();
+              }
+            };
         l.add(faceUpAction);
       }
       if (reversible) {
-        c = new KeyCommand(reverseCommand, NamedKeyStroke.NULL_KEYSTROKE, this) { //$NON-NLS-1$
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(reverseCommand, NamedKeyStroke.NULL_KEYSTROKE, this) { // $NON-NLS-1$
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            final Command c = reverse();
-            gameModule.sendAndLog(c);
-            repaintMap();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                final Command c = reverse();
+                gameModule.sendAndLog(c);
+                repaintMap();
+              }
+            };
         l.add(c);
       }
       if (allowMultipleDraw) {
-        c = new KeyCommand(drawMultipleMessage, NamedKeyStroke.NULL_KEYSTROKE, this) { //$NON-NLS-1$
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(
+                drawMultipleMessage, NamedKeyStroke.NULL_KEYSTROKE, this) { // $NON-NLS-1$
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            promptForDragCount();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                promptForDragCount();
+              }
+            };
         l.add(c);
       }
       if (allowSelectDraw) {
-        c = new KeyCommand(drawSpecificMessage, NamedKeyStroke.NULL_KEYSTROKE, this) { //$NON-NLS-1$
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(
+                drawSpecificMessage, NamedKeyStroke.NULL_KEYSTROKE, this) { // $NON-NLS-1$
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            promptForNextDraw();
-            repaintMap();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                promptForNextDraw();
+                repaintMap();
+              }
+            };
         l.add(c);
       }
       if (persistable) {
-        c = new KeyCommand(saveMessage, saveKey, this) {
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(saveMessage, saveKey, this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            doSaveDeck();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doSaveDeck();
+              }
+            };
         l.add(c);
-        c = new KeyCommand(loadMessage, loadKey, this) {
-          private static final long serialVersionUID = 1L;
+        c =
+            new KeyCommand(loadMessage, loadKey, this) {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            doLoadDeck();
-          }
-        };
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doLoadDeck();
+              }
+            };
         l.add(c);
       }
 
@@ -1667,29 +1689,25 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
 
     for (final KeyCommand command : commands) {
-      if (faceUpMessage.equals(command.getValue(Action.NAME)) && !faceDown) { //$NON-NLS-1$
-        command.putValue(Action.NAME, faceDownMessage); //$NON-NLS-1$
-      }
-      else if (faceDownMessage.equals(command.getValue(Action.NAME)) && faceDown) { //$NON-NLS-1$
-        command.putValue(Action.NAME, faceUpMessage); //$NON-NLS-1$
+      if (faceUpMessage.equals(command.getValue(Action.NAME)) && !faceDown) { // $NON-NLS-1$
+        command.putValue(Action.NAME, faceDownMessage); // $NON-NLS-1$
+      } else if (faceDownMessage.equals(command.getValue(Action.NAME)) && faceDown) { // $NON-NLS-1$
+        command.putValue(Action.NAME, faceUpMessage); // $NON-NLS-1$
       }
     }
 
     return isAccessible() ? commands : null;
   }
 
-
-  /**
-   * Format command report as per module designers setup.
-   */
+  /** Format command report as per module designers setup. */
   protected Command reportCommand(String format, String commandName) {
     final FormattedString reportFormat = new FormattedString(format);
     return reportCommand(reportFormat, commandName);
   }
 
   /**
-   * Format command report as per module designers setup. Use a supplied FormattedString
-   * with preset properties
+   * Format command report as per module designers setup. Use a supplied FormattedString with preset
+   * properties
    */
   protected Command reportCommand(FormattedString reportFormat, String commandName) {
     reportFormat.setProperty(DrawPile.DECK_NAME, getLocalizedDeckName());
@@ -1697,7 +1715,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final String rep = reportFormat.getLocalizedText(this, commandName);
     Command c = null;
     if (rep.length() > 0) {
-      c = new Chatter.DisplayText(gameModule.getChatter(), "* " + rep); //$NON-NLS-1$
+      c = new Chatter.DisplayText(gameModule.getChatter(), "* " + rep); // $NON-NLS-1$
       c.execute();
     }
 
@@ -1706,27 +1724,28 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   public void promptForDragCount() {
     while (true) {
-      final String s = JOptionPane.showInputDialog(GameModule.getGameModule().getPlayerWindow(),
-        Resources.getString("Deck.enter_the_number")); //$NON-NLS-1$
+      final String s =
+          JOptionPane.showInputDialog(
+              GameModule.getGameModule().getPlayerWindow(),
+              Resources.getString("Deck.enter_the_number")); // $NON-NLS-1$
       if (s != null) {
         try {
           dragCount = Integer.parseInt(s);
           dragCount = Math.min(dragCount, getPieceCount());
           if (dragCount >= 0) break;
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
           // Ignore if user doesn't enter a number
         }
-      }
-      else {
+      } else {
         break;
       }
     }
   }
 
   protected void promptForNextDraw() {
-    final JDialog d = new JDialog((Frame) SwingUtilities.getAncestorOfClass(Frame.class, map.getView()), true);
-    d.setTitle(Resources.getString("Deck.draw")); //$NON-NLS-1$
+    final JDialog d =
+        new JDialog((Frame) SwingUtilities.getAncestorOfClass(Frame.class, map.getView()), true);
+    d.setTitle(Resources.getString("Deck.draw")); // $NON-NLS-1$
     d.setLayout(new BoxLayout(d.getContentPane(), BoxLayout.Y_AXIS));
 
     class AvailablePiece implements Comparable<AvailablePiece> {
@@ -1740,12 +1759,10 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       public int compareTo(AvailablePiece other) {
         if (other == null) return 1;
 
-        final String otherProperty =
-          (String) other.piece.getProperty(selectSortProperty);
+        final String otherProperty = (String) other.piece.getProperty(selectSortProperty);
         if (otherProperty == null) return 1;
 
-        final String myProperty =
-          (String) piece.getProperty(selectSortProperty);
+        final String myProperty = (String) piece.getProperty(selectSortProperty);
         if (myProperty == null) return -1;
 
         return -otherProperty.compareTo(myProperty);
@@ -1759,8 +1776,8 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       @Override
       @SuppressWarnings("PMD.SimplifyBooleanReturns")
       public boolean equals(Object o) {
-        if (! (o instanceof AvailablePiece)) return false;
-        return ((AvailablePiece)o).piece.equals(piece);
+        if (!(o instanceof AvailablePiece)) return false;
+        return ((AvailablePiece) o).piece.equals(piece);
       }
     }
 
@@ -1776,25 +1793,25 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final JList<AvailablePiece> list = new JList<>(pieces);
     list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     d.add(new ScrollPane(list));
-    d.add(new JLabel(Resources.getString("Deck.select_cards"))); //$NON-NLS-1$
-    d.add(new JLabel(Resources.getString("Deck.then_click"))); //$NON-NLS-1$
+    d.add(new JLabel(Resources.getString("Deck.select_cards"))); // $NON-NLS-1$
+    d.add(new JLabel(Resources.getString("Deck.then_click"))); // $NON-NLS-1$
 
     final Box box = Box.createHorizontalBox();
 
     final JButton okButton = new JButton(Resources.getString(Resources.OK));
-    okButton.addActionListener(e -> {
-      final int[] selection = list.getSelectedIndices();
-      if (selection.length > 0) {
-        nextDraw = new ArrayList<>();
-        for (final int value : selection) {
-          nextDraw.add(pieces[value].piece);
-        }
-      }
-      else {
-        nextDraw = null;
-      }
-      d.dispose();
-    });
+    okButton.addActionListener(
+        e -> {
+          final int[] selection = list.getSelectedIndices();
+          if (selection.length > 0) {
+            nextDraw = new ArrayList<>();
+            for (final int value : selection) {
+              nextDraw.add(pieces[value].piece);
+            }
+          } else {
+            nextDraw = null;
+          }
+          d.dispose();
+        });
     box.add(okButton);
 
     final JButton cancelButton = new JButton(Resources.getString(Resources.CANCEL));
@@ -1811,8 +1828,8 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-   * Combine the contents of this Deck with the contents of the deck specified
-   * by {@link #reshuffleTarget}
+   * Combine the contents of this Deck with the contents of the deck specified by {@link
+   * #reshuffleTarget}
    */
   public Command sendToDeck() {
     Command c = null;
@@ -1824,8 +1841,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
         if (c == null) {
           c = new NullCommand();
         }
-      }
-      else {
+      } else {
         c = new NullCommand();
       }
       // move cards to deck
@@ -1843,13 +1859,12 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   /**
-   * Extended Send to Deck Command, based on the configuration of the supplied DeckSendKeyCommand
-   *  - Deck target can be variable
-   *  - Optional limit on number of cards to send
-   *  - Optionally limit selection of cards to those that match an expression
-   *  - Optionally stop sending cards when a specific card seen (match expression).
+   * Extended Send to Deck Command, based on the configuration of the supplied DeckSendKeyCommand -
+   * Deck target can be variable - Optional limit on number of cards to send - Optionally limit
+   * selection of cards to those that match an expression - Optionally stop sending cards when a
+   * specific card seen (match expression).
    *
-   *  If anything goes wrong, leave the source Deck untouched and gernate a Bad Data Report
+   * <p>If anything goes wrong, leave the source Deck untouched and gernate a Bad Data Report
    *
    * @param dkc DeckKeyCommand command containing the Send configuration
    * @return Commands executing the send
@@ -1861,32 +1876,42 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final String targetDeckName;
     final String data;
     if (dkc.isVariableDeck()) {
-      targetDeckName = dkc.getDeckExpression().getText(propertySource, dkc, "Editor.DeckSendKeyCommand.deck_expression");
-      data = targetDeckName + " from expression " + dkc.getDeckExpression(); //NON-NLS
-    }
-    else {
+      targetDeckName =
+          dkc.getDeckExpression()
+              .getText(propertySource, dkc, "Editor.DeckSendKeyCommand.deck_expression");
+      data = targetDeckName + " from expression " + dkc.getDeckExpression(); // NON-NLS
+    } else {
       targetDeckName = dkc.getTargetDeck();
       data = targetDeckName;
     }
 
     final DrawPile target = DrawPile.findDrawPile(targetDeckName);
     if (target == null) {
-      ErrorDialog.dataWarning(new BadDataReport(dkc, Resources.getString("Editor.DeckSendKeyCommand.error_no_target"), data)); // NON-NLS
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              dkc,
+              Resources.getString("Editor.DeckSendKeyCommand.error_no_target"),
+              data)); // NON-NLS
       return c;
     }
 
     int sendLimit;
     if (dkc.isLimitTotal()) {
       try {
-        sendLimit = Integer.parseInt(dkc.getLimitExpression().getText(this, dkc, "Editor.DeckSendKeyCommand.limit_expression"));
-      }
-      catch (Exception ex) {
-        ErrorDialog.dataWarning(new BadDataReport(dkc, Resources.getString("Editor.Editor.DeckSendKeyCommand.error_invalid_send_limit"), dkc.getLimitExpression().getFormat())); // NON-NLS
+        sendLimit =
+            Integer.parseInt(
+                dkc.getLimitExpression()
+                    .getText(this, dkc, "Editor.DeckSendKeyCommand.limit_expression"));
+      } catch (Exception ex) {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                dkc,
+                Resources.getString("Editor.Editor.DeckSendKeyCommand.error_invalid_send_limit"),
+                dkc.getLimitExpression().getFormat())); // NON-NLS
         sendLimit = -1;
       }
 
-    }
-    else {
+    } else {
       sendLimit = -1;
     }
 
@@ -1894,19 +1919,24 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final List<GamePiece> sending = new ArrayList<>();
     final List<GamePiece> drawing = getOrderedPieces();
 
-    for (final GamePiece nextCard : drawing) { // Draw them in random order if this is an always-shuffle deck
+    for (final GamePiece nextCard :
+        drawing) { // Draw them in random order if this is an always-shuffle deck
       // Is this a card we are not interested in?
       if (dkc.isSendMatching()) {
-        final String result = dkc.getMatchExpression().getText(nextCard, dkc, "Editor.DeckSendKeyCommand.send_expression");
-        if (!"true".equals(result)) { //NON-NLS
+        final String result =
+            dkc.getMatchExpression()
+                .getText(nextCard, dkc, "Editor.DeckSendKeyCommand.send_expression");
+        if (!"true".equals(result)) { // NON-NLS
           continue;
         }
       }
 
       // Is this a stop card?
       if (dkc.isStop()) {
-        final String result = dkc.getStopExpresson().getText(nextCard, dkc, "Editor.DeckSendKeyCommand.stop_expression");
-        if ("true".equals(result)) { //NON-NLS
+        final String result =
+            dkc.getStopExpresson()
+                .getText(nextCard, dkc, "Editor.DeckSendKeyCommand.stop_expression");
+        if ("true".equals(result)) { // NON-NLS
           if (dkc.isStopInclude()) {
             sending.add(nextCard);
           }
@@ -1939,7 +1969,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
 
     // And add a report
-    if ((! dkc.getReportFormat().getFormat().isEmpty()) && Map.isChangeReportingEnabled()) {
+    if ((!dkc.getReportFormat().getFormat().isEmpty()) && Map.isChangeReportingEnabled()) {
       final FormattedString report = dkc.getReportFormat();
       report.setProperty(DeckSendKeyCommand.SENT_COUNT, String.valueOf(sending.size()));
       report.setProperty(DeckSendKeyCommand.TARGET_DECK, targetDeckName);
@@ -1949,14 +1979,14 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     return c;
   }
 
-
   @Override
   public boolean isExpanded() {
     return false;
   }
 
-
-  /** Return true if the player playing the given side can access this deck
+  /**
+   * Return true if the player playing the given side can access this deck
+   *
    * @see PlayerRoster
    */
   public boolean isAccessibleTo(String playerSide) {
@@ -1992,22 +2022,23 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       String name = sf.getPath();
       final int index = name.lastIndexOf('.');
       if (index > 0) {
-        name = name.substring(0, index) + ".sav"; //$NON-NLS-1$
+        name = name.substring(0, index) + ".sav"; // $NON-NLS-1$
         fc.setSelectedFile(new File(name));
       }
     }
 
-    if (fc.showSaveDialog(map.getView()) != FileChooser.APPROVE_OPTION)
-      return null;
+    if (fc.showSaveDialog(map.getView()) != FileChooser.APPROVE_OPTION) return null;
 
     File outputFile = fc.getSelectedFile();
-    if (outputFile != null &&
-        outputFile.exists() &&
-        shouldConfirmOverwrite() &&
-        JOptionPane.NO_OPTION ==
-         JOptionPane.showConfirmDialog(gameModule.getPlayerWindow(),
-          Resources.getString("Deck.overwrite", outputFile.getName()), Resources.getString("Deck.file_exists"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          JOptionPane.YES_NO_OPTION)) {
+    if (outputFile != null
+        && outputFile.exists()
+        && shouldConfirmOverwrite()
+        && JOptionPane.NO_OPTION
+            == JOptionPane.showConfirmDialog(
+                gameModule.getPlayerWindow(),
+                Resources.getString("Deck.overwrite", outputFile.getName()),
+                Resources.getString("Deck.file_exists"), // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                JOptionPane.YES_NO_OPTION)) {
       outputFile = null;
     }
 
@@ -2015,24 +2046,24 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   }
 
   private boolean shouldConfirmOverwrite() {
-    return System.getProperty("os.name").trim().equalsIgnoreCase("linux"); //$NON-NLS-1$ //$NON-NLS-2$
+    return System.getProperty("os.name")
+        .trim()
+        .equalsIgnoreCase("linux"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   private boolean saveDeck() {
     boolean result = false;
-    gameModule.warn(Resources.getString("Deck.saving_deck")); //$NON-NLS-1$
+    gameModule.warn(Resources.getString("Deck.saving_deck")); // $NON-NLS-1$
 
     final File saveFile = getSaveFileName();
     try {
       if (saveFile != null) {
         saveDeck(saveFile);
         result = true;
+      } else {
+        gameModule.warn(Resources.getString("Deck.save_canceled")); // $NON-NLS-1$
       }
-      else {
-        gameModule.warn(Resources.getString("Deck.save_canceled")); //$NON-NLS-1$
-      }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, saveFile);
     }
     return result;
@@ -2055,34 +2086,30 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
   private File getLoadFileName() {
     final FileChooser fc = gameModule.getFileChooser();
     fc.selectDotSavFile();
-    if (fc.showOpenDialog(map.getView()) != FileChooser.APPROVE_OPTION)
-      return null;
+    if (fc.showOpenDialog(map.getView()) != FileChooser.APPROVE_OPTION) return null;
     return fc.getSelectedFile();
   }
 
   private Command loadDeck() {
     Command c = new NullCommand();
-    gameModule.warn(Resources.getString("Deck.loading_deck")); //$NON-NLS-1$
+    gameModule.warn(Resources.getString("Deck.loading_deck")); // $NON-NLS-1$
 
     final File loadFile = getLoadFileName();
     try {
       if (loadFile != null) {
         c = loadDeck(loadFile);
+      } else {
+        gameModule.warn(Resources.getString("Deck.load_canceled")); // $NON-NLS-1$
       }
-      else {
-        gameModule.warn(Resources.getString("Deck.load_canceled")); //$NON-NLS-1$
-      }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, loadFile);
-    }
-    catch (NoSuchElementException e) {
+    } catch (NoSuchElementException e) {
       JOptionPane.showMessageDialog(
-        GameModule.getGameModule().getPlayerWindow(),
-        Resources.getString("Deck.load_failed_title"),
-        Resources.getString("Deck.load_failed_text", (loadFile != null) ? loadFile.getName() : ""),
-        JOptionPane.ERROR_MESSAGE
-      );
+          GameModule.getGameModule().getPlayerWindow(),
+          Resources.getString("Deck.load_failed_title"),
+          Resources.getString(
+              "Deck.load_failed_text", (loadFile != null) ? loadFile.getName() : ""),
+          JOptionPane.ERROR_MESSAGE);
     }
 
     return c;
@@ -2110,23 +2137,20 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       }
       c = c.append(t.getChangeCommand());
       updateCountsAll();
-    }
-    else {
-      gameModule.warn(Resources.getString("Deck.not_a_saved_deck", f.getName())); //$NON-NLS-1$
+    } else {
+      gameModule.warn(Resources.getString("Deck.not_a_saved_deck", f.getName())); // $NON-NLS-1$
       c = null;
     }
     return c;
   }
 
-
   private File getImportFileName() {
     final FileChooser fc = gameModule.getFileChooser();
     fc.selectDotSavFile();
-    if (fc.showOpenDialog(GameModule.getGameModule().getControlPanel()) != FileChooser.APPROVE_OPTION)
-      return null;
+    if (fc.showOpenDialog(GameModule.getGameModule().getControlPanel())
+        != FileChooser.APPROVE_OPTION) return null;
     return fc.getSelectedFile();
   }
-
 
   public Command importDeck() {
     Command c = new NullCommand();
@@ -2136,26 +2160,22 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     try {
       if (loadFile != null) {
         c = importDeck(loadFile);
-      }
-      else {
+      } else {
         gameModule.warn(Resources.getString("Deck.import_canceled"));
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, loadFile);
-    }
-    catch (NoSuchElementException e) {
+    } catch (NoSuchElementException e) {
       JOptionPane.showMessageDialog(
-        GameModule.getGameModule().getPlayerWindow(),
-        Resources.getString("Deck.import_failed_title"),
-        Resources.getString("Deck.import_failed_text", (loadFile != null) ? loadFile.getName() : ""),
-        JOptionPane.ERROR_MESSAGE
-      );
+          GameModule.getGameModule().getPlayerWindow(),
+          Resources.getString("Deck.import_failed_title"),
+          Resources.getString(
+              "Deck.import_failed_text", (loadFile != null) ? loadFile.getName() : ""),
+          JOptionPane.ERROR_MESSAGE);
     }
 
     return c;
   }
-
 
   public Command importDeck(File f) throws IOException {
     final String ds = Files.readString(f.toPath(), StandardCharsets.UTF_8);
@@ -2165,24 +2185,22 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     gameModule.removeCommandEncoder(commandEncoder);
 
     if (!(c instanceof LoadDeckCommand)) {
-      gameModule.warn(Resources.getString("Deck.not_a_saved_deck", f.getName())); //$NON-NLS-1$
+      gameModule.warn(Resources.getString("Deck.not_a_saved_deck", f.getName())); // $NON-NLS-1$
       return null;
     }
 
     return c;
   }
 
-
   /**
-   * Command to set the contents of this deck from a saved file. The contents
-   * are saved with whatever id's the pieces have in the game when the deck was
-   * saved, but new copies are created when the deck is re-loaded.
+   * Command to set the contents of this deck from a saved file. The contents are saved with
+   * whatever id's the pieces have in the game when the deck was saved, but new copies are created
+   * when the deck is re-loaded.
    *
    * @author rkinney
-   *
    */
   protected static class LoadDeckCommand extends Command {
-    public static final String PREFIX = "DECK\t"; //$NON-NLS-1$
+    public static final String PREFIX = "DECK\t"; // $NON-NLS-1$
     private final Deck target;
 
     public LoadDeckCommand(Deck target) {
@@ -2205,7 +2223,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
 
     public String getTargetId() {
-      return target == null ? "" : target.getId(); //$NON-NLS-1$
+      return target == null ? "" : target.getId(); // $NON-NLS-1$
     }
 
     @Override
@@ -2214,22 +2232,19 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
   }
 
-  /**
-   * An object that parses expression strings from the config window
-   */
+  /** An object that parses expression strings from the config window */
   public static class CountExpression {
     private final String fullstring;
     private final String name;
     private final String expression;
 
     public CountExpression(String expressionString) {
-      final String[] split = expressionString.split("\\s*:\\s*", 2); //$NON-NLS-1$
+      final String[] split = expressionString.split("\\s*:\\s*", 2); // $NON-NLS-1$
       if (split.length == 2) {
-        name       = split[0];
+        name = split[0];
         expression = split[1];
         fullstring = expressionString;
-      }
-      else {
+      } else {
         name = expression = fullstring = null;
       }
     }
@@ -2247,17 +2262,13 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     }
   }
 
-  /**
-   * Return the number of cards to be returned by next call to
-   * {@link #drawCards()}.
-   */
+  /** Return the number of cards to be returned by next call to {@link #drawCards()}. */
   public int getDragCount() {
     return dragCount;
   }
 
   /**
-   * Set the number of cards to be returned by next call to
-   * {@link #drawCards()}.
+   * Set the number of cards to be returned by next call to {@link #drawCards()}.
    *
    * @param dragCount number of cards to be returned
    */
@@ -2289,15 +2300,19 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
 
   /**
    * Sort the Deck. Called from DeckSortKeyCommand
+   *
    * @param sortParameters A list of parameters describing the sort
    * @param reportFormat A report format to generate when sort performed
    * @return Command encapsulating sort
    */
-  public Command sort(List<SortParameter> sortParameters, FormattedString reportFormat, String menuCommand) {
+  public Command sort(
+      List<SortParameter> sortParameters, FormattedString reportFormat, String menuCommand) {
     Command c = new NullCommand();
 
     // Do not even try unless there is at least one SortParameter with a non-null property name
-    if (sortParameters == null || sortParameters.isEmpty() || sortParameters.get(0).getSortProperty().isEmpty()) {
+    if (sortParameters == null
+        || sortParameters.isEmpty()
+        || sortParameters.get(0).getSortProperty().isEmpty()) {
       return c;
     }
 
@@ -2311,7 +2326,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     c = c.append(setContents(pieces));
 
     // Add the Chat message if reporting enabled
-    if (Map.isChangeReportingEnabled() && ! reportFormat.getFormat().isEmpty()) {
+    if (Map.isChangeReportingEnabled() && !reportFormat.getFormat().isEmpty()) {
       c = c.append(reportCommand(reportFormat, menuCommand));
     }
 

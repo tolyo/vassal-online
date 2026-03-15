@@ -28,7 +28,6 @@ import VASSAL.build.widget.PieceSlot;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.ComponentI18nData;
 import VASSAL.i18n.Resources;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,9 +35,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Container for definitions of Game Piece prototypes.
- * Actual definition is in inner class
- * {@link VASSAL.build.module.PrototypeDefinition}
+ * Container for definitions of Game Piece prototypes. Actual definition is in inner class {@link
+ * VASSAL.build.module.PrototypeDefinition}
  */
 public class PrototypesContainer extends AbstractConfigurable {
   private static PrototypesContainer instance;
@@ -46,6 +44,7 @@ public class PrototypesContainer extends AbstractConfigurable {
 
   /**
    * Return an unmodifiable Collection of the current Prototype Definitions
+   *
    * @return PrototypeDefinition Collection
    */
   public Collection<PrototypeDefinition> getDefinitions() {
@@ -73,8 +72,7 @@ public class PrototypesContainer extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -82,33 +80,35 @@ public class PrototypesContainer extends AbstractConfigurable {
   }
 
   @Override
-  public void addTo(Buildable parent) {
-
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{ PrototypeFolder.class, PrototypeDefinition.class };
+    return new Class<?>[] {PrototypeFolder.class, PrototypeDefinition.class};
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PrototypesContainer.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PrototypesContainer.component_type"); // $NON-NLS-1$
   }
 
   // Rebuild prototype cross-reference
   private void rebuildPrototypeMap() {
     definitions.clear();
-    GameModule.getGameModule().getAllDescendantComponentsOf(PrototypeDefinition.class).forEach((def) -> definitions.put(def.getConfigureName(), def));
+    GameModule.getGameModule()
+        .getAllDescendantComponentsOf(PrototypeDefinition.class)
+        .forEach((def) -> definitions.put(def.getConfigureName(), def));
   }
 
   public void addDefinition(PrototypeDefinition def) {
     definitions.put(def.getConfigureName(), def);
-    def.addPropertyChangeListener(evt -> {
-      if (NAME_PROPERTY.equals(evt.getPropertyName())) {
-        // When a prototype is renamed we need to rebuild the prototype map, so that if there was a duplicate of the same name it will re-establish its presence
-        rebuildPrototypeMap();
-      }
-    });
+    def.addPropertyChangeListener(
+        evt -> {
+          if (NAME_PROPERTY.equals(evt.getPropertyName())) {
+            // When a prototype is renamed we need to rebuild the prototype map, so that if there
+            // was a duplicate of the same name it will re-establish its presence
+            rebuildPrototypeMap();
+          }
+        });
   }
 
   @Override
@@ -121,23 +121,19 @@ public class PrototypesContainer extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Prototypes.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("Prototypes.html"); // $NON-NLS-1$
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   public static PrototypesContainer findInstance() {
     if (instance == null) {
       final Iterator<PrototypesContainer> i =
-        GameModule.getGameModule()
-          .getComponentsOf(PrototypesContainer.class)
-          .iterator();
+          GameModule.getGameModule().getComponentsOf(PrototypesContainer.class).iterator();
       if (i.hasNext()) {
         instance = i.next();
-      }
-      else {
+      } else {
         return null;
       }
     }
@@ -147,22 +143,19 @@ public class PrototypesContainer extends AbstractConfigurable {
   private void resetCache(AbstractBuildable target) {
     for (final Buildable b : target.getBuildables()) {
       if (b instanceof PrototypeDefinition) {
-        ((PrototypeDefinition)b).clearCache();
-      }
-      else if (b instanceof AbstractFolder) {
-        resetCache((AbstractBuildable)b);
+        ((PrototypeDefinition) b).clearCache();
+      } else if (b instanceof AbstractFolder) {
+        resetCache((AbstractBuildable) b);
       }
     }
   }
 
-
   private void resetPieceCache(AbstractBuildable target) {
     for (final Buildable b : target.getBuildables()) {
       if (b instanceof PieceSlot) {
-        ((PieceSlot)b).clearCache();
-      }
-      else if (b instanceof AbstractBuildable) {
-        resetPieceCache((AbstractBuildable)b);
+        ((PieceSlot) b).clearCache();
+      } else if (b instanceof AbstractBuildable) {
+        resetPieceCache((AbstractBuildable) b);
       }
     }
   }
@@ -181,7 +174,7 @@ public class PrototypesContainer extends AbstractConfigurable {
   @Override
   public ComponentI18nData getI18nData() {
     final ComponentI18nData data = super.getI18nData();
-    data.setPrefix(""); //$NON-NLS-1$
+    data.setPrefix(""); // $NON-NLS-1$
     return data;
   }
 

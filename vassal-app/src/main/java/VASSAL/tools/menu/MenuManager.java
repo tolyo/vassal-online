@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -88,8 +87,8 @@ public abstract class MenuManager {
   }
 
   public void addToSection(String key, ChildProxy<?> item) {
-    final MenuMarker start = getMarker(key + ".start"); //NON-NLS
-    final MenuMarker end = getMarker(key + ".end"); //NON-NLS
+    final MenuMarker start = getMarker(key + ".start"); // NON-NLS
+    final MenuMarker end = getMarker(key + ".end"); // NON-NLS
     final ParentProxy parent = end.getParent();
 
     final int startPos = parent.getIndex(start);
@@ -115,8 +114,8 @@ public abstract class MenuManager {
   }
 
   public void removeFromSection(String key, ChildProxy<?> item) {
-    final MenuMarker start = getMarker(key + ".start"); //NON-NLS
-    final MenuMarker end = getMarker(key + ".end"); //NON-NLS
+    final MenuMarker start = getMarker(key + ".start"); // NON-NLS
+    final MenuMarker end = getMarker(key + ".end"); // NON-NLS
     final ParentProxy parent = end.getParent();
 
     // remove the item
@@ -131,8 +130,7 @@ public abstract class MenuManager {
           // if we have a group on each side, or before but not after;
           // remove our top separator
           parent.remove(startPos - 1);
-        }
-        else if (visibleItemAfter(end)) {
+        } else if (visibleItemAfter(end)) {
           // we have a group after, but none before;
           // remove our bottom separator
           parent.remove(endPos + 1);
@@ -155,7 +153,7 @@ public abstract class MenuManager {
 
   private boolean visibleItemBefore(ChildProxy<?> child) {
     final ParentProxy parent = child.getParent();
-    //FIXME - loop executes zero or billions of times!
+    // FIXME - loop executes zero or billions of times!
     for (int i = parent.getIndex(child) - 1; i >= 0; i++) {
       final ChildProxy<?> c = parent.getChild(i);
       if (!(c instanceof MenuMarker)) return true;

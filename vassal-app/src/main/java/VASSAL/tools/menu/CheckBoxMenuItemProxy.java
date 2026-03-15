@@ -21,7 +21,6 @@ package VASSAL.tools.menu;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.lang.ref.WeakReference;
-
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 
@@ -29,9 +28,8 @@ import javax.swing.JCheckBoxMenuItem;
  * @author Joel Uckelman
  * @since 3.1.0
  */
-public class CheckBoxMenuItemProxy
-       extends AbstractProxy<JCheckBoxMenuItem>
-       implements ItemListener {
+public class CheckBoxMenuItemProxy extends AbstractProxy<JCheckBoxMenuItem>
+    implements ItemListener {
 
   private Action action;
   private boolean state;
@@ -53,7 +51,7 @@ public class CheckBoxMenuItemProxy
     return action;
   }
 
-  public void setAction(final Action action)  {
+  public void setAction(final Action action) {
     this.action = action;
 
     forEachPeer(item -> item.setAction(action));

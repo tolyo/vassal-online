@@ -23,20 +23,17 @@
 package VASSAL.configure;
 
 import VASSAL.i18n.Resources;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-
+import java.awt.event.KeyListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-public class FormattedStringConfigurer
-    extends StringConfigurer
+public class FormattedStringConfigurer extends StringConfigurer
     implements ActionListener, FocusListener {
 
   private final DefaultComboBoxModel<String> optionsModel;
@@ -50,10 +47,7 @@ public class FormattedStringConfigurer
     this(null, "", options);
   }
 
-  public FormattedStringConfigurer(
-      String key,
-      String name,
-      String[] options) {
+  public FormattedStringConfigurer(String key, String name, String[] options) {
     super(key, name);
     optionsModel = new DefaultComboBoxModel<>();
     setOptions(options);
@@ -83,42 +77,42 @@ public class FormattedStringConfigurer
 
       // Focus gained/lost on text field,
       // so enable/disable insert drop-down
-      nameField.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent event) {
-          if (dropList != null) {
-            dropList.setSelectedIndex(0);
-            dropList.setEnabled(true);
-          }
-        }
+      nameField.addFocusListener(
+          new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent event) {
+              if (dropList != null) {
+                dropList.setSelectedIndex(0);
+                dropList.setEnabled(true);
+              }
+            }
 
-        @Override
-        public void focusLost(FocusEvent event) {
-          if (dropList != null) {
-            dropList.setPopupVisible(false);
-            dropList.setEnabled(false);
-          }
-        }
-      });
+            @Override
+            public void focusLost(FocusEvent event) {
+              if (dropList != null) {
+                dropList.setPopupVisible(false);
+                dropList.setEnabled(false);
+              }
+            }
+          });
 
       // The insert key expands the insert drop-down.
-      nameField.addKeyListener(new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
+      nameField.addKeyListener(
+          new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
 
-        @Override
-        public void keyPressed(KeyEvent e) {
-        }
+            @Override
+            public void keyPressed(KeyEvent e) {}
 
-        @Override
-        public void keyReleased(KeyEvent e) {
-          final int code = e.getKeyCode();
-          if (code == KeyEvent.VK_INSERT && dropList != null) {
-            dropList.setPopupVisible(true);
-          }
-        }
-      });
+            @Override
+            public void keyReleased(KeyEvent e) {
+              final int code = e.getKeyCode();
+              if (code == KeyEvent.VK_INSERT && dropList != null) {
+                dropList.setPopupVisible(true);
+              }
+            }
+          });
 
       dropList = new JComboBox<>(optionsModel);
 
@@ -131,7 +125,6 @@ public class FormattedStringConfigurer
 
       setListVisibility();
       p.add(dropList, "grow 0,right"); // NON-NLS
-
     }
     return p;
   }

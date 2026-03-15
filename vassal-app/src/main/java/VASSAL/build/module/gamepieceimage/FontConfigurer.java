@@ -23,21 +23,17 @@ import VASSAL.configure.IntConfigurer;
 import VASSAL.counters.TraitConfigPanel;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
-/**
- * A Configurer for {@link Font}values
- */
+/** A Configurer for {@link Font}values */
 public class FontConfigurer extends Configurer {
 
   private TraitConfigPanel p;
@@ -62,6 +58,7 @@ public class FontConfigurer extends Configurer {
     setValue(f.font);
     setName(f.getConfigureName());
   }
+
   @Override
   public String getValueString() {
     return encode((OutlineFont) value);
@@ -81,7 +78,8 @@ public class FontConfigurer extends Configurer {
 
       final JPanel familyPanel = new JPanel(new MigLayout("ins 0")); // NON-NLS
       family = new JComboBox<>();
-      //String[] s = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+      // String[] s =
+      // GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
       for (int i = 0; i < FontManager.ALLOWABLE_FONTS.length; ++i) {
         family.addItem(FontManager.ALLOWABLE_FONTS[i]);
       }
@@ -122,16 +120,17 @@ public class FontConfigurer extends Configurer {
   }
 
   protected void updateValue() {
-    final int style = Font.PLAIN |
-       (bold.booleanValue() ? Font.BOLD : 0) |
-       (italic.booleanValue() ? Font.ITALIC : 0);
+    final int style =
+        Font.PLAIN
+            | (bold.booleanValue() ? Font.BOLD : 0)
+            | (italic.booleanValue() ? Font.ITALIC : 0);
 
-    final OutlineFont font = new OutlineFont(
-      (String) family.getSelectedItem(),
-      style,
-      Integer.parseInt(size.getValueString()),
-      outline.booleanValue()
-    );
+    final OutlineFont font =
+        new OutlineFont(
+            (String) family.getSelectedItem(),
+            style,
+            Integer.parseInt(size.getValueString()),
+            outline.booleanValue());
 
     setValue(font);
     demo.setFont(font);

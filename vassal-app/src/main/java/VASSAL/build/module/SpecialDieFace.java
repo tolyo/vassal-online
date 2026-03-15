@@ -17,8 +17,6 @@
  */
 package VASSAL.build.module;
 
-import java.util.Collection;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
@@ -28,37 +26,34 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
 import VASSAL.configure.IconConfigurer;
 import VASSAL.i18n.Resources;
+import java.util.Collection;
 
 public class SpecialDieFace extends AbstractConfigurable {
 
-  public static final String TEXT = "text"; //$NON-NLS-1$
-  public static final String NUMERICAL_VALUE = "value"; //$NON-NLS-1$
-  public static final String ICON = "icon"; //$NON-NLS-1$
-  public static final String IMAGE = "image"; //$NON-NLS-1$
+  public static final String TEXT = "text"; // $NON-NLS-1$
+  public static final String NUMERICAL_VALUE = "value"; // $NON-NLS-1$
+  public static final String ICON = "icon"; // $NON-NLS-1$
+  public static final String IMAGE = "image"; // $NON-NLS-1$
 
   private int value;
   private String imageName;
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.SpecialDieFace.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.SpecialDieFace.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString("Editor.SpecialDieFace.text_value"), //$NON-NLS-1$
-          Resources.getString("Editor.SpecialDieFace.numeric_value"), //$NON-NLS-1$
-          Resources.getString("Editor.SpecialDieFace.icon") //$NON-NLS-1$
+    return new String[] {
+      Resources.getString("Editor.SpecialDieFace.text_value"), // $NON-NLS-1$
+      Resources.getString("Editor.SpecialDieFace.numeric_value"), // $NON-NLS-1$
+      Resources.getString("Editor.SpecialDieFace.icon") // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      Integer.class,
-      IconConfig.class
-    };
+    return new Class<?>[] {String.class, Integer.class, IconConfig.class};
   }
 
   @Override
@@ -68,14 +63,10 @@ public class SpecialDieFace extends AbstractConfigurable {
 
   public static class IconConfig implements ConfigurerFactory {
     @Override
-    public Configurer getConfigurer(
-        AutoConfigurable c,
-        String key,
-        String name) {
+    public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
       return new IconConfigurer(key, name, null);
     }
   }
-
 
   @Override
   public String[] getAttributeNames() {
@@ -98,19 +89,16 @@ public class SpecialDieFace extends AbstractConfigurable {
   public void setAttribute(String key, Object o) {
     if (TEXT.equals(key)) {
       setConfigureName((String) o);
-    }
-    else if (NUMERICAL_VALUE.equals(key)) {
+    } else if (NUMERICAL_VALUE.equals(key)) {
       try {
         if (o instanceof String) {
           o = Integer.valueOf((String) o);
         }
         value = (Integer) o;
-      }
-      catch (NumberFormatException e) {
+      } catch (NumberFormatException e) {
         throw new IllegalBuildException(e);
       }
-    }
-    else if (ICON.equals(key)) {
+    } else if (ICON.equals(key)) {
       imageName = (String) o;
     }
   }
@@ -119,20 +107,17 @@ public class SpecialDieFace extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (TEXT.equals(key)) {
       return getConfigureName();
-    }
-    else if (NUMERICAL_VALUE.equals(key)) {
+    } else if (NUMERICAL_VALUE.equals(key)) {
       return String.valueOf(value);
-    }
-    else if (ICON.equals(key)) {
+    } else if (ICON.equals(key)) {
       return imageName;
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html", "SpecialDiceButton"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GameModule.html", "SpecialDiceButton"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override

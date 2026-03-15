@@ -19,7 +19,6 @@
 package VASSAL.configure;
 
 import VASSAL.i18n.Resources;
-
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Window;
@@ -28,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -36,11 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-
 /**
  * @author Brent Easton
  */
-public class TableConfigurer extends Configurer implements ActionListener  {
+public class TableConfigurer extends Configurer implements ActionListener {
 
   public static final String ADD_ACTION = Resources.getString("Editor.TableConfigurer.add");
   public static final String DEL_ACTION = Resources.getString("Editor.TableConfigurer.remove");
@@ -72,9 +69,7 @@ public class TableConfigurer extends Configurer implements ActionListener  {
   }
 
   @Override
-  public void setValue(String s) {
-
-  }
+  public void setValue(String s) {}
 
   public void setRowDelimiter(char c) {
     rowDelimiter = c;
@@ -155,9 +150,7 @@ public class TableConfigurer extends Configurer implements ActionListener  {
     final String action = e.getActionCommand();
 
     if (action.equals(ADD_ACTION)) {
-      Arrays
-        .stream(columns)
-        .forEach(Column::addRow);
+      Arrays.stream(columns).forEach(Column::addRow);
       updateContents();
     }
     // other possible actions to check:

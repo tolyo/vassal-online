@@ -26,16 +26,18 @@ import VASSAL.configure.Parameter;
 import VASSAL.tools.NamedKeyStroke;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class ReplaceTest extends DecoratorTest {
 
-
   @Test
-  public void serializeTests() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+  public void serializeTests()
+      throws NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException {
 
     // Default piece
     Replace trait = createTrait();
@@ -59,15 +61,10 @@ public class ReplaceTest extends DecoratorTest {
     trait.parameterList.add(new Parameter("A", "23"));
     trait.parameterList.add(new Parameter("B", "{XYZZY + \"$Test2$\"}"));
     serializeTest("NamedKeyStroke", trait); // NON-NLS
-
-
   }
 
   // Don't even try and run the editorTest on Replace!
-  public void editorTest(String test, Decorator referenceTrait) {
-
-  }
-
+  public void editorTest(String test, Decorator referenceTrait) {}
 
   private Replace createTrait() {
     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {

@@ -21,13 +21,12 @@ package VASSAL.tools.logging;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An {@link OutputStream} which feeds an {@link org.slf4j.Logger}.
- * All output is logged at the <code>WARN</code> level.
+ * An {@link OutputStream} which feeds an {@link org.slf4j.Logger}. All output is logged at the
+ * <code>WARN</code> level.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -37,9 +36,7 @@ public class LoggedOutputStream extends OutputStream {
 
   private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
 
-  /**
-   * Creates a <code>LoggedOutputStream</code> with the default logger.
-   */
+  /** Creates a <code>LoggedOutputStream</code> with the default logger. */
   public LoggedOutputStream() {
     this(LoggerFactory.getLogger(LoggedOutputStream.class));
   }

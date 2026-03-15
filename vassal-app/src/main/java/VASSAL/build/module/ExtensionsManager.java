@@ -16,13 +16,6 @@
  */
 package VASSAL.build.module;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import VASSAL.Info;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.metadata.AbstractMetaData;
@@ -30,29 +23,33 @@ import VASSAL.build.module.metadata.ExtensionMetaData;
 import VASSAL.build.module.metadata.MetaDataFactory;
 import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.WriteErrorDialog;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Convenience class for managing extensions relative to a module file.
- * Create extension directory as lazily as possible.
+ * Convenience class for managing extensions relative to a module file. Create extension directory
+ * as lazily as possible.
  *
  * @author rodneykinney
- *
  */
-
 public class ExtensionsManager {
   private File moduleFile;
   private File extensionsDir;
   private File inactiveDir;
 
   /**
-   * Tests if the specified file should be accepted as an module extension
-   * file. Currently we disallow any files that are hidden or "files" that
-   * are directories.
+   * Tests if the specified file should be accepted as an module extension file. Currently we
+   * disallow any files that are hidden or "files" that are directories.
    */
-  private final FilenameFilter filter = (dir, name) -> {
-    final File fileCandidate = new File(dir, name);
-    return !fileCandidate.isHidden() && !fileCandidate.isDirectory();
-  };
+  private final FilenameFilter filter =
+      (dir, name) -> {
+        final File fileCandidate = new File(dir, name);
+        return !fileCandidate.isHidden() && !fileCandidate.isDirectory();
+      };
 
   public ExtensionsManager(File moduleFile) {
     this.moduleFile = moduleFile;
@@ -62,9 +59,7 @@ public class ExtensionsManager {
     this.moduleFile = new File(module.getDataArchive().getName());
   }
 
-  /**
-   * Manage global extensions
-   */
+  /** Manage global extensions */
   public ExtensionsManager(String dir) {
     extensionsDir = ensureExists(new File(Info.getConfDir(), dir));
   }
@@ -77,7 +72,7 @@ public class ExtensionsManager {
       if (index > 0) {
         dirName = dirName.substring(0, index);
       }
-      dir = new File(dirName + "_ext"); //NON-NLS
+      dir = new File(dirName + "_ext"); // NON-NLS
       if (mustExist) {
         dir = ensureExists(dir);
       }
@@ -96,19 +91,18 @@ public class ExtensionsManager {
     extensionsDir = dir == null ? null : ensureExists(dir);
   }
 
-
   /**
    * Ensure a directory exists.
+   *
    * @param dir Directory
    * @return Directory as <code>File</code> object; otherwise <code>null</code> if an error occurs.
    */
   protected File ensureExists(File dir) {
     if (dir.exists() && !dir.isDirectory()) {
-      WriteErrorDialog.error(new IOException(dir + "is not a directory"), dir); //NON-NLS
+      WriteErrorDialog.error(new IOException(dir + "is not a directory"), dir); // NON-NLS
       return null;
-    }
-    else if (!dir.exists() && !dir.mkdirs()) {
-      WriteErrorDialog.error(new IOException("Could not create " + dir), dir); //NON-NLS
+    } else if (!dir.exists() && !dir.mkdirs()) {
+      WriteErrorDialog.error(new IOException("Could not create " + dir), dir); // NON-NLS
       return null;
     }
     return dir;
@@ -120,7 +114,7 @@ public class ExtensionsManager {
       if (extDir == null) {
         return null;
       }
-      inactiveDir = new File(extDir, "inactive"); //NON-NLS
+      inactiveDir = new File(extDir, "inactive"); // NON-NLS
       if (mustExist) {
         inactiveDir = ensureExists(inactiveDir);
         if (inactiveDir == null) {
@@ -142,8 +136,7 @@ public class ExtensionsManager {
         return extension;
       }
       newExt = new File(extensionsDirectory, extension.getName());
-    }
-    else {
+    } else {
       final File inactiveExtensionsDirectory = getInactiveExtensionsDirectory(true);
       if (inactiveExtensionsDirectory == null) {
         return extension;
@@ -160,8 +153,7 @@ public class ExtensionsManager {
       final File[] files = dir.listFiles(filter);
       if (files == null) {
         ReadErrorDialog.error(new IOException(), dir);
-      }
-      else {
+      } else {
         Arrays.sort(files);
         for (final File file : files) {
           final AbstractMetaData metadata = MetaDataFactory.buildMetaData(file);
@@ -169,7 +161,6 @@ public class ExtensionsManager {
             extensions.add(file);
           }
         }
-
       }
     }
     return extensions;

@@ -18,10 +18,6 @@
 
 package VASSAL.build.module.turn;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.BadDataReport;
 import VASSAL.build.Buildable;
@@ -29,12 +25,13 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.ComponentDescription;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-/**
- * Generic Turn Component
- */
+/** Generic Turn Component */
 public class TurnComponent extends AbstractConfigurable implements ComponentDescription {
-  public static final String DESCRIPTION = "description"; //NON-NLS
+  public static final String DESCRIPTION = "description"; // NON-NLS
 
   protected String description;
 
@@ -61,10 +58,17 @@ public class TurnComponent extends AbstractConfigurable implements ComponentDesc
   protected TurnLevel getTurnLevel(int i) {
     if (levels.isEmpty()) {
       return null;
-    }
-    else {
+    } else {
       if (i >= levels.size()) {
-        ErrorDialog.dataWarning(new BadDataReport(Resources.getString("TurnTracker.level_error", getConfigureName(), getConfigureName(), i, levels.size()), getConfigureName())); //NON-NLS
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                Resources.getString(
+                    "TurnTracker.level_error",
+                    getConfigureName(),
+                    getConfigureName(),
+                    i,
+                    levels.size()),
+                getConfigureName())); // NON-NLS
         return levels.get(levels.size() - 1);
       }
     }
@@ -90,9 +94,7 @@ public class TurnComponent extends AbstractConfigurable implements ComponentDesc
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public String getAttributeValueString(String key) {
@@ -100,8 +102,7 @@ public class TurnComponent extends AbstractConfigurable implements ComponentDesc
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
@@ -114,7 +115,5 @@ public class TurnComponent extends AbstractConfigurable implements ComponentDesc
   }
 
   @Override
-  public void addTo(Buildable parent) {
-  }
+  public void addTo(Buildable parent) {}
 }
-

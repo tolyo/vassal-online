@@ -21,19 +21,15 @@ import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.Configurable;
 import VASSAL.i18n.Resources;
-
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Ensures that any children of a given type have unique configure names
- */
+/** Ensures that any children of a given type have unique configure names */
 public class UniquelyNamedChildren implements ValidityChecker {
   private final AbstractConfigurable target;
   private final Class<?> childClass;
 
-  public UniquelyNamedChildren(AbstractConfigurable target,
-                               Class<?> childClass) {
+  public UniquelyNamedChildren(AbstractConfigurable target, Class<?> childClass) {
     this.childClass = childClass;
     this.target = target;
   }
@@ -51,8 +47,7 @@ public class UniquelyNamedChildren implements ValidityChecker {
 
           if (children.contains(name)) {
             duplicates.add(name);
-          }
-          else {
+          } else {
             children.add(name);
           }
         }
@@ -61,13 +56,12 @@ public class UniquelyNamedChildren implements ValidityChecker {
       if (!duplicates.isEmpty()) {
         for (final String name : duplicates) {
           report.addWarning(
-            Resources.getString("Editor.ValidityChecker.duplicate_warning",
-              ConfigureTree.getConfigureName(childClass),
-              name,
-              ConfigureTree.getConfigureName(target),
-              ConfigureTree.getConfigureName(target.getClass())
-            )
-          );
+              Resources.getString(
+                  "Editor.ValidityChecker.duplicate_warning",
+                  ConfigureTree.getConfigureName(childClass),
+                  name,
+                  ConfigureTree.getConfigureName(target),
+                  ConfigureTree.getConfigureName(target.getClass())));
         }
       }
     }

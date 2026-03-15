@@ -1,18 +1,12 @@
-
 package VASSAL.build.module.dice;
 
+import VASSAL.build.module.DieRoll;
+import VASSAL.tools.FormattedString;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import VASSAL.build.module.DieRoll;
-import VASSAL.tools.FormattedString;
-
-/**
- *
- * ShadowDice Dice Server
- *
- */
+/** ShadowDice Dice Server */
 public class ShadowDiceDieServer extends DieServer {
   public static final String ROLL_MARKER = "VASSAL auto-generated dice roll";
 
@@ -35,7 +29,7 @@ public class ShadowDiceDieServer extends DieServer {
     final String LSQUARE = "%5B"; // '['
     final String RSQUARE = "%5D"; // ']'
     final String HASH = "%23";
-//      final String PLUS = "%2B";
+    //      final String PLUS = "%2B";
 
     final String desc;
     String s;
@@ -73,7 +67,7 @@ public class ShadowDiceDieServer extends DieServer {
     s += "&todo=Action%21&hid=1";
     s = s.replace(' ', '+'); // No spaces allowed, use '+' instead.
 
-    return new String[]{s};
+    return new String[] {s};
   }
 
   /*
@@ -91,11 +85,9 @@ public class ShadowDiceDieServer extends DieServer {
 
       if (c == '#') {
         b.append('.');
-      }
-      else if (hexyChars.indexOf(c) >= 0) {
+      } else if (hexyChars.indexOf(c) >= 0) {
         b.append('%').append(Integer.toHexString(c).toUpperCase());
-      }
-      else {
+      } else {
         b.append(c);
       }
     }
@@ -108,9 +100,8 @@ public class ShadowDiceDieServer extends DieServer {
     final Enumeration<String> e = results.elements();
 
     // Initialise and search for start line
-    String line =  e.nextElement();
-    while (e.hasMoreElements() && !line.startsWith("! " + ROLL_MARKER))
-      line = e.nextElement();
+    String line = e.nextElement();
+    while (e.hasMoreElements() && !line.startsWith("! " + ROLL_MARKER)) line = e.nextElement();
 
     // Skip description line
     line = e.nextElement();
@@ -137,5 +128,4 @@ public class ShadowDiceDieServer extends DieServer {
   public void roll(RollSet mr, FormattedString format) {
     super.doInternetRoll(mr, format);
   }
-
 }

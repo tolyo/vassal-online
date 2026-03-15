@@ -20,21 +20,19 @@ package VASSAL.configure;
 import VASSAL.counters.TraitLayout;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
 
 /**
- * Configurer for a List of Parameters
- * The object stored in the value of the Configurer is a List<Parameter>
+ * Configurer for a List of Parameters The object stored in the value of the Configurer is a
+ * List<Parameter>
  */
 public class ParameterListConfigurer extends Configurer implements ConfigurableList {
 
@@ -86,10 +84,10 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     this("", "", params);
   }
 
-
   /**
    * Return a list of the Parameter names in the current configurer value
-   * @return  Parameter names
+   *
+   * @return Parameter names
    */
   public List<String> getParameterNames() {
     final List<String> l = new ArrayList<>();
@@ -111,7 +109,8 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
 
   /**
    * Return a list of the Parameter values in the current configurer value
-   * @return  Parameter values
+   *
+   * @return Parameter values
    */
   public List<String> getParameterValues() {
     final List<String> l = new ArrayList<>();
@@ -179,7 +178,6 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     setSelectedEntryIndex(pos + 1);
 
     updateControls();
-
   }
 
   @Override
@@ -205,7 +203,6 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
 
     // Refresh the view
     updateControls(pos + 1);
-
   }
 
   @Override
@@ -225,9 +222,7 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
 
     getListValue().remove(listPos);
     updateControls();
-
   }
-
 
   @Override
   public void selectEntry(ConfigurableListEntry entry) {
@@ -297,9 +292,15 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
       panel = new JPanel(new MigLayout(TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
       panel.setBorder(BorderFactory.createEtchedBorder());
 
-      controls = new JPanel(new MigLayout("hidemode 3,ins 2", "[grow,fill]", "[grow,fill]")); // NON-NLS
+      controls =
+          new JPanel(new MigLayout("hidemode 3,ins 2", "[grow,fill]", "[grow,fill]")); // NON-NLS
 
-      configControls = new JPanel(new MigLayout("hidemode 3,wrap 3," + ConfigurerLayout.STANDARD_INSETS_GAPY, "[fill]rel[grow,fill]rel[grow 0]", "[center]")); // NON-NLS
+      configControls =
+          new JPanel(
+              new MigLayout(
+                  "hidemode 3,wrap 3," + ConfigurerLayout.STANDARD_INSETS_GAPY,
+                  "[fill]rel[grow,fill]rel[grow 0]",
+                  "[center]")); // NON-NLS
 
       controls.add(configControls, "grow, aligny center"); // NON-NLS
       panel.add(controls, "grow"); // NON-NLS
@@ -337,9 +338,7 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     entries.get(focus).requestFocus();
   }
 
-  /**
-   * Update visibility, enabled state as required
-   */
+  /** Update visibility, enabled state as required */
   private void updateControls() {
 
     configControls.setVisible(!getListValue().isEmpty());
@@ -357,28 +356,31 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
   private void updateListController() {
     getListController();
     controller.setCanMoveUp(getSelectedEntryIndex() > 0);
-    controller.setCanMoveDown(getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
+    controller.setCanMoveDown(
+        getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
   }
-
 
   private void buildHeader() {
 
-    final JLabel propertyNameHeader = new JLabel(Resources.getString("Editor.ParameterListConfigurer.dynamic_property_name"));
-    final Font boldFont = new Font(propertyNameHeader.getFont().getFontName(), Font.BOLD, propertyNameHeader.getFont().getSize());
+    final JLabel propertyNameHeader =
+        new JLabel(Resources.getString("Editor.ParameterListConfigurer.dynamic_property_name"));
+    final Font boldFont =
+        new Font(
+            propertyNameHeader.getFont().getFontName(),
+            Font.BOLD,
+            propertyNameHeader.getFont().getSize());
     propertyNameHeader.setFont(boldFont);
     configControls.add(propertyNameHeader, "alignx center"); // NON-NLS
 
-    final JLabel valueHeader  = new JLabel(Resources.getString("Editor.ParameterListConfigurer.value"));
+    final JLabel valueHeader =
+        new JLabel(Resources.getString("Editor.ParameterListConfigurer.value"));
     valueHeader.setFont(boldFont);
     configControls.add(valueHeader, "alignx center,wrap"); // NON-NLS
 
     configControls.setVisible(false);
-
   }
 
-  /**
-   * Append an Entry's controls to the bottom of the panel
-   */
+  /** Append an Entry's controls to the bottom of the panel */
   private void appendConfigControls(ParameterEntry entry) {
     final ParameterConfigurer c = entry.getParameterConfigurer();
     getControls();
@@ -387,9 +389,7 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     configControls.add(entry.getRemoveButton());
   }
 
-  /**
-   * Append an Entry's controls after the currently selected entry
-   */
+  /** Append an Entry's controls after the currently selected entry */
   private void insertConfigControls(ParameterEntry entry, int listPos) {
 
     int controlPos = listPosToControlsPos(listPos);
@@ -398,12 +398,9 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     configControls.add(c.getPropertyNameControls(), controlPos++);
     configControls.add(c.getValueControls(), controlPos++);
     configControls.add(entry.getRemoveButton(), controlPos++);
-
   }
 
-  /**
-   * Remove an Entry's controls from the specified position
-   */
+  /** Remove an Entry's controls from the specified position */
   private void removeConfigControls(ParameterEntry entry) {
     final ParameterConfigurer c = entry.getParameterConfigurer();
     getControls();
@@ -412,9 +409,7 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     configControls.remove(entry.getRemoveButton());
   }
 
-  /**
-   * Find the position of the first control for the specified list Entry
-   */
+  /** Find the position of the first control for the specified list Entry */
   private int listPosToControlsPos(int listPos) {
     return HEADER_COMPONENT_COUNT + listPos * COMPONENT_COUNT;
   }
@@ -423,7 +418,6 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
   public void repack() {
     repack(panel);
   }
-
 
   private static class ParameterEntry extends AbstractConfigurableListEntry {
 
@@ -464,6 +458,5 @@ public class ParameterListConfigurer extends Configurer implements ConfigurableL
     public void setHighlighted(boolean highlighted) {
       getConfigurer().setHighlighted(highlighted);
     }
-
   }
 }

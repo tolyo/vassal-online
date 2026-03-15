@@ -29,8 +29,7 @@ public class DummyMessageServer implements MessageBoard, WelcomeMessageServer {
   }
 
   @Override
-  public void postMessage(String msg) {
-  }
+  public void postMessage(String msg) {}
 
   @Override
   public Command getWelcomeMessage() {

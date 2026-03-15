@@ -17,18 +17,14 @@
  */
 package VASSAL.build.module.documentation;
 
+import VASSAL.tools.menu.MenuManager;
+import VASSAL.tools.swing.HTMLWindowHelper;
 import java.net.URL;
-
 import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import VASSAL.tools.menu.MenuManager;
-import VASSAL.tools.swing.HTMLWindowHelper;
-
-/**
- * A Window that displays HTML content, with navigation
- */
+/** A Window that displays HTML content, with navigation */
 public class HelpWindow extends JFrame implements HyperlinkListener {
   private static final long serialVersionUID = 1L;
 

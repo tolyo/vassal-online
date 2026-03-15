@@ -17,24 +17,20 @@
  */
 package VASSAL.chat;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.SwingWorker;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.ThrowableUtils;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Refreshes every time the user attempts to connect
  *
  * @author rkinney
- *
  */
 public class DynamicClient extends HybridClient {
   private static final Logger log = LoggerFactory.getLogger(DynamicClient.class);
@@ -62,29 +58,28 @@ public class DynamicClient extends HybridClient {
             try {
               setDelegate(get());
               DynamicClient.super.setConnected(connect);
-            }
-            catch (final InterruptedException e) {
-              log.error("Error while connecting: interrupted", e); //NON-NLS
-            }
-            catch (final ExecutionException ex) {
+            } catch (final InterruptedException e) {
+              log.error("Error while connecting: interrupted", e); // NON-NLS
+            } catch (final ExecutionException ex) {
               final Throwable e = ex.getCause();
-              fireStatus(Resources.getString("Server.bad_address3")); //$NON-NLS-1$
-              ErrorDialog.showDetails(e, ThrowableUtils.getStackTrace(e), "Error.network_communication_error"); //$NON-NLS-1$
+              fireStatus(Resources.getString("Server.bad_address3")); // $NON-NLS-1$
+              ErrorDialog.showDetails(
+                  e,
+                  ThrowableUtils.getStackTrace(e),
+                  "Error.network_communication_error"); //$NON-NLS-1$
               e.printStackTrace();
             }
             connecting = false;
           }
         }.execute();
       }
-    }
-    else {
+    } else {
       super.setConnected(connect);
       if (!isConnected()) {
         try {
           setDelegate(buildDelegate());
-        }
-        catch (final IOException ex) {
-          log.error("Error while connecting", ex); //NON-NLS
+        } catch (final IOException ex) {
+          log.error("Error while connecting", ex); // NON-NLS
         }
       }
     }

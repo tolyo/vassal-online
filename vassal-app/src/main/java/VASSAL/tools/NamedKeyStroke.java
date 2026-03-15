@@ -18,34 +18,32 @@
 
 package VASSAL.tools;
 
+import static java.awt.event.KeyEvent.VK_BACK_SPACE;
+import static java.awt.event.KeyEvent.VK_DELETE;
+
 import VASSAL.build.module.KeyNamer;
 import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
 import VASSAL.tools.swing.SwingUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.Objects;
-
-import static java.awt.event.KeyEvent.VK_BACK_SPACE;
-import static java.awt.event.KeyEvent.VK_DELETE;
+import javax.swing.KeyStroke;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * A NamedKeyStroke is a KeyStroke with a name given by the module developer.
- * An actual KeyStroke is allocated from a pool of KeyStrokes at run-time and
- * associated with the name.
+ * A NamedKeyStroke is a KeyStroke with a name given by the module developer. An actual KeyStroke is
+ * allocated from a pool of KeyStrokes at run-time and associated with the name.
  *
- * KeyStrokes have been replaced by NamedKeyStrokes within Vassal wherever
- * the Stroke is saved. A standard KeyStroke is represented as a NamedKeyStroke
- * with a null or zero-length name.
+ * <p>KeyStrokes have been replaced by NamedKeyStrokes within Vassal wherever the Stroke is saved. A
+ * standard KeyStroke is represented as a NamedKeyStroke with a null or zero-length name.
  *
- * NamedKeyStroke variables should never be null, use NULL_KEYSTROKE to
- * represent a NamedKeyStroke with no value.
+ * <p>NamedKeyStroke variables should never be null, use NULL_KEYSTROKE to represent a
+ * NamedKeyStroke with no value.
  */
 public class NamedKeyStroke {
-  private static final Map<Pair<KeyStroke, String>, NamedKeyStroke> CACHE = new ConcurrentSoftHashMap<>();
+  private static final Map<Pair<KeyStroke, String>, NamedKeyStroke> CACHE =
+      new ConcurrentSoftHashMap<>();
 
   public static final NamedKeyStroke NULL_KEYSTROKE = new NamedKeyStroke();
 
@@ -78,8 +76,8 @@ public class NamedKeyStroke {
   }
 
   /**
-   * Is there a name associated with this KeyStroke? No name means
-   * it is a standard KeyStroke.
+   * Is there a name associated with this KeyStroke? No name means it is a standard KeyStroke.
+   *
    * @return True if a name associated with this Keystroke
    */
   public boolean isNamed() {
@@ -91,11 +89,13 @@ public class NamedKeyStroke {
   }
 
   public boolean isNull() {
-    return (stroke == null && name == null) || (stroke != null && stroke.getKeyCode() == 0 && stroke.getModifiers() == 0);
+    return (stroke == null && name == null)
+        || (stroke != null && stroke.getKeyCode() == 0 && stroke.getModifiers() == 0);
   }
 
   /**
    * Return the raw KeyStroke stored in this NamedKeyStroke
+   *
    * @return KeyStroke
    */
   public KeyStroke getStroke() {
@@ -103,16 +103,15 @@ public class NamedKeyStroke {
   }
 
   /**
-   * @return If a Named keystroke, returns the name string; otherwise if a "real" keystroke returns a string naming the keystroke (e.g. "Ctrl+C")
+   * @return If a Named keystroke, returns the name string; otherwise if a "real" keystroke returns
+   *     a string naming the keystroke (e.g. "Ctrl+C")
    */
   public String getDesc() {
     if (isNamed()) {
       return name;
-    }
-    else if (stroke != null) {
+    } else if (stroke != null) {
       return KeyNamer.getKeyString(stroke);
-    }
-    else {
+    } else {
       return "";
     }
   }
@@ -126,8 +125,7 @@ public class NamedKeyStroke {
 
     if (o instanceof NamedKeyStroke) {
       return Objects.equals(stroke, ((NamedKeyStroke) o).stroke);
-    }
-    else if (stroke == null) {
+    } else if (stroke == null) {
       return false;
     }
     // checking for parameter being a completely unrelated class to this class
@@ -139,9 +137,9 @@ public class NamedKeyStroke {
         final KeyStroke k = (KeyStroke) o;
         final int k_code = k.getKeyCode();
         // Either DEL or BACKSPACE matches to either
-        return (k_code == VK_DELETE || k_code == VK_BACK_SPACE) && k.getModifiers() == stroke.getModifiers();
-      }
-      else {
+        return (k_code == VK_DELETE || k_code == VK_BACK_SPACE)
+            && k.getModifiers() == stroke.getModifiers();
+      } else {
         return o.equals(stroke);
       }
     }
@@ -154,9 +152,7 @@ public class NamedKeyStroke {
     return Objects.hashCode(stroke);
   }
 
-  /**
-   * Return the allocated KeyStroke associated with this KeyStroke
-   */
+  /** Return the allocated KeyStroke associated with this KeyStroke */
   public KeyStroke getKeyStroke() {
     return stroke;
   }
@@ -165,6 +161,7 @@ public class NamedKeyStroke {
   public static NamedKeyStroke getNamedKeyStroke(char c) {
     return of(c);
   }
+
   @Deprecated(since = "2021-12-01", forRemoval = true)
   public static NamedKeyStroke getNamedKeyStroke(char c, int mod) {
     return of(c, mod);
@@ -209,9 +206,6 @@ public class NamedKeyStroke {
   }
 
   public static NamedKeyStroke of(KeyStroke k, String s) {
-    return CACHE.computeIfAbsent(
-      Pair.of(k, s),
-      p -> new NamedKeyStroke(p.getLeft(), p.getRight())
-    );
+    return CACHE.computeIfAbsent(Pair.of(k, s), p -> new NamedKeyStroke(p.getLeft(), p.getRight()));
   }
 }

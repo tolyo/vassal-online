@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 
 /**
  * Utility class for registering a component as a source of hotkey events
+ *
  * @see VASSAL.build.GameModule#addKeyStrokeSource
  * @see VASSAL.build.GameModule#addKeyStrokeListener
  */

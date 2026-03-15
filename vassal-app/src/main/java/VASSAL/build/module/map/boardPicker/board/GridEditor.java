@@ -26,15 +26,6 @@ import VASSAL.build.module.map.boardPicker.board.mapgrid.RegularGridNumbering;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.AdjustableSpeedScrollPane;
 import VASSAL.tools.swing.SwingUtils;
-import org.apache.commons.lang3.SystemUtils;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -51,15 +42,26 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import org.apache.commons.lang3.SystemUtils;
 
 public abstract class GridEditor extends JDialog implements MouseListener, KeyListener {
   private static final long serialVersionUID = 1L;
 
-  protected static final String SET = Resources.getString("Editor.GridEditor.set_grid_shape"); //$NON-NLS-1$
+  protected static final String SET =
+      Resources.getString("Editor.GridEditor.set_grid_shape"); // $NON-NLS-1$
   protected static final String CANCEL = Resources.getString(Resources.CANCEL);
-  protected static final String CANCEL_SET = Resources.getString("Editor.GridEditor.cancel_set"); //$NON-NLS-1$
+  protected static final String CANCEL_SET =
+      Resources.getString("Editor.GridEditor.cancel_set"); // $NON-NLS-1$
   protected static final String OK = Resources.getString(Resources.SAVE);
-  protected static final String NUMBERING = Resources.getString("Editor.GridEditor.numbering"); //$NON-NLS-1$
+  protected static final String NUMBERING =
+      Resources.getString("Editor.GridEditor.numbering"); // $NON-NLS-1$
 
   protected EditableGrid grid;
   protected Board board;
@@ -69,16 +71,14 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
 
   protected boolean setMode;
   protected Point hp1, hp2, hp3;
-
   protected JButton okButton, canSetButton, setButton, numberingButton;
-
   protected boolean saveGridVisible, saveNumberingVisible;
   protected double saveDx, saveDy;
   protected Point saveOrigin;
 
   public GridEditor(EditableGrid grid) {
     super(GameModule.getGameModule().getPlayerWindow());
-    setTitle(Resources.getString("Editor.ModuleEditor.edit", grid.getGridName())); //$NON-NLS-1$
+    setTitle(Resources.getString("Editor.ModuleEditor.edit", grid.getGridName())); // $NON-NLS-1$
     setModal(true);
     this.grid = grid;
     final GridContainer container = grid.getContainer();
@@ -89,7 +89,8 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
     if (grid.getGridNumbering() != null) {
       saveNumberingVisible = grid.getGridNumbering().isVisible();
       // if (saveGridVisible) {
-      //  ((RegularGridNumbering) grid.getGridNumbering()).setAttribute(RegularGridNumbering.VISIBLE, Boolean.FALSE);
+      //  ((RegularGridNumbering)
+      // grid.getGridNumbering()).setAttribute(RegularGridNumbering.VISIBLE, Boolean.FALSE);
       // }
     }
 
@@ -102,12 +103,13 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
 
   protected void initComponents() {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent we) {
-        cancel();
-      }
-    });
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent we) {
+            cancel();
+          }
+        });
 
     board.setCacheGrid(false);
     view = new GridPanel(board);
@@ -116,31 +118,34 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
     view.addKeyListener(this);
     view.setFocusable(true);
 
-    scroll = new AdjustableSpeedScrollPane(
-      view,
-      JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-    );
+    scroll =
+        new AdjustableSpeedScrollPane(
+            view, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
     scroll.setPreferredSize(new Dimension(800, 600));
     add(scroll, BorderLayout.CENTER);
 
     final Box textPanel = Box.createVerticalBox();
-    textPanel.add(new JLabel(Resources.getString("Editor.GridEditor.arrow_keys"))); //$NON-NLS-1$
-    textPanel.add(new JLabel(SystemUtils.IS_OS_MAC ? Resources.getString("Editor.GridEditor.command_arrow_keys") : Resources.getString("Editor.GridEditor.control_arrow_keys"))); //$NON-NLS-1$
-    textPanel.add(new JLabel(Resources.getString("Editor.GridEditor.shift_key"))); //$NON-NLS-1$
+    textPanel.add(new JLabel(Resources.getString("Editor.GridEditor.arrow_keys"))); // $NON-NLS-1$
+    textPanel.add(
+        new JLabel(
+            SystemUtils.IS_OS_MAC
+                ? Resources.getString("Editor.GridEditor.command_arrow_keys")
+                : Resources.getString("Editor.GridEditor.control_arrow_keys"))); // $NON-NLS-1$
+    textPanel.add(new JLabel(Resources.getString("Editor.GridEditor.shift_key"))); // $NON-NLS-1$
 
     final JPanel buttonPanel = new JPanel();
 
     okButton = new JButton(OK);
-    okButton.addActionListener(e -> {
-      cancelSetMode();
-      setVisible(false);
-/*
-      GameModule.getGameModule()
-                .getDataArchive().clearTransformedImageCache();
-*/
-    });
+    okButton.addActionListener(
+        e -> {
+          cancelSetMode();
+          setVisible(false);
+          /*
+                GameModule.getGameModule()
+                          .getDataArchive().clearTransformedImageCache();
+          */
+        });
     buttonPanel.add(okButton);
 
     final JButton canButton = new JButton(CANCEL);
@@ -158,12 +163,13 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
     canSetButton.setRequestFocusEnabled(false);
     buttonPanel.add(canSetButton);
 
-
     numberingButton = new JButton(NUMBERING);
-    numberingButton.addActionListener(e -> {
-      ((RegularGridNumbering) grid.getGridNumbering()).setAttribute(RegularGridNumbering.VISIBLE, !grid.getGridNumbering().isVisible());
-      repaint();
-    });
+    numberingButton.addActionListener(
+        e -> {
+          ((RegularGridNumbering) grid.getGridNumbering())
+              .setAttribute(RegularGridNumbering.VISIBLE, !grid.getGridNumbering().isVisible());
+          repaint();
+        });
     numberingButton.setEnabled(grid.getGridNumbering() != null);
     numberingButton.setVisible(true);
     numberingButton.setRequestFocusEnabled(false);
@@ -200,7 +206,8 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
       setMode = false;
       grid.setVisible(saveGridVisible);
       if (grid.getGridNumbering() != null && saveNumberingVisible) {
-        ((RegularGridNumbering) grid.getGridNumbering()).setAttribute(RegularGridNumbering.VISIBLE, saveNumberingVisible);
+        ((RegularGridNumbering) grid.getGridNumbering())
+            .setAttribute(RegularGridNumbering.VISIBLE, saveNumberingVisible);
       }
       repaint();
     }
@@ -215,8 +222,8 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
     setButton.setVisible(false);
     view.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     grid.setVisible(false);
-    JOptionPane.showMessageDialog(view,
-        Resources.getString("Editor.GridEditor.click_on_3")); //$NON-NLS-1$
+    JOptionPane.showMessageDialog(
+        view, Resources.getString("Editor.GridEditor.click_on_3")); // $NON-NLS-1$
     repaint();
   }
 
@@ -229,88 +236,75 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
     final boolean sideways = grid.isSideways();
 
     switch (e.getKeyCode()) {
-    case KeyEvent.VK_UP:
-      if (SwingUtils.isModifierKeyDown(e)) {
-        if (sideways) {
-          adjustDx(-1, e);
+      case KeyEvent.VK_UP:
+        if (SwingUtils.isModifierKeyDown(e)) {
+          if (sideways) {
+            adjustDx(-1, e);
+          } else {
+            adjustDy(-1, e);
+          }
+        } else {
+          if (sideways) {
+            adjustX0(-1, e);
+          } else {
+            adjustY0(-1, e);
+          }
         }
-        else {
-          adjustDy(-1, e);
+        break;
+      case KeyEvent.VK_DOWN:
+        if (SwingUtils.isModifierKeyDown(e)) {
+          if (sideways) {
+            adjustDx(1, e);
+          } else {
+            adjustDy(1, e);
+          }
+        } else {
+          if (sideways) {
+            adjustX0(1, e);
+          } else {
+            adjustY0(1, e);
+          }
         }
-      }
-      else {
-        if (sideways) {
-          adjustX0(-1, e);
+        break;
+      case KeyEvent.VK_LEFT:
+        if (SwingUtils.isModifierKeyDown(e)) {
+          if (sideways) {
+            adjustDy(-1, e);
+          } else {
+            adjustDx(-1, e);
+          }
+        } else {
+          if (sideways) {
+            adjustY0(-1, e);
+          } else {
+            adjustX0(-1, e);
+          }
         }
-        else {
-          adjustY0(-1, e);
+        break;
+      case KeyEvent.VK_RIGHT:
+        if (SwingUtils.isModifierKeyDown(e)) {
+          if (sideways) {
+            adjustDy(1, e);
+          } else {
+            adjustDx(1, e);
+          }
+        } else {
+          if (sideways) {
+            adjustY0(1, e);
+          } else {
+            adjustX0(1, e);
+          }
         }
-      }
-      break;
-    case KeyEvent.VK_DOWN:
-      if (SwingUtils.isModifierKeyDown(e)) {
-        if (sideways) {
-          adjustDx(1, e);
-        }
-        else {
-          adjustDy(1, e);
-        }
-      }
-      else {
-        if (sideways) {
-          adjustX0(1, e);
-        }
-        else {
-          adjustY0(1, e);
-        }
-      }
-      break;
-    case KeyEvent.VK_LEFT:
-      if (SwingUtils.isModifierKeyDown(e)) {
-        if (sideways) {
-          adjustDy(-1, e);
-        }
-        else {
-          adjustDx(-1, e);
-        }
-      }
-      else {
-        if (sideways) {
-          adjustY0(-1, e);
-        }
-        else {
-          adjustX0(-1, e);
-        }
-      }
-      break;
-    case KeyEvent.VK_RIGHT:
-      if (SwingUtils.isModifierKeyDown(e)) {
-        if (sideways) {
-          adjustDy(1, e);
-        }
-        else {
-          adjustDx(1, e);
-        }
-      }
-      else {
-        if (sideways) {
-          adjustY0(1, e);
-        }
-        else {
-          adjustX0(1, e);
-        }
-      }
-      break;
-    default :
-      return;
+        break;
+      default:
+        return;
     }
 
     repaint();
     e.consume();
   }
 
-  public void rebuild() {
-  }
+  public void rebuild() {}
 
   @Override
   public void keyReleased(KeyEvent e) {
@@ -318,19 +312,16 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
   }
 
   @Override
-  public void keyTyped(KeyEvent e) {
-  }
+  public void keyTyped(KeyEvent e) {}
 
   @Override
   public void mouseClicked(MouseEvent e) {
     if (setMode) {
       if (hp1 == null) {
         hp1 = e.getPoint();
-      }
-      else if (hp2 == null) {
+      } else if (hp2 == null) {
         hp2 = e.getPoint();
-      }
-      else if (hp3 == null) {
+      } else if (hp3 == null) {
         hp3 = e.getPoint();
         calculate();
         cancelSetMode();
@@ -340,20 +331,16 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
   }
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
-  public void mousePressed(MouseEvent e) {
-  }
+  public void mousePressed(MouseEvent e) {}
 
   @Override
-  public void mouseReleased(MouseEvent e) {
-  }
+  public void mouseReleased(MouseEvent e) {}
 
   protected static final int DELTA = 1;
   protected static final double DDELTA = 0.1;
@@ -401,15 +388,13 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
 
     if (p.x < (-width)) {
       p.x += width;
-    }
-    else if (p.x > width) {
+    } else if (p.x > width) {
       p.x -= width;
     }
 
     if (p.y < (-height)) {
       p.y += height;
-    }
-    else if (p.y > height) {
+    } else if (p.y > height) {
       p.y -= height;
     }
 
@@ -429,9 +414,10 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
   }
 
   protected void reportShapeError() {
-    JOptionPane.showMessageDialog(view,
-        Resources.getString("Editor.GridEditor.does_not_look", grid.getGridName()), //$NON-NLS-1$
-        Resources.getString("Editor.GridEditor.grid_shape_error"), //$NON-NLS-1$
+    JOptionPane.showMessageDialog(
+        view,
+        Resources.getString("Editor.GridEditor.does_not_look", grid.getGridName()), // $NON-NLS-1$
+        Resources.getString("Editor.GridEditor.grid_shape_error"), // $NON-NLS-1$
         JOptionPane.ERROR_MESSAGE);
   }
 
@@ -474,8 +460,7 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
         final Graphics2D g2d = (Graphics2D) g;
 
         g2d.addRenderingHints(SwingUtils.FONT_HINTS);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
         final AffineTransform orig_t = g2d.getTransform();
@@ -497,8 +482,7 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
           highlight(g, hp2);
           highlight(g, hp3);
         }
-      }
-      else {
+      } else {
         super.paint(g);
       }
     }
@@ -526,20 +510,27 @@ public abstract class GridEditor extends JDialog implements MouseListener, KeyLi
    */
   public interface EditableGrid {
     double getDx();
+
     double getDy();
+
     Point getOrigin();
 
     void setDx(double dx);
+
     void setDy(double dy);
+
     void setOrigin(Point p);
 
     boolean isSideways();
+
     void setSideways(boolean sideways);
 
     GridContainer getContainer();
+
     GridNumbering getGridNumbering();
 
     boolean isVisible();
+
     void setVisible(boolean b);
 
     String getGridName();

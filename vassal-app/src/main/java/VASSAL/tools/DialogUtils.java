@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import javax.swing.SwingUtilities;
 
 /**
@@ -35,8 +34,7 @@ import javax.swing.SwingUtilities;
 public class DialogUtils {
   private DialogUtils() {}
 
-  private static final Set<Object> disabled =
-    Collections.synchronizedSet(new HashSet<>());
+  private static final Set<Object> disabled = Collections.synchronizedSet(new HashSet<>());
 
   public static boolean isDisabled(Object key) {
     return disabled.contains(key);
@@ -50,8 +48,7 @@ public class DialogUtils {
 
       if (wasDisabled) {
         if (!disable) disabled.remove(key);
-      }
-      else {
+      } else {
         if (disable) disabled.add(key);
       }
 
@@ -62,13 +59,13 @@ public class DialogUtils {
   private static final ExecutorService ex = Executors.newSingleThreadExecutor();
 
   public static Future<?> enqueue(final Runnable runnable) {
-    return ex.submit(() -> {
-      try {
-        SwingUtilities.invokeAndWait(runnable);
-      }
-      catch (InterruptedException | InvocationTargetException e) {
-        ErrorDialog.bug(e);
-      }
-    });
+    return ex.submit(
+        () -> {
+          try {
+            SwingUtilities.invokeAndWait(runnable);
+          } catch (InterruptedException | InvocationTargetException e) {
+            ErrorDialog.bug(e);
+          }
+        });
   }
 }

@@ -17,18 +17,15 @@
  */
 package VASSAL.command;
 
-import java.awt.Rectangle;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.map.HighlightLastMoved;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.KeyBuffer;
 import VASSAL.counters.Stack;
+import java.awt.Rectangle;
 
-/**
- * This Command removed a {@link GamePiece} from a game.  Its undo
- * Command is {@link AddPiece}.  */
+/** This Command removed a {@link GamePiece} from a game. Its undo Command is {@link AddPiece}. */
 public class RemovePiece extends Command {
   private Command undo = null;
   private GamePiece target;
@@ -43,9 +40,8 @@ public class RemovePiece extends Command {
   }
 
   /**
-   * Removes a piece by invoking {@link Map#removePiece} if the
-   * piece belongs to a {@link Map}, followed by {@link
-   * VASSAL.build.module.GameState#removePiece}.
+   * Removes a piece by invoking {@link Map#removePiece} if the piece belongs to a {@link Map},
+   * followed by {@link VASSAL.build.module.GameState#removePiece}.
    */
   @Override
   protected void executeCommand() {
@@ -64,7 +60,7 @@ public class RemovePiece extends Command {
     HighlightLastMoved.setLastMoved(target);
 
     if (m != null) {
-      r = parent == null ?  m.boundingBoxOf(target) : m.boundingBoxOf(parent);
+      r = parent == null ? m.boundingBoxOf(target) : m.boundingBoxOf(parent);
       m.removePiece(target);
       target.setMap(null);
     }
@@ -72,8 +68,7 @@ public class RemovePiece extends Command {
     if (parent != null) {
       final String stateWithPiece = parent.getState();
       parent.remove(target);
-      undo = undo.append(
-        new ChangePiece(parent.getId(), parent.getState(), stateWithPiece));
+      undo = undo.append(new ChangePiece(parent.getId(), parent.getState(), stateWithPiece));
       target.setParent(null);
     }
 

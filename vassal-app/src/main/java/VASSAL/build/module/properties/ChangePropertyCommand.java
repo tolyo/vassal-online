@@ -23,7 +23,6 @@ import VASSAL.command.Command;
  * Command to change the value of a {@link MutableProperty}
  *
  * @author rodneykinney
- *
  */
 public class ChangePropertyCommand extends Command {
   private final MutableProperty property;
@@ -31,7 +30,8 @@ public class ChangePropertyCommand extends Command {
   private final String newValue;
   private final String oldValue;
 
-  public ChangePropertyCommand(MutableProperty property, String propertyName, String oldValue, String newValue) {
+  public ChangePropertyCommand(
+      MutableProperty property, String propertyName, String oldValue, String newValue) {
     super();
     this.property = property;
     this.propertyName = propertyName;

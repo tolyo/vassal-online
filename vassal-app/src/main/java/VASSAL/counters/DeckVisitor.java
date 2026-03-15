@@ -18,9 +18,7 @@ package VASSAL.counters;
  * at http://www.opensource.org.
  */
 
-/**
- * For Visitors that are aware of {@link Deck} types
- */
+/** For Visitors that are aware of {@link Deck} types */
 public interface DeckVisitor extends PieceVisitor {
   /** Perform the operation on a Deck */
   Object visitDeck(Deck d);

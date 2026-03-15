@@ -30,18 +30,17 @@ import VASSAL.tools.menu.CheckBoxMenuItemProxy;
 import VASSAL.tools.menu.MenuBarProxy;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.menu.MenuProxy;
-import org.apache.commons.lang3.SystemUtils;
-
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.swing.AbstractAction;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import org.apache.commons.lang3.SystemUtils;
 
 public class PlayerWindow extends JFrame {
 
@@ -77,12 +76,11 @@ public class PlayerWindow extends JFrame {
     final MenuBarProxy mb = mm.getMenuBarProxyFor(this);
 
     // file menu
-    final MenuProxy fileMenu =
-      new MenuProxy(Resources.getString("General.file"));
+    final MenuProxy fileMenu = new MenuProxy(Resources.getString("General.file"));
     fileMenu.setMnemonic(Resources.getString("General.file.shortcut").charAt(0));
 
-    fileMenu.add(mm.addMarker("PredefinedSetup.start"));  //NON-NLS
-    fileMenu.add(mm.addMarker("PredefinedSetup.end"));  //NON-NLS
+    fileMenu.add(mm.addMarker("PredefinedSetup.start")); // NON-NLS
+    fileMenu.add(mm.addMarker("PredefinedSetup.end")); // NON-NLS
 
     fileMenu.add(mm.addKey("GameState.new_game"));
     fileMenu.add(mm.addKey("GameState.load_game_new"));
@@ -90,8 +88,8 @@ public class PlayerWindow extends JFrame {
     final MenuProxy openRecent = new MenuProxy(Resources.getString("GameState.open_recent"));
     fileMenu.add(openRecent);
 
-    openRecent.add(mm.addMarker("OpenRecent.start"));  //NON-NLS
-    openRecent.add(mm.addMarker("OpenRecent.end"));  //NON-NLS
+    openRecent.add(mm.addMarker("OpenRecent.start")); // NON-NLS
+    openRecent.add(mm.addMarker("OpenRecent.end")); // NON-NLS
 
     fileMenu.add(mm.addKey("GameState.save_game"));
     fileMenu.add(mm.addKey("GameState.save_game_as"));
@@ -103,10 +101,9 @@ public class PlayerWindow extends JFrame {
     if (SystemUtils.IS_OS_MAC) {
       fileMenu.addSeparator();
       fileMenu.add(mm.addKey("ScenarioOptions.menu_text"));
-      fileMenu.add(mm.addMarker("Editor.File.start"));  //NON-NLS
-      fileMenu.add(mm.addMarker("Editor.File.end"));  //NON-NLS
-    }
-    else {
+      fileMenu.add(mm.addMarker("Editor.File.start")); // NON-NLS
+      fileMenu.add(mm.addMarker("Editor.File.end")); // NON-NLS
+    } else {
       fileMenu.addSeparator();
       fileMenu.add(mm.addKey("Prefs.edit_preferences"));
       fileMenu.add(mm.addKey("ScenarioOptions.menu_text"));
@@ -117,18 +114,17 @@ public class PlayerWindow extends JFrame {
     mm.addAction("General.quit", new ShutDownAction());
 
     // help menu
-    final MenuProxy helpMenu =
-      new MenuProxy(Resources.getString("General.help"));
+    final MenuProxy helpMenu = new MenuProxy(Resources.getString("General.help"));
 
     helpMenu.setMnemonic(Resources.getString("General.help.shortcut").charAt(0));
 
-    helpMenu.add(mm.addMarker("Documentation.Module.start"));  //NON-NLS
-    helpMenu.add(mm.addMarker("Documentation.Module.end"));  //NON-NLS
+    helpMenu.add(mm.addMarker("Documentation.Module.start")); // NON-NLS
+    helpMenu.add(mm.addMarker("Documentation.Module.end")); // NON-NLS
 
-    helpMenu.add(mm.addMarker("Documentation.VASSAL.start"));  //NON-NLS
+    helpMenu.add(mm.addMarker("Documentation.VASSAL.start")); // NON-NLS
     helpMenu.add(mm.addKey("Help.user_guide"));
     helpMenu.addSeparator();
-    helpMenu.add(mm.addMarker("Documentation.VASSAL.end"));  //NON-NLS
+    helpMenu.add(mm.addMarker("Documentation.VASSAL.end")); // NON-NLS
 
     helpMenu.add(mm.addKey("Documentation.about_module"));
 
@@ -137,8 +133,7 @@ public class PlayerWindow extends JFrame {
     }
 
     // Tools menu
-    final MenuProxy toolsMenu =
-      new MenuProxy(Resources.getString("General.tools"));
+    final MenuProxy toolsMenu = new MenuProxy(Resources.getString("General.tools"));
     toolsMenu.setMnemonic(Resources.getString("General.tools.shortcut").charAt(0));
 
     toolsMenu.add(mm.addKey("GameState.load_and_fast_forward"));
@@ -149,30 +144,32 @@ public class PlayerWindow extends JFrame {
     toolsMenu.addSeparator();
 
     toolsMenu.add(mm.addKey("GameRefresher.refresh_counters"));
-    
-    final CheckBoxMenuItemProxy debugCheckbox = new CheckBoxMenuItemProxy(new AbstractAction(
-      Resources.getString("Debug.show_debug_window")) {
-      private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final DebugControls dc = GameModule.getGameModule().getDebugControls();
-        if (dc != null) {
-          dc.toggleVisible();
-        }
-      }
-    }, false);
+    final CheckBoxMenuItemProxy debugCheckbox =
+        new CheckBoxMenuItemProxy(
+            new AbstractAction(Resources.getString("Debug.show_debug_window")) {
+              private static final long serialVersionUID = 1L;
+
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                final DebugControls dc = GameModule.getGameModule().getDebugControls();
+                if (dc != null) {
+                  dc.toggleVisible();
+                }
+              }
+            },
+            false);
 
     toolsMenu.add(debugCheckbox);
     DebugControls.setCheckBox(debugCheckbox);
 
     try {
-      final URL url = new File(Documentation.getDocumentationBaseDir(),
-                               "userguide/userguide.pdf").toURI().toURL();
-      mm.addAction("Help.user_guide",
-        new ShowHelpAction("Help.user_guide", url, null));
-    }
-    catch (MalformedURLException e) {
+      final URL url =
+          new File(Documentation.getDocumentationBaseDir(), "userguide/userguide.pdf")
+              .toURI()
+              .toURL();
+      mm.addAction("Help.user_guide", new ShowHelpAction("Help.user_guide", url, null));
+    } catch (MalformedURLException e) {
       ErrorDialog.bug(e);
     }
 
@@ -180,8 +177,8 @@ public class PlayerWindow extends JFrame {
 
     mb.add(fileMenu);
     mb.add(toolsMenu);
-    mb.add(mm.addMarker("Editor.MenuBar.start"));  //NON-NLS
-    mb.add(mm.addMarker("Editor.MenuBar.end"));  //NON-NLS
+    mb.add(mm.addMarker("Editor.MenuBar.start")); // NON-NLS
+    mb.add(mm.addMarker("Editor.MenuBar.end")); // NON-NLS
     mb.add(helpMenu);
 
     setJMenuBar(mm.getMenuBarFor(this));

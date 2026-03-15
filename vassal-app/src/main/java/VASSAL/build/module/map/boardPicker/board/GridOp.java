@@ -16,6 +16,10 @@
  */
 package VASSAL.build.module.map.boardPicker.board;
 
+import VASSAL.tools.image.ImageUtils;
+import VASSAL.tools.imageop.AbstractTileOpImpl;
+import VASSAL.tools.imageop.AbstractTiledOpImpl;
+import VASSAL.tools.imageop.ImageOp;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -26,14 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import VASSAL.tools.image.ImageUtils;
-import VASSAL.tools.imageop.AbstractTileOpImpl;
-import VASSAL.tools.imageop.AbstractTiledOpImpl;
-import VASSAL.tools.imageop.ImageOp;
 
 public class GridOp extends AbstractTiledOpImpl {
   private static Logger logger = LoggerFactory.getLogger(GridOp.class);
@@ -42,6 +40,7 @@ public class GridOp extends AbstractTiledOpImpl {
   protected final MapGrid grid;
   protected final double scale;
   protected final boolean reversed;
+
   @SuppressWarnings("PMD.LooseCoupling")
   protected final RenderingHints hints;
 
@@ -88,7 +87,18 @@ public class GridOp extends AbstractTiledOpImpl {
   }
 
   @SuppressWarnings("PMD.LooseCoupling")
-  private static BufferedImage draw(int x0, int y0, int w, int h, ImageOp sop, MapGrid grid, Rectangle bounds, double scale, boolean reversed, RenderingHints hints) throws ExecutionException, InterruptedException {
+  private static BufferedImage draw(
+      int x0,
+      int y0,
+      int w,
+      int h,
+      ImageOp sop,
+      MapGrid grid,
+      Rectangle bounds,
+      double scale,
+      boolean reversed,
+      RenderingHints hints)
+      throws ExecutionException, InterruptedException {
     if (w < 1 || h < 1) {
       return ImageUtils.NULL_IMAGE;
     }
@@ -103,12 +113,10 @@ public class GridOp extends AbstractTiledOpImpl {
     final BufferedImage dst;
     try {
       // match the transparency of the first tile
-      dst = ImageUtils.createCompatibleImage(
-        w, h,
-        sop.getTile(tiles[0], null).getTransparency() != BufferedImage.OPAQUE
-      );
-    }
-    catch (NullPointerException | IndexOutOfBoundsException e) {
+      dst =
+          ImageUtils.createCompatibleImage(
+              w, h, sop.getTile(tiles[0], null).getTransparency() != BufferedImage.OPAQUE);
+    } catch (NullPointerException | IndexOutOfBoundsException e) {
       logger.warn("{}, {}, {}, {}, {}", visible, sop, tw, th, tiles);
       throw e;
     }
@@ -131,8 +139,7 @@ public class GridOp extends AbstractTiledOpImpl {
   }
 
   @Override
-  protected void fixSize() {
-  }
+  protected void fixSize() {}
 
   @Override
   protected ImageOp createTileOp(int tileX, int tileY) {
@@ -146,6 +153,7 @@ public class GridOp extends AbstractTiledOpImpl {
     private final MapGrid grid;
     private final double scale;
     private final boolean reversed;
+
     @SuppressWarnings("PMD.LooseCoupling")
     private final RenderingHints hints;
 
@@ -156,8 +164,7 @@ public class GridOp extends AbstractTiledOpImpl {
         throw new IllegalArgumentException();
       }
 
-      if (tileX < 0 || tileX >= gop.getNumXTiles() ||
-          tileY < 0 || tileY >= gop.getNumYTiles()) {
+      if (tileX < 0 || tileX >= gop.getNumXTiles() || tileY < 0 || tileY >= gop.getNumYTiles()) {
         throw new IndexOutOfBoundsException();
       }
 
@@ -193,8 +200,7 @@ public class GridOp extends AbstractTiledOpImpl {
     }
 
     @Override
-    protected void fixSize() {
-    }
+    protected void fixSize() {}
 
     @Override
     public boolean equals(Object o) {
@@ -202,11 +208,7 @@ public class GridOp extends AbstractTiledOpImpl {
       if (o == null || o.getClass() != this.getClass()) return false;
 
       final TileOp op = (TileOp) o;
-      return dx0 == op.dx0 &&
-             dy0 == op.dy0 &&
-             dw == op.dw &&
-             dh == op.dh &&
-             sop.equals(op.sop);
+      return dx0 == op.dx0 && dy0 == op.dy0 && dw == op.dw && dh == op.dh && sop.equals(op.sop);
     }
 
     @Override
@@ -217,15 +219,31 @@ public class GridOp extends AbstractTiledOpImpl {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-      return getClass().getName() +
-        "[sop=" + sop + //NON-NLS
-        ",dx0=" + dx0 + //NON-NLS
-        ",dy0=" + dy0 + //NON-NLS
-        ",dw=" + dw + //NON-NLS
-        ",dy=" + dh + //NON-NLS
-        ",scale=" + scale + //NON-NLS
-        ",reversed=" + reversed + //NON-NLS
-        ",hints=" + hints + "]"; //NON-NLS
+      return getClass().getName()
+          + "[sop="
+          + sop
+          + // NON-NLS
+          ",dx0="
+          + dx0
+          + // NON-NLS
+          ",dy0="
+          + dy0
+          + // NON-NLS
+          ",dw="
+          + dw
+          + // NON-NLS
+          ",dy="
+          + dh
+          + // NON-NLS
+          ",scale="
+          + scale
+          + // NON-NLS
+          ",reversed="
+          + reversed
+          + // NON-NLS
+          ",hints="
+          + hints
+          + "]"; // NON-NLS
     }
   }
 
@@ -235,11 +253,11 @@ public class GridOp extends AbstractTiledOpImpl {
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final GridOp op = (GridOp) o;
-    return reversed == op.reversed &&
-           scale == op.scale &&
-           sop.equals(op.sop) &&
-           grid.equals(op.grid) &&
-           hints.equals(op.hints);
+    return reversed == op.reversed
+        && scale == op.scale
+        && sop.equals(op.sop)
+        && grid.equals(op.grid)
+        && hints.equals(op.hints);
   }
 
   @Override
@@ -249,11 +267,21 @@ public class GridOp extends AbstractTiledOpImpl {
 
   @Override
   public String toString() {
-    return getClass().getName() +
-      "[sop=" + sop + //NON-NLS
-      ",grid=" + grid + //NON-NLS
-      ",scale=" + scale + //NON-NLS
-      ",reversed=" + reversed + //NON-NLS
-      ",hints=" + hints + "]"; //NON-NLS
+    return getClass().getName()
+        + "[sop="
+        + sop
+        + // NON-NLS
+        ",grid="
+        + grid
+        + // NON-NLS
+        ",scale="
+        + scale
+        + // NON-NLS
+        ",reversed="
+        + reversed
+        + // NON-NLS
+        ",hints="
+        + hints
+        + "]"; // NON-NLS
   }
 }

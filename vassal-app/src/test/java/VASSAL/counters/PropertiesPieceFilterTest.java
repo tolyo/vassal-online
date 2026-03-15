@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import VASSAL.build.GameModule;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -16,12 +15,10 @@ import org.mockito.Mockito;
 
 public class PropertiesPieceFilterTest implements Auditable {
 
-
   /**
-   * More complex tests that cannot be parameterized
-   * See {@link PropertiesPieceFilterParameterizedTest}
+   * More complex tests that cannot be parameterized See {@link
+   * PropertiesPieceFilterParameterizedTest}
    */
-
   @Test
   public void test() {
     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
@@ -60,5 +57,4 @@ public class PropertiesPieceFilterTest implements Auditable {
       assertThat("Check || Test 4", filter.accept(bp1, this, audit), is(false));
     }
   }
-
 }

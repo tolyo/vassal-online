@@ -45,16 +45,6 @@ import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.ScaledImagePainter;
 import VASSAL.tools.swing.DataArchiveTextPane;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicHTML;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -78,11 +68,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.DoubleConsumer;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicHTML;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * d/b/a "Text Label"
  *
- * Displays a text label, with content specified by the user at runtime.
+ * <p>Displays a text label, with content specified by the user at runtime.
  */
 public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public static final String ID = "label;"; // NON-NLS
@@ -95,7 +94,8 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   private String menuCommand = Resources.getString("Editor.TextLabel.change_label");
   private Font font = new Font(Font.DIALOG, Font.PLAIN, 10);
   private KeyCommand[] commands;
-  private final FormattedString nameFormat = new FormattedString("$" + PIECE_NAME + "$ ($" + LABEL + "$)");
+  private final FormattedString nameFormat =
+      new FormattedString("$" + PIECE_NAME + "$ ($" + LABEL + "$)");
   private final FormattedString labelFormat = new FormattedString("");
   private static final String PIECE_NAME = "pieceName"; // NON-NLS
   private static final String BAD_PIECE_NAME = "PieceName"; // NON-NLS
@@ -178,11 +178,9 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public Object getLocalizedProperty(Object key) {
     if (key.equals(propertyName)) {
       return getLocalizedLabel();
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return getLocalizedLabel() + piece.getProperty(key);
-    }
-    else {
+    } else {
       return super.getLocalizedProperty(key);
     }
   }
@@ -191,11 +189,9 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public Object getProperty(Object key) {
     if (key.equals(propertyName)) {
       return getLabel();
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return getLabel() + piece.getProperty(key);
-    }
-    else {
+    } else {
       return super.getProperty(key);
     }
   }
@@ -204,23 +200,23 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(labelKey)
-      .append(menuCommand)
-      .append(font.getSize())
-      .append(textBg)
-      .append(textFg)
-      .append(verticalPos)
-      .append(verticalOffset)
-      .append(horizontalPos)
-      .append(horizontalOffset)
-      .append(verticalJust)
-      .append(horizontalJust)
-      .append(nameFormat.getFormat())
-      .append(font.getFamily())
-      .append(font.getStyle())
-      .append(rotateDegrees)
-      .append(propertyName)
-      .append(description)
-      .append(alwaysUseFormat);
+        .append(menuCommand)
+        .append(font.getSize())
+        .append(textBg)
+        .append(textFg)
+        .append(verticalPos)
+        .append(verticalOffset)
+        .append(horizontalPos)
+        .append(horizontalOffset)
+        .append(verticalJust)
+        .append(horizontalJust)
+        .append(nameFormat.getFormat())
+        .append(font.getFamily())
+        .append(font.getStyle())
+        .append(rotateDegrees)
+        .append(propertyName)
+        .append(description)
+        .append(alwaysUseFormat);
     return ID + se.getValue();
   }
 
@@ -238,9 +234,8 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public String getName() {
     String result = "";
     if ((label.length() == 0) && !alwaysUseFormat) {
-      result =  piece.getName();
-    }
-    else {
+      result = piece.getName();
+    } else {
       nameFormat.setProperty(PIECE_NAME, piece.getName());
       //
       // Bug 9483
@@ -254,11 +249,9 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       try {
         RecursionLimiter.startExecution(this);
         result = nameFormat.getText(getOutermost(this), this, "Editor.TextLabel.name_format");
-      }
-      catch (RecursionLimitException e) {
+      } catch (RecursionLimitException e) {
         RecursionLimiter.infiniteLoop(e);
-      }
-      finally {
+      } finally {
         RecursionLimiter.endExecution();
       }
     }
@@ -269,10 +262,8 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public String getLocalizedName() {
     if ((label.length() == 0) && !alwaysUseFormat) {
       return piece.getLocalizedName();
-    }
-    else {
-      final FormattedString f =
-        new FormattedString(getTranslation(nameFormat.getFormat()));
+    } else {
+      final FormattedString f = new FormattedString(getTranslation(nameFormat.getFormat()));
       f.setProperty(PIECE_NAME, piece.getLocalizedName());
       f.setProperty(LABEL, getLocalizedLabel());
       return f.getLocalizedText(getOutermost(this), this, "Editor.TextLabel.name_format");
@@ -288,7 +279,7 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       return;
     }
 
-    final float fsize = (float)(font.getSize() * zoom);
+    final float fsize = (float) (font.getSize() * zoom);
 
     // Windows renders some characters (e.g. "4") very poorly at 8pt. To
     // mitigate that, we upscale, render, then downscale when the font
@@ -297,16 +288,13 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
     final boolean isHTML = BasicHTML.isHTMLString(lastCachedLabel);
 
     if (!isHTML && Math.round(fsize) == 8.0f) {
-      final Font zfont = font.deriveFont(((float)(3 * font.getSize() * zoom)));
+      final Font zfont = font.deriveFont(((float) (3 * font.getSize() * zoom)));
       lastCachedOp = Op.scale(new LabelOp(lastCachedLabel, zfont, textFg, textBg), 1.0 / 3.0);
-    }
-    else if (zoom == 1.0) {
+    } else if (zoom == 1.0) {
       lastCachedOp = baseOp;
-    }
-    else if (isHTML) {
+    } else if (isHTML) {
       lastCachedOp = Op.scale(baseOp, zoom);
-    }
-    else {
+    } else {
       final Font zfont = font.deriveFont(fsize);
       lastCachedOp = new LabelOp(lastCachedLabel, zfont, textFg, textBg);
     }
@@ -321,12 +309,10 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
     if (zoom == 1.0) {
       lastCachedOp = baseOp;
-    }
-    else if (BasicHTML.isHTMLString(lastCachedLabel)) {
+    } else if (BasicHTML.isHTMLString(lastCachedLabel)) {
       lastCachedOp = Op.scale(baseOp, zoom);
-    }
-    else {
-      final float fsize = (float)(font.getSize() * zoom);
+    } else {
+      final float fsize = (float) (font.getSize() * zoom);
       final Font zfont = font.deriveFont(fsize);
       lastCachedOp = new LabelOp(lastCachedLabel, zfont, textFg, textBg);
     }
@@ -335,8 +321,9 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   }
 
   private final DoubleConsumer updateCachedOpForZoom =
-    SystemUtils.IS_OS_WINDOWS ? this::updateCachedOpForZoomWindows
-                              : this::updateCachedOpForZoomNotWindows;
+      SystemUtils.IS_OS_WINDOWS
+          ? this::updateCachedOpForZoomWindows
+          : this::updateCachedOpForZoomNotWindows;
 
   @Override
   public void draw(Graphics g, int x, int y, Component obs, double zoom) {
@@ -362,8 +349,8 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
     if (rotateDegrees != 0) {
       saveXForm = g2d.getTransform();
-      final AffineTransform newXForm = AffineTransform.getRotateInstance(
-        Math.toRadians(rotateDegrees), x, y);
+      final AffineTransform newXForm =
+          AffineTransform.getRotateInstance(Math.toRadians(rotateDegrees), x, y);
       g2d.transform(newXForm);
     }
 
@@ -383,16 +370,14 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
         lastCachedLabel = null;
         baseOp = lastCachedOp = null;
       }
-    }
-    else if (!ll.equals(lastCachedLabel)) {
+    } else if (!ll.equals(lastCachedLabel)) {
       // label has changed, is non-empty
       position = null;
       lastCachedLabel = ll;
 
       if (BasicHTML.isHTMLString(lastCachedLabel)) {
         baseOp = new HTMLLabelOp(lastCachedLabel, font, textFg, textBg);
-      }
-      else {
+      } else {
         baseOp = new LabelOp(lastCachedLabel, font, textFg, textBg);
       }
       lastCachedOp = null;
@@ -400,9 +385,8 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   }
 
   /**
-   * Return the relative position of the upper-left corner of the label,
-   * for a piece at position (0,0). Cache the position of the label once the label
-   * image has been generated.
+   * Return the relative position of the upper-left corner of the label, for a piece at position
+   * (0,0). Cache the position of the label once the label image has been generated.
    */
   private Point getLabelPosition() {
     if (position != null) {
@@ -416,35 +400,35 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
     final Rectangle selBnds = piece.getShape().getBounds();
 
     switch (verticalPos) {
-    case 't':
-      y += selBnds.y;
-      break;
-    case 'b':
-      y += selBnds.y + selBnds.height;
+      case 't':
+        y += selBnds.y;
+        break;
+      case 'b':
+        y += selBnds.y + selBnds.height;
     }
 
     switch (horizontalPos) {
-    case 'l':
-      x += selBnds.x;
-      break;
-    case 'r':
-      x += selBnds.x + selBnds.width;
+      case 'l':
+        x += selBnds.x;
+        break;
+      case 'r':
+        x += selBnds.x + selBnds.width;
     }
 
     switch (verticalJust) {
-    case 'b':
-      y -= lblSize.height;
-      break;
-    case 'c':
-      y -= lblSize.height / 2;
+      case 'b':
+        y -= lblSize.height;
+        break;
+      case 'c':
+        y -= lblSize.height / 2;
     }
 
     switch (horizontalJust) {
-    case 'c':
-      x -= lblSize.width / 2;
-      break;
-    case 'r':
-      x -= lblSize.width;
+      case 'c':
+        x -= lblSize.width / 2;
+        break;
+      case 'r':
+        x -= lblSize.width;
     }
 
     final Point result = new Point(x, y);
@@ -462,8 +446,7 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
     int index = s.indexOf("$" + propertyName + "$");
     while (index >= 0) {
-      s = s.substring(0, index) +
-          s.substring(index + propertyName.length() + 2);
+      s = s.substring(0, index) + s.substring(index + propertyName.length() + 2);
       index = s.indexOf("$" + propertyName + "$");
     }
     label = s;
@@ -498,11 +481,7 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       this.font = font;
       this.fg = fg;
       this.bg = bg;
-      hash = new HashCodeBuilder().append(txt)
-                                  .append(font)
-                                  .append(fg)
-                                  .append(bg)
-                                  .toHashCode();
+      hash = new HashCodeBuilder().append(txt).append(font).append(fg).append(bg).toHashCode();
     }
 
     @Override
@@ -519,16 +498,13 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       if (size.width <= 0 || size.height <= 0) return ImageUtils.NULL_IMAGE;
 
       // prepare the target image
-      final BufferedImage im = ImageUtils.createCompatibleImage(
-        size.width,
-        size.height,
-        bg == null || bg.getTransparency() != Color.OPAQUE
-      );
+      final BufferedImage im =
+          ImageUtils.createCompatibleImage(
+              size.width, size.height, bg == null || bg.getTransparency() != Color.OPAQUE);
 
       final Graphics2D g = im.createGraphics();
       g.addRenderingHints(SwingUtils.FONT_HINTS);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                         RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       // paint the background
       if (bg != null) {
@@ -553,12 +529,12 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
     protected Dimension buildDimensions() {
       final Graphics2D g = ImageUtils.NULL_IMAGE.createGraphics();
       final TextLayout layout = new TextLayout(txt, font, g.getFontRenderContext());
-      final Rectangle2D lBounds = new Rectangle2D.Float(
-        0f,
-        -layout.getAscent() - layout.getLeading(),
-        layout.getAdvance(),
-        layout.getAscent() + layout.getDescent() + 2f * layout.getLeading()
-      );
+      final Rectangle2D lBounds =
+          new Rectangle2D.Float(
+              0f,
+              -layout.getAscent() - layout.getLeading(),
+              layout.getAdvance(),
+              layout.getAscent() + layout.getDescent() + 2f * layout.getLeading());
       final Rectangle2D bounds = lBounds.createUnion(layout.getBounds());
       g.dispose();
       return bounds.getBounds().getSize();
@@ -582,10 +558,10 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       if (!(o instanceof LabelOp)) return false;
 
       final LabelOp lop = (LabelOp) o;
-      return Objects.equals(txt, lop.txt) &&
-             Objects.equals(font, lop.font) &&
-             Objects.equals(fg, lop.fg) &&
-             Objects.equals(bg, lop.bg);
+      return Objects.equals(txt, lop.txt)
+          && Objects.equals(font, lop.font)
+          && Objects.equals(fg, lop.fg)
+          && Objects.equals(bg, lop.bg);
     }
 
     @Override
@@ -608,16 +584,13 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       if (size.width <= 0 || size.height <= 0) return ImageUtils.NULL_IMAGE;
 
       // prepare the target image
-      final BufferedImage im = ImageUtils.createCompatibleImage(
-        size.width,
-        size.height,
-        bg == null || bg.getTransparency() != Color.OPAQUE
-      );
+      final BufferedImage im =
+          ImageUtils.createCompatibleImage(
+              size.width, size.height, bg == null || bg.getTransparency() != Color.OPAQUE);
 
       final Graphics2D g = im.createGraphics();
       g.addRenderingHints(SwingUtils.FONT_HINTS);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                         RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       // paint the background
       if (bg != null) {
@@ -628,11 +601,13 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       // paint the foreground
       if (fg != null) {
         // Support images pre-existing in the module
-        if (txt.contains("<img ") && !txt.contains(" src=\"http://") && !txt.contains(" src=\"https://") && !txt.contains(" src=\"file://")) { //NON-NLS
-          final DataArchiveTextPane p = new DataArchiveTextPane(txt, "label", fg, font); //NON-NLS
+        if (txt.contains("<img ")
+            && !txt.contains(" src=\"http://")
+            && !txt.contains(" src=\"https://")
+            && !txt.contains(" src=\"file://")) { // NON-NLS
+          final DataArchiveTextPane p = new DataArchiveTextPane(txt, "label", fg, font); // NON-NLS
           p.paint(g);
-        }
-        else {
+        } else {
           final JLabel l = makeLabel();
           l.paint(g);
         }
@@ -659,34 +634,30 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
   public String getLabel() {
     // Suppress all error reporting within the label evaluation if the piece is not on a Map.
-    return labelFormat.getText(getOutermost(this), this, "Editor.TextLabel.label_text", getMap() == null);
+    return labelFormat.getText(
+        getOutermost(this), this, "Editor.TextLabel.label_text", getMap() == null);
   }
 
   public String getLocalizedLabel() {
-    final FormattedString f =
-      new FormattedString(getTranslation(labelFormat.getFormat()));
+    final FormattedString f = new FormattedString(getTranslation(labelFormat.getFormat()));
     // Suppress all error reporting within the label evaluation if the piece is not on a Map.
-    return f.getLocalizedText(getOutermost(this), this, "Editor.TextLabel.label_text", getMap() == null);
+    return f.getLocalizedText(
+        getOutermost(this), this, "Editor.TextLabel.label_text", getMap() == null);
   }
 
   @Override
   public Rectangle boundingBox() {
     final Rectangle r = piece.boundingBox();
 
-    final Rectangle labelRect = new Rectangle(
-      getLabelPosition(),
-      baseOp != null ? baseOp.getSize() : new Dimension()
-    );
+    final Rectangle labelRect =
+        new Rectangle(getLabelPosition(), baseOp != null ? baseOp.getSize() : new Dimension());
 
     final Rectangle labelBounds;
     if (rotateDegrees != 0) {
-      final AffineTransform tx = AffineTransform.getRotateInstance(
-        Math.toRadians(rotateDegrees)
-      );
+      final AffineTransform tx = AffineTransform.getRotateInstance(Math.toRadians(rotateDegrees));
 
       labelBounds = tx.createTransformedShape(labelRect).getBounds();
-    }
-    else {
+    } else {
       labelBounds = labelRect;
     }
 
@@ -696,12 +667,13 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
   @Deprecated(since = "2021-03-14", forRemoval = true)
   protected Rectangle lastRect = null;
+
   @Deprecated(since = "2021-03-14", forRemoval = true)
   protected Area lastShape = null;
 
   /**
-   * Return the Shape of the counter by adding the shape of this label to the shape of all inner traits.
-   * Minimize generation of new Area objects.
+   * Return the Shape of the counter by adding the shape of this label to the shape of all inner
+   * traits. Minimize generation of new Area objects.
    */
   @Override
   public Shape getShape() {
@@ -713,23 +685,18 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       return innerShape;
     }
 
-    final Rectangle labelRect = new Rectangle(
-      getLabelPosition(),
-      baseOp != null ? baseOp.getSize() : new Dimension()
-    );
+    final Rectangle labelRect =
+        new Rectangle(getLabelPosition(), baseOp != null ? baseOp.getSize() : new Dimension());
 
     final Shape labelShape;
     final Rectangle labelBounds;
 
     if (rotateDegrees != 0) {
-      final AffineTransform tx = AffineTransform.getRotateInstance(
-        Math.toRadians(rotateDegrees)
-      );
+      final AffineTransform tx = AffineTransform.getRotateInstance(Math.toRadians(rotateDegrees));
 
       labelShape = tx.createTransformedShape(labelRect);
       labelBounds = labelShape.getBounds();
-    }
-    else {
+    } else {
       labelShape = labelBounds = labelRect;
     }
 
@@ -749,13 +716,12 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
     if (commands == null) {
       menuKeyCommand = new KeyCommand(menuCommand, labelKey, getOutermost(this), this);
       if (labelKey == null
-        || labelKey.isNull()
-        || menuCommand == null
-        || menuCommand.length() == 0) {
+          || labelKey.isNull()
+          || menuCommand == null
+          || menuCommand.length() == 0) {
         commands = KeyCommand.NONE;
-      }
-      else {
-        commands = new KeyCommand[]{menuKeyCommand};
+      } else {
+        commands = new KeyCommand[] {menuKeyCommand};
       }
     }
     return commands;
@@ -769,20 +735,22 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       ChangeTracker tracker = new ChangeTracker(this);
       final Dimension oldDimension = (Dimension) UIManager.get("OptionPane.minimumSize");
       UIManager.put("OptionPane.minimumSize", new Dimension(800, 40));
-      final String s = (String) JOptionPane.showInputDialog(
-        getMap() == null ? GameModule.getGameModule().getPlayerWindow() : getMap().getView().getTopLevelAncestor(),
-        menuKeyCommand.getName(),
-        null,
-        JOptionPane.QUESTION_MESSAGE,
-        null,
-        null,
-        label
-      );
+      final String s =
+          (String)
+              JOptionPane.showInputDialog(
+                  getMap() == null
+                      ? GameModule.getGameModule().getPlayerWindow()
+                      : getMap().getView().getTopLevelAncestor(),
+                  menuKeyCommand.getName(),
+                  null,
+                  JOptionPane.QUESTION_MESSAGE,
+                  null,
+                  null,
+                  label);
       UIManager.put("OptionPane.minimumSize", oldDimension);
       if (s == null) {
         tracker = null;
-      }
-      else {
+      } else {
         setLabel(s);
         c = tracker.getChangeCommand();
       }
@@ -820,33 +788,32 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
   public boolean testEquals(Object o) {
 
     // Check Class
-    if (! (o instanceof Labeler)) return false;
+    if (!(o instanceof Labeler)) return false;
     final Labeler l = (Labeler) o;
 
     // Check Type
-    if (! Objects.equals(labelKey, l.labelKey)) return false;
-    if (! Objects.equals(menuCommand, l.menuCommand)) return false;
-    if (! Objects.equals(font, l.font)) return false;
-    if (! Objects.equals(textBg, l.textBg)) return false;
-    if (! Objects.equals(textFg, l.textFg)) return false;
-    if (! Objects.equals(verticalPos, l.verticalPos)) return false;
-    if (! Objects.equals(verticalOffset, l.verticalOffset)) return false;
-    if (! Objects.equals(horizontalPos, l.horizontalPos)) return false;
-    if (! Objects.equals(horizontalOffset, l.horizontalOffset)) return false;
-    if (! Objects.equals(verticalJust, l.verticalJust)) return false;
-    if (! Objects.equals(horizontalJust, l.horizontalJust)) return false;
-    if (! Objects.equals(nameFormat, l.nameFormat)) return false;
-    if (! Objects.equals(rotateDegrees, l.rotateDegrees)) return false;
-    if (! Objects.equals(propertyName, l.propertyName)) return false;
-    if (! Objects.equals(description, l.description)) return false;
-    if (! Objects.equals(alwaysUseFormat, l.alwaysUseFormat)) return false;
+    if (!Objects.equals(labelKey, l.labelKey)) return false;
+    if (!Objects.equals(menuCommand, l.menuCommand)) return false;
+    if (!Objects.equals(font, l.font)) return false;
+    if (!Objects.equals(textBg, l.textBg)) return false;
+    if (!Objects.equals(textFg, l.textFg)) return false;
+    if (!Objects.equals(verticalPos, l.verticalPos)) return false;
+    if (!Objects.equals(verticalOffset, l.verticalOffset)) return false;
+    if (!Objects.equals(horizontalPos, l.horizontalPos)) return false;
+    if (!Objects.equals(horizontalOffset, l.horizontalOffset)) return false;
+    if (!Objects.equals(verticalJust, l.verticalJust)) return false;
+    if (!Objects.equals(horizontalJust, l.horizontalJust)) return false;
+    if (!Objects.equals(nameFormat, l.nameFormat)) return false;
+    if (!Objects.equals(rotateDegrees, l.rotateDegrees)) return false;
+    if (!Objects.equals(propertyName, l.propertyName)) return false;
+    if (!Objects.equals(description, l.description)) return false;
+    if (!Objects.equals(alwaysUseFormat, l.alwaysUseFormat)) return false;
 
     // Check State
     return Objects.equals(label, l.label);
   }
-  /**
-   * Return Property names exposed by this trait
-   */
+
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -886,10 +853,10 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       initialValue.setHintKey("Editor.TextLabel.label_text_hint");
       controls.add("Editor.TextLabel.label_text", initialValue);
 
-      format = new FormattedStringConfigurer(new String[]{PIECE_NAME, LABEL});
+      format = new FormattedStringConfigurer(new String[] {PIECE_NAME, LABEL});
       format.setValue(l.nameFormat.getFormat()); // NON-NLS
       format.setHintKey("Editor.TextLabel.name_format_hint");
-      controls.add("Editor.TextLabel.name_format", format); //NON-NLS
+      controls.add("Editor.TextLabel.name_format", format); // NON-NLS
 
       alwaysUseFormatConfig = new BooleanConfigurer(l.alwaysUseFormat);
       controls.add("Editor.TextLabel.always_use_format", alwaysUseFormatConfig);
@@ -901,27 +868,35 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       labelKeyInput = new NamedHotKeyConfigurer(l.labelKey);
       controls.add("Editor.keyboard_command", labelKeyInput);
 
-      fontFamily = new TranslatingStringEnumConfigurer(
-        new String[]{Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED, Font.DIALOG, Font.DIALOG_INPUT},
-        new String[] {
-          "Editor.Font.serif",
-          "Editor.Font.sans_serif",
-          "Editor.Font.monospaced",
-          "Editor.Font.dialog",
-          "Editor.Font.dialog_input"},
-          l.font.getFamily());
+      fontFamily =
+          new TranslatingStringEnumConfigurer(
+              new String[] {
+                Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED, Font.DIALOG, Font.DIALOG_INPUT
+              },
+              new String[] {
+                "Editor.Font.serif",
+                "Editor.Font.sans_serif",
+                "Editor.Font.monospaced",
+                "Editor.Font.dialog",
+                "Editor.Font.dialog_input"
+              },
+              l.font.getFamily());
 
-      JPanel p = new JPanel(new MigLayout("ins 0", "[]unrel[]rel[]unrel[]rel[]unrel[]rel[]")); // NON-NLS
+      JPanel p =
+          new JPanel(new MigLayout("ins 0", "[]unrel[]rel[]unrel[]rel[]unrel[]rel[]")); // NON-NLS
       p.add(fontFamily.getControls());
       p.add(new JLabel(Resources.getString("Editor.size_label")));
       fontSize = new IntConfigurer(l.font.getSize());
       p.add(fontSize.getControls());
       p.add(new JLabel(Resources.getString("Editor.TextLabel.bold")));
       final int fontStyle = l.font.getStyle();
-      bold = new BooleanConfigurer(Boolean.valueOf(fontStyle != Font.PLAIN && fontStyle != Font.ITALIC));
+      bold =
+          new BooleanConfigurer(
+              Boolean.valueOf(fontStyle != Font.PLAIN && fontStyle != Font.ITALIC));
       p.add(bold.getControls());
       p.add(new JLabel(Resources.getString("Editor.TextLabel.italic")));
-      italic = new BooleanConfigurer(Boolean.valueOf(fontStyle != Font.PLAIN && fontStyle != Font.BOLD));
+      italic =
+          new BooleanConfigurer(Boolean.valueOf(fontStyle != Font.PLAIN && fontStyle != Font.BOLD));
       p.add(italic.getControls());
 
       controls.add("Editor.TextLabel.label_font", p);
@@ -932,15 +907,11 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       bg = new ColorConfigurer(l.textBg);
       controls.add("Editor.TextLabel.background_color", bg);
 
-      vPos = new TranslatingStringEnumConfigurer(
-        new String[] {"c", "t", "b"}, // NON-NLS
-        new String[] {
-          "Editor.center",
-          "Editor.top",
-          "Editor.bottom"
-        },
-        l.verticalPos
-      );
+      vPos =
+          new TranslatingStringEnumConfigurer(
+              new String[] {"c", "t", "b"}, // NON-NLS
+              new String[] {"Editor.center", "Editor.top", "Editor.bottom"},
+              l.verticalPos);
 
       p = new JPanel(new MigLayout("ins 0", "[100]unrel[]rel[]")); // NON-NLS
       p.add(vPos.getControls());
@@ -949,15 +920,11 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       p.add(vOff.getControls());
       controls.add("Editor.TextLabel.vertical_position", p);
 
-      hPos = new TranslatingStringEnumConfigurer(
-        new String[] {"c", "l", "r"}, // NON-NLS
-        new String[] {
-          "Editor.center",
-          "Editor.left",
-          "Editor.right"
-        },
-        l.horizontalPos
-      );
+      hPos =
+          new TranslatingStringEnumConfigurer(
+              new String[] {"c", "l", "r"}, // NON-NLS
+              new String[] {"Editor.center", "Editor.left", "Editor.right"},
+              l.horizontalPos);
 
       p = new JPanel(new MigLayout("ins 0", "[100]unrel[]rel[]")); // NON-NLS
       p.add(hPos.getControls());
@@ -966,26 +933,18 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
       p.add(hOff.getControls());
       controls.add("Editor.TextLabel.horizontal_position", p);
 
-      vJust = new TranslatingStringEnumConfigurer(
-        new String[] {"c", "t", "b"}, // NON-NLS
-        new String[] {
-          "Editor.center",
-          "Editor.top",
-          "Editor.bottom"
-        },
-        l.verticalJust
-      );
+      vJust =
+          new TranslatingStringEnumConfigurer(
+              new String[] {"c", "t", "b"}, // NON-NLS
+              new String[] {"Editor.center", "Editor.top", "Editor.bottom"},
+              l.verticalJust);
       controls.add("Editor.TextLabel.vertical_text_justification", vJust, "grow 0"); // NON-NLS
 
-      hJust = new TranslatingStringEnumConfigurer(
-        new String[] {"c", "l", "r"}, // NON-NLS
-        new String[] {
-          "Editor.center",
-          "Editor.left",
-          "Editor.right"
-        },
-        l.horizontalJust
-      );
+      hJust =
+          new TranslatingStringEnumConfigurer(
+              new String[] {"c", "l", "r"}, // NON-NLS
+              new String[] {"Editor.center", "Editor.left", "Editor.right"},
+              l.horizontalJust);
       controls.add("Editor.TextLabel.horizontal_text_justification", hJust, "grow 0"); // NON-NLS
 
       rotate = new IntConfigurer(l.rotateDegrees);
@@ -1004,41 +963,40 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(labelKeyInput.getValueString())
-        .append(command.getValueString());
+      se.append(labelKeyInput.getValueString()).append(command.getValueString());
 
       Integer i = (Integer) fontSize.getValue();
       if (i == null || i <= 0) {
         i = 10;
       }
       se.append(i.toString())
-        .append(bg.getValueString())
-        .append(fg.getValueString())
-        .append(vPos.getValueString());
+          .append(bg.getValueString())
+          .append(fg.getValueString())
+          .append(vPos.getValueString());
       i = (Integer) vOff.getValue();
       if (i == null) i = 0;
 
-      se.append(i.toString())
-        .append(hPos.getValueString());
+      se.append(i.toString()).append(hPos.getValueString());
       i = (Integer) hOff.getValue();
       if (i == null) i = 0;
 
       se.append(i.toString())
-        .append(vJust.getValueString())
-        .append(hJust.getValueString())
-        .append(format.getValueString())
-        .append(fontFamily.getValueString());
-      final int style = Font.PLAIN +
-        (bold.booleanValue() ? Font.BOLD : 0) +
-        (italic.booleanValue() ? Font.ITALIC : 0);
+          .append(vJust.getValueString())
+          .append(hJust.getValueString())
+          .append(format.getValueString())
+          .append(fontFamily.getValueString());
+      final int style =
+          Font.PLAIN
+              + (bold.booleanValue() ? Font.BOLD : 0)
+              + (italic.booleanValue() ? Font.ITALIC : 0);
       se.append(style);
       i = (Integer) rotate.getValue();
       if (i == null) i = 0;
 
       se.append(i.toString())
-        .append(propertyNameConfig.getValueString())
-        .append(descConfig.getValueString())
-        .append(alwaysUseFormatConfig.getValueString());
+          .append(propertyNameConfig.getValueString())
+          .append(descConfig.getValueString())
+          .append(alwaysUseFormatConfig.getValueString());
 
       return ID + se.getValue();
     }
@@ -1060,15 +1018,32 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
         });
   }
 
-  /** @deprecated Use {@link VASSAL.tools.image.LabelUtils#drawLabel(Graphics, String, int, int, int, int, Color, Color)} instead. **/
+  /**
+   * @deprecated Use {@link VASSAL.tools.image.LabelUtils#drawLabel(Graphics, String, int, int, int,
+   *     int, Color, Color)} instead. *
+   */
   @Deprecated(since = "2020-08-27", forRemoval = true)
-  public static void drawLabel(Graphics g, String text, int x, int y, int hAlign, int vAlign, Color fgColor, Color bgColor) {
+  public static void drawLabel(
+      Graphics g, String text, int x, int y, int hAlign, int vAlign, Color fgColor, Color bgColor) {
     LabelUtils.drawLabel(g, text, x, y, hAlign, vAlign, fgColor, bgColor);
   }
 
-  /** @deprecated Use {@link VASSAL.tools.image.LabelUtils#drawLabel(Graphics, String, int, int, Font, int, int, Color, Color, Color)} instead. **/
+  /**
+   * @deprecated Use {@link VASSAL.tools.image.LabelUtils#drawLabel(Graphics, String, int, int,
+   *     Font, int, int, Color, Color, Color)} instead. *
+   */
   @Deprecated(since = "2020-08-27", forRemoval = true)
-  public static void drawLabel(Graphics g, String text, int x, int y, Font f, int hAlign, int vAlign, Color fgColor, Color bgColor, Color borderColor) {
+  public static void drawLabel(
+      Graphics g,
+      String text,
+      int x,
+      int y,
+      Font f,
+      int hAlign,
+      int vAlign,
+      Color fgColor,
+      Color bgColor,
+      Color borderColor) {
     LabelUtils.drawLabel(g, text, x, y, f, hAlign, vAlign, fgColor, bgColor, borderColor);
   }
 
@@ -1106,6 +1081,7 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
 
   /**
    * In case our labels refer to any image files
+   *
    * @param s Collection to add image names to
    */
   @Override

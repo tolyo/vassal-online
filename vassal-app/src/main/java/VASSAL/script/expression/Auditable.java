@@ -17,23 +17,27 @@
 package VASSAL.script.expression;
 
 /**
- * An Auditable class can have the execution of any {@link Expression} it contains tracked
- * and errors reported with additional detailusing the {@link AuditTrail} class
+ * An Auditable class can have the execution of any {@link Expression} it contains tracked and
+ * errors reported with additional detailusing the {@link AuditTrail} class
  */
 public interface Auditable {
   /**
    * Return a description of the Type of trait or Component an Auditable is
+   *
    * @return Component Type
    */
   default String getComponentTypeName() {
     return "";
-  };
+  }
+  ;
 
   /**
    * Return the name of the trait or Component an Auditable is
+   *
    * @return Component name
    */
   default String getComponentName() {
     return "";
-  };
+  }
+  ;
 }

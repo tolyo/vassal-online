@@ -33,7 +33,6 @@ import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.script.expression.Expression;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.LaunchButton;
-
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,40 +43,43 @@ import java.util.stream.Stream;
  * Adds a toolbar button that changes the value of a global property
  *
  * @author rkinney
- *
  */
-public class ChangePropertyButton extends AbstractToolbarItem implements PropertyChangerConfigurer.Constraints {
-  public static final String BUTTON_TEXT = "text"; //NON-NLS
-  public static final String BUTTON_TOOLTIP = "tooltip"; //NON-NLS
-  public static final String BUTTON_ICON = "icon"; //NON-NLS
-  public static final String HOTKEY = "hotkey"; //NON-NLS
-  public static final String DESCRIPTION = "desc"; //NON-NLS
+public class ChangePropertyButton extends AbstractToolbarItem
+    implements PropertyChangerConfigurer.Constraints {
+  public static final String BUTTON_TEXT = "text"; // NON-NLS
+  public static final String BUTTON_TOOLTIP = "tooltip"; // NON-NLS
+  public static final String BUTTON_ICON = "icon"; // NON-NLS
+  public static final String HOTKEY = "hotkey"; // NON-NLS
+  public static final String DESCRIPTION = "desc"; // NON-NLS
 
-  public static final String PROPERTY_CHANGER = "propChanger"; //NON-NLS
+  public static final String PROPERTY_CHANGER = "propChanger"; // NON-NLS
 
-  public static final String REPORT_FORMAT = "reportFormat"; //NON-NLS
-  public static final String OLD_VALUE_FORMAT = "oldValue"; //NON-NLS
-  public static final String NEW_VALUE_FORMAT = "newValue"; //NON-NLS
-  public static final String DESCRIPTION_FORMAT = "description"; //NON-NLS
+  public static final String REPORT_FORMAT = "reportFormat"; // NON-NLS
+  public static final String OLD_VALUE_FORMAT = "oldValue"; // NON-NLS
+  public static final String NEW_VALUE_FORMAT = "newValue"; // NON-NLS
+  public static final String DESCRIPTION_FORMAT = "description"; // NON-NLS
 
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
   protected FormattedString report = new FormattedString();
   protected GlobalProperty property;
-  protected PropertyChangerConfigurer propChangeConfig = new PropertyChangerConfigurer(null, null, this);
+  protected PropertyChangerConfigurer propChangeConfig =
+      new PropertyChangerConfigurer(null, null, this);
   protected FormattedString format = new FormattedString();
   protected String desc = "";
 
   public ChangePropertyButton() {
     setNameKey("");
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("Editor.ChangePropertyButton.change"),
-      Resources.getString("Editor.ChangePropertyButton.change"),
-      "",
-      e -> launch()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("Editor.ChangePropertyButton.change"),
+            Resources.getString("Editor.ChangePropertyButton.change"),
+            "",
+            e -> launch()));
 
     launch = getLaunchButton(); // for compatibility
     propChangeConfig.setContext(getAncestor());
@@ -97,7 +99,7 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
 
         if (!reportText.isEmpty()) {
           final Chatter.DisplayText chatCommand =
-            new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+              new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
           chatCommand.execute();
           c.append(chatCommand);
         }
@@ -121,10 +123,11 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
 
   @Override
   public String[] getAttributeDescriptions() {
-    final Stream.Builder<Object> b = Stream.builder().add(Resources.getString("Editor.description_label"));
+    final Stream.Builder<Object> b =
+        Stream.builder().add(Resources.getString("Editor.description_label"));
     Arrays.stream(super.getAttributeDescriptions()).forEach(b::add);
     b.add(Resources.getString("Editor.report_format"))
-      .add(Resources.getString("Editor.ChangePropertyButton.options"));
+        .add(Resources.getString("Editor.ChangePropertyButton.options"));
     return b.build().toArray(String[]::new);
   }
 
@@ -152,14 +155,15 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
   public static class ReportFormatConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[] {OLD_VALUE_FORMAT, NEW_VALUE_FORMAT, DESCRIPTION_FORMAT});
+      return new PlayerIdFormattedExpressionConfigurer(
+          key, name, new String[] {OLD_VALUE_FORMAT, NEW_VALUE_FORMAT, DESCRIPTION_FORMAT});
     }
   }
 
   public static class PropChangerOptions implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      final Configurer cfg = ((ChangePropertyButton)c).propChangeConfig;
+      final Configurer cfg = ((ChangePropertyButton) c).propChangeConfig;
       cfg.setContext(c);
       return cfg;
     }
@@ -169,21 +173,17 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
   public void setAttribute(String key, Object value) {
     if (DESCRIPTION.equals(key)) {
       desc = (String) value;
-    }
-    else if (PROPERTY_CHANGER.equals(key)) {
+    } else if (PROPERTY_CHANGER.equals(key)) {
       if (value instanceof String) {
-        propChangeConfig.setValue((String)value);
-      }
-      else {
+        propChangeConfig.setValue((String) value);
+      } else {
         propChangeConfig.setValue(value);
       }
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       report.setFormat((String) value);
-    }
-    else {
+    } else {
       if (BUTTON_TEXT.equals(key)) {
-        setConfigureName((String)value);
+        setConfigureName((String) value);
       }
       super.setAttribute(key, value);
     }
@@ -193,14 +193,11 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
   public String getAttributeValueString(String key) {
     if (DESCRIPTION.equals(key)) {
       return desc;
-    }
-    else if (PROPERTY_CHANGER.equals(key)) {
+    } else if (PROPERTY_CHANGER.equals(key)) {
       return propChangeConfig.getValueString();
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       return report.getFormat();
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -213,7 +210,8 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GlobalProperties.html", "ChangePropertyToolbarButton"); //NON-NLS
+    return HelpFile.getReferenceManualPage(
+        "GlobalProperties.html", "ChangePropertyToolbarButton"); // NON-NLS
   }
 
   @Override
@@ -273,16 +271,16 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
     return property;
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
     return List.of(report.getFormat());
   }
-
 
   /**
    * @return a list of the Decorator's string/expression fields if any (for search)
@@ -295,11 +293,9 @@ public class ChangePropertyButton extends AbstractToolbarItem implements Propert
     if (propChanger != null) {
       if (propChanger instanceof IncrementProperty) {
         l.add(((IncrementProperty) propChanger).getIncrement());
-      }
-      else if (propChanger instanceof PropertySetter) {
+      } else if (propChanger instanceof PropertySetter) {
         l.add(((PropertySetter) propChanger).getRawValue());
-      }
-      else if (propChanger instanceof PropertyPrompt) {
+      } else if (propChanger instanceof PropertyPrompt) {
         final PropertyPrompt pp = (PropertyPrompt) propChanger;
         l.add(pp.getPrompt());
         if (pp instanceof EnumeratedPropertyPrompt) {

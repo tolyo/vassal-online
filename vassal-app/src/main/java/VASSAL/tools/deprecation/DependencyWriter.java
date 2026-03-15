@@ -37,8 +37,7 @@ public class DependencyWriter {
     if ("-o".equals(args[0])) {
       outfile = args[1];
       infile = args[2];
-    }
-    else {
+    } else {
       outfile = null;
       infile = args[0];
     }
@@ -47,27 +46,30 @@ public class DependencyWriter {
 
     final Set<String> deps = new HashSet<>();
 
-    final Consumer<String> collect = s -> {
-      deps.add(s);
-    };
+    final Consumer<String> collect =
+        s -> {
+          deps.add(s);
+        };
 
     walker.setClassCallback(collect);
     walker.setMethodCallback(collect);
     walker.setFieldCallback(collect);
 
-    try (PrintStream ps = args.length == 1 ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
+    try (PrintStream ps =
+        args.length == 1 ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
       walker.setThisClassBeginCallback(s -> ps.println(s));
-      walker.setThisClassEndCallback(s -> {
-        final String[] darr = deps.toArray(new String[0]);
-        Arrays.sort(darr);
-        for (final String dep: darr) {
-          ps.println("  " + dep);
-        }
-        ps.println("");
-        deps.clear();
-      });
+      walker.setThisClassEndCallback(
+          s -> {
+            final String[] darr = deps.toArray(new String[0]);
+            Arrays.sort(darr);
+            for (final String dep : darr) {
+              ps.println("  " + dep);
+            }
+            ps.println("");
+            deps.clear();
+          });
 
       Processor.process(walker, infile);
     }
   }
-} 
+}

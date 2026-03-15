@@ -18,13 +18,12 @@
 
 package VASSAL.tools.io;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TailerTest {
 
@@ -84,9 +83,8 @@ public class TailerTest {
     tailer.stop();
 
     final String actual = sb_tailer.toString().replace("\r\n", "\n");
-    final String expected = Files.readString(file.toPath())
-                                 .replace("\r\n", "\n")
-                                 .substring(0, actual.length());
+    final String expected =
+        Files.readString(file.toPath()).replace("\r\n", "\n").substring(0, actual.length());
 
     // compare whatever the Tailer had time to read
     assertEquals(expected, actual);

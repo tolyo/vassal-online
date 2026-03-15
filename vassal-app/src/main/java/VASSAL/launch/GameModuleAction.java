@@ -17,31 +17,26 @@
  */
 package VASSAL.launch;
 
+import VASSAL.build.GameModule;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.build.GameModule;
-
 /**
- * Utility base class for {@link GameModule}-related actions, with auxiliary
- * actions and error reporting.
+ * Utility base class for {@link GameModule}-related actions, with auxiliary actions and error
+ * reporting.
  *
  * @author rodneykinney
- *
  */
 public abstract class GameModuleAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(GameModuleAction.class);
+  private static final Logger logger = LoggerFactory.getLogger(GameModuleAction.class);
 
   protected Component comp;
   protected boolean actionCancelled;
@@ -82,8 +77,8 @@ public abstract class GameModuleAction extends AbstractAction {
   }
 
   /**
-   * Add an auxiliary action to be performed after the core action. For example, closing a window after a module has
-   * been loaded
+   * Add an auxiliary action to be performed after the core action. For example, closing a window
+   * after a module has been loaded
    *
    * @param r action
    */

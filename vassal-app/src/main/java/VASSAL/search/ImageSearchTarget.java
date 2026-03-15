@@ -23,9 +23,10 @@ import java.util.SortedSet;
 /**
  * An interface for "things that contain images" to ship off convenient packages of filename.
  *
- * Used for finding what images can be removed from a module. Also will probably get added to search functions.
+ * <p>Used for finding what images can be removed from a module. Also will probably get added to
+ * search functions.
  *
- * Implemented by {@link VASSAL.build.AbstractBuildable} (for most module components)
+ * <p>Implemented by {@link VASSAL.build.AbstractBuildable} (for most module components)
  */
 public interface ImageSearchTarget {
   /**
@@ -35,6 +36,7 @@ public interface ImageSearchTarget {
 
   /**
    * Adds all images used by this component AND any children to the collection
+   *
    * @param s Collection to add image names to
    */
   void addImageNamesRecursively(Collection<String> s);
@@ -45,8 +47,7 @@ public interface ImageSearchTarget {
   SortedSet<String> getLocalImageNames();
 
   /**
-   * Implementing classes should add
-   * the names of any image files they use to the collection.
+   * Implementing classes should add the names of any image files they use to the collection.
    *
    * @param s Collection to add image names to
    */

@@ -17,9 +17,7 @@
  */
 package VASSAL.i18n;
 
-/**
- * A Class representing an Attribute of a Component that can be translated.
- */
+/** A Class representing an Attribute of a Component that can be translated. */
 public class TranslatableAttribute {
   Translatable component;
   String attributeName;
@@ -42,7 +40,7 @@ public class TranslatableAttribute {
   }
 
   public String getKey() {
-    return component.getI18nData().getFullPrefix() + attributeName; //$NON-NLS-1$
+    return component.getI18nData().getFullPrefix() + attributeName; // $NON-NLS-1$
   }
 
   public boolean isTranslatable() {

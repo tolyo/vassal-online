@@ -24,27 +24,32 @@ import VASSAL.script.expression.Auditable;
 import VASSAL.script.expression.Expression;
 import VASSAL.script.expression.ExpressionException;
 import VASSAL.script.expression.FormattedStringExpression;
-
-import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  * Prompts user to select from a list
- * @author rkinney
  *
+ * @author rkinney
  */
 public class EnumeratedPropertyPrompt extends PropertyPrompt {
   protected String[] validValues;
   protected Expression[] valueExpressions;
   protected DialogParent dialogParent;
 
-  public EnumeratedPropertyPrompt(DialogParent dialogParent, String prompt, String[] validValues, Constraints propertySource) {
+  public EnumeratedPropertyPrompt(
+      DialogParent dialogParent, String prompt, String[] validValues, Constraints propertySource) {
     super(propertySource, prompt);
     this.validValues = validValues;
     valueExpressions = new Expression[validValues.length];
     for (int i = 0; i < validValues.length; i++) {
-      final String updatedExpression = (new FormattedStringExpression(validValues[i]).tryEvaluate((PropertySource) propertySource, (Auditable) propertySource, AuditTrail.create((Auditable) propertySource, validValues[i])));
+      final String updatedExpression =
+          (new FormattedStringExpression(validValues[i])
+              .tryEvaluate(
+                  (PropertySource) propertySource,
+                  (Auditable) propertySource,
+                  AuditTrail.create((Auditable) propertySource, validValues[i])));
       valueExpressions[i] = Expression.createExpression(updatedExpression);
     }
     this.dialogParent = dialogParent;
@@ -60,15 +65,18 @@ public class EnumeratedPropertyPrompt extends PropertyPrompt {
     for (int i = 0; i < finalValues.length; i++) {
       String value;
       try {
-        final AuditTrail audit = AuditTrail.create(constraints == null ? null : constraints.getPropertySource(), valueExpressions[i].getExpression());
+        final AuditTrail audit =
+            AuditTrail.create(
+                constraints == null ? null : constraints.getPropertySource(),
+                valueExpressions[i].getExpression());
         if (constraints == null) {
           value = valueExpressions[i].evaluate(GameModule.getGameModule(), null, audit);
+        } else {
+          value =
+              valueExpressions[i].evaluate(
+                  constraints.getPropertySource(), constraints.getPropertySource(), audit);
         }
-        else {
-          value = valueExpressions[i].evaluate(constraints.getPropertySource(), constraints.getPropertySource(), audit);
-        }
-      }
-      catch (final ExpressionException e) {
+      } catch (final ExpressionException e) {
         value = valueExpressions[i].getExpression();
       }
       finalValues[i] = value;
@@ -87,19 +95,20 @@ public class EnumeratedPropertyPrompt extends PropertyPrompt {
       return oldValue;
     }
 
-    // Note, of user hit cancel button hit on dialog, null is returned, which will be handled at the next level up
-    return (String) JOptionPane.showInputDialog(
-      dialogParent.getComponent(),
-      promptText,
-      null,
-      JOptionPane.QUESTION_MESSAGE,
-      null,
-      nonBlankValues.toArray(new String[0]),
-      oldValue);
+    // Note, of user hit cancel button hit on dialog, null is returned, which will be handled at the
+    // next level up
+    return (String)
+        JOptionPane.showInputDialog(
+            dialogParent.getComponent(),
+            promptText,
+            null,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            nonBlankValues.toArray(new String[0]),
+            oldValue);
   }
 
   public String[] getValidValues() {
     return validValues;
   }
-
 }

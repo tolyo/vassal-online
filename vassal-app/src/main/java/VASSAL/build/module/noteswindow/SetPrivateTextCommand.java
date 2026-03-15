@@ -20,9 +20,7 @@ import VASSAL.command.Command;
  * at http://www.opensource.org.
  */
 
-/**
- * When executed, adds a {@link PrivateText} to a specified set.
- */
+/** When executed, adds a {@link PrivateText} to a specified set. */
 public class SetPrivateTextCommand extends Command {
   private final Interface i;
   private final PrivateText text;

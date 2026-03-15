@@ -21,9 +21,7 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.IntConfigurer;
 import VASSAL.i18n.Resources;
 
-/**
- * A whole number Module Preference.
- */
+/** A whole number Module Preference. */
 public class IntegerPreference extends BasicPreference {
 
   protected int defaultValue = 0;
@@ -49,7 +47,6 @@ public class IntegerPreference extends BasicPreference {
       value = Integer.valueOf((String) value);
     }
     defaultValue = (Integer) value;
-
   }
 
   @Override

@@ -33,15 +33,6 @@ import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.OpIcon;
 import VASSAL.tools.swing.Dialogs;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -51,35 +42,42 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * An IconFamily is a named set of Icons in the four standard Tango sizes.
  *
- * Each IconFamily consists of at least a Scalable Icon, plus zero or more
- * specifically sized icons.
+ * <p>Each IconFamily consists of at least a Scalable Icon, plus zero or more specifically sized
+ * icons.
  *
- * If a specific sized Icon is missing, the IconFamily will supply a scaled icon
- * based on the Scalable icon.
+ * <p>If a specific sized Icon is missing, the IconFamily will supply a scaled icon based on the
+ * Scalable icon.
  *
- * Icons are created as lazily as possible.
+ * <p>Icons are created as lazily as possible.
  *
- * IconFamilys are created in two ways: - For Vassal inbuilt Icons by
- * IconFactory when it scans the Vengine for inbuilt Icons - For Modules,
- * IconFamilys can be added to IconFamilyContainer by the module designer.
+ * <p>IconFamilys are created in two ways: - For Vassal inbuilt Icons by IconFactory when it scans
+ * the Vengine for inbuilt Icons - For Modules, IconFamilys can be added to IconFamilyContainer by
+ * the module designer.
  *
- * Each IconFamily consists of at least a Scalable Icon, plus zero or more
- * specifically sized icons. If an
+ * <p>Each IconFamily consists of at least a Scalable Icon, plus zero or more specifically sized
+ * icons. If an
  */
 public class IconFamily extends AbstractConfigurable {
 
-  public static final String SCALABLE_ICON = "scalableIcon"; //$NON-NLS-1$
-  public static final String ICON0 = "icon0"; //$NON-NLS-1$
-  public static final String ICON1 = "icon1"; //$NON-NLS-1$
-  public static final String ICON2 = "icon2"; //$NON-NLS-1$
-  public static final String ICON3 = "icon3"; //$NON-NLS-1$
+  public static final String SCALABLE_ICON = "scalableIcon"; // $NON-NLS-1$
+  public static final String ICON0 = "icon0"; // $NON-NLS-1$
+  public static final String ICON1 = "icon1"; // $NON-NLS-1$
+  public static final String ICON2 = "icon2"; // $NON-NLS-1$
+  public static final String ICON3 = "icon3"; // $NON-NLS-1$
 
-  private final PropertyChangeSupport propSupport = new PropertyChangeSupport(
-      this);
+  private final PropertyChangeSupport propSupport = new PropertyChangeSupport(this);
 
   // Tango Icon sizes
   public static final int XSMALL = 0;
@@ -91,14 +89,14 @@ public class IconFamily extends AbstractConfigurable {
   static final int SIZE_COUNT = MAX_SIZE + 1;
 
   // Pixel size of each Tango Size
-  static final int[] SIZES = { 16, 22, 32, 48 };
+  static final int[] SIZES = {16, 22, 32, 48};
 
   // Directories within the icons directory to locate each Tango Size
   static final String[] SIZE_DIRS = {
     "16x16/", //$NON-NLS-1$
     "22x22/", //$NON-NLS-1$
     "32x32/", //$NON-NLS-1$
-    "48x48/"  //$NON-NLS-1$
+    "48x48/" //$NON-NLS-1$
   };
 
   // Names of sizes in local language
@@ -106,7 +104,7 @@ public class IconFamily extends AbstractConfigurable {
 
   // Directory within the icons directory holding the Scalable versions of the
   // icons
-  static final String SCALABLE_DIR = "scalable/"; //$NON-NLS-1$
+  static final String SCALABLE_DIR = "scalable/"; // $NON-NLS-1$
 
   // Cache of the icons in this family
   protected OpIcon[] icons;
@@ -124,18 +122,16 @@ public class IconFamily extends AbstractConfigurable {
   public static String[] getIconSizeNames() {
     synchronized (SIZE_NAMES) {
       if (SIZE_NAMES[0] == null) {
-        SIZE_NAMES[XSMALL] = Resources.getString("Icon.extra_small"); //$NON-NLS-1$
-        SIZE_NAMES[SMALL] = Resources.getString("Icon.small"); //$NON-NLS-1$
-        SIZE_NAMES[MEDIUM] = Resources.getString("Icon.medium"); //$NON-NLS-1$
-        SIZE_NAMES[LARGE] = Resources.getString("Icon.large"); //$NON-NLS-1$
+        SIZE_NAMES[XSMALL] = Resources.getString("Icon.extra_small"); // $NON-NLS-1$
+        SIZE_NAMES[SMALL] = Resources.getString("Icon.small"); // $NON-NLS-1$
+        SIZE_NAMES[MEDIUM] = Resources.getString("Icon.medium"); // $NON-NLS-1$
+        SIZE_NAMES[LARGE] = Resources.getString("Icon.large"); // $NON-NLS-1$
       }
     }
     return SIZE_NAMES;
   }
 
-  /**
-   * Return an Icon Size based on the local language name
-   */
+  /** Return an Icon Size based on the local language name */
   public static int getIconSize(String name) {
     final String[] options = getIconSizeNames();
     for (int i = 0; i < options.length; i++) {
@@ -154,24 +150,20 @@ public class IconFamily extends AbstractConfigurable {
   }
 
   /**
-   * Create a new IconFamily with the given name. The name supplied will
-   * normally be the name of an IconFamily, with no suffix.
+   * Create a new IconFamily with the given name. The name supplied will normally be the name of an
+   * IconFamily, with no suffix.
    *
-   * These constructors are used by IconFactory to create IconFamilys for the
-   * Vassal inbuilt Icons
+   * <p>These constructors are used by IconFactory to create IconFamilys for the Vassal inbuilt
+   * Icons
    *
-   * FIXME: Write this bit...Will be needed once Toolbar Icon support is added
-   * Backward Compatibility: If the name supplied does have a file type suffix,
-   * then it is a specific Icon name from a pre-IconFamily module. By throwing
-   * away the suffix, IconFamily will use the supplied icon as a base icon to
-   * create the full IconFamily.
+   * <p>FIXME: Write this bit...Will be needed once Toolbar Icon support is added Backward
+   * Compatibility: If the name supplied does have a file type suffix, then it is a specific Icon
+   * name from a pre-IconFamily module. By throwing away the suffix, IconFamily will use the
+   * supplied icon as a base icon to create the full IconFamily.
    *
-   * @param familyName
-   *          IconFamily name or Icon name
-   * @param scalableName
-   *          Name of the scalable icon
-   * @param sizeName
-   *          Names of the sized Icons
+   * @param familyName IconFamily name or Icon name
+   * @param scalableName Name of the scalable icon
+   * @param sizeName Names of the sized Icons
    */
   public IconFamily(String familyName, String scalableName, String[] sizeName) {
     this(familyName);
@@ -188,7 +180,7 @@ public class IconFamily extends AbstractConfigurable {
 
   public IconFamily() {
     icons = new OpIcon[SIZE_COUNT];
-    setConfigureName(""); //$NON-NLS-1$
+    setConfigureName(""); // $NON-NLS-1$
   }
 
   public void setScalableIconPath(String s) {
@@ -202,15 +194,13 @@ public class IconFamily extends AbstractConfigurable {
   }
 
   public boolean isLegacy() {
-    return getName().contains("."); //$NON-NLS-1$
+    return getName().contains("."); // $NON-NLS-1$
   }
 
   /**
-   * Return a particular sized icon. If it can't be found, then build it by
-   * scaling the base Icon.
+   * Return a particular sized icon. If it can't be found, then build it by scaling the base Icon.
    *
-   * @param size
-   *          Icon size
+   * @param size Icon size
    * @return Icon
    */
   public Icon getIcon(int size) {
@@ -227,8 +217,7 @@ public class IconFamily extends AbstractConfigurable {
   }
 
   /**
-   * Return a particular sized Icon, but do not build one from the scalable Icon
-   * if it is not found.
+   * Return a particular sized Icon, but do not build one from the scalable Icon if it is not found.
    *
    * @param size
    * @return
@@ -292,10 +281,8 @@ public class IconFamily extends AbstractConfigurable {
   /**
    * Scale an Icon to desired size
    *
-   * @param base
-   *          Base Icon
-   * @param toSizePixels
-   *          Required Size in Pixels
+   * @param base Base Icon
+   * @param toSizePixels Required Size in Pixels
    * @return Scaled Icon
    */
   protected OpIcon scaleIcon(OpIcon base, int toSizePixels) {
@@ -309,8 +296,7 @@ public class IconFamily extends AbstractConfigurable {
       return base;
     }
 
-    return new OpIcon(Op.scale(base.getOp(), ((double) toSizePixels)
-        / base.getIconHeight()));
+    return new OpIcon(Op.scale(base.getOp(), ((double) toSizePixels) / base.getIconHeight()));
   }
 
   public String getName() {
@@ -331,7 +317,7 @@ public class IconFamily extends AbstractConfigurable {
 
   // Note: Custom Configurer
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.IconFamily.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.IconFamily.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -346,27 +332,22 @@ public class IconFamily extends AbstractConfigurable {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] { NAME_PROPERTY, SCALABLE_ICON, ICON0, ICON1, ICON2, ICON3 };
+    return new String[] {NAME_PROPERTY, SCALABLE_ICON, ICON0, ICON1, ICON2, ICON3};
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (NAME_PROPERTY.equals(key)) {
       return getConfigureName();
-    }
-    else if (SCALABLE_ICON.equals(key)) {
+    } else if (SCALABLE_ICON.equals(key)) {
       return scalablePath;
-    }
-    else if (ICON0.equals(key)) {
+    } else if (ICON0.equals(key)) {
       return sizePaths[0];
-    }
-    else if (ICON1.equals(key)) {
+    } else if (ICON1.equals(key)) {
       return sizePaths[1];
-    }
-    else if (ICON2.equals(key)) {
+    } else if (ICON2.equals(key)) {
       return sizePaths[2];
-    }
-    else if (ICON3.equals(key)) {
+    } else if (ICON3.equals(key)) {
       return sizePaths[3];
     }
     return null;
@@ -376,20 +357,15 @@ public class IconFamily extends AbstractConfigurable {
   public void setAttribute(String key, Object value) {
     if (NAME_PROPERTY.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (SCALABLE_ICON.equals(key)) {
+    } else if (SCALABLE_ICON.equals(key)) {
       setScalableIconPath((String) value);
-    }
-    else if (ICON0.equals(key)) {
+    } else if (ICON0.equals(key)) {
       setSizeIconPath(0, (String) value);
-    }
-    else if (ICON1.equals(key)) {
+    } else if (ICON1.equals(key)) {
       setSizeIconPath(1, (String) value);
-    }
-    else if (ICON2.equals(key)) {
+    } else if (ICON2.equals(key)) {
       setSizeIconPath(2, (String) value);
-    }
-    else if (ICON3.equals(key)) {
+    } else if (ICON3.equals(key)) {
       setSizeIconPath(3, (String) value);
     }
   }
@@ -405,14 +381,10 @@ public class IconFamily extends AbstractConfigurable {
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
-  public void addTo(Buildable parent) {
-
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -437,40 +409,45 @@ public class IconFamily extends AbstractConfigurable {
       controls = new JPanel();
       controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
 
-      final JPanel mig = new JPanel(new MigLayout("inset 5")); //$NON-NLS-1$
+      final JPanel mig = new JPanel(new MigLayout("inset 5")); // $NON-NLS-1$
 
-      title = new StringConfigurer(null, "", family.getConfigureName()); //$NON-NLS-1$
-      title.addPropertyChangeListener(evt -> {
-        if (evt.getNewValue() != null) {
-          family.setConfigureName((String) evt.getNewValue());
-        }
-      });
+      title = new StringConfigurer(null, "", family.getConfigureName()); // $NON-NLS-1$
+      title.addPropertyChangeListener(
+          evt -> {
+            if (evt.getNewValue() != null) {
+              family.setConfigureName((String) evt.getNewValue());
+            }
+          });
 
-      mig.add(new JLabel(Resources.getString("Editor.IconFamily.family_name"))); //$NON-NLS-1$
-      mig.add(title.getControls(), "wrap"); //$NON-NLS-1$
+      mig.add(new JLabel(Resources.getString("Editor.IconFamily.family_name"))); // $NON-NLS-1$
+      mig.add(title.getControls(), "wrap"); // $NON-NLS-1$
 
-      errorLabel = new JLabel(Resources.getString("Editor.IconFamily.name_taken")); //$NON-NLS-1$
+      errorLabel = new JLabel(Resources.getString("Editor.IconFamily.name_taken")); // $NON-NLS-1$
       errorLabel.setForeground(Color.red);
       errorLabel.setVisible(false);
-      family.addPropertyChangeListener(evt -> {
-        if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
-          final IconFamily savedFamily = IconFactory.getIconFamily(family
-              .getName());
-          errorLabel.setVisible(savedFamily != null && savedFamily != family);
-        }
-      });
-      mig.add(errorLabel, "span 2,wrap"); //$NON-NLS-1$
+      family.addPropertyChangeListener(
+          evt -> {
+            if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
+              final IconFamily savedFamily = IconFactory.getIconFamily(family.getName());
+              errorLabel.setVisible(savedFamily != null && savedFamily != family);
+            }
+          });
+      mig.add(errorLabel, "span 2,wrap"); // $NON-NLS-1$
 
       final IconImageConfigurer scalableConfig = new IconImageConfigurer(family);
-      mig.add(new JLabel(Resources.getString("Editor.IconFamily.scalable_icon_label"))); //$NON-NLS-1$
-      mig.add(scalableConfig.getControls(), "wrap"); //$NON-NLS-1$
+      mig.add(
+          new JLabel(Resources.getString("Editor.IconFamily.scalable_icon_label"))); // $NON-NLS-1$
+      mig.add(scalableConfig.getControls(), "wrap"); // $NON-NLS-1$
 
       final IconImageConfigurer[] sizeConfig = new IconImageConfigurer[SIZE_COUNT];
       for (int size = 0; size < SIZE_COUNT; size++) {
         sizeConfig[size] = new IconImageConfigurer(family, size);
         final String px = String.valueOf(SIZES[size]);
-        mig.add(new JLabel(Resources.getString("Editor.IconFamily.icon_label", getIconSizeNames()[size], px))); //$NON-NLS-1$
-        mig.add(sizeConfig[size].getControls(), "wrap"); //$NON-NLS-1$
+        mig.add(
+            new JLabel(
+                Resources.getString(
+                    "Editor.IconFamily.icon_label", getIconSizeNames()[size], px))); // $NON-NLS-1$
+        mig.add(sizeConfig[size].getControls(), "wrap"); // $NON-NLS-1$
       }
 
       controls.add(mig);
@@ -487,10 +464,7 @@ public class IconFamily extends AbstractConfigurable {
     }
 
     @Override
-    public void setValue(String s) {
-
-    }
-
+    public void setValue(String s) {}
   }
 
   /**************************************************
@@ -510,8 +484,7 @@ public class IconFamily extends AbstractConfigurable {
       this.family = family;
       if (size < 0) {
         px = SIZES[LARGE];
-      }
-      else {
+      } else {
         px = SIZES[size];
       }
     }
@@ -533,35 +506,39 @@ public class IconFamily extends AbstractConfigurable {
         controls = new JPanel(new MigLayout());
         controls.add(new JLabel(getName()));
 
-        final JPanel p = new JPanel() {
-          private static final long serialVersionUID = 1L;
+        final JPanel p =
+            new JPanel() {
+              private static final long serialVersionUID = 1L;
 
-          @Override
-          public void paint(Graphics g) {
-            g.clearRect(0, 0, getSize().width, getSize().height);
-            final Icon i = getIconValue();
-            if (i != null) {
-              i.paintIcon(this, g, getSize().width / 2 - i.getIconWidth() / 2,
-                  getSize().height / 2 - i.getIconHeight() / 2);
-            }
-          }
-        };
+              @Override
+              public void paint(Graphics g) {
+                g.clearRect(0, 0, getSize().width, getSize().height);
+                final Icon i = getIconValue();
+                if (i != null) {
+                  i.paintIcon(
+                      this,
+                      g,
+                      getSize().width / 2 - i.getIconWidth() / 2,
+                      getSize().height / 2 - i.getIconHeight() / 2);
+                }
+              }
+            };
         p.setPreferredSize(new Dimension(px, px));
         controls.add(p);
 
         final JButton select = new JButton(Resources.getString(Resources.SELECT));
-        select.addActionListener(e -> {
-          selectImage();
-          p.repaint();
-        });
-        controls.add(select, "wrap"); //$NON-NLS-1$
+        select.addActionListener(
+            e -> {
+              selectImage();
+              p.repaint();
+            });
+        controls.add(select, "wrap"); // $NON-NLS-1$
 
         warningLabel = new JLabel();
         warningLabel.setForeground(Color.red);
         warningLabel.setVisible(false);
         checkIconSize();
-        controls.add(warningLabel, "span,wrap"); //$NON-NLS-1$
-
+        controls.add(warningLabel, "span,wrap"); // $NON-NLS-1$
       }
       return controls;
     }
@@ -570,8 +547,7 @@ public class IconFamily extends AbstractConfigurable {
     public String getValueString() {
       if (size < 0) {
         return family.scalablePath;
-      }
-      else {
+      } else {
         return family.sizePaths[size];
       }
     }
@@ -583,8 +559,7 @@ public class IconFamily extends AbstractConfigurable {
           if (family.scalablePath != null) {
             icon = family.getScalableIcon();
           }
-        }
-        else {
+        } else {
           if (family.sizePaths[size] != null) {
             icon = family.getIcon(size);
           }
@@ -597,8 +572,7 @@ public class IconFamily extends AbstractConfigurable {
     public void setValue(String s) {
       if (size < 0) {
         family.setScalableIconPath(buildPath(s));
-      }
-      else {
+      } else {
         family.setSizeIconPath(size, buildPath(s));
         checkIconSize();
       }
@@ -608,7 +582,11 @@ public class IconFamily extends AbstractConfigurable {
       final Icon check = family.getRawIcon(size);
       if (check != null) {
         if (check.getIconHeight() != SIZES[size]) {
-          setWarning(Resources.getString("Editor.IconFamily.size_warning", SIZES[size], check.getIconHeight())); //$NON-NLS-1$
+          setWarning(
+              Resources.getString(
+                  "Editor.IconFamily.size_warning",
+                  SIZES[size],
+                  check.getIconHeight())); // $NON-NLS-1$
         }
       }
     }
@@ -619,10 +597,9 @@ public class IconFamily extends AbstractConfigurable {
       }
 
       if (size < 0) {
-        return ArchiveWriter.ICON_DIR + SCALABLE_DIR + s; //$NON-NLS-1$
-      }
-      else {
-        return ArchiveWriter.ICON_DIR + SIZE_DIRS[size] + s; //$NON-NLS-1$
+        return ArchiveWriter.ICON_DIR + SCALABLE_DIR + s; // $NON-NLS-1$
+      } else {
+        return ArchiveWriter.ICON_DIR + SIZE_DIRS[size] + s; // $NON-NLS-1$
       }
     }
 
@@ -643,45 +620,42 @@ public class IconFamily extends AbstractConfigurable {
     protected void selectImage() {
       final FileChooser fc = GameModule.getGameModule().getEditorImageChooser();
       fc.setFileFilter(new FamilyImageFilter(family.getName()));
-      fc.setSelectedFile(new File(family.getName() + ".*")); //$NON-NLS-1$
+      fc.setSelectedFile(new File(family.getName() + ".*")); // $NON-NLS-1$
       if (fc.showOpenDialog(getControls()) == FileChooser.APPROVE_OPTION) {
         final File f = fc.getSelectedFile();
         final String name = f.getName();
-        if (name.split("\\.").length != 2) { //$NON-NLS-1$
-          showError(Resources.getString("Editor.IconFamily.illegal_icon_name")); //$NON-NLS-1$
-        }
-        else if (!name.startsWith(family.getName())) {
-          showError(Resources.getString("Editor.IconFamily.bad_icon_name", family.getName())); //$NON-NLS-1$
-        }
-        else if (!ImageUtils.hasImageSuffix(name)) {
-          showError(Resources.getString("Editor.IconFamily.bad_icon_file")); //$NON-NLS-1$
-        }
-        else {
-          GameModule.getGameModule().getArchiveWriter().addImage(f.getPath(),
-              buildPath(f.getName()));
-          setWarning(""); //$NON-NLS-1$
+        if (name.split("\\.").length != 2) { // $NON-NLS-1$
+          showError(Resources.getString("Editor.IconFamily.illegal_icon_name")); // $NON-NLS-1$
+        } else if (!name.startsWith(family.getName())) {
+          showError(
+              Resources.getString(
+                  "Editor.IconFamily.bad_icon_name", family.getName())); // $NON-NLS-1$
+        } else if (!ImageUtils.hasImageSuffix(name)) {
+          showError(Resources.getString("Editor.IconFamily.bad_icon_file")); // $NON-NLS-1$
+        } else {
+          GameModule.getGameModule()
+              .getArchiveWriter()
+              .addImage(f.getPath(), buildPath(f.getName()));
+          setWarning(""); // $NON-NLS-1$
           setValue(name);
         }
-      }
-      else {
-        setWarning(""); //$NON-NLS-1$
+      } else {
+        setWarning(""); // $NON-NLS-1$
         setValue(null);
       }
     }
 
     protected void showError(String message) {
-      Dialogs.showMessageDialog(SwingUtilities.getWindowAncestor(controls),
-          Resources.getString("Editor.IconFamily.icon_load_error"),  //$NON-NLS-1$
-          Resources.getString("Editor.IconFamily.cannot_load_icon"), message, //$NON-NLS-1$
+      Dialogs.showMessageDialog(
+          SwingUtilities.getWindowAncestor(controls),
+          Resources.getString("Editor.IconFamily.icon_load_error"), // $NON-NLS-1$
+          Resources.getString("Editor.IconFamily.cannot_load_icon"),
+          message, //$NON-NLS-1$
           JOptionPane.ERROR_MESSAGE);
     }
-
   }
 
-  /**
-   * Filter Icon files matching this family
-   *
-   */
+  /** Filter Icon files matching this family */
   static class FamilyImageFilter extends ImageFileFilter {
     private final String familyName;
 
@@ -693,7 +667,7 @@ public class IconFamily extends AbstractConfigurable {
     @Override
     public boolean accept(File f) {
       if (super.accept(f)) {
-        final String s = f.getName().split("\\.")[0]; //$NON-NLS-1$
+        final String s = f.getName().split("\\.")[0]; // $NON-NLS-1$
         return s.equals(familyName);
       }
       return false;

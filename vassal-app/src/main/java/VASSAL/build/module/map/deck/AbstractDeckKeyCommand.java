@@ -28,14 +28,12 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Base class for additional Menu items (with Hotkeys) that can be added to a DrawPile/Deck
- */
-public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implements DeckKeyCommand {
+/** Base class for additional Menu items (with Hotkeys) that can be added to a DrawPile/Deck */
+public abstract class AbstractDeckKeyCommand extends AbstractConfigurable
+    implements DeckKeyCommand {
   public static final String DESCRIPTION = "description";
   public static final String MENU_TEXT = "menuText";
   public static final String REPORT_FORMAT = "reportFormat";
@@ -68,21 +66,17 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
   public void setAttribute(String key, Object value) {
     if (DESCRIPTION.equals(key)) {
       description = (String) value;
-    }
-    else if (HOTKEY.equals(key)) {
+    } else if (HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       keyStroke = (NamedKeyStroke) value;
-    }
-    else if (MENU_TEXT.equals(key)) {
+    } else if (MENU_TEXT.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       if (value instanceof String) {
         reportFormat.setFormat((String) value);
-      }
-      else {
+      } else {
         reportFormat = (FormattedString) value;
       }
     }
@@ -92,14 +86,11 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
   public String getAttributeValueString(String key) {
     if (DESCRIPTION.equals(key)) {
       return description;
-    }
-    else if (HOTKEY.equals(key)) {
+    } else if (HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(keyStroke);
-    }
-    else if (MENU_TEXT.equals(key)) {
+    } else if (MENU_TEXT.equals(key)) {
       return getConfigureName();
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       return reportFormat.getFormat();
     }
     return null;
@@ -117,16 +108,16 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] {String.class, String.class, NamedKeyStroke.class, DeckReportFormatConfig.class};
+    return new Class<?>[] {
+      String.class, String.class, NamedKeyStroke.class, DeckReportFormatConfig.class
+    };
   }
 
   @Override
-  public void addTo(Buildable parent) {
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
@@ -140,6 +131,7 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override
@@ -149,10 +141,11 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
     return l;
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -161,10 +154,11 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
     return l;
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -177,12 +171,13 @@ public abstract class AbstractDeckKeyCommand extends AbstractConfigurable implem
 
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, ((DeckKeyCommand) c).getAdditionalReportProperties());
+      return new PlayerIdFormattedExpressionConfigurer(
+          key, name, ((DeckKeyCommand) c).getAdditionalReportProperties());
     }
   }
 
   @Override
   public String[] getAdditionalReportProperties() {
-    return new String[]{DECK_NAME, COMMAND_NAME};
+    return new String[] {DECK_NAME, COMMAND_NAME};
   }
 }

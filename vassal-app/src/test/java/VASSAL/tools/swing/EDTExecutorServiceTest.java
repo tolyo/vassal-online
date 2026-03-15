@@ -17,6 +17,9 @@
  */
 package VASSAL.tools.swing;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import VASSAL.tools.concurrent.SimpleFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -24,12 +27,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
-
-import VASSAL.tools.concurrent.SimpleFuture;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class EDTExecutorServiceTest {
   @Test
@@ -66,16 +64,16 @@ public class EDTExecutorServiceTest {
   @Test
   public void testIsTerminatedFalse() throws InterruptedException {
     final EDTExecutorService ex = new EDTExecutorService();
-    ex.submit(new Runnable() {
-      public void run() {
-        try {
-          // wait a lot longer than awaitTermination() below
-          Thread.sleep(100L);
-        }
-        catch (InterruptedException e) {
-        }
-      }
-    });
+    ex.submit(
+        new Runnable() {
+          public void run() {
+            try {
+              // wait a lot longer than awaitTermination() below
+              Thread.sleep(100L);
+            } catch (InterruptedException e) {
+            }
+          }
+        });
 
     ex.shutdown();
     assertFalse(ex.awaitTermination(1L, TimeUnit.NANOSECONDS));
@@ -85,11 +83,13 @@ public class EDTExecutorServiceTest {
   @Test
   public void testSubmitRunnable() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
-    final Future<?> f = ex.submit(new Runnable() {
-      public void run() {
-        assertTrue(SwingUtilities.isEventDispatchThread());
-      }
-    });
+    final Future<?> f =
+        ex.submit(
+            new Runnable() {
+              public void run() {
+                assertTrue(SwingUtilities.isEventDispatchThread());
+              }
+            });
 
     f.get();
   }
@@ -97,11 +97,14 @@ public class EDTExecutorServiceTest {
   @Test
   public void testSubmitRunnableWithValue() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
-    final Future<Double> f = ex.submit(new Runnable() {
-      public void run() {
-        assertTrue(SwingUtilities.isEventDispatchThread());
-      }
-    }, Math.PI);
+    final Future<Double> f =
+        ex.submit(
+            new Runnable() {
+              public void run() {
+                assertTrue(SwingUtilities.isEventDispatchThread());
+              }
+            },
+            Math.PI);
 
     assertEquals(Math.PI, f.get(), 0.0);
   }
@@ -109,12 +112,14 @@ public class EDTExecutorServiceTest {
   @Test
   public void testSubmitCallable() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
-    final Future<Byte> f = ex.submit(new Callable<Byte>() {
-      public Byte call() {
-        assertTrue(SwingUtilities.isEventDispatchThread());
-        return (byte) 0xfe;
-      }
-    });
+    final Future<Byte> f =
+        ex.submit(
+            new Callable<Byte>() {
+              public Byte call() {
+                assertTrue(SwingUtilities.isEventDispatchThread());
+                return (byte) 0xfe;
+              }
+            });
 
     assertEquals((byte) 0xfe, f.get().byteValue());
   }
@@ -122,11 +127,13 @@ public class EDTExecutorServiceTest {
   @Test
   public void testSubmitEDTRunnableFuture() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
-    final Future<Short> f = ex.submit(new EDTRunnableFuture<Short>((short) 3) {
-      protected void runOnEDT() {
-        assertTrue(SwingUtilities.isEventDispatchThread());
-      }
-    });
+    final Future<Short> f =
+        ex.submit(
+            new EDTRunnableFuture<Short>((short) 3) {
+              protected void runOnEDT() {
+                assertTrue(SwingUtilities.isEventDispatchThread());
+              }
+            });
 
     assertEquals(3, f.get().shortValue());
   }
@@ -137,11 +144,12 @@ public class EDTExecutorServiceTest {
 
     final SimpleFuture<Boolean> f = new SimpleFuture<Boolean>();
 
-    final Runnable r = new Runnable() {
-      public void run() {
-        f.set(SwingUtilities.isEventDispatchThread());
-      }
-    };
+    final Runnable r =
+        new Runnable() {
+          public void run() {
+            f.set(SwingUtilities.isEventDispatchThread());
+          }
+        };
 
     ex.execute(r);
     assertTrue(f.get());
@@ -151,15 +159,15 @@ public class EDTExecutorServiceTest {
   public void testInvokeAll() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
 
-    final List<Callable<Character>> tasks =
-      new ArrayList<Callable<Character>>();
+    final List<Callable<Character>> tasks = new ArrayList<Callable<Character>>();
     for (int i = 0; i < 10; ++i) {
-      tasks.add(new Callable<Character>() {
-        public Character call() {
-          assertTrue(SwingUtilities.isEventDispatchThread());
-          return 'x';
-        }
-      });
+      tasks.add(
+          new Callable<Character>() {
+            public Character call() {
+              assertTrue(SwingUtilities.isEventDispatchThread());
+              return 'x';
+            }
+          });
     }
 
     for (Future<Character> f : ex.invokeAll(tasks)) {
@@ -171,15 +179,15 @@ public class EDTExecutorServiceTest {
   public void testInvokeAllTimeout() throws Exception {
     final EDTExecutorService ex = new EDTExecutorService();
 
-    final List<Callable<Character>> tasks =
-      new ArrayList<Callable<Character>>();
+    final List<Callable<Character>> tasks = new ArrayList<Callable<Character>>();
     for (int i = 0; i < 10; ++i) {
-      tasks.add(new Callable<Character>() {
-        public Character call() {
-          assertTrue(SwingUtilities.isEventDispatchThread());
-          return 'x';
-        }
-      });
+      tasks.add(
+          new Callable<Character>() {
+            public Character call() {
+              assertTrue(SwingUtilities.isEventDispatchThread());
+              return 'x';
+            }
+          });
     }
 
     for (Future<Character> f : ex.invokeAll(tasks, 1L, TimeUnit.NANOSECONDS)) {
@@ -205,18 +213,28 @@ public class EDTExecutorServiceTest {
   public void testSubmitCallableAfterShutdown() {
     final EDTExecutorService ex = new EDTExecutorService();
     ex.shutdown();
-    assertThrows(RejectedExecutionException.class, () -> ex.submit(new Callable<Float>() {
-      public Float call() { return 1.0f; }
-    }));
+    assertThrows(
+        RejectedExecutionException.class,
+        () ->
+            ex.submit(
+                new Callable<Float>() {
+                  public Float call() {
+                    return 1.0f;
+                  }
+                }));
   }
 
   @Test
   public void testSubmitEDTRunnableFutureAfterShutdown() {
     final EDTExecutorService ex = new EDTExecutorService();
     ex.shutdown();
-    assertThrows(RejectedExecutionException.class, () -> ex.submit(new EDTRunnableFuture<Void>() {
-      protected void runOnEDT() {}
-    }));
+    assertThrows(
+        RejectedExecutionException.class,
+        () ->
+            ex.submit(
+                new EDTRunnableFuture<Void>() {
+                  protected void runOnEDT() {}
+                }));
   }
 
   @Test
@@ -233,9 +251,12 @@ public class EDTExecutorServiceTest {
 
     final List<Callable<Boolean>> tasks = new ArrayList<>();
     for (int i = 0; i < 10; ++i) {
-      tasks.add(new Callable<Boolean>() {
-        public Boolean call() { return Boolean.TRUE; }
-      });
+      tasks.add(
+          new Callable<Boolean>() {
+            public Boolean call() {
+              return Boolean.TRUE;
+            }
+          });
     }
 
     assertThrows(RejectedExecutionException.class, () -> ex.invokeAll(tasks));
@@ -248,11 +269,15 @@ public class EDTExecutorServiceTest {
 
     final List<Callable<Boolean>> tasks = new ArrayList<>();
     for (int i = 0; i < 10; ++i) {
-      tasks.add(new Callable<Boolean>() {
-        public Boolean call() { return Boolean.TRUE; }
-      });
+      tasks.add(
+          new Callable<Boolean>() {
+            public Boolean call() {
+              return Boolean.TRUE;
+            }
+          });
     }
 
-    assertThrows(RejectedExecutionException.class, () -> ex.invokeAll(tasks, 1L, TimeUnit.NANOSECONDS));
+    assertThrows(
+        RejectedExecutionException.class, () -> ex.invokeAll(tasks, 1L, TimeUnit.NANOSECONDS));
   }
 }

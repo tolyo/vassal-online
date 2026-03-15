@@ -57,7 +57,8 @@ public class BeanShellExpressionTest implements Auditable {
     assertThat(BeanShellExpression.convertProperty(""), is(emptyString()));
     assertThat(BeanShellExpression.convertProperty("{abc}"), is(equalTo("abc")));
     assertThat(BeanShellExpression.convertProperty("abc"), is(equalTo("abc")));
-    assertThat(BeanShellExpression.convertProperty("abc def"), is(equalTo("GetProperty(\"abc def\")")));
+    assertThat(
+        BeanShellExpression.convertProperty("abc def"), is(equalTo("GetProperty(\"abc def\")")));
   }
 
   @Test
@@ -104,6 +105,5 @@ public class BeanShellExpressionTest implements Auditable {
     e = BeanShellExpression.createExpression("\"abc\"", true);
     assertThat(e, is(instanceOf(BeanShellExpression.class)));
     assertThat(e.getExpression(), is(equalTo("{\"abc\"}")));
-
   }
 }

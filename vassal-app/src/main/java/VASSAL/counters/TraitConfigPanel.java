@@ -20,20 +20,15 @@ package VASSAL.counters;
 
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
-
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * A standardised Panel for use by Trait configurers
- */
+/** A standardised Panel for use by Trait configurers */
 public class TraitConfigPanel extends JPanel {
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Create a new default Trait Config Panel
-   */
+  /** Create a new default Trait Config Panel */
   public TraitConfigPanel() {
     this(false);
   }
@@ -58,6 +53,7 @@ public class TraitConfigPanel extends JPanel {
 
   /**
    * Add a label as a JLabel.
+   *
    * @param text text to wrap in the JLabel
    */
   public void addLabel(String text) {
@@ -66,6 +62,7 @@ public class TraitConfigPanel extends JPanel {
 
   /**
    * Add the Controls from a Configurer
+   *
    * @param c Configurer
    */
   public void addControls(Configurer c) {
@@ -79,8 +76,8 @@ public class TraitConfigPanel extends JPanel {
   /**
    * Add a component and its label with additional MigLayout constraints to this panel.
    *
-   * NOTE: This is the base level add() method. All other add() overrides should eventually
-   * call this method.
+   * <p>NOTE: This is the base level add() method. All other add() overrides should eventually call
+   * this method.
    *
    * @param label Label
    * @param c Configurer components
@@ -143,8 +140,10 @@ public class TraitConfigPanel extends JPanel {
   public void add(JLabel label, JPanel panel) {
     add(label, panel, "");
   }
+
   /**
    * Add a label based on an i18Key and an existing JPanel containing controls
+   *
    * @param i18nKey i18n Key
    * @param p JPanel containing controls
    */

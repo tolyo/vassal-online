@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 class ProcessCallable implements Callable<Integer> {
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(ProcessCallable.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProcessCallable.class);
 
   protected final Process proc;
   protected final InputStreamPump stdoutPump;
@@ -56,10 +54,7 @@ class ProcessCallable implements Callable<Integer> {
    * @param exec the executor which runs the stream pumps
    */
   public ProcessCallable(
-    Process proc,
-    InputStreamPump stdoutPump,
-    InputStreamPump stderrPump,
-    ExecutorService exec) {
+      Process proc, InputStreamPump stdoutPump, InputStreamPump stderrPump, ExecutorService exec) {
 
     if (proc == null) throw new IllegalArgumentException("proc == null");
 
@@ -74,7 +69,7 @@ class ProcessCallable implements Callable<Integer> {
   /**
    * {@inheritDoc}
    *
-   *  @return the return value of the process
+   * @return the return value of the process
    */
   @Override
   public Integer call() {
@@ -101,8 +96,7 @@ class ProcessCallable implements Callable<Integer> {
       closeStreams();
 
       return result;
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       // We don't log this because it's not an error, it just
       // means that the process is being cancelled.
 
@@ -128,22 +122,17 @@ class ProcessCallable implements Callable<Integer> {
 
     try {
       f.get(1000L, TimeUnit.MILLISECONDS);
-    }
-    catch (ExecutionException | InterruptedException e) {
+    } catch (ExecutionException | InterruptedException e) {
       logger.error("", e);
-    }
-    catch (TimeoutException e) {
+    } catch (TimeoutException e) {
       logger.error("", e);
       f.cancel(true);
     }
   }
 
   protected void closeStreams() {
-    List.of(
-      proc.getOutputStream(),
-      proc.getErrorStream(),
-      proc.getInputStream()
-    ).forEach(this::closeCloseable);
+    List.of(proc.getOutputStream(), proc.getErrorStream(), proc.getInputStream())
+        .forEach(this::closeCloseable);
   }
 
   private void closeCloseable(Closeable closeable) {
@@ -153,9 +142,8 @@ class ProcessCallable implements Callable<Integer> {
 
     try {
       closeable.close();
-    }
-    catch (IOException e) {
-      logger.error("Error while closing stream", e); //NON-NLS
+    } catch (IOException e) {
+      logger.error("Error while closing stream", e); // NON-NLS
     }
   }
 }

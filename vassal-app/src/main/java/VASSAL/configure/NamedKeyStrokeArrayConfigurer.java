@@ -20,22 +20,16 @@ package VASSAL.configure;
 import VASSAL.counters.TraitLayout;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
-
 import org.apache.commons.lang3.ArrayUtils;
 
-/**
- * Configures an array of {link NamedKeyStrokes}
- */
+/** Configures an array of {link NamedKeyStrokes} */
 public class NamedKeyStrokeArrayConfigurer extends Configurer implements ConfigurableList {
   private JPanel controls;
   private JPanel panel;
@@ -66,15 +60,17 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
   @Override
   public Component getControls() {
     if (panel == null) {
-      panel = new JPanel(new MigLayout("ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      panel =
+          new JPanel(
+              new MigLayout("ins 0," + TraitLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
 
-      controls = new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
+      controls =
+          new JPanel(new MigLayout(ConfigurerLayout.STANDARD_GAPY, "[grow,fill][]")); // NON-NLS
       controls.setBorder(BorderFactory.createEtchedBorder());
       panel.add(controls, "grow"); // NON-NLS
       panel.add(getListController(), "growy 0,aligny center"); // NON-NLS
 
       rebuildControls();
-
     }
     return panel;
   }
@@ -83,9 +79,8 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     rebuildControls();
     entries.get(focus).requestFocus();
   }
-  /**
-   * Rebuild controls from scratch
-   */
+
+  /** Rebuild controls from scratch */
   private void rebuildControls() {
     entries.clear();
     controls.removeAll();
@@ -103,9 +98,7 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     repack();
   }
 
-  /**
-   * Refresh visible state of controls without rebuilding
-   */
+  /** Refresh visible state of controls without rebuilding */
   private void updateControls() {
     int i = 0;
     for (final NKSAEntry entry : entries) {
@@ -113,10 +106,10 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     }
     getListController();
     controller.setCanMoveUp(getSelectedEntryIndex() > 0);
-    controller.setCanMoveDown(getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
+    controller.setCanMoveDown(
+        getSelectedEntryIndex() >= 0 && getSelectedEntryIndex() < entries.size() - 1);
 
     controls.repaint();
-
   }
 
   @Override
@@ -148,7 +141,7 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
   public NamedKeyStroke[] getKeyStrokes() {
     final List<NamedKeyStroke> l = new ArrayList<>();
     for (final NKSAEntry entry : entries) {
-      final NamedKeyStroke value = (NamedKeyStroke)  entry.getConfigurer().getValue();
+      final NamedKeyStroke value = (NamedKeyStroke) entry.getConfigurer().getValue();
       if (value != null) {
         l.add(value);
       }
@@ -191,7 +184,8 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     }
 
     final int pos = getSelectedEntryIndex();
-    NamedKeyStroke[] keys = getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
+    NamedKeyStroke[] keys =
+        getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
     final NamedKeyStroke moving = keys[pos];
 
     keys = ArrayUtils.remove(keys, pos);
@@ -210,7 +204,8 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     }
 
     final int pos = getSelectedEntryIndex();
-    NamedKeyStroke[] keys = getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
+    NamedKeyStroke[] keys =
+        getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
     final NamedKeyStroke moving = keys[pos];
 
     keys = ArrayUtils.remove(keys, pos);
@@ -226,7 +221,8 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
   public void addEntry() {
 
     final int pos = getSelectedEntryIndex();
-    final NamedKeyStroke[] keys = getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
+    final NamedKeyStroke[] keys =
+        getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
 
     final int newEntry;
     // Insert the new entry into the list at the appropriate place
@@ -234,22 +230,21 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
       setValue(ArrayUtils.add(keys, NamedKeyStroke.NULL_KEYSTROKE));
       newEntry = getNameKeyStrokeArrayValue().length - 1;
       setSelectedEntryIndex(newEntry);
-    }
-    else {
+    } else {
       newEntry = pos + 1;
       setValue(ArrayUtils.insert(newEntry, keys, NamedKeyStroke.NULL_KEYSTROKE));
       setSelectedEntryIndex(newEntry);
     }
 
     rebuildControls(newEntry);
-
   }
 
   @Override
   public void deleteEntry(ConfigurableListEntry entry) {
 
     final int pos = entries.indexOf(entry);
-    final NamedKeyStroke[] keys = getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
+    final NamedKeyStroke[] keys =
+        getValue() == null ? new NamedKeyStroke[0] : getNameKeyStrokeArrayValue();
 
     setValue(ArrayUtils.remove(keys, pos));
     setSelectedEntryIndex(Math.min(pos, entries.size() - 1));
@@ -257,7 +252,6 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     if (selectedEntryIndex >= 0) {
       entries.get(selectedEntryIndex).requestFocus();
     }
-
   }
 
   @Override
@@ -305,7 +299,7 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
      * Build a new List Entry
      *
      * @param parentConfig Parent List
-     * @param value        Initial value for entry
+     * @param value Initial value for entry
      */
     public NKSAEntry(ConfigurableList parentConfig, Object value) {
       super(parentConfig, value);
@@ -326,6 +320,5 @@ public class NamedKeyStrokeArrayConfigurer extends Configurer implements Configu
     public void setHighlighted(boolean b) {
       getConfigurer().setHighlighted(b);
     }
-
   }
 }

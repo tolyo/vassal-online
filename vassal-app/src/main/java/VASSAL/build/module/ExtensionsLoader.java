@@ -17,6 +17,14 @@
  */
 package VASSAL.build.module;
 
+import VASSAL.build.GameModule;
+import VASSAL.build.widget.PieceSlot;
+import VASSAL.command.Command;
+import VASSAL.command.CommandEncoder;
+import VASSAL.configure.DirectoryConfigurer;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.DataArchive;
+import VASSAL.tools.SequenceEncoder;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,27 +32,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.build.widget.PieceSlot;
-import VASSAL.build.GameModule;
-import VASSAL.command.Command;
-import VASSAL.command.CommandEncoder;
-import VASSAL.configure.DirectoryConfigurer;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.DataArchive;
-import VASSAL.tools.SequenceEncoder;
-
 public class ExtensionsLoader implements CommandEncoder {
-  private static final Logger logger =
-    LoggerFactory.getLogger(ExtensionsLoader.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExtensionsLoader.class);
 
-  public static final String COMMAND_PREFIX = "EXT\t"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "EXT\t"; // $NON-NLS-1$
   // Preferences key for the list of extensions to load
-  public static final String SPECIFY_DIR_IN_PREFS = "specifyExtensionDirInPrefs"; //$NON-NLS-1$
-  public static final String EXTENSION_DIR = "extensionDIR"; //$NON-NLS-1$
+  public static final String SPECIFY_DIR_IN_PREFS = "specifyExtensionDirInPrefs"; // $NON-NLS-1$
+  public static final String EXTENSION_DIR = "extensionDIR"; // $NON-NLS-1$
 
   protected Set<String> loadedExtensions = new HashSet<>();
   protected Map<String, String> loadedIds = new HashMap<>();
@@ -54,20 +51,29 @@ public class ExtensionsLoader implements CommandEncoder {
 
   public void addTo(GameModule mod) {
     extMgr = new ExtensionsManager(mod);
-    globalExtMgr = new ExtensionsManager("ext"); //NON-NLS
+    globalExtMgr = new ExtensionsManager("ext"); // NON-NLS
     mod.addCommandEncoder(this);
-    if ("true".equals(GlobalOptions.getInstance().getAttributeValueString(SPECIFY_DIR_IN_PREFS))) { //$NON-NLS-1$
-      final DirectoryConfigurer config = new DirectoryConfigurer(EXTENSION_DIR, Resources.getString("ExtensionsLoader.extensions_directory")); //$NON-NLS-1$
+    if ("true"
+        .equals(
+            GlobalOptions.getInstance()
+                .getAttributeValueString(SPECIFY_DIR_IN_PREFS))) { // $NON-NLS-1$
+      final DirectoryConfigurer config =
+          new DirectoryConfigurer(
+              EXTENSION_DIR,
+              Resources.getString("ExtensionsLoader.extensions_directory")); // $NON-NLS-1$
       config.setValue((Object) null);
-      GameModule.getGameModule().getPrefs().addOption(Resources.getString("ExtensionsLoader.extensions_tab"), config); //$NON-NLS-1$
+      GameModule.getGameModule()
+          .getPrefs()
+          .addOption(Resources.getString("ExtensionsLoader.extensions_tab"), config); // $NON-NLS-1$
       extMgr.setExtensionsDirectory(config.getFileValue());
       if (config.getFileValue() == null) {
         config.setValue(extMgr.getExtensionsDirectory(false).getAbsoluteFile());
       }
-      config.addPropertyChangeListener(evt -> {
-        extMgr.setExtensionsDirectory((File) evt.getNewValue());
-        addExtensions();
-      });
+      config.addPropertyChangeListener(
+          evt -> {
+            extMgr.setExtensionsDirectory((File) evt.getNewValue());
+            addExtensions();
+          });
     }
     addExtensions();
 
@@ -88,14 +94,15 @@ public class ExtensionsLoader implements CommandEncoder {
     }
     for (final File ext : extMgr.getActiveExtensions()) {
       if (!addExtension(ext)) {
-        GameModule.getGameModule().warn(Resources.getString("ExtensionsLoader.deactivating_extension", ext.getName()));
+        GameModule.getGameModule()
+            .warn(Resources.getString("ExtensionsLoader.deactivating_extension", ext.getName()));
         extMgr.setActive(ext, false);
       }
     }
   }
 
   protected boolean addExtension(File extension) {
-    logger.info("Loading extension " + extension); //NON-NLS
+    logger.info("Loading extension " + extension); // NON-NLS
     final String extname = extension.getPath();
     boolean success = loadedExtensions.contains(extname);
     if (!success) {
@@ -108,7 +115,9 @@ public class ExtensionsLoader implements CommandEncoder {
         if (id.length() > 0) {
           for (final String loadedId : loadedIds.keySet()) {
             if (loadedId.equals(id)) {
-              idMsg = Resources.getString("ExtensionsLoader.id_conflict", extension.getName(), id, loadedIds.get(id));
+              idMsg =
+                  Resources.getString(
+                      "ExtensionsLoader.id_conflict", extension.getName(), id, loadedIds.get(id));
             }
           }
           loadedIds.put(id, extname);
@@ -124,24 +133,21 @@ public class ExtensionsLoader implements CommandEncoder {
           logger.info(idMsg);
         }
         success = true;
-      }
-      catch (ZipException e) {
+      } catch (ZipException e) {
         // Not a zip file. Ignore.
-      }
-      catch (IOException | LoadExtensionException e) {
+      } catch (IOException | LoadExtensionException e) {
         reportBuildError(e, extension.getName());
       }
     }
     return success;
   }
 
-  protected ModuleExtension createExtension(String extname)
-                                            throws ZipException, IOException {
+  protected ModuleExtension createExtension(String extname) throws ZipException, IOException {
     return new ModuleExtension(new DataArchive(extname));
   }
 
   protected String getLoadedMessage(String name, String version) {
-    return Resources.getString("ExtensionsLoader.extension_loaded", name, version); //$NON-NLS-1$
+    return Resources.getString("ExtensionsLoader.extension_loaded", name, version); // $NON-NLS-1$
   }
 
   private void reportBuildError(Exception e, String name) {
@@ -150,7 +156,7 @@ public class ExtensionsLoader implements CommandEncoder {
       msg = e.getClass().getName();
       msg = msg.substring(msg.lastIndexOf('.'));
     }
-    GameModule.getGameModule().warn(getErrorMessage(name, msg)); //$NON-NLS-1$
+    GameModule.getGameModule().warn(getErrorMessage(name, msg)); // $NON-NLS-1$
   }
 
   protected String getErrorMessage(String name, String msg) {
@@ -162,7 +168,8 @@ public class ExtensionsLoader implements CommandEncoder {
     if (!command.startsWith(COMMAND_PREFIX)) {
       return null;
     }
-    final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
+    final SequenceEncoder.Decoder st =
+        new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
     return new ModuleExtension.RegCmd(st.nextToken(), st.nextToken());
   }
 
@@ -173,9 +180,7 @@ public class ExtensionsLoader implements CommandEncoder {
     }
     final ModuleExtension.RegCmd cmd = (ModuleExtension.RegCmd) c;
     final SequenceEncoder se = new SequenceEncoder('\t');
-    se
-      .append(cmd.getName())
-      .append(cmd.getVersion());
+    se.append(cmd.getName()).append(cmd.getVersion());
     return COMMAND_PREFIX + se.getValue();
   }
 

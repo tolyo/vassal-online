@@ -18,9 +18,7 @@ package VASSAL.build.module.noteswindow;
 
 import VASSAL.command.Command;
 
-/**
- * When executed, adds a {@link SecretNote} to a specified List.
- */
+/** When executed, adds a {@link SecretNote} to a specified List. */
 public class AddSecretNoteCommand extends Command {
   private final Interface i;
   private final SecretNote note;

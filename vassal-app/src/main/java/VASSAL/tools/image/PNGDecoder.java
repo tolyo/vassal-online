@@ -54,8 +54,7 @@ class PNGDecoder {
 
   static final long sig = 0x89504e470d0a1a0aL;
 
-  public static boolean decodeSignature(DataInputStream in)
-                                                          throws IOException {
+  public static boolean decodeSignature(DataInputStream in) throws IOException {
     // 5.2
     return in.readLong() == sig;
   }
@@ -77,13 +76,13 @@ class PNGDecoder {
 
     final long crc = in.readInt() & 0x0000000ffffffffL;
 
-/*
-    final CRC32 crc32 = new CRC32();
-    crc32.update(type);
-    crc32.update(data);
-    if (crc != crc32.getValue())
-      throw new IOException("corrupted " + type + " chunk");
-*/
+    /*
+        final CRC32 crc32 = new CRC32();
+        crc32.update(type);
+        crc32.update(data);
+        if (crc != crc32.getValue())
+          throw new IOException("corrupted " + type + " chunk");
+    */
 
     return new Chunk(type, data, crc);
   }
@@ -96,7 +95,7 @@ class PNGDecoder {
     private Chunk(int type, byte[] data, long crc) {
       this.type = type;
       this.data = data;
-      this.crc  = crc;
+      this.crc = crc;
     }
   }
 }

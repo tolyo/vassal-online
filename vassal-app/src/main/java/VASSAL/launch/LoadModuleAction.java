@@ -17,11 +17,6 @@
  */
 package VASSAL.launch;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.ExtensionsLoader;
 import VASSAL.build.module.WizardSupport;
@@ -32,6 +27,10 @@ import VASSAL.preferences.Prefs;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.UsernameAndPasswordDialog;
 import VASSAL.tools.filechooser.FileChooser;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Loads a module in play mode
@@ -58,9 +57,10 @@ public class LoadModuleAction extends GameModuleAction {
     File target = moduleFile;
     if (target == null) {
       if (fc == null) {
-        fc = FileChooser.createFileChooser(comp,
-          (DirectoryConfigurer)
-            Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
+        fc =
+            FileChooser.createFileChooser(
+                comp,
+                (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
       }
 
       if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
@@ -84,11 +84,11 @@ public class LoadModuleAction extends GameModuleAction {
   }
 
   private void showWizardOrPlayerWindow(GameModule module) {
-    final Boolean showWizard = (Boolean) Prefs.getGlobalPrefs().getValue(WizardSupport.WELCOME_WIZARD_KEY);
+    final Boolean showWizard =
+        (Boolean) Prefs.getGlobalPrefs().getValue(WizardSupport.WELCOME_WIZARD_KEY);
     if (Boolean.TRUE.equals(showWizard)) {
       module.getWizardSupport().showWelcomeWizard();
-    }
-    else {
+    } else {
       module.getPlayerWindow().setVisible(true);
 
       // prompt for username and password if wizard is off

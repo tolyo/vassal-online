@@ -21,15 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * A simple Room bean
- */
+/** A simple Room bean */
 public class SimpleRoom implements Room {
   private String name;
   private final List<Player> players = new ArrayList<>();
 
-  public SimpleRoom() {
-  }
+  public SimpleRoom() {}
 
   public SimpleRoom(String name) {
     this(name, new Player[0]);
@@ -66,8 +63,7 @@ public class SimpleRoom implements Room {
     final int index = players.indexOf(p);
     if (index < 0) {
       players.add(p);
-    }
-    else {
+    } else {
       players.set(index, p);
     }
   }
@@ -108,8 +104,7 @@ public class SimpleRoom implements Room {
   public boolean equals(Object o) {
     if (o instanceof SimpleRoom) {
       return name != null && name.equals(((SimpleRoom) o).name);
-    }
-    else {
+    } else {
       return false;
     }
   }

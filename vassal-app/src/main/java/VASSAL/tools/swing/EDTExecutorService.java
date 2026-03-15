@@ -46,23 +46,19 @@ public class EDTExecutorService extends AbstractExecutorService {
 
   /** {@inheritDoc} */
   @Override
-  public boolean awaitTermination(long timeout, TimeUnit unit)
-                                                  throws InterruptedException {
+  public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
     // Wait for the poison pill to finish.
     lock.lock();
     try {
       if (isTerminated()) return true;
       poison_pill.get(timeout, unit);
       return true;
-    }
-    catch (TimeoutException e) {
+    } catch (TimeoutException e) {
       return false;
-    }
-    catch (CancellationException | ExecutionException e) {
+    } catch (CancellationException | ExecutionException e) {
       // Should not happen, the poison pill is never cancelled / runs no code
       throw new IllegalStateException(e);
-    }
-    finally {
+    } finally {
       lock.unlock();
     }
   }
@@ -88,8 +84,7 @@ public class EDTExecutorService extends AbstractExecutorService {
 
       submit(poison_pill);
       shutdown.set(true);
-    }
-    finally {
+    } finally {
       lock.unlock();
     }
   }
@@ -128,8 +123,7 @@ public class EDTExecutorService extends AbstractExecutorService {
    *
    * @param task the task to submit
    * @return the task which was submitted
-   * @throws RejectedExecutionException if the task cannot be scheduled for
-   *   execution
+   * @throws RejectedExecutionException if the task cannot be scheduled for execution
    * @throws NullPointerException if the task is {@code null}
    */
   public <T> EDTRunnableFuture<T> submit(EDTRunnableFuture<T> task) {
@@ -146,16 +140,15 @@ public class EDTExecutorService extends AbstractExecutorService {
       if (shutdown.get()) throw new RejectedExecutionException();
 
       EventQueue.invokeLater(r);
-    }
-    finally {
+    } finally {
       lock.unlock();
     }
   }
 
   // The poison pill task used for shutting down the ExecutorService
   protected final EDTRunnableFuture<Void> poison_pill =
-    new EDTRunnableFuture<>() {
-      @Override
-      protected void runOnEDT() {}
-    };
+      new EDTRunnableFuture<>() {
+        @Override
+        protected void runOnEDT() {}
+      };
 }

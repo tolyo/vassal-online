@@ -21,9 +21,8 @@ package VASSAL.tools.lang;
 /**
  * Holds a mutable reference.
  *
- * This class is useful in cases where a reference to an object must be
- * passed to a method without the caller retaining a reference to that
- * object itself.
+ * <p>This class is useful in cases where a reference to an object must be passed to a method
+ * without the caller retaining a reference to that object itself.
  *
  * @since 3.2.0
  * @author Joel Uckelman

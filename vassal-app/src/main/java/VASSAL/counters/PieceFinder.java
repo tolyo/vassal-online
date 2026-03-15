@@ -17,50 +17,48 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.module.Map;
 import java.awt.Point;
 import java.awt.Shape;
 import java.util.Iterator;
 
-import VASSAL.build.module.Map;
-
-/**
- * This interface defines selection criteria for finding a GamePiece in a Map
- */
+/** This interface defines selection criteria for finding a GamePiece in a Map */
 @FunctionalInterface
 public interface PieceFinder {
-  /** Return the argument GamePiece (or one of its children if a Stack) found at the given point on the given Map */
+  /**
+   * Return the argument GamePiece (or one of its children if a Stack) found at the given point on
+   * the given Map
+   */
   GamePiece select(Map map, GamePiece piece, Point pt);
 
   /** Return a Stack overlapping the given point */
   PieceFinder STACK_ONLY = new StackOnly();
 
   /**
-   * If a Stack overlaps the given point, return the piece containing that point if expanded,
-   * or the top piece if not expanded.
-   * */
+   * If a Stack overlaps the given point, return the piece containing that point if expanded, or the
+   * top piece if not expanded.
+   */
   PieceFinder PIECE_IN_STACK = new PieceInStack();
 
   /**
-   * If a Stack overlaps the given point, return the piece containing that point if expanded,
-   * or the top piece if not expanded.
-   * If a Deck is found instead, return the deck.
+   * If a Stack overlaps the given point, return the piece containing that point if expanded, or the
+   * top piece if not expanded. If a Deck is found instead, return the deck.
    */
   PieceFinder DECK_OR_PIECE_IN_STACK = new DeckOrPieceInStack();
 
-  /** Returns a Stack if unexpanded and overlapping the given point,
-   * or a piece within that stack if expanded and overlapping the given point
+  /**
+   * Returns a Stack if unexpanded and overlapping the given point, or a piece within that stack if
+   * expanded and overlapping the given point
    */
   PieceFinder MOVABLE = new Movable();
 
   PieceFinder MAT_ONLY = new MatOnly();
 
-  /**
-   * Returns a Mat that overlaps this piece
-   */
+  /** Returns a Mat that overlaps this piece */
   class MatOnly extends Movable {
     @Override
     public Object visitDefault(GamePiece piece) {
-      final String matName = (String)piece.getProperty(Mat.MAT_NAME);
+      final String matName = (String) piece.getProperty(Mat.MAT_NAME);
       if (matName != null && !"".equals(matName)) {
         return super.visitDefault(piece);
       }
@@ -82,14 +80,12 @@ public interface PieceFinder {
     @Override
     public Object visitStack(Stack s) {
       GamePiece selected = (GamePiece) super.visitStack(s);
-      if (selected != null
-          && selected.getParent() == s) {
+      if (selected != null && selected.getParent() == s) {
         selected = s;
       }
       return selected;
     }
   }
-
 
   class DeckOrPieceInStack extends PieceInStack {
     @Override
@@ -101,14 +97,13 @@ public interface PieceFinder {
     }
   }
 
-
   class PieceInStack extends Movable {
     @Override
     public Object visitStack(Stack s) {
       GamePiece selected = (GamePiece) super.visitStack(s);
-      if (selected == s
-          && !s.isExpanded()) {
-        selected = s.topPiece();  //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
+      if (selected == s && !s.isExpanded()) {
+        selected = s.topPiece(); // NOTE: topPiece() returns the top VISIBLE piece (not hidden by
+        // Invisible trait)
       }
       return selected;
     }
@@ -153,9 +148,9 @@ public interface PieceFinder {
       if (shapes.length < s.getPieceCount()) {
         shapes = new Shape[s.getPieceCount()];
       }
-      map.getStackMetrics().getContents(s, null, shapes, null, s.getPosition().x, s.getPosition().y);
-      for (final Iterator<GamePiece> i = s.getPiecesInVisibleOrderIterator();
-           i.hasNext();) {
+      map.getStackMetrics()
+          .getContents(s, null, shapes, null, s.getPosition().x, s.getPosition().y);
+      for (final Iterator<GamePiece> i = s.getPiecesInVisibleOrderIterator(); i.hasNext(); ) {
         final GamePiece child = i.next();
 
         // Pieces can be moved by background threads causing the size of
@@ -181,4 +176,3 @@ public interface PieceFinder {
     }
   }
 }
-

@@ -36,7 +36,6 @@ public interface FileStore extends Closeable {
    *
    * @param path the path to the file in the store
    * @return <code>true</code> if the file exists in the store
-   *
    * @throws IOException oops
    */
   boolean contains(String path) throws IOException;
@@ -46,7 +45,6 @@ public interface FileStore extends Closeable {
    *
    * @param path the path to the file in the store
    * @return an <code>InputStream</code> containing the requested file
-   *
    * @throws IOException oops
    */
   InputStream getInputStream(String path) throws IOException;
@@ -56,19 +54,16 @@ public interface FileStore extends Closeable {
    *
    * @param path the path to the file in the store
    * @return the size of the file, in bytes
-   *
    * @throws FileNotFoundException if <code>path</code> is not in the store
    * @throws IOException oops
    */
   long getSize(String path) throws IOException;
 
   /**
-   * Gets the modification time of a file in the store, in milliseconds
-   * since the epoch.
+   * Gets the modification time of a file in the store, in milliseconds since the epoch.
    *
    * @param path the path to the file in the store
    * @return the mtime of the file
-   *
    * @throws FileNotFoundException if <code>path</code> is not in the store
    * @throws IOException oops
    */
@@ -78,7 +73,6 @@ public interface FileStore extends Closeable {
    * Gets the list of files in the store.
    *
    * @return the list of files in the store
-   *
    * @throws IOException oops
    */
   List<String> getFiles() throws IOException;
@@ -88,7 +82,6 @@ public interface FileStore extends Closeable {
    *
    * @param root the directory
    * @return the list of files under the given directory
-   *
    * @throws FileNotFoundException if <code>root</code> is not in the store
    * @throws IOException oops
    */

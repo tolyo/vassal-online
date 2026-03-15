@@ -24,7 +24,11 @@ import org.junit.jupiter.api.Test;
 public class ReturnToDeckTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     ReturnToDeck trait = createTrait();
 
@@ -39,7 +43,6 @@ public class ReturnToDeckTest extends DecoratorTest {
     trait.selectDeckPrompt = "prompt";
     trait.description = "plover";
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 
   private ReturnToDeck createTrait() {

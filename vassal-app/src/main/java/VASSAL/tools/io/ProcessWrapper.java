@@ -40,17 +40,14 @@ public class ProcessWrapper {
    * @param future the future for the process
    * @param stdout the process' STDOUT
    * @param stderr the process' STDERR
-   * @param stdin  the process' STDIN
+   * @param stdin the process' STDIN
    */
   ProcessWrapper(
-    Future<Integer> future,
-    InputStream stdout,
-    InputStream stderr,
-    OutputStream stdin) {
+      Future<Integer> future, InputStream stdout, InputStream stderr, OutputStream stdin) {
 
     this.future = future;
     this.stdout = stdout;
     this.stderr = stderr;
-    this.stdin  = stdin;
+    this.stdin = stdin;
   }
 }

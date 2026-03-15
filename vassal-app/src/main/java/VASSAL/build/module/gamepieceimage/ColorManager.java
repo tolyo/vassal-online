@@ -22,7 +22,6 @@ import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,14 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Container for definitions of Generic Color Definitions
- */
+/** Container for definitions of Generic Color Definitions */
 public class ColorManager extends AbstractConfigurable {
 
-  /**
-   * Statics - Standard Colors
-   */
+  /** Statics - Standard Colors */
   protected static ColorManager instance;
 
   public static ColorManager getColorManager() {
@@ -66,20 +61,20 @@ public class ColorManager extends AbstractConfigurable {
   };
 
   protected static String[] standardColorNames = {
-    "WHITE",      // NON-NLS
-    "GRAY",       // NON-NLS
-    "BLACK",      // NON-NLS
-    "CLEAR",      // NON-NLS
-    "RED",        // NON-NLS
-    "GREEN",      // NON-NLS
-    "BLUE",       // NON-NLS
-    "ORANGE",     // NON-NLS
-    "PINK",       // NON-NLS
-    "CYAN",       // NON-NLS
-    "MAGENTA",    // NON-NLS
-    "YELLOW",     // NON-NLS
+    "WHITE", // NON-NLS
+    "GRAY", // NON-NLS
+    "BLACK", // NON-NLS
+    "CLEAR", // NON-NLS
+    "RED", // NON-NLS
+    "GREEN", // NON-NLS
+    "BLUE", // NON-NLS
+    "ORANGE", // NON-NLS
+    "PINK", // NON-NLS
+    "CYAN", // NON-NLS
+    "MAGENTA", // NON-NLS
+    "YELLOW", // NON-NLS
     "LIGHT GRAY", // NON-NLS
-    "DARK GRAY"   // NON-NLS
+    "DARK GRAY" // NON-NLS
   };
 
   protected static String[] standardColorKeys = {
@@ -117,11 +112,8 @@ public class ColorManager extends AbstractConfigurable {
     return null;
   }
 
-  /**
-   * User defined Colors
-   */
-  protected Map<String, ColorSwatch> userColors =
-    new HashMap<>();
+  /** User defined Colors */
+  protected Map<String, ColorSwatch> userColors = new HashMap<>();
 
   public ColorSwatch getColorSwatch(String name) {
     ColorSwatch c = userColors.get(name);
@@ -180,8 +172,7 @@ public class ColorManager extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -195,7 +186,7 @@ public class ColorManager extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { ColorSwatch.class };
+    return new Class<?>[] {ColorSwatch.class};
   }
 
   public static String getConfigureTypeName() {
@@ -208,13 +199,13 @@ public class ColorManager extends AbstractConfigurable {
     if (b instanceof ColorSwatch) {
       final ColorSwatch def = (ColorSwatch) b;
       userColors.put(def.getConfigureName(), def);
-      def.addPropertyChangeListener(evt -> {
-        if (NAME_PROPERTY.equals(evt.getPropertyName())) {
-          userColors.remove(evt.getOldValue());
-          userColors.put((String) evt.getNewValue(),
-                         (ColorSwatch) evt.getSource());
-        }
-      });
+      def.addPropertyChangeListener(
+          evt -> {
+            if (NAME_PROPERTY.equals(evt.getPropertyName())) {
+              userColors.remove(evt.getOldValue());
+              userColors.put((String) evt.getNewValue(), (ColorSwatch) evt.getSource());
+            }
+          });
     }
   }
 
@@ -228,12 +219,12 @@ public class ColorManager extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GamePieceImageDefinitions.html", "NamedColors"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GamePieceImageDefinitions.html", "NamedColors"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   public Color getColorByName(String colorName) {
 
@@ -248,8 +239,7 @@ public class ColorManager extends AbstractConfigurable {
     final List<ColorSwatch> a = new ArrayList<>(userColors.values());
     Collections.sort(a);
 
-    final List<String> names =
-      new ArrayList<>(a.size() + standardColors.length);
+    final List<String> names = new ArrayList<>(a.size() + standardColors.length);
 
     for (final ColorSwatch cs : a) {
       names.add(cs.getConfigureName());
@@ -263,8 +253,7 @@ public class ColorManager extends AbstractConfigurable {
     final List<ColorSwatch> a = new ArrayList<>(userColors.values());
     Collections.sort(a);
 
-    final List<String> names =
-      new ArrayList<>(a.size() + standardColors.length);
+    final List<String> names = new ArrayList<>(a.size() + standardColors.length);
 
     for (final ColorSwatch cs : a) {
       names.add(cs.getConfigureName());

@@ -22,23 +22,21 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
- * An adapter for converting {@link Iterator}s into {@link Enumeration}s.
- * Consider altering the code requiring the <code>Enumeration</code> instead
- * of using this class. <code>Enumeration</code>s generally should not be
- * used in new code.
+ * An adapter for converting {@link Iterator}s into {@link Enumeration}s. Consider altering the code
+ * requiring the <code>Enumeration</code> instead of using this class. <code>Enumeration</code>s
+ * generally should not be used in new code.
  *
  * @author Joel Uckelman
- * @since 3.1.0
- * see IterableEnumeration
- * @deprecated use {@link Iterator}, {@link Iterable}, {@link java.util.Collection} or Stream API instead.
+ * @since 3.1.0 see IterableEnumeration
+ * @deprecated use {@link Iterator}, {@link Iterable}, {@link java.util.Collection} or Stream API
+ *     instead.
  */
 @Deprecated(since = "2021-12-01", forRemoval = true)
 public class EnumeratedIterator<T> implements Enumeration<T> {
   private final Iterator<T> i;
 
   /**
-   * Creates an <code>EnumeratedIterator</code> from the given
-   * <code>Iterator</code>.
+   * Creates an <code>EnumeratedIterator</code> from the given <code>Iterator</code>.
    *
    * @param i the <code>Iterator</code> on which this will iterate
    */

@@ -20,18 +20,16 @@ package VASSAL.counters;
 import java.util.Comparator;
 
 /**
- * Sorts GamePieces according to their position:
- * If on different Maps, order by Map id
- * If in different Stacks order by Stack position on the Map
- * If in the same Stack, order by position within the Stack
+ * Sorts GamePieces according to their position: If on different Maps, order by Map id If in
+ * different Stacks order by Stack position on the Map If in the same Stack, order by position
+ * within the Stack
  */
 public class PieceSorter implements Comparator<GamePiece> {
   @Override
   public int compare(GamePiece p1, GamePiece p2) {
     if (p1.getMap() == null) {
       return p2.getMap() == null ? 0 : 1;
-    }
-    else if (p2.getMap() == null) {
+    } else if (p2.getMap() == null) {
       return -1;
     }
 
@@ -44,11 +42,9 @@ public class PieceSorter implements Comparator<GamePiece> {
 
     if (s1 == null) {
       return s2 == null ? 0 : 1;
-    }
-    else if (s2 == null) {
+    } else if (s2 == null) {
       return -1;
-    }
-    else {
+    } else {
       int result = p1.getMap().indexOf(s1) - p2.getMap().indexOf(s2);
       if (result == 0) { // Pieces must be in the same stack
         result = s1.indexOf(p1) - s2.indexOf(p2);

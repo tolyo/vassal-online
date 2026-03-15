@@ -28,9 +28,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -40,35 +37,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
-/**
- * Designates the piece as a "Mat" on which other pieces ("Cargo") can be placed.
- */
+/** Designates the piece as a "Mat" on which other pieces ("Cargo") can be placed. */
 public class Mat extends Decorator implements TranslatablePiece {
   public static final String ID = "mat;"; // NON-NLS
-  public static final String MAT_NAME = "MatName"; //NON-NLS
-  public static final String MAT_ID = "MatID"; //NON-NLS
-  public static final String MAT_CONTENTS = "MatContents"; //NON-NLS
-  public static final String MAT_NUM_CARGO = "MatNumCargo"; //NON-NLS
+  public static final String MAT_NAME = "MatName"; // NON-NLS
+  public static final String MAT_ID = "MatID"; // NON-NLS
+  public static final String MAT_CONTENTS = "MatContents"; // NON-NLS
+  public static final String MAT_NUM_CARGO = "MatNumCargo"; // NON-NLS
   protected String matName;
   protected String desc;
   protected List<GamePiece> contents = new ArrayList<>();
 
   public Mat() {
-    this(ID + "Mat;;", null); //NON-NLS
+    this(ID + "Mat;;", null); // NON-NLS
   }
 
   public Mat(String name) {
-    this (ID + name + ";;", null);
+    this(ID + name + ";;", null);
   }
 
   public Mat(String type, GamePiece inner) {
     mySetType(type);
     setInner(inner);
 
-    for (GamePiece check = inner; check instanceof Decorator; check = ((Decorator)check).getInner()) {
+    for (GamePiece check = inner;
+        check instanceof Decorator;
+        check = ((Decorator) check).getInner()) {
       if (check instanceof MatCargo) {
-        ErrorDialog.dataWarning(new BadDataReport("Same piece must not be both Mat and Mat Cargo -- will create infinite loops", type));
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Same piece must not be both Mat and Mat Cargo -- will create infinite loops",
+                type));
       }
     }
   }
@@ -126,7 +127,6 @@ public class Mat extends Decorator implements TranslatablePiece {
     return offsets;
   }
 
-
   @Override
   public void mySetState(String newState) {
     contents.clear();
@@ -135,7 +135,8 @@ public class Mat extends Decorator implements TranslatablePiece {
     final GameState gs = GameModule.getGameModule().getGameState();
     for (int i = 0; i < num; i++) {
       final GamePiece piece = gs.getPieceForId(st.nextToken());
-      //BR// getPieceForId can return null, and WILL during load-game if Cargo piece hasn't loaded yet.
+      // BR// getPieceForId can return null, and WILL during load-game if Cargo piece hasn't loaded
+      // yet.
       if (piece != null) {
         addCargo(piece); // We use addCargo to ensure Cargo piece is also connected to us
       }
@@ -158,6 +159,7 @@ public class Mat extends Decorator implements TranslatablePiece {
 
   /**
    * Adds a piece of cargo to this mat
+   *
    * @param p game piece to add
    */
   public void addCargo(GamePiece p) {
@@ -167,7 +169,7 @@ public class Mat extends Decorator implements TranslatablePiece {
 
     contents.add(p);
 
-    final MatCargo cargo = (MatCargo)getDecorator(getOutermost(p), MatCargo.class);
+    final MatCargo cargo = (MatCargo) getDecorator(getOutermost(p), MatCargo.class);
     if (cargo != null) {
       final GamePiece outer = getOutermost(this);
       if (cargo.getMat() != this) {
@@ -176,25 +178,25 @@ public class Mat extends Decorator implements TranslatablePiece {
     }
   }
 
-
   /**
    * Adds a piece of cargo and returns a command to duplicate the operation on another client
+   *
    * @param p piece of cargo to add
    * @return Command that adds the cargo to this mat (and removes it from any other mat it was on)
    */
   public Command makeAddCargoCommand(GamePiece p) {
-    final ChangeTracker ct  = new ChangeTracker(this);
+    final ChangeTracker ct = new ChangeTracker(this);
     final ChangeTracker ct2 = new ChangeTracker(p);
     ChangeTracker ct3 = null;
 
     if ((p instanceof Decorator) && !hasCargo(p)) {
       final GamePiece cargo = getDecorator(getOutermost(p), MatCargo.class);
       if (cargo != null) {
-        final GamePiece mt = ((MatCargo)cargo).getMat();
+        final GamePiece mt = ((MatCargo) cargo).getMat();
         if ((mt != null) && (mt != getOutermost(this))) {
           ct3 = new ChangeTracker(mt);
 
-          final Mat mat = (Mat)getDecorator(mt, Mat.class);
+          final Mat mat = (Mat) getDecorator(mt, Mat.class);
           mat.removeCargo(p);
         }
       }
@@ -211,7 +213,9 @@ public class Mat extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Removes a MatCargo piece from our list of cargo. Does NOT clear MatCargo's reference to this mat - must be done separately.
+   * Removes a MatCargo piece from our list of cargo. Does NOT clear MatCargo's reference to this
+   * mat - must be done separately.
+   *
    * @param p Cargo to remove
    */
   public void removeCargo(GamePiece p) {
@@ -221,12 +225,14 @@ public class Mat extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Removes a MatCargo piece from our list of cargo, and returns a Command to duplicate the changes on another client
+   * Removes a MatCargo piece from our list of cargo, and returns a Command to duplicate the changes
+   * on another client
+   *
    * @param p GamePiece with a MatCargo trait, to be removed
    * @return Command to remove the piece
    */
   public Command makeRemoveCargoCommand(GamePiece p) {
-    final ChangeTracker ct  = new ChangeTracker(this);
+    final ChangeTracker ct = new ChangeTracker(this);
     final ChangeTracker ct2 = new ChangeTracker(p);
 
     removeCargo(p);
@@ -234,9 +240,10 @@ public class Mat extends Decorator implements TranslatablePiece {
     return ct.getChangeCommand().append(ct2.getChangeCommand());
   }
 
-
   /**
-   * Remove all cargo from this Mat, and returns a Command to duplicate the changes on another client
+   * Remove all cargo from this Mat, and returns a Command to duplicate the changes on another
+   * client
+   *
    * @return Command to remove all cargo
    */
   public Command makeRemoveAllCargoCommand() {
@@ -247,25 +254,32 @@ public class Mat extends Decorator implements TranslatablePiece {
     return c;
   }
 
-
   @Override
   public Rectangle boundingBox() {
     return piece.boundingBox();
   }
 
-  /**
-   * Draw the cargo. Used to generate a DragShadow for a Mat correctly showing the loaded cargo
-   */
+  /** Draw the cargo. Used to generate a DragShadow for a Mat correctly showing the loaded cargo */
   public void drawCargo(Graphics g, int x, int y, Component obs, double zoom) {
     final Point matPosition = getPosition();
     for (final GamePiece piece : getContents()) {
       final Point cargoPos = piece.getPosition();
       final GamePiece parent = piece.getParent();
       if (parent instanceof Stack) {
-        ((Stack) parent).draw(g, x - (int) ((matPosition.x - cargoPos.x) * zoom), y - (int) ((matPosition.y - cargoPos.y) * zoom), obs, zoom);
-      }
-      else {
-        piece.draw(g, x - (int) ((getPosition().x - cargoPos.x) * zoom), y - (int) ((getPosition().y - cargoPos.y) * zoom), obs, zoom);
+        ((Stack) parent)
+            .draw(
+                g,
+                x - (int) ((matPosition.x - cargoPos.x) * zoom),
+                y - (int) ((matPosition.y - cargoPos.y) * zoom),
+                obs,
+                zoom);
+      } else {
+        piece.draw(
+            g,
+            x - (int) ((getPosition().x - cargoPos.x) * zoom),
+            y - (int) ((getPosition().y - cargoPos.y) * zoom),
+            obs,
+            zoom);
       }
     }
   }
@@ -312,14 +326,11 @@ public class Mat extends Decorator implements TranslatablePiece {
     }
     if (MAT_ID.equals(key)) {
       return matName + "_" + getProperty(BasicPiece.PIECE_UID);
-    }
-    else if (MAT_CONTENTS.equals(key)) {
+    } else if (MAT_CONTENTS.equals(key)) {
       return new ArrayList<>(contents);
-    }
-    else if (MAT_NUM_CARGO.equals(key)) {
+    } else if (MAT_NUM_CARGO.equals(key)) {
       return String.valueOf(contents.size());
-    }
-    else if (Properties.NO_STACK.equals(key)) { // Mats can't stack
+    } else if (Properties.NO_STACK.equals(key)) { // Mats can't stack
       return Boolean.TRUE;
     }
     return super.getProperty(key);
@@ -332,11 +343,9 @@ public class Mat extends Decorator implements TranslatablePiece {
     }
     if (MAT_ID.equals(key)) {
       return matName + "_" + getProperty(BasicPiece.PIECE_UID);
-    }
-    else if (MAT_NUM_CARGO.equals(key)) {
+    } else if (MAT_NUM_CARGO.equals(key)) {
       return String.valueOf(contents.size());
-    }
-    else if (Properties.NO_STACK.equals(key)) { //  Mats can't stack
+    } else if (Properties.NO_STACK.equals(key)) { //  Mats can't stack
       return Boolean.TRUE;
     }
     return super.getLocalizedProperty(key);
@@ -354,7 +363,7 @@ public class Mat extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Mat)) return false;
+    if (!(o instanceof Mat)) return false;
     final Mat c = (Mat) o;
     if (!Objects.equals(matName, c.matName)) {
       return false;
@@ -368,17 +377,13 @@ public class Mat extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Return Property names exposed by this trait
-   * Do not return the CURRENT_MAT_PROPn properties. These are defined for the Cargo.
-   * The real properties on the Mat will be exposed by the individual Marks or DP's that implement them.
+   * Return Property names exposed by this trait Do not return the CURRENT_MAT_PROPn properties.
+   * These are defined for the Cargo. The real properties on the Mat will be exposed by the
+   * individual Marks or DP's that implement them.
    */
   @Override
   public List<String> getPropertyNames() {
-    return Arrays.asList(
-      MAT_NAME,
-      MAT_ID,
-      MAT_NUM_CARGO,
-      Properties.NO_STACK);
+    return Arrays.asList(MAT_NAME, MAT_ID, MAT_NUM_CARGO, Properties.NO_STACK);
   }
 
   public static class Ed implements PieceEditor {
@@ -397,7 +402,6 @@ public class Mat extends Decorator implements TranslatablePiece {
       descInput.setHintKey("Editor.description_hint");
       controls.add("Editor.description_label", descInput);
     }
-
 
     @Override
     public Component getControls() {

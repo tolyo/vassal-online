@@ -24,8 +24,6 @@ import VASSAL.build.module.map.boardPicker.Board;
 import VASSAL.build.module.map.boardPicker.board.mapgrid.Zone;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.image.LabelUtils;
-
-import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -33,6 +31,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
+import javax.swing.JComponent;
 
 public class Region extends AbstractConfigurable {
 
@@ -84,35 +83,27 @@ public class Region extends AbstractConfigurable {
     origin.translate(dx, dy);
   }
 
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String X = "originx"; //$NON-NLS-1$
-  public static final String Y = "originy"; //$NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String X = "originx"; // $NON-NLS-1$
+  public static final String Y = "originy"; // $NON-NLS-1$
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      NAME,
-      X,
-      Y
-    };
+    return new String[] {NAME, X, Y};
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString(Resources.NAME_LABEL),
-      Resources.getString("Editor.Region.x_coord"), //$NON-NLS-1$
-      Resources.getString("Editor.Region.y_coord"), //$NON-NLS-1$
+      Resources.getString("Editor.Region.x_coord"), // $NON-NLS-1$
+      Resources.getString("Editor.Region.y_coord"), // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      Integer.class,
-      Integer.class
-    };
+    return new Class<?>[] {String.class, Integer.class, Integer.class};
   }
 
   @Override
@@ -127,7 +118,7 @@ public class Region extends AbstractConfigurable {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.Region.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.Region.component_type"); // $NON-NLS-1$
   }
 
   public boolean contains(Point p) {
@@ -143,11 +134,9 @@ public class Region extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (X.equals(key)) {
+    } else if (X.equals(key)) {
       return String.valueOf(origin.x);
-    }
-    else if (Y.equals(key)) {
+    } else if (Y.equals(key)) {
       return String.valueOf(origin.y);
     }
     return null;
@@ -155,20 +144,17 @@ public class Region extends AbstractConfigurable {
 
   @Override
   public void setAttribute(String key, Object val) {
-    if (val == null)
-      return;
+    if (val == null) return;
 
     if (NAME.equals(key)) {
       setConfigureName((String) val);
       if (myGrid != null) myGrid.addRegion(this);
-    }
-    else if (X.equals(key)) {
+    } else if (X.equals(key)) {
       if (val instanceof String) {
         val = Integer.valueOf((String) val);
       }
       origin.x = (Integer) val;
-    }
-    else if (Y.equals(key)) {
+    } else if (Y.equals(key)) {
       if (val instanceof String) {
         val = Integer.valueOf((String) val);
       }
@@ -200,6 +186,7 @@ public class Region extends AbstractConfigurable {
   public Board getBoard() {
     return myGrid.getBoard();
   }
+
   /*
    * Move the region. Ensure the selectable region remains within
    * its container
@@ -218,11 +205,19 @@ public class Region extends AbstractConfigurable {
    * If the grid is visible, draw a dot and a label. Mainly of use for testing
    * a newly created grid.
    */
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
+  public void draw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
     draw(g, bounds, visibleRect, scale, reversed, 0, 0);
   }
 
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed, int xOffset, int yOffset) {
+  public void draw(
+      Graphics g,
+      Rectangle bounds,
+      Rectangle visibleRect,
+      double scale,
+      boolean reversed,
+      int xOffset,
+      int yOffset) {
     if (!bounds.intersects(visibleRect)) {
       return;
     }
@@ -230,7 +225,7 @@ public class Region extends AbstractConfigurable {
     final int labelOffset = 7;
 
     final int size = (int) (scale * myGrid.getFontSize() + 0.5);
-    final Font f = new Font("Dialog", Font.PLAIN, size); //$NON-NLS-1$
+    final Font f = new Font("Dialog", Font.PLAIN, size); // $NON-NLS-1$
 
     final Color fg = selected ? Color.white : Color.black;
     final Color bg = selected ? Color.black : Color.white;
@@ -257,18 +252,23 @@ public class Region extends AbstractConfigurable {
     g.setColor(saveColor);
 
     LabelUtils.drawLabel(
-      g, getLocalizedConfigureName(),
-      posX, posY + labelOffset, f, LabelUtils.CENTER,
-      LabelUtils.TOP, fg, bg, fg
-    );
+        g,
+        getLocalizedConfigureName(),
+        posX,
+        posY + labelOffset,
+        f,
+        LabelUtils.CENTER,
+        LabelUtils.TOP,
+        fg,
+        bg,
+        fg);
     g.setClip(oldClip);
 
     // Calculate and store the selection rectangle
-    final int width = g.getFontMetrics().stringWidth(getConfigureName() + "  ") + 1; //$NON-NLS-1$
+    final int width = g.getFontMetrics().stringWidth(getConfigureName() + "  ") + 1; // $NON-NLS-1$
     final int height = g.getFontMetrics().getHeight() + 1;
 
     selectionRect.setLocation(posX - (width / 2), posY - 1);
     selectionRect.setSize(width, height + labelOffset + 1);
   }
 }
-

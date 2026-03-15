@@ -26,22 +26,18 @@ import VASSAL.script.expression.ExpressionBuilder;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 /**
- * A standard Formatted String configurer that has an additional
- * Calculator icon that:
- *   a) Indicates to the user that $name$ variables can be used in this field
- *   b) Clicking on it opens up an Expression Builder that allows entry of
- *      in-line Calculated Properties (Not implemented yet)
+ * A standard Formatted String configurer that has an additional Calculator icon that: a) Indicates
+ * to the user that $name$ variables can be used in this field b) Clicking on it opens up an
+ * Expression Builder that allows entry of in-line Calculated Properties (Not implemented yet)
  */
 public class FormattedExpressionConfigurer extends FormattedStringConfigurer {
   protected ExpressionButton button;
@@ -121,10 +117,8 @@ public class FormattedExpressionConfigurer extends FormattedStringConfigurer {
   }
 
   /**
-   * A small 'Calculator' button added after the text to indicate this
-   * Configurer accepts Expressions. Clicking on the button will open
-   * an ExpressionConfigurer.
-   *
+   * A small 'Calculator' button added after the text to indicate this Configurer accepts
+   * Expressions. Clicking on the button will open an ExpressionConfigurer.
    */
   public static class ExpressionButton extends JButton implements ActionListener {
     private static final long serialVersionUID = 1L;
@@ -138,9 +132,10 @@ public class FormattedExpressionConfigurer extends FormattedStringConfigurer {
     public ExpressionButton(Configurer config, int size, EditablePiece piece) {
       this.config = config;
       this.piece = piece;
-      setIcon(IconFactory.getIcon("calculator", IconFamily.XSMALL)); //NON-NLS
+      setIcon(IconFactory.getIcon("calculator", IconFamily.XSMALL)); // NON-NLS
       setSize(size);
-      setToolTipText(Resources.getString("Editor.FormattedExpressionConfigurer.expression_builder"));
+      setToolTipText(
+          Resources.getString("Editor.FormattedExpressionConfigurer.expression_builder"));
       addActionListener(this);
     }
 

@@ -25,7 +25,6 @@ import VASSAL.configure.DirectoryConfigurer;
 import VASSAL.configure.IntConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ReadErrorDialog;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -42,30 +41,30 @@ import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 /**
- * A set of preferences. Each set of preferences is identified by a name, and different sets may share a common editor,
- * which is responsible for writing the preferences to disk.
- * <br>See also:
- * <br>{@link VASSAL.build.module.GlobalOptions} - main nexus for preferences being added
+ * A set of preferences. Each set of preferences is identified by a name, and different sets may
+ * share a common editor, which is responsible for writing the preferences to disk. <br>
+ * See also: <br>
+ * {@link VASSAL.build.module.GlobalOptions} - main nexus for preferences being added
  */
 public class Prefs implements Closeable {
   /** Preferences key for the directory containing modules */
-  public static final String MODULES_DIR_KEY = "modulesDir"; //NON-NLS
-  public static final String DISABLE_D3D = "disableD3d"; //NON-NLS
-  public static final String DISABLE_OGL_FBO = "disableOGLFBO"; //NON-NLS
-  public static final String BAD_DATA_AUDIT_TRAILS = "badDataAuditTrails"; //NON-NLS
+  public static final String MODULES_DIR_KEY = "modulesDir"; // NON-NLS
 
-  public static final String MAIN_WINDOW_REMEMBER = "mainWindowRemember"; //NON-NLS
-  public static final String MAIN_WINDOW_HEIGHT = "mainWindowHeight"; //NON-NLS
-  public static final String MAIN_WINDOW_WIDTH  = "mainWindowWidth";  //NON-NLS
+  public static final String DISABLE_D3D = "disableD3d"; // NON-NLS
+  public static final String DISABLE_OGL_FBO = "disableOGLFBO"; // NON-NLS
+  public static final String BAD_DATA_AUDIT_TRAILS = "badDataAuditTrails"; // NON-NLS
 
-  public static final String OVERRIDE_DEFAULT_FONT_SIZE = "overrideDefaultFontSize"; //NON-NLS
+  public static final String MAIN_WINDOW_REMEMBER = "mainWindowRemember"; // NON-NLS
+  public static final String MAIN_WINDOW_HEIGHT = "mainWindowHeight"; // NON-NLS
+  public static final String MAIN_WINDOW_WIDTH = "mainWindowWidth"; // NON-NLS
 
-  public static final String TRANSLATABLE_SUPPORT = "translatableSupport"; //NON-NLS
+  public static final String OVERRIDE_DEFAULT_FONT_SIZE = "overrideDefaultFontSize"; // NON-NLS
+
+  public static final String TRANSLATABLE_SUPPORT = "translatableSupport"; // NON-NLS
 
   private static Prefs globalPrefs; // A Global Preferences object
 
@@ -103,17 +102,20 @@ public class Prefs implements Closeable {
     return file;
   }
 
-  /** @return false -> overridden by GlobalPrefs */
+  /**
+   * @return false -> overridden by GlobalPrefs
+   */
   public boolean isDisableAutoWrite() {
     return false;
   }
 
-  /** @param b - no action taken -> overridden by GlobalPrefs */
-  public void setDisableAutoWrite(boolean b) {
-  }
+  /**
+   * @param b - no action taken -> overridden by GlobalPrefs
+   */
+  public void setDisableAutoWrite(boolean b) {}
 
   public void addOption(Configurer o) {
-    addOption(Resources.getString("Prefs.general_tab"), o); //$NON-NLS-1$
+    addOption(Resources.getString("Prefs.general_tab"), o); // $NON-NLS-1$
   }
 
   public void addOption(String category, Configurer o) {
@@ -123,12 +125,10 @@ public class Prefs implements Closeable {
   /**
    * Add a configurable property to the preferences in the given category
    *
-   * @param category
-   *          the tab under which to add the Configurer's controls in the editor window. If null, do not add controls.
-   *
-   * @param prompt
-   *          If non-null and the value was not read from the preferences file on initialization (i.e. first-time
-   *          setup), prompt the user for an initial value
+   * @param category the tab under which to add the Configurer's controls in the editor window. If
+   *     null, do not add controls.
+   * @param prompt If non-null and the value was not read from the preferences file on
+   *     initialization (i.e. first-time setup), prompt the user for an initial value
    */
   public synchronized void addOption(String category, Configurer o, String prompt) {
     if (o != null && options.get(o.getKey()) == null) {
@@ -164,10 +164,9 @@ public class Prefs implements Closeable {
   /**
    * Return the value of a given preference.
    *
-   * @param key
-   *          the name of the preference to retrieve
-   * @return the value of this option read from the Preferences file at startup, or <code>null</code> if no value is
-   *         undefined
+   * @param key the name of the preference to retrieve
+   * @return the value of this option read from the Preferences file at startup, or <code>null
+   *     </code> if no value is undefined
    */
   public synchronized String getStoredValue(String key) {
     return storedValues.getProperty(key);
@@ -182,26 +181,21 @@ public class Prefs implements Closeable {
         storedValues.clear();
         try {
           storedValues.load(in);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
           // This happens if we have a corrupted prefs file, which is not
           // a very friendly exception for Properties.load() to throw when
           // doing I/O.
           throw new IOException("Corrupted prefs file", e);
         }
       }
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       // First time for this module, not an error.
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.errorNoI18N(e, file);
     }
   }
 
-  /**
-   * Store this set of preferences
-   */
+  /** Store this set of preferences */
   public synchronized void save() throws IOException {
     storedValues.clear();
 
@@ -266,81 +260,62 @@ public class Prefs implements Closeable {
   }
 
   /**
-   * Initialize visible Global Preferences that are shared between the
-   * Module Manager and the Editor/Player.
-   *
+   * Initialize visible Global Preferences that are shared between the Module Manager and the
+   * Editor/Player.
    */
   public static void initSharedGlobalPrefs() {
     getGlobalPrefs();
 
-    final DirectoryConfigurer c =
-      new DirectoryConfigurer(MODULES_DIR_KEY, null);
+    final DirectoryConfigurer c = new DirectoryConfigurer(MODULES_DIR_KEY, null);
     c.setValue(new File(System.getProperty("user.home")));
     globalPrefs.addOption(null, c);
 
-    final IntConfigurer overrideDefaultFontSize = new IntConfigurer(
-        OVERRIDE_DEFAULT_FONT_SIZE,
-        Resources.getString("Prefs.override_default_font_size"),
-       0
-    );
+    final IntConfigurer overrideDefaultFontSize =
+        new IntConfigurer(
+            OVERRIDE_DEFAULT_FONT_SIZE, Resources.getString("Prefs.override_default_font_size"), 0);
     globalPrefs.addOption(Resources.getString("Prefs.general_tab"), overrideDefaultFontSize);
 
     // Options to remember main window size
-    final BooleanConfigurer windowRemember = new BooleanConfigurer(
-      MAIN_WINDOW_REMEMBER,
-      Resources.getString("Prefs.main_window"),
-      Boolean.TRUE
-    );
+    final BooleanConfigurer windowRemember =
+        new BooleanConfigurer(
+            MAIN_WINDOW_REMEMBER, Resources.getString("Prefs.main_window"), Boolean.TRUE);
     globalPrefs.addOption(Resources.getString("Prefs.general_tab"), windowRemember);
 
-    final IntConfigurer windowWidth = new IntConfigurer(
-      MAIN_WINDOW_WIDTH,
-      null,
-      -1
-    );
+    final IntConfigurer windowWidth = new IntConfigurer(MAIN_WINDOW_WIDTH, null, -1);
     globalPrefs.addOption(null, windowWidth);
 
-    final IntConfigurer windowHeight = new IntConfigurer(
-      MAIN_WINDOW_HEIGHT,
-      null,
-      -1
-    );
+    final IntConfigurer windowHeight = new IntConfigurer(MAIN_WINDOW_HEIGHT, null, -1);
     globalPrefs.addOption(null, windowHeight);
 
     if (SystemUtils.IS_OS_WINDOWS) {
       // Option to disable D3D pipeline
-      final BooleanConfigurer d3dConf = new BooleanConfigurer(
-        DISABLE_D3D,
-        Resources.getString("Prefs.disable_d3d"),
-        Boolean.FALSE
-      );
+      final BooleanConfigurer d3dConf =
+          new BooleanConfigurer(
+              DISABLE_D3D, Resources.getString("Prefs.disable_d3d"), Boolean.FALSE);
       globalPrefs.addOption(Resources.getString("Prefs.compatibility_tab"), d3dConf);
-    }
-    else if (SystemUtils.IS_OS_MAC) {
+    } else if (SystemUtils.IS_OS_MAC) {
       // Option to disable OpenGL FBOs
       // M1 Macs need FBOs disabled in OpenGL, at least until Metal in Java 17;
       // Intel Mac users probably want this turned off.
-      final BooleanConfigurer oglfboConf = new BooleanConfigurer(
-        DISABLE_OGL_FBO,
-        Resources.getString("Prefs.disable_ogl_fbo"),
-        "aarch64".equals(System.getProperty("os.arch"))
-      );
+      final BooleanConfigurer oglfboConf =
+          new BooleanConfigurer(
+              DISABLE_OGL_FBO,
+              Resources.getString("Prefs.disable_ogl_fbo"),
+              "aarch64".equals(System.getProperty("os.arch")));
       globalPrefs.addOption(Resources.getString("Prefs.compatibility_tab"), oglfboConf);
     }
 
-    final BooleanConfigurer wizardConf = new BooleanConfigurer(
-      WizardSupport.WELCOME_WIZARD_KEY,
-      Resources.getString("WizardSupport.ShowWizard"),
-      Boolean.TRUE
-    );
+    final BooleanConfigurer wizardConf =
+        new BooleanConfigurer(
+            WizardSupport.WELCOME_WIZARD_KEY,
+            Resources.getString("WizardSupport.ShowWizard"),
+            Boolean.TRUE);
 
     globalPrefs.addOption(wizardConf);
 
-    final BooleanConfigurer auditConf = new BooleanConfigurer(
-      BAD_DATA_AUDIT_TRAILS,
-      Resources.getString("Prefs.expression_auditing"),
-      Boolean.FALSE
-    );
+    final BooleanConfigurer auditConf =
+        new BooleanConfigurer(
+            BAD_DATA_AUDIT_TRAILS, Resources.getString("Prefs.expression_auditing"), Boolean.FALSE);
 
     globalPrefs.addOption(Resources.getString("Prefs.general_tab"), auditConf);
   }
@@ -358,15 +333,10 @@ public class Prefs implements Closeable {
     final StringBuilder sb = new StringBuilder();
     for (int i = 0; i < str.length(); ++i) {
       final int cp = str.codePointAt(i);
-      if (('0' <= cp && cp <= '9') ||
-          ('A' <= cp && cp <= 'Z') ||
-          ('a' <= cp && cp <= 'z')) {
+      if (('0' <= cp && cp <= '9') || ('A' <= cp && cp <= 'Z') || ('a' <= cp && cp <= 'z')) {
         sb.append((char) cp);
-      }
-      else {
-        sb.append('_')
-          .append(Integer.toHexString(cp).toUpperCase())
-          .append('_');
+      } else {
+        sb.append('_').append(Integer.toHexString(cp).toUpperCase()).append('_');
       }
     }
 

@@ -18,18 +18,6 @@
 
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.net.URLConnection;
-
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-
-import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.Info;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.metadata.AbstractMetaData;
@@ -46,6 +34,15 @@ import VASSAL.tools.menu.MacOSXMenuManager;
 import VASSAL.tools.menu.MenuBarProxy;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.version.VersionUtils;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URLConnection;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Editor extends Launcher {
   public static void main(String[] args) throws IOException {
@@ -62,8 +59,7 @@ public class Editor extends Launcher {
 
   @Override
   protected MenuManager createMenuManager() {
-    return SystemUtils.IS_OS_MAC ?
-      new MacOSXMenuManager() : new EditorMenuManager();
+    return SystemUtils.IS_OS_MAC ? new MacOSXMenuManager() : new EditorMenuManager();
   }
 
   @Override
@@ -77,25 +73,25 @@ public class Editor extends Launcher {
     }
 
     switch (lr.mode) {
-    case EDIT:
-      new EditModuleAction(lr.module).loadModule(lr.module);
-      break;
-    case IMPORT:
-      new ImportAction(null).loadModule(lr.importFile);
-      break;
-    case NEW:
-      new CreateModuleAction(null).performAction(null);
-      break;
-    case EDIT_EXT:
-      GameModule.init(new GameModule(new DataArchive(lr.module.getPath())));
-      GameModule.getGameModule().getPlayerWindow().setVisible(true);
-      new EditExtensionAction(lr.extension).performAction(null);
-      break;
-    case NEW_EXT:
-      GameModule.init(new GameModule(new DataArchive(lr.module.getPath())));
-      final JFrame f = GameModule.getGameModule().getPlayerWindow();
-      f.setVisible(true);
-      new NewExtensionAction(f).performAction(null);
+      case EDIT:
+        new EditModuleAction(lr.module).loadModule(lr.module);
+        break;
+      case IMPORT:
+        new ImportAction(null).loadModule(lr.importFile);
+        break;
+      case NEW:
+        new CreateModuleAction(null).performAction(null);
+        break;
+      case EDIT_EXT:
+        GameModule.init(new GameModule(new DataArchive(lr.module.getPath())));
+        GameModule.getGameModule().getPlayerWindow().setVisible(true);
+        new EditExtensionAction(lr.extension).performAction(null);
+        break;
+      case NEW_EXT:
+        GameModule.init(new GameModule(new DataArchive(lr.module.getPath())));
+        final JFrame f = GameModule.getGameModule().getPlayerWindow();
+        f.setVisible(true);
+        new NewExtensionAction(f).performAction(null);
     }
   }
 
@@ -103,10 +99,11 @@ public class Editor extends Launcher {
     private static final long serialVersionUID = 1L;
 
     public NewModuleLaunchAction(ModuleManagerWindow mm) {
-      super(Resources.getString("Main.new_module"), mm,
-        Editor.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.NEW)
-      );
+      super(
+          Resources.getString("Main.new_module"),
+          mm,
+          Editor.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.NEW));
     }
 
     @Override
@@ -119,10 +116,11 @@ public class Editor extends Launcher {
     private static final long serialVersionUID = 1L;
 
     public ImportLaunchAction(ModuleManagerWindow mm, File module) {
-      super(Resources.getString("Main.import_module"), mm,
-        Editor.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.IMPORT, module)
-      );
+      super(
+          Resources.getString("Main.import_module"),
+          mm,
+          Editor.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.IMPORT, module));
     }
 
     @Override
@@ -154,11 +152,13 @@ public class Editor extends Launcher {
       if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
         lr.importFile = fc.getSelectedFile();
 
-        final AbstractMetaData metadata =
-          MetaDataFactory.buildMetaData(lr.importFile);
+        final AbstractMetaData metadata = MetaDataFactory.buildMetaData(lr.importFile);
         if (!(metadata instanceof ImportMetaData)) {
-          ErrorDialog.show("Error.invalid_import_file", lr.importFile.getAbsolutePath());  //NON-NLS
-          logger.error("Import of " + lr.importFile.getAbsolutePath() + " failed: unrecognized import type");  //NON-NLS
+          ErrorDialog.show("Error.invalid_import_file", lr.importFile.getAbsolutePath()); // NON-NLS
+          logger.error(
+              "Import of "
+                  + lr.importFile.getAbsolutePath()
+                  + " failed: unrecognized import type"); // NON-NLS
           lr.importFile = null;
         }
       }
@@ -171,10 +171,11 @@ public class Editor extends Launcher {
     private static final long serialVersionUID = 1L;
 
     public LaunchAction(ModuleManagerWindow mm, File module) {
-      super(Resources.getString("Main.edit_module_specific"), mm,
-        Editor.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.EDIT, module)
-      );
+      super(
+          Resources.getString("Main.edit_module_specific"),
+          mm,
+          Editor.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.EDIT, module));
       setEnabled(!isInUse(module));
     }
 
@@ -189,16 +190,15 @@ public class Editor extends Launcher {
         // don't permit editing of modules significantly newer than us
         if (Info.isModuleTooNew(vv)) {
           ErrorDialog.show(
-            "Error.module_too_new",  //NON-NLS
-            lr.module.getPath(),
-            vv,
-            Info.getVersion()
-          );
+              "Error.module_too_new", // NON-NLS
+              lr.module.getPath(),
+              vv,
+              Info.getVersion());
           return;
         }
 
         if (data instanceof ModuleMetaData) {
-          if (!checkModuleLoadable((ModuleMetaData)data)) {
+          if (!checkModuleLoadable((ModuleMetaData) data)) {
             return;
           }
         }
@@ -206,21 +206,18 @@ public class Editor extends Launcher {
         // warn user if editing this module would update it to our version
         if (Info.hasOldFormat(vv)) {
           WarningDialog.show(
-            "Warning.module_will_be_updated",  //NON-NLS
-            lr.module.getName(),
-            VersionUtils.truncateToMinorVersion(Info.getVersion())
-          );
+              "Warning.module_will_be_updated", // NON-NLS
+              lr.module.getName(),
+              VersionUtils.truncateToMinorVersion(Info.getVersion()));
         }
-      }
-      else {
+      } else {
         if (lr.module != null) {
           // A module in the MM should be a valid Module, but people can and do delete
           // or replace module files while the MM is running.
-          ErrorDialog.show("Error.invalid_vassal_module", lr.module.getAbsolutePath()); //NON-NLS
+          ErrorDialog.show("Error.invalid_vassal_module", lr.module.getAbsolutePath()); // NON-NLS
           logger.error(
-            "-- Load of {} failed: Not a Vassal module", //NON-NLS
-            lr.module.getAbsolutePath()
-          );
+              "-- Load of {} failed: Not a Vassal module", // NON-NLS
+              lr.module.getAbsolutePath());
           lr.module = null;
         }
         return;

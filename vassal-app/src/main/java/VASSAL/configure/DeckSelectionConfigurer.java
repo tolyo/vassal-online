@@ -22,9 +22,7 @@ import VASSAL.build.module.Map;
 import VASSAL.build.module.map.DrawPile;
 import VASSAL.counters.GamePiece;
 import VASSAL.i18n.Resources;
-
 import java.awt.Component;
-
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -49,7 +47,7 @@ public class DeckSelectionConfigurer extends FormattedExpressionConfigurer {
 
   public void showPopup() {
     final JPopupMenu mapMenu = new JPopupMenu();
-    for (final Map m: GameModule.getGameModule().getAllDescendantComponentsOf(Map.class)) {
+    for (final Map m : GameModule.getGameModule().getAllDescendantComponentsOf(Map.class)) {
       final JMenu deckMenu = new JMenu(m.getMapName());
       for (final DrawPile d : m.getAllDescendantComponentsOf(DrawPile.class)) {
         final JMenuItem item = new JMenuItem(d.getConfigureName());

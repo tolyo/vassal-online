@@ -21,6 +21,8 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.chat.HttpRequestWrapper;
+import VASSAL.tools.PropertiesEncoder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,20 +31,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import VASSAL.chat.HttpRequestWrapper;
-import VASSAL.tools.PropertiesEncoder;
-
-
 /**
- * Root node in a hierarchical server.
- * Represents the server process itself.
- * Children represent modules.
- * Children of modules represent rooms.
- * Children of rooms represent players.
+ * Root node in a hierarchical server. Represents the server process itself. Children represent
+ * modules. Children of modules represent rooms. Children of rooms represent players.
  */
 public class AsynchronousServerNode extends ServerNode {
-  private static final Logger logger =
-    Logger.getLogger(AsynchronousServerNode.class.getName());
+  private static final Logger logger = Logger.getLogger(AsynchronousServerNode.class.getName());
   private StatusReporter statusReporter;
   private ReportContentsThread contentsReporter;
 
@@ -52,8 +46,7 @@ public class AsynchronousServerNode extends ServerNode {
   }
 
   protected void init(String url) {
-    statusReporter = new StatusReporter(
-      url == null ? null : new HttpRequestWrapper(url), this);
+    statusReporter = new StatusReporter(url == null ? null : new HttpRequestWrapper(url), this);
     contentsReporter = new ReportContentsThread(this);
   }
 
@@ -82,8 +75,7 @@ public class AsynchronousServerNode extends ServerNode {
             wait();
             sendContents();
           }
-        }
-        catch (final InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
       }
     }
@@ -95,13 +87,12 @@ public class AsynchronousServerNode extends ServerNode {
       if (time - lastGlobalUpdate < GLOBAL_UPDATE_INTERVAL) {
         modules = Arrays.asList(server.getChildren()).iterator();
         lastGlobalUpdate = time;
-      }
-      else {
+      } else {
         modules = changed.iterator();
       }
       while (modules.hasNext()) {
         final Node module = modules.next();
-        logger.fine("Sending contents of " + module.getId()); //$NON-NLS-1$
+        logger.fine("Sending contents of " + module.getId()); // $NON-NLS-1$
         final Node[] players = module.getLeafDescendants();
         final Node[] rooms = module.getChildren();
 
@@ -110,15 +101,18 @@ public class AsynchronousServerNode extends ServerNode {
           final Node[] c = rooms[i].getChildren();
           if (c.length > 0) {
             try {
-              final Properties roomProps = new PropertiesEncoder(rooms[i].getInfo()).getProperties();
-              final String roomOwner = roomProps.getProperty("owner");  //NON-NLS
-              final String playerId = new PropertiesEncoder(c[0].getInfo()).getProperties().getProperty("id");  //NON-NLS
-              if (roomOwner == null || (! roomOwner.equals(playerId))) {
-                roomProps.setProperty("owner", playerId); //NON-NLS
+              final Properties roomProps =
+                  new PropertiesEncoder(rooms[i].getInfo()).getProperties();
+              final String roomOwner = roomProps.getProperty("owner"); // NON-NLS
+              final String playerId =
+                  new PropertiesEncoder(c[0].getInfo())
+                      .getProperties()
+                      .getProperty("id"); // NON-NLS
+              if (roomOwner == null || (!roomOwner.equals(playerId))) {
+                roomProps.setProperty("owner", playerId); // NON-NLS
                 rooms[i].setInfo(new PropertiesEncoder(roomProps).toString());
               }
-            }
-            catch (final IOException e) {
+            } catch (final IOException e) {
               // Error encoding/decoding properties. Shouldn't happen.
               e.printStackTrace();
             }
@@ -135,7 +129,7 @@ public class AsynchronousServerNode extends ServerNode {
     }
 
     public synchronized void markChanged(Node module) {
-      logger.fine(module + " has changed"); //$NON-NLS-1$
+      logger.fine(module + " has changed"); // $NON-NLS-1$
       changed.add(module);
       notifyAll();
     }

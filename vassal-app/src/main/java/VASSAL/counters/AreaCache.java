@@ -16,11 +16,10 @@
  */
 package VASSAL.counters;
 
+import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.util.Map;
-
-import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
 
 public class AreaCache {
   private static final Map<Shape, Area> CACHE = new ConcurrentSoftHashMap<>();

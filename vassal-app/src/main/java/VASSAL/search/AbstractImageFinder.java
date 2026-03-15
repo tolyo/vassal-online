@@ -22,8 +22,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Abstract implementation of {@link ImageSearchTarget} interface. Used to find images contained by components/pieces/traits
- * for "Image Purge" tool,
+ * Abstract implementation of {@link ImageSearchTarget} interface. Used to find images contained by
+ * components/pieces/traits for "Image Purge" tool,
  */
 public abstract class AbstractImageFinder implements ImageSearchTarget {
   /**
@@ -37,7 +37,9 @@ public abstract class AbstractImageFinder implements ImageSearchTarget {
   }
 
   /**
-   * Adds all images used by this component AND any children (or inner decorators/pieces) to the collection.
+   * Adds all images used by this component AND any children (or inner decorators/pieces) to the
+   * collection.
+   *
    * @param s Collection to add image names to
    */
   @Override
@@ -56,8 +58,8 @@ public abstract class AbstractImageFinder implements ImageSearchTarget {
   }
 
   /**
-   * Classes extending AbstractImageFinder should override this method in order to add
-   * the names of any image files they use to the collection.
+   * Classes extending AbstractImageFinder should override this method in order to add the names of
+   * any image files they use to the collection.
    *
    * @param s Collection to add image names to
    */

@@ -22,13 +22,11 @@ import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Container for definitions of Generic Counter Definitions.
- * Actual definition is in inner class
+ * Container for definitions of Generic Counter Definitions. Actual definition is in inner class
  * {@link VASSAL.build.module.gamepieceimage.GamePieceLayout}.
  */
 public class GamePieceLayoutsContainer extends AbstractConfigurable {
@@ -59,8 +57,7 @@ public class GamePieceLayoutsContainer extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -74,7 +71,7 @@ public class GamePieceLayoutsContainer extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{GamePieceLayout.class};
+    return new Class<?>[] {GamePieceLayout.class};
   }
 
   public static String getConfigureTypeName() {
@@ -87,13 +84,13 @@ public class GamePieceLayoutsContainer extends AbstractConfigurable {
     if (b instanceof GamePieceLayout) {
       final GamePieceLayout def = (GamePieceLayout) b;
       definitions.put(def.getConfigureName(), def);
-      def.addPropertyChangeListener(evt -> {
-        if (NAME_PROPERTY.equals(evt.getPropertyName())) {
-          definitions.remove(evt.getOldValue());
-          definitions.put((String) evt.getNewValue(),
-                          (GamePieceLayout) evt.getSource());
-        }
-      });
+      def.addPropertyChangeListener(
+          evt -> {
+            if (NAME_PROPERTY.equals(evt.getPropertyName())) {
+              definitions.remove(evt.getOldValue());
+              definitions.put((String) evt.getNewValue(), (GamePieceLayout) evt.getSource());
+            }
+          });
     }
   }
 
@@ -107,12 +104,11 @@ public class GamePieceLayoutsContainer extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GamePieceLayouts.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("GamePieceLayouts.html"); // $NON-NLS-1$
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   public GamePieceImage getGenericDefn(String defnName) {
     for (final GamePieceLayout d : definitions.values()) {
@@ -133,4 +129,3 @@ public class GamePieceLayoutsContainer extends AbstractConfigurable {
     return true;
   }
 }
-

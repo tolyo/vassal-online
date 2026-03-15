@@ -42,8 +42,6 @@ import VASSAL.search.HTMLImageFinder;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.LaunchButton;
 import VASSAL.tools.swing.SwingUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionListener;
@@ -53,22 +51,31 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * This component places a button into the controls window toolbar.
- * Pressing the button generates random numbers and displays the
- * result in the Chatter */
+ * This component places a button into the controls window toolbar. Pressing the button generates
+ * random numbers and displays the result in the Chatter
+ */
 public class DiceButton extends AbstractToolbarItem {
   protected java.util.Random ran;
   protected int nSides = 6, nDice = 2, plus = 0, addToTotal = 0;
   protected boolean reportTotal = false;
   protected boolean promptAlways = false;
   protected boolean sortDice = false;
-  protected final FormattedString reportFormat = new FormattedString("** $" + REPORT_NAME + "$ = $" + RESULT + "$ *** &lt;$" + GlobalOptions.PLAYER_NAME + "$&gt;"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+  protected final FormattedString reportFormat =
+      new FormattedString(
+          "** $"
+              + REPORT_NAME
+              + "$ = $"
+              + RESULT
+              + "$ *** &lt;$"
+              + GlobalOptions.PLAYER_NAME
+              + "$&gt;"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
   /** Locking of options for roll prompts */
   protected boolean lockSides = false;
+
   protected boolean lockDice = false;
   protected boolean lockPlus = false;
   protected boolean lockAdd = false;
@@ -102,37 +109,49 @@ public class DiceButton extends AbstractToolbarItem {
 
   /** Keep Options */
   protected static final String KEEP_SMALLEST = "s";
+
   protected static final String KEEP_LARGEST = "l";
   protected static final String KEEP_EQUAL = "=";
   protected static final String KEEP_GREATER = ">";
   protected static final String KEEP_LESS = "<";
 
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
-  protected String tooltip = ""; //$NON-NLS-1$
+  protected String tooltip = ""; // $NON-NLS-1$
   protected final MutableProperty.Impl property = new Impl("", this);
   protected final MutableProperty.Impl totalProp = new Impl("", this);
   protected final MutableProperty.Impl keepProp = new Impl("", this);
   protected final MutableProperty.Impl summaryProp = new Impl("", this);
 
   // These five identical to AbstractToolbarItem, and are only here for "clirr purposes"
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String BUTTON_TEXT = "text"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String TOOLTIP = "tooltip"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String NAME = "name"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String ICON = "icon"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String HOTKEY = "hotkey"; //$NON-NLS-1$
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String BUTTON_TEXT = "text"; // $NON-NLS-1$
 
-  public static final String DEPRECATED_NAME = "label"; //$NON-NLS-1$
-  public static final String N_DICE = "nDice"; //$NON-NLS-1$
-  public static final String N_SIDES = "nSides"; //$NON-NLS-1$
-  public static final String PLUS = "plus"; //$NON-NLS-1$
-  public static final String ADD_TO_TOTAL = "addToTotal"; //$NON-NLS-1$
-  public static final String REPORT_TOTAL = "reportTotal"; //$NON-NLS-1$
-  public static final String PROMPT_ALWAYS = "prompt"; //$NON-NLS-1$
-  public static final String REPORT_FORMAT = "reportFormat"; //$NON-NLS-1$
-  public static final String SORT_DICE_RESULTS = "sortDice"; //NON-NLS
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String TOOLTIP = "tooltip"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String NAME = "name"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String ICON = "icon"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
+
+  public static final String DEPRECATED_NAME = "label"; // $NON-NLS-1$
+  public static final String N_DICE = "nDice"; // $NON-NLS-1$
+  public static final String N_SIDES = "nSides"; // $NON-NLS-1$
+  public static final String PLUS = "plus"; // $NON-NLS-1$
+  public static final String ADD_TO_TOTAL = "addToTotal"; // $NON-NLS-1$
+  public static final String REPORT_TOTAL = "reportTotal"; // $NON-NLS-1$
+  public static final String PROMPT_ALWAYS = "prompt"; // $NON-NLS-1$
+  public static final String REPORT_FORMAT = "reportFormat"; // $NON-NLS-1$
+  public static final String SORT_DICE_RESULTS = "sortDice"; // NON-NLS
 
   public static final String KEEP_DICE = "keepDice";
   public static final String KEEP_OPTION = "keepOption";
@@ -144,97 +163,101 @@ public class DiceButton extends AbstractToolbarItem {
   public static final String LOCK_ADD = "lockAdd";
 
   /** Variable name for reporting format */
-  public static final String SUMMARY = "summary"; //$NON-NLS-1$
-  public static final String RESULT = "result"; //$NON-NLS-1$
-  public static final String REPORT_NAME = "name"; //$NON-NLS-1$
-  public static final String RESULT_N = "result#"; //$NON-NLS-1$
-  public static final String NUMERIC_TOTAL = "numericalTotal"; //$NON-NLS-1$
+  public static final String SUMMARY = "summary"; // $NON-NLS-1$
+
+  public static final String RESULT = "result"; // $NON-NLS-1$
+  public static final String REPORT_NAME = "name"; // $NON-NLS-1$
+  public static final String RESULT_N = "result#"; // $NON-NLS-1$
+  public static final String NUMERIC_TOTAL = "numericalTotal"; // $NON-NLS-1$
 
   public DiceButton() {
     initLaunchButton();
   }
 
   protected void initLaunchButton() {
-    final ActionListener rollAction = e -> {
+    final ActionListener rollAction =
+        e -> {
 
-      // Determine which elements are not locked
-      final List<String> keepAttributes = new ArrayList<>();
-      if (promptAlways) {
-        if (!lockDice) {
-          keepAttributes.add(N_DICE);
-        }
-        if (!lockSides) {
-          keepAttributes.add(N_SIDES);
-        }
-        if (!lockPlus) {
-          keepAttributes.add(PLUS);
-        }
-        if (!lockAdd) {
-          keepAttributes.add(ADD_TO_TOTAL);
-        }
-      }
+          // Determine which elements are not locked
+          final List<String> keepAttributes = new ArrayList<>();
+          if (promptAlways) {
+            if (!lockDice) {
+              keepAttributes.add(N_DICE);
+            }
+            if (!lockSides) {
+              keepAttributes.add(N_SIDES);
+            }
+            if (!lockPlus) {
+              keepAttributes.add(PLUS);
+            }
+            if (!lockAdd) {
+              keepAttributes.add(ADD_TO_TOTAL);
+            }
+          }
 
-      // Only show a prompt if at least one of the 4 attributes is not locked, otherwise it is a standard roll
-      if (promptAlways && !keepAttributes.isEmpty()) {
-        final DiceButton delegate = new DiceButton() {
-          @Override
-          protected void initLaunchButton() {
-            setLaunchButton(makeLaunchButton("", AbstractToolbarItem.BUTTON_TEXT, "", null));
+          // Only show a prompt if at least one of the 4 attributes is not locked, otherwise it is a
+          // standard roll
+          if (promptAlways && !keepAttributes.isEmpty()) {
+            final DiceButton delegate =
+                new DiceButton() {
+                  @Override
+                  protected void initLaunchButton() {
+                    setLaunchButton(
+                        makeLaunchButton("", AbstractToolbarItem.BUTTON_TEXT, "", null));
+                  }
+                };
+
+            for (final String key : keepAttributes) {
+              delegate.setAttribute(key, getAttributeValueString(key));
+            }
+
+            final AutoConfigurer ac = new AutoConfigurer(delegate);
+            final ConfigurerWindow w = new ConfigurerWindow(ac, true);
+            w.setTitle(getConfigureName());
+            for (final String key : getAttributeNames()) {
+              if (!keepAttributes.contains(key)) {
+                final Component controls = ac.getConfigurer(key).getControls();
+                final Container parent = controls.getParent();
+                parent.remove(controls);
+                parent.remove(ac.getLabel(key));
+              }
+            }
+            w.setLocationRelativeTo(getLaunchButton().getTopLevelAncestor());
+            SwingUtils.repack(w, true);
+            w.setVisible(true);
+
+            for (final String key : keepAttributes) {
+              setAttribute(key, delegate.getAttributeValueString(key));
+            }
+            if (!w.isCancelled()) {
+              DR();
+            }
+          } else {
+            DR();
           }
         };
 
-        for (final String key : keepAttributes) {
-          delegate.setAttribute(key, getAttributeValueString(key));
-        }
-
-        final AutoConfigurer ac = new AutoConfigurer(delegate);
-        final ConfigurerWindow w = new ConfigurerWindow(ac, true);
-        w.setTitle(getConfigureName());
-        for (final String key : getAttributeNames()) {
-          if (!keepAttributes.contains(key)) {
-            final Component controls = ac.getConfigurer(key).getControls();
-            final Container parent = controls.getParent();
-            parent.remove(controls);
-            parent.remove(ac.getLabel(key));
-          }
-        }
-        w.setLocationRelativeTo(getLaunchButton().getTopLevelAncestor());
-        SwingUtils.repack(w, true);
-        w.setVisible(true);
-
-        for (final String key : keepAttributes) {
-          setAttribute(key, delegate.getAttributeValueString(key));
-        }
-        if (! w.isCancelled()) {
-          DR();
-        }
-      }
-      else {
-        DR();
-      }
-    };
-
-    setLaunchButton(makeLaunchButton(
+    setLaunchButton(
+        makeLaunchButton(
             Resources.getString("Editor.DiceButton.dice_button_text"),
             Resources.getString("Editor.DiceButton.dice_button_tooltip"),
-            "/images/die.gif", //NON-NLS
-            rollAction
-    ));
+            "/images/die.gif", // NON-NLS
+            rollAction));
     launch = getLaunchButton(); // for compatibility
 
-    setAttribute(AbstractToolbarItem.NAME, Resources.getString("Editor.DiceButton.dice_name")); //NON-NLS
+    setAttribute(
+        AbstractToolbarItem.NAME, Resources.getString("Editor.DiceButton.dice_name")); // NON-NLS
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.DiceButton.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.DiceButton.component_type"); // $NON-NLS-1$
   }
 
   /**
-   * Forwards the result of the roll to the {@link Chatter#send}
-   * method of the {@link Chatter} of the {@link GameModule}.  Format is
-   * prefix+[comma-separated roll list]+suffix
-   * New-style reporting is numericTotal and individual results
-   * */
+   * Forwards the result of the roll to the {@link Chatter#send} method of the {@link Chatter} of
+   * the {@link GameModule}. Format is prefix+[comma-separated roll list]+suffix New-style reporting
+   * is numericTotal and individual results
+   */
   protected void DR() {
 
     keepDice = new int[nDice];
@@ -259,11 +282,9 @@ public class DiceButton extends AbstractToolbarItem {
       if (keepingDice) {
         if (KEEP_GREATER.equals(keepOption) && roll < keepValue) {
           continue;
-        }
-        else if (KEEP_LESS.equals(keepOption) && roll > keepValue) {
+        } else if (KEEP_LESS.equals(keepOption) && roll > keepValue) {
           continue;
-        }
-        else if (KEEP_EQUAL.equals(keepOption) && roll != keepValue) {
+        } else if (KEEP_EQUAL.equals(keepOption) && roll != keepValue) {
           continue;
         }
       }
@@ -289,11 +310,11 @@ public class DiceButton extends AbstractToolbarItem {
       keepCount = Math.max(0, Math.min(keepValue, tempDice.length));
       keepDice = new int[keepCount];
 
-      // tempDice has been sorted, so can just pull the required number from the front or back of the array
+      // tempDice has been sorted, so can just pull the required number from the front or back of
+      // the array
       if (KEEP_SMALLEST.equals(keepOption)) {
         System.arraycopy(tempDice, 0, keepDice, 0, keepCount);
-      }
-      else {
+      } else {
         System.arraycopy(tempDice, tempDice.length - keepCount, keepDice, 0, keepCount);
       }
 
@@ -313,8 +334,7 @@ public class DiceButton extends AbstractToolbarItem {
     final StringBuilder val = new StringBuilder();
     if (reportTotal) {
       val.append(numericTotal);
-    }
-    else {
+    } else {
       for (int i = 0; i < keepCount; ++i) {
         val.append(keepDice[i]);
         if (i < keepCount - 1) {
@@ -335,20 +355,24 @@ public class DiceButton extends AbstractToolbarItem {
 
     for (int i = 0; i < sortedKeys.length; i++) {
       if (i > 0) {
-        summaryVal.append(Resources.getString("Dice.summary_separator"))
-                .append(' ');
+        summaryVal.append(Resources.getString("Dice.summary_separator")).append(' ');
       }
-      summaryVal.append(sortedKeys[i])
-              .append(' ')
-              .append(Resources.getString("Dice.summary_times"))
-              .append(resultCounts.get(sortedKeys[i]));
+      summaryVal
+          .append(sortedKeys[i])
+          .append(' ')
+          .append(Resources.getString("Dice.summary_times"))
+          .append(resultCounts.get(sortedKeys[i]));
     }
 
     // Send results
     final String report = formatResult(val.toString(), summaryVal.toString());
-    Command c = report.isEmpty() ? new NullCommand() : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), report);
+    Command c =
+        report.isEmpty()
+            ? new NullCommand()
+            : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), report);
     c.execute();
-    c = c.append(property.setPropertyValue(val.toString()))
+    c =
+        c.append(property.setPropertyValue(val.toString()))
             .append(totalProp.setPropertyValue(Integer.toString(numericTotal)))
             .append(keepProp.setPropertyValue(Integer.toString(keepCount)))
             .append(summaryProp.setPropertyValue(summaryVal.toString()));
@@ -357,9 +381,9 @@ public class DiceButton extends AbstractToolbarItem {
 
   /**
    * Use the configured FormattedString to format the result of a roll
+   *
    * @param result Result format
    * @param summary Summary format
-   *
    * @return Formatted result
    */
   protected String formatResult(final String result, final String summary) {
@@ -400,7 +424,10 @@ public class DiceButton extends AbstractToolbarItem {
     final String text = reportFormat.getLocalizedText(this, "Editor.report_format");
     String report = text;
     if (!text.isEmpty()) {
-      report = text.startsWith("*") ? "*" + text : "* " + text; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      report =
+          text.startsWith("*")
+              ? "*" + text
+              : "* " + text; // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     return report;
   }
@@ -414,92 +441,114 @@ public class DiceButton extends AbstractToolbarItem {
   @Override
   public String[] getAttributeNames() {
     return ArrayUtils.addAll(
-            super.getAttributeNames(),
-            REPORT_FORMAT,
-            PROMPT_ALWAYS,
-            N_DICE,
-            LOCK_DICE,
-            N_SIDES,
-            LOCK_SIDES,
-            PLUS,
-            LOCK_PLUS,
-            ADD_TO_TOTAL,
-            LOCK_ADD,
-            REPORT_TOTAL,
-            SORT_DICE_RESULTS,
-            KEEP_DICE,
-            KEEP_OPTION,
-            KEEP_COUNT
-    );
+        super.getAttributeNames(),
+        REPORT_FORMAT,
+        PROMPT_ALWAYS,
+        N_DICE,
+        LOCK_DICE,
+        N_SIDES,
+        LOCK_SIDES,
+        PLUS,
+        LOCK_PLUS,
+        ADD_TO_TOTAL,
+        LOCK_ADD,
+        REPORT_TOTAL,
+        SORT_DICE_RESULTS,
+        KEEP_DICE,
+        KEEP_OPTION,
+        KEEP_COUNT);
   }
 
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.addAll(
-            super.getAttributeDescriptions(),
-            Resources.getString("Editor.report_format"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.prompt_value"), //$NON-NLS-1$
-            Resources.getString("Dice.number_of_dice"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.lock_number_of_dice"), //$NON-NLS-1$
-            Resources.getString("Dice.number_of_sides"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.lock_number_of_sides"), //$NON-NLS-1$
-            Resources.getString("Dice.add_to_each_side"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.lock_add_to_each_side"), //$NON-NLS-1$
-            Resources.getString("Dice.add_to_total"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.lock_add_to_total"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.report_total"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.sort_results"), //$NON-NLS-1$
-            Resources.getString("Editor.DiceButton.keep_dice"),
-            Resources.getString("Editor.DiceButton.keep_option"),
-            Resources.getString("Editor.DiceButton.keep_count")
-    );
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.report_format"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.prompt_value"), // $NON-NLS-1$
+        Resources.getString("Dice.number_of_dice"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.lock_number_of_dice"), // $NON-NLS-1$
+        Resources.getString("Dice.number_of_sides"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.lock_number_of_sides"), // $NON-NLS-1$
+        Resources.getString("Dice.add_to_each_side"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.lock_add_to_each_side"), // $NON-NLS-1$
+        Resources.getString("Dice.add_to_total"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.lock_add_to_total"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.report_total"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.sort_results"), // $NON-NLS-1$
+        Resources.getString("Editor.DiceButton.keep_dice"),
+        Resources.getString("Editor.DiceButton.keep_option"),
+        Resources.getString("Editor.DiceButton.keep_count"));
   }
 
-  /** @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead. */
+  /**
+   * @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead.
+   */
   @Deprecated(since = "2020-10-01", forRemoval = true)
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(final AutoConfigurable c, final String key, final String name) {
-      return new IconConfigurer(key, name, "/images/die.gif"); //$NON-NLS-1$
+      return new IconConfigurer(key, name, "/images/die.gif"); // $NON-NLS-1$
     }
   }
 
   public static class ReportFormatConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(final AutoConfigurable c, final String key, final String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[]{REPORT_NAME, RESULT, NUMERIC_TOTAL, RESULT_N, N_DICE, N_SIDES, PLUS, ADD_TO_TOTAL, KEEP_DICE, KEEP_COUNT, SUMMARY});
+      return new PlayerIdFormattedExpressionConfigurer(
+          key,
+          name,
+          new String[] {
+            REPORT_NAME,
+            RESULT,
+            NUMERIC_TOTAL,
+            RESULT_N,
+            N_DICE,
+            N_SIDES,
+            PLUS,
+            ADD_TO_TOTAL,
+            KEEP_DICE,
+            KEEP_COUNT,
+            SUMMARY
+          });
     }
   }
 
   public static class KeepConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new TranslatingStringEnumConfigurer(key, name,
-              new String[] {KEEP_GREATER, KEEP_EQUAL, KEEP_LESS, KEEP_LARGEST, KEEP_SMALLEST},
-              new String[] {"Editor.DiceButton.keep_greater_than", "Editor.DiceButton.keep_equal", "Editor.DiceButton.keep_less_than", "Editor.DiceButton.keep_largest", "Editor.DiceButton.keep_smallest"});
+      return new TranslatingStringEnumConfigurer(
+          key,
+          name,
+          new String[] {KEEP_GREATER, KEEP_EQUAL, KEEP_LESS, KEEP_LARGEST, KEEP_SMALLEST},
+          new String[] {
+            "Editor.DiceButton.keep_greater_than",
+            "Editor.DiceButton.keep_equal",
+            "Editor.DiceButton.keep_less_than",
+            "Editor.DiceButton.keep_largest",
+            "Editor.DiceButton.keep_smallest"
+          });
     }
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.addAll(
-            super.getAttributeTypes(),
-            ReportFormatConfig.class,
-            Boolean.class,
-            Integer.class,
-            Boolean.class,
-            Integer.class,
-            Boolean.class,
-            Integer.class,
-            Boolean.class,
-            Integer.class,
-            Boolean.class,
-            Boolean.class,
-            Boolean.class,
-            Boolean.class,
-            KeepConfig.class,
-            Integer.class
-    );
+        super.getAttributeTypes(),
+        ReportFormatConfig.class,
+        Boolean.class,
+        Integer.class,
+        Boolean.class,
+        Integer.class,
+        Boolean.class,
+        Integer.class,
+        Boolean.class,
+        Integer.class,
+        Boolean.class,
+        Boolean.class,
+        Boolean.class,
+        Boolean.class,
+        KeepConfig.class,
+        Integer.class);
   }
 
   private final VisibilityCondition cond = () -> promptAlways;
@@ -512,173 +561,141 @@ public class DiceButton extends AbstractToolbarItem {
   public VisibilityCondition getAttributeVisibility(final String name) {
     if (List.of(LOCK_DICE, LOCK_SIDES, LOCK_PLUS, LOCK_ADD).contains(name)) {
       return cond;
-    }
-    else if (List.of(KEEP_OPTION, KEEP_COUNT).contains(name)) {
+    } else if (List.of(KEEP_OPTION, KEEP_COUNT).contains(name)) {
       return keep;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
 
   /**
-   * Expects to be added to a GameModule.  Adds the button to the
-   * control window's toolbar and registers itself as a @link
-   * KeyStrokeListener */
+   * Expects to be added to a GameModule. Adds the button to the control window's toolbar and
+   * registers itself as a @link KeyStrokeListener
+   */
   @Override
   public void addTo(Buildable parent) {
     super.addTo(parent);
 
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     ran = GameModule.getGameModule().getRNG();
     property.setPropertyValue("1"); // Initialize with a numeric value //$NON-NLS-1$
-    property.addTo((MutablePropertiesContainer)parent);
+    property.addTo((MutablePropertiesContainer) parent);
 
     totalProp.setPropertyValue("0");
-    totalProp.addTo((MutablePropertiesContainer)parent);
+    totalProp.addTo((MutablePropertiesContainer) parent);
 
     keepProp.setPropertyValue("0");
-    keepProp.addTo((MutablePropertiesContainer)parent);
+    keepProp.addTo((MutablePropertiesContainer) parent);
 
     summaryProp.setPropertyValue(""); // Initialize the summaryProp
-    summaryProp.addTo((MutablePropertiesContainer)parent); // add the summary property
+    summaryProp.addTo((MutablePropertiesContainer) parent); // add the summary property
   }
-
 
   @Override
   public void setAttribute(final String key, final Object o) {
-    if (DEPRECATED_NAME.equals(key)) { // Backward compatibility.  Before v1.3, name and button text were combined into one attribute
+    if (DEPRECATED_NAME.equals(
+        key)) { // Backward compatibility.  Before v1.3, name and button text were combined into one
+      // attribute
       setAttribute(NAME, o);
       setAttribute(BUTTON_TEXT, o);
-    }
-    else if (NAME.equals(key)) {
+    } else if (NAME.equals(key)) {
       setConfigureName((String) o);
-      property.setPropertyName(getConfigureName() + "_result"); //$NON-NLS-1$
-      totalProp.setPropertyName(getConfigureName() + "_total"); //$NON-NLS-1$
-      keepProp.setPropertyName(getConfigureName() + "_keep"); //$NON-NLS-1$
-      summaryProp.setPropertyName(getConfigureName() + "_summary"); //$NON-NLS-1$
+      property.setPropertyName(getConfigureName() + "_result"); // $NON-NLS-1$
+      totalProp.setPropertyName(getConfigureName() + "_total"); // $NON-NLS-1$
+      keepProp.setPropertyName(getConfigureName() + "_keep"); // $NON-NLS-1$
+      summaryProp.setPropertyName(getConfigureName() + "_summary"); // $NON-NLS-1$
       getLaunchButton().setToolTipText((String) o);
-    }
-    else if (N_DICE.equals(key)) {
+    } else if (N_DICE.equals(key)) {
       if (o instanceof Integer) {
         nDice = (Integer) o;
-      }
-      else if (o instanceof String) {
+      } else if (o instanceof String) {
         nDice = Integer.parseInt((String) o);
       }
       nDice = Math.max(nDice, 0);
-    }
-    else if (LOCK_DICE.equals(key)) {
+    } else if (LOCK_DICE.equals(key)) {
       if (o instanceof Boolean) {
         lockDice = (Boolean) o;
+      } else if (o instanceof String) {
+        lockDice = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        lockDice = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (N_SIDES.equals(key)) {
+    } else if (N_SIDES.equals(key)) {
       if (o instanceof Integer) {
         nSides = (Integer) o;
-      }
-      else if (o instanceof String) {
+      } else if (o instanceof String) {
         nSides = Integer.parseInt((String) o);
       }
       nSides = Math.max(nSides, 0);
-    }
-    else if (LOCK_SIDES.equals(key)) {
+    } else if (LOCK_SIDES.equals(key)) {
       if (o instanceof Boolean) {
         lockSides = (Boolean) o;
+      } else if (o instanceof String) {
+        lockSides = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        lockSides = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (PLUS.equals(key)) {
+    } else if (PLUS.equals(key)) {
       if (o instanceof Integer) {
         plus = (Integer) o;
-      }
-      else if (o instanceof String) {
+      } else if (o instanceof String) {
         plus = Integer.parseInt((String) o);
       }
-    }
-    else if (LOCK_PLUS.equals(key)) {
+    } else if (LOCK_PLUS.equals(key)) {
       if (o instanceof Boolean) {
         lockPlus = (Boolean) o;
+      } else if (o instanceof String) {
+        lockPlus = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        lockPlus = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (ADD_TO_TOTAL.equals(key)) {
+    } else if (ADD_TO_TOTAL.equals(key)) {
       if (o instanceof Integer) {
         addToTotal = (Integer) o;
-      }
-      else if (o instanceof String) {
+      } else if (o instanceof String) {
         addToTotal = Integer.parseInt((String) o);
       }
-    }
-    else if (LOCK_ADD.equals(key)) {
+    } else if (LOCK_ADD.equals(key)) {
       if (o instanceof Boolean) {
         lockAdd = (Boolean) o;
+      } else if (o instanceof String) {
+        lockAdd = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        lockAdd = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (REPORT_TOTAL.equals(key)) {
+    } else if (REPORT_TOTAL.equals(key)) {
       if (o instanceof Boolean) {
         reportTotal = (Boolean) o;
+      } else if (o instanceof String) {
+        reportTotal = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        reportTotal = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (PROMPT_ALWAYS.equals(key)) {
+    } else if (PROMPT_ALWAYS.equals(key)) {
       if (o instanceof Boolean) {
         promptAlways = (Boolean) o;
+      } else if (o instanceof String) {
+        promptAlways = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        promptAlways = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       reportFormat.setFormat((String) o);
-    }
-    else if (TOOLTIP.equals(key)) {
+    } else if (TOOLTIP.equals(key)) {
       tooltip = (String) o;
       super.setAttribute(key, o);
-    }
-    else if (SORT_DICE_RESULTS.equals(key)) {
+    } else if (SORT_DICE_RESULTS.equals(key)) {
       if (o instanceof Boolean) {
         sortDice = (Boolean) o;
+      } else if (o instanceof String) {
+        sortDice = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        sortDice = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (KEEP_DICE.equals(key)) {
+    } else if (KEEP_DICE.equals(key)) {
       if (o instanceof Boolean) {
         keepingDice = (Boolean) o;
+      } else if (o instanceof String) {
+        keepingDice = "true".equals(o); // $NON-NLS-1$
       }
-      else if (o instanceof String) {
-        keepingDice = "true".equals(o); //$NON-NLS-1$
-      }
-    }
-    else if (KEEP_OPTION.equals(key)) {
+    } else if (KEEP_OPTION.equals(key)) {
       keepOption = (String) o;
-    }
-    else if (KEEP_COUNT.equals(key)) {
+    } else if (KEEP_COUNT.equals(key)) {
       if (o instanceof Integer) {
         keepValue = (Integer) o;
-      }
-      else if (o instanceof String) {
+      } else if (o instanceof String) {
         keepValue = Integer.parseInt((String) o);
       }
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
   }
@@ -687,56 +704,39 @@ public class DiceButton extends AbstractToolbarItem {
   public String getAttributeValueString(final String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (N_DICE.equals(key)) {
+    } else if (N_DICE.equals(key)) {
       return String.valueOf(nDice);
-    }
-    else if (LOCK_DICE.equals(key)) {
+    } else if (LOCK_DICE.equals(key)) {
       return String.valueOf(lockDice);
-    }
-    else if (N_SIDES.equals(key)) {
+    } else if (N_SIDES.equals(key)) {
       return String.valueOf(nSides);
-    }
-    else if (LOCK_SIDES.equals(key)) {
+    } else if (LOCK_SIDES.equals(key)) {
       return String.valueOf(lockSides);
-    }
-    else if (PLUS.equals(key)) {
+    } else if (PLUS.equals(key)) {
       return String.valueOf(plus);
-    }
-    else if (LOCK_PLUS.equals(key)) {
+    } else if (LOCK_PLUS.equals(key)) {
       return String.valueOf(lockPlus);
-    }
-    else if (ADD_TO_TOTAL.equals(key)) {
+    } else if (ADD_TO_TOTAL.equals(key)) {
       return String.valueOf(addToTotal);
-    }
-    else if (LOCK_ADD.equals(key)) {
+    } else if (LOCK_ADD.equals(key)) {
       return String.valueOf(lockAdd);
-    }
-    else if (REPORT_TOTAL.equals(key)) {
+    } else if (REPORT_TOTAL.equals(key)) {
       return String.valueOf(reportTotal);
-    }
-    else if (PROMPT_ALWAYS.equals(key)) {
+    } else if (PROMPT_ALWAYS.equals(key)) {
       return String.valueOf(promptAlways);
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       return reportFormat.getFormat();
-    }
-    else if (TOOLTIP.equals(key)) {
+    } else if (TOOLTIP.equals(key)) {
       return tooltip.isEmpty() ? super.getAttributeValueString(BUTTON_TEXT) : tooltip;
-    }
-    else if (SORT_DICE_RESULTS.equals(key)) {
+    } else if (SORT_DICE_RESULTS.equals(key)) {
       return String.valueOf(sortDice);
-    }
-    else if (KEEP_DICE.equals(key)) {
+    } else if (KEEP_DICE.equals(key)) {
       return String.valueOf(keepingDice);
-    }
-    else if (KEEP_OPTION.equals(key)) {
+    } else if (KEEP_OPTION.equals(key)) {
       return keepOption;
-    }
-    else if (KEEP_COUNT.equals(key)) {
+    } else if (KEEP_COUNT.equals(key)) {
       return String.valueOf(keepValue);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -748,12 +748,10 @@ public class DiceButton extends AbstractToolbarItem {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("DiceButton.html"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage("DiceButton.html"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
-  /**
-   * Implement PropertyNameSource - Expose roll result property
-   */
+  /** Implement PropertyNameSource - Expose roll result property */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -765,7 +763,8 @@ public class DiceButton extends AbstractToolbarItem {
   }
 
   /**
-   * In case reports use HTML and  refer to any image files
+   * In case reports use HTML and refer to any image files
+   *
    * @param s Collection to add image names to
    */
   @Override

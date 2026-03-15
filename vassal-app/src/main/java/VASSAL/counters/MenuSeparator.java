@@ -16,16 +16,6 @@
 
 package VASSAL.counters;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Arrays;
-import java.util.List;
-
-import java.util.Objects;
-import javax.swing.KeyStroke;
-
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
 import VASSAL.configure.NamedHotKeyConfigurer;
@@ -34,10 +24,16 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import javax.swing.KeyStroke;
 
-/**
- * This trait puts a menu separator bar in the context menu for the piece
- */
+/** This trait puts a menu separator bar in the context menu for the piece */
 public class MenuSeparator extends Decorator implements TranslatablePiece {
   public static final String ID = "menuSeparator;"; // NON-NLS
   public static final String SEPARATOR_NAME = "<separator>"; // NON-NLS
@@ -59,9 +55,9 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
   public void mySetType(String type) {
     type = type.substring(ID.length());
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type, ';');
-    desc        = st.nextToken();
-    key         = st.nextNamedKeyStroke(null);
-    command     = null;
+    desc = st.nextToken();
+    key = st.nextNamedKeyStroke(null);
+    command = null;
   }
 
   @Override
@@ -75,7 +71,7 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
   protected KeyCommand[] myGetKeyCommands() {
     if (command == null) {
       separatorCommand = new KeyCommand(SEPARATOR_NAME, key, getOutermost(this), this);
-      command = new KeyCommand[]{separatorCommand};
+      command = new KeyCommand[] {separatorCommand};
     }
     if (command.length > 0) {
       command[0].setEnabled(getMap() != null);
@@ -90,12 +86,12 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
 
   @Override
   public Command myKeyEvent(KeyStroke stroke) {
-    return null; // We don't ever actually "do" anything to the game state, we're just here to mark a menu separator
+    return null; // We don't ever actually "do" anything to the game state, we're just here to mark
+    // a menu separator
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -140,7 +136,7 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof MenuSeparator)) return false;
+    if (!(o instanceof MenuSeparator)) return false;
     final MenuSeparator c = (MenuSeparator) o;
     if (!Objects.equals(desc, c.desc)) return false;
     return Objects.equals(key, c.key);
@@ -150,7 +146,6 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
   public HelpFile getHelpFile() {
     return HelpFile.getReferenceManualPage("MenuSeparator.html"); // NON-NLS
   }
-
 
   public static class Ed implements PieceEditor {
     private final StringConfigurer descInput;
@@ -167,7 +162,6 @@ public class MenuSeparator extends Decorator implements TranslatablePiece {
       keyInput = new NamedHotKeyConfigurer(p.key);
       controls.add("Editor.MenuSeparator.if_hidden", keyInput);
     }
-
 
     @Override
     public Component getControls() {

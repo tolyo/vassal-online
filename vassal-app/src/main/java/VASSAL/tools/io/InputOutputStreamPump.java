@@ -18,12 +18,11 @@
 
 package VASSAL.tools.io;
 
+import VASSAL.tools.concurrent.listener.DummyEventListener;
+import VASSAL.tools.concurrent.listener.EventListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import VASSAL.tools.concurrent.listener.DummyEventListener;
-import VASSAL.tools.concurrent.listener.EventListener;
 
 /**
  * Pumps an {@link InputStream} to an {@link OutputStream}.
@@ -31,8 +30,7 @@ import VASSAL.tools.concurrent.listener.EventListener;
  * @author Joel Uckelman
  * @since 3.2.0
  */
-public class InputOutputStreamPump implements InputStreamPump,
-                                              OutputStreamPump {
+public class InputOutputStreamPump implements InputStreamPump, OutputStreamPump {
   protected InputStream in;
   protected OutputStream out;
 
@@ -40,9 +38,7 @@ public class InputOutputStreamPump implements InputStreamPump,
 
   protected final EventListener<IOException> ioexListener;
 
-  /**
-   * Creates an <code>InputOutputStreamPump</code>.
-   */
+  /** Creates an <code>InputOutputStreamPump</code>. */
   public InputOutputStreamPump() {
     this(null, null, new DummyEventListener<>());
   }
@@ -73,8 +69,8 @@ public class InputOutputStreamPump implements InputStreamPump,
    * @param out the output stream
    * @param ioexListener the exception listener
    */
-  public InputOutputStreamPump(InputStream in, OutputStream out,
-                               EventListener<IOException> ioexListener) {
+  public InputOutputStreamPump(
+      InputStream in, OutputStream out, EventListener<IOException> ioexListener) {
     this.in = in;
     this.out = out;
     this.ioexListener = ioexListener;
@@ -113,8 +109,7 @@ public class InputOutputStreamPump implements InputStreamPump,
 
     try {
       in.transferTo(out);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // Tell someone who cares.
       ioexListener.receive(this, e);
     }

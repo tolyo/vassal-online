@@ -23,7 +23,11 @@ import org.junit.jupiter.api.Test;
 public class SubMenuTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     SubMenu trait = new SubMenu();
 
@@ -35,6 +39,5 @@ public class SubMenuTest extends DecoratorTest {
     trait.mySetType(SubMenu.ID + ";xyzzy;abc,def,ghi"); // NON-NLS
     trait.setDescription("plover");
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 }

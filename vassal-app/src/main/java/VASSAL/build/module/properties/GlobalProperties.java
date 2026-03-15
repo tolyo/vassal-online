@@ -17,13 +17,6 @@
  */
 package VASSAL.build.module.properties;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JToolBar;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -35,14 +28,19 @@ import VASSAL.configure.UniquelyNamedChildren;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.TemporaryToolBar;
 import VASSAL.tools.ToolBarComponent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JToolBar;
 
 /**
  * Dummy component that acts as a simple container for GlobalProperty components
  *
  * @author rkinney
- *
  */
-public class GlobalProperties extends AbstractConfigurable implements MutablePropertiesContainer, ToolBarComponent, PropertySource {
+public class GlobalProperties extends AbstractConfigurable
+    implements MutablePropertiesContainer, ToolBarComponent, PropertySource {
   private final TemporaryToolBar tempToolbar = new TemporaryToolBar();
   private PropertySource propertySource;
   private final Map<String, MutableProperty> initialValues = new HashMap<>();
@@ -73,8 +71,7 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public String getAttributeValueString(String key) {
@@ -82,20 +79,21 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GlobalProperties.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("GlobalProperties.html"); // NON-NLS
   }
 
   // Only the module-level GlobalProperties component can have Scenario Options.
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return parent instanceof GameModule ?
-      new Class<?>[] {GlobalPropertyFolder.class, GlobalProperty.class, ScenarioPropertiesOptionTab.class } :
-      new Class<?>[] {GlobalPropertyFolder.class, GlobalProperty.class};
+    return parent instanceof GameModule
+        ? new Class<?>[] {
+          GlobalPropertyFolder.class, GlobalProperty.class, ScenarioPropertiesOptionTab.class
+        }
+        : new Class<?>[] {GlobalPropertyFolder.class, GlobalProperty.class};
   }
 
   @Override
@@ -108,13 +106,12 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
 
     tempToolbar.setDelegate((ToolBarComponent) parent);
     propertySource = (PropertySource) parent;
-    GameModule.getGameModule().addCommandEncoder(
-      new ChangePropertyCommandEncoder(this));
+    GameModule.getGameModule().addCommandEncoder(new ChangePropertyCommandEncoder(this));
 
-    validator = new CompoundValidityChecker(
-      new UniquelyNamedChildren(this, ScenarioPropertiesOptionTab.class),
-      new UniquelyNamedChildren(this, GlobalProperty.class)
-    );
+    validator =
+        new CompoundValidityChecker(
+            new UniquelyNamedChildren(this, ScenarioPropertiesOptionTab.class),
+            new UniquelyNamedChildren(this, GlobalProperty.class));
 
     // Initialise the Scenario Options
     if (parent instanceof GameModule) {
@@ -126,8 +123,7 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
   public void addMutableProperty(String key, MutableProperty p) {
     if (parent == null) {
       initialValues.put(key, p);
-    }
-    else {
+    } else {
       parent.addMutableProperty(key, p);
     }
   }
@@ -136,8 +132,7 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
   public MutableProperty removeMutableProperty(String key) {
     if (parent == null) {
       return initialValues.remove(key);
-    }
-    else {
+    } else {
       return parent.removeMutableProperty(key);
     }
   }
@@ -180,9 +175,7 @@ public class GlobalProperties extends AbstractConfigurable implements MutablePro
     return parent;
   }
 
-  /**
-   * Use the identity of the owning container (i.e. Module, map or zone)
-   */
+  /** Use the identity of the owning container (i.e. Module, map or zone) */
   @Override
   public String getMutablePropertiesContainerId() {
     return parent.getMutablePropertiesContainerId();

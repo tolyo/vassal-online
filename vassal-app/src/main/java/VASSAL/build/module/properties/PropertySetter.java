@@ -22,8 +22,9 @@ import VASSAL.script.expression.AuditTrail;
 import VASSAL.tools.FormattedString;
 
 /**
- * Provides a fixed value
- * The value can be specified as a FormattedString property and evaluated at runtime
+ * Provides a fixed value The value can be specified as a FormattedString property and evaluated at
+ * runtime
+ *
  * @author rkinney
  */
 public class PropertySetter implements PropertyChanger {
@@ -54,7 +55,9 @@ public class PropertySetter implements PropertyChanger {
     String s = newValue;
     if (format != null) {
       format.setFormat(s);
-      s = format.getText(propSource.getPropertySource(), propSource, AuditTrail.create(propSource, s));
+      s =
+          format.getText(
+              propSource.getPropertySource(), propSource, AuditTrail.create(propSource, s));
     }
     return s;
   }
@@ -62,6 +65,4 @@ public class PropertySetter implements PropertyChanger {
   public void setNewValue(String newValue) {
     this.newValue = newValue;
   }
-
-
 }

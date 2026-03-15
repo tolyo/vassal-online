@@ -26,30 +26,29 @@ import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.URLUtils;
 import VASSAL.tools.filechooser.AudioFileFilter;
 import VASSAL.tools.filechooser.FileChooser;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.swing.JButton;
+import javax.swing.JTextField;
 
 /**
- * Configurer for specifying a Clip. This class is intended to allow
- * players to override a default sound with their own sound file on their
- * local file system.
+ * Configurer for specifying a Clip. This class is intended to allow players to override a default
+ * sound with their own sound file on their local file system.
  */
 public class SoundConfigurer extends Configurer {
-  public static final String DEFAULT = "default"; //NON-NLS
+  public static final String DEFAULT = "default"; // NON-NLS
   private final String defaultResource;
   private String clipName;
   private ConfigurerPanel controls;
   private JTextField textField;
   private final AudioClipFactory clipFactory;
 
-  //FIXME this needs some i18n scheme and preferably the display version should be [disabled] while leaving file version alone.
+  // FIXME this needs some i18n scheme and preferably the display version should be [disabled] while
+  // leaving file version alone.
   private static final String NO_VALUE = "<disabled>";
 
   public SoundConfigurer(String key, String name, String defaultResource) {
@@ -62,7 +61,11 @@ public class SoundConfigurer extends Configurer {
   @Override
   public Component getControls() {
     if (controls == null) {
-      controls = new ConfigurerPanel(getName(), "[]rel[]rel[]rel[grow,fill]", "[]rel[]rel[]rel[]rel[grow,fill]"); // NON-NLS
+      controls =
+          new ConfigurerPanel(
+              getName(),
+              "[]rel[]rel[]rel[grow,fill]",
+              "[]rel[]rel[]rel[]rel[grow,fill]"); // NON-NLS
 
       JButton b = new JButton(Resources.getString("Editor.SoundConfigurer.play"));
       b.addActionListener(e -> play());
@@ -97,18 +100,15 @@ public class SoundConfigurer extends Configurer {
     }
     URL url = null;
     if (DEFAULT.equals(s)) {
-      url = getClass().getResource("/images/" + defaultResource); //NON-NLS
+      url = getClass().getResource("/images/" + defaultResource); // NON-NLS
       clipName = s;
-    }
-    else if (NO_VALUE.equals(s)) {
+    } else if (NO_VALUE.equals(s)) {
       clipName = s;
-    }
-    else if (s != null) {
+    } else if (s != null) {
       try {
         url = URLUtils.toURL(new File(s));
         clipName = s;
-      }
-      catch (MalformedURLException e) {
+      } catch (MalformedURLException e) {
         ReadErrorDialog.error(e, s);
         clipName = null;
       }
@@ -119,12 +119,10 @@ public class SoundConfigurer extends Configurer {
     if (url != null) {
       try {
         setValue(clipFactory.getAudioClip(url));
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, url.toString());
       }
-    }
-    else {
+    } else {
       if (textField != null) {
         textField.setText(null);
       }
@@ -139,14 +137,12 @@ public class SoundConfigurer extends Configurer {
 
   protected AudioClipFactory createAudioClipFactory() {
     return url -> {
-      if (url.toString().toLowerCase().endsWith(".mp3")) { //NON-NLS
+      if (url.toString().toLowerCase().endsWith(".mp3")) { // NON-NLS
         return new Mp3AudioClip(url);
-      }
-      else {
+      } else {
         try (InputStream in = url.openStream()) {
           return new AudioSystemClip(in);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           return null;
         }
       }
@@ -166,8 +162,7 @@ public class SoundConfigurer extends Configurer {
 
     if (fc.showOpenDialog(getControls()) != FileChooser.APPROVE_OPTION) {
       setValue(NO_VALUE);
-    }
-    else {
+    } else {
       final File f = fc.getSelectedFile();
       setValue(f.getName());
     }

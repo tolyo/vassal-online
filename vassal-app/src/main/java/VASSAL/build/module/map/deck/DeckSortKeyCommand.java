@@ -26,11 +26,9 @@ import VASSAL.counters.KeyCommand;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.NamedKeyStrokeListener;
-
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
@@ -41,7 +39,7 @@ public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
   private NamedKeyStrokeListener sortListener;
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.DeckSortKeyCommand.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.DeckSortKeyCommand.component_type"); // $NON-NLS-1$
   }
 
   public List<SortParameter> getSortParameters() {
@@ -60,7 +58,8 @@ public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
 
   @Override
   public String[] getAttributeDescriptions() {
-    return ArrayUtils.addAll(super.getAttributeDescriptions(), Resources.getString("Editor.DeckSortKeyCommand.sort_by"));
+    return ArrayUtils.addAll(
+        super.getAttributeDescriptions(), Resources.getString("Editor.DeckSortKeyCommand.sort_by"));
   }
 
   @Override
@@ -75,8 +74,7 @@ public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
         value = SortParameterArrayConfigurer.decode((String) value);
       }
       sortParameters = (List<SortParameter>) value;
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -85,26 +83,27 @@ public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
   public String getAttributeValueString(String key) {
     if (SORT_PARAMETERS.equals(key)) {
       return SortParameterArrayConfigurer.encode(sortParameters);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
 
   @Override
   public List<KeyCommand> getKeyCommands(Deck deck) {
-    return List.of(new KeyCommand(getConfigureName(), NamedKeyStroke.NULL_KEYSTROKE, deck) {
-      private static final long serialVersionUID = 1L;
+    return List.of(
+        new KeyCommand(getConfigureName(), NamedKeyStroke.NULL_KEYSTROKE, deck) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doSort(deck);
-      }
-    });
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            doSort(deck);
+          }
+        });
   }
 
   private void doSort(Deck deck) {
-    GameModule.getGameModule().sendAndLog(deck.sort(sortParameters, reportFormat, getConfigureName()));
+    GameModule.getGameModule()
+        .sendAndLog(deck.sort(sortParameters, reportFormat, getConfigureName()));
     deck.repaintMap();
   }
 
@@ -128,11 +127,8 @@ public class DeckSortKeyCommand extends AbstractDeckKeyCommand {
   public static class SortParameterConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new SortParameterArrayConfigurer(key, name, ((DeckSortKeyCommand) c).getSortParameters());
+      return new SortParameterArrayConfigurer(
+          key, name, ((DeckSortKeyCommand) c).getSortParameters());
     }
   }
 }
-
-
-
-

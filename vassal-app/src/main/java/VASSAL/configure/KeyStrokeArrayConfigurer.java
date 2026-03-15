@@ -17,13 +17,14 @@
  */
 package VASSAL.configure;
 
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -32,12 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import VASSAL.i18n.Resources;
-import VASSAL.tools.SequenceEncoder;
-
-/**
- * Configures an array of keystrokes
- */
+/** Configures an array of keystrokes */
 public class KeyStrokeArrayConfigurer extends Configurer {
   private final List<HotKeyConfigurer> configs = new ArrayList<>();
   private Box controls;
@@ -61,7 +57,8 @@ public class KeyStrokeArrayConfigurer extends Configurer {
       controls.add(b);
       final JLabel l = new JLabel(getName());
       b.add(l);
-      final JButton button = new JButton(Resources.getString("Editor.KeyStrokeArrayConfigurer.add"));
+      final JButton button =
+          new JButton(Resources.getString("Editor.KeyStrokeArrayConfigurer.add"));
       b.add(button);
       button.addActionListener(e -> addKey(null));
 
@@ -84,8 +81,7 @@ public class KeyStrokeArrayConfigurer extends Configurer {
     controls.add(config.getControls());
     if (configs.size() > 5) {
       panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 150));
-    }
-    else {
+    } else {
       panel.setPreferredSize(null);
     }
     final Window w = SwingUtilities.getWindowAncestor(controls);
@@ -116,8 +112,7 @@ public class KeyStrokeArrayConfigurer extends Configurer {
       for (int i = 0; i < keyStrokes.length; ++i) {
         if (i > configs.size()) {
           addKey(keyStrokes[i]);
-        }
-        else {
+        } else {
           configs.get(i).setValue(keyStrokes[i]);
         }
       }

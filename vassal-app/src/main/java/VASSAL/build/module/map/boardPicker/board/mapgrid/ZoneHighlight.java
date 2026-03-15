@@ -17,6 +17,19 @@
  */
 package VASSAL.build.module.map.boardPicker.board.mapgrid;
 
+import VASSAL.build.AbstractConfigurable;
+import VASSAL.build.AutoConfigurable;
+import VASSAL.build.Buildable;
+import VASSAL.build.module.documentation.HelpFile;
+import VASSAL.configure.ColorConfigurer;
+import VASSAL.configure.Configurer;
+import VASSAL.configure.ConfigurerFactory;
+import VASSAL.configure.TranslatableStringEnum;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.image.ImageUtils;
+import VASSAL.tools.imageop.Op;
+import VASSAL.tools.imageop.SourceOp;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -33,47 +46,31 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import VASSAL.build.AbstractConfigurable;
-import VASSAL.build.AutoConfigurable;
-import VASSAL.build.Buildable;
-import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.configure.ColorConfigurer;
-import VASSAL.configure.Configurer;
-import VASSAL.configure.ConfigurerFactory;
-import VASSAL.configure.TranslatableStringEnum;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.image.ImageUtils;
-import VASSAL.tools.imageop.Op;
-import VASSAL.tools.imageop.SourceOp;
-
 /**
- * A Class that defines a method of highlighting the a zone in
- * a multi-zoned grid.
+ * A Class that defines a method of highlighting the a zone in a multi-zoned grid.
  *
  * @author Brent Easton
  */
-public class ZoneHighlight extends AbstractConfigurable  {
+public class ZoneHighlight extends AbstractConfigurable {
 
-  public static final String NAME = "name"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String COVERAGE = "coverage"; //NON-NLS
-  public static final String WIDTH = "width"; //NON-NLS
-  public static final String STYLE = "style"; //NON-NLS
-  public static final String IMAGE = "image"; //NON-NLS
-  public static final String OPACITY = "opacity"; //NON-NLS
+  public static final String NAME = "name"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String COVERAGE = "coverage"; // NON-NLS
+  public static final String WIDTH = "width"; // NON-NLS
+  public static final String STYLE = "style"; // NON-NLS
+  public static final String IMAGE = "image"; // NON-NLS
+  public static final String OPACITY = "opacity"; // NON-NLS
 
-  public static final String COVERAGE_FULL = "Entire Zone"; //NON-NLS (really)
-  public static final String COVERAGE_BORDER = "Zone Border"; //NON-NLS (really)
-  public static final String STYLE_PLAIN = "Plain"; //NON-NLS (really)
-  public static final String STYLE_STRIPES = "Striped"; //NON-NLS (really)
-  public static final String STYLE_CROSS = "Crosshatched"; //NON-NLS (really)
-  public static final String STYLE_IMAGE = "Tiled Image"; //NON-NLS (really)
+  public static final String COVERAGE_FULL = "Entire Zone"; // NON-NLS (really)
+  public static final String COVERAGE_BORDER = "Zone Border"; // NON-NLS (really)
+  public static final String STYLE_PLAIN = "Plain"; // NON-NLS (really)
+  public static final String STYLE_STRIPES = "Striped"; // NON-NLS (really)
+  public static final String STYLE_CROSS = "Crosshatched"; // NON-NLS (really)
+  public static final String STYLE_IMAGE = "Tiled Image"; // NON-NLS (really)
 
   protected Color color = null;
   protected String coverage = COVERAGE_FULL;
@@ -101,21 +98,17 @@ public class ZoneHighlight extends AbstractConfigurable  {
       final Paint oldPaint = g2d.getPaint();
       if (!STYLE_PLAIN.equals(style)) {
         g2d.setPaint(getPaint());
-      }
-      else {
+      } else {
         g2d.setColor(color);
       }
 
-      g2d.setComposite(AlphaComposite.getInstance(
-        AlphaComposite.SRC_OVER, opacity / 100.0f));
+      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity / 100.0f));
 
       if (COVERAGE_FULL.equals(coverage)) {
         g2d.fill(s);
-      }
-      else {
-        final Stroke stroke = new BasicStroke((float)(width * scale),
-                                              BasicStroke.CAP_ROUND,
-                                              BasicStroke.JOIN_ROUND);
+      } else {
+        final Stroke stroke =
+            new BasicStroke((float) (width * scale), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         g2d.setStroke(stroke);
         g2d.draw(s);
       }
@@ -133,21 +126,18 @@ public class ZoneHighlight extends AbstractConfigurable  {
         if (srcOp != null) {
           final Image im = srcOp.getImage();
           if (im != null) {
-            paint = new TexturePaint(ImageUtils.toBufferedImage(im),
-              new Rectangle(srcOp.getSize()));
+            paint =
+                new TexturePaint(ImageUtils.toBufferedImage(im), new Rectangle(srcOp.getSize()));
           }
         }
-      }
-      else {
-// FIXME: Make this an ImageOp?
-        final BufferedImage img =
-          ImageUtils.createCompatibleTranslucentImage(6, 6);
+      } else {
+        // FIXME: Make this an ImageOp?
+        final BufferedImage img = ImageUtils.createCompatibleTranslucentImage(6, 6);
         final Graphics2D g = img.createGraphics();
         g.setColor(color);
         if (style.equals(STYLE_STRIPES)) {
           g.drawLine(0, 5, 5, 0);
-        }
-        else if (style.equals(STYLE_CROSS)) {
+        } else if (style.equals(STYLE_CROSS)) {
           g.drawLine(0, 5, 5, 0);
           g.drawLine(1, 0, 5, 4);
         }
@@ -172,20 +162,12 @@ public class ZoneHighlight extends AbstractConfigurable  {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      COLOR,
-      COVERAGE,
-      WIDTH,
-      STYLE,
-      IMAGE,
-      OPACITY
-    };
+    return new String[] {NAME, COLOR, COVERAGE, WIDTH, STYLE, IMAGE, OPACITY};
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString("Editor.color_label"),
       Resources.getString("Editor.ZoneHighlight.coverage"),
@@ -198,7 +180,7 @@ public class ZoneHighlight extends AbstractConfigurable  {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       Color.class,
       Coverage.class,
@@ -212,17 +194,13 @@ public class ZoneHighlight extends AbstractConfigurable  {
   public static class Coverage extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{
-        COVERAGE_FULL,
-        COVERAGE_BORDER
-      };
+      return new String[] {COVERAGE_FULL, COVERAGE_BORDER};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[]{
-        "Editor.ZoneHighlight.coverage_full",
-        "Editor.ZoneHighlight.coverage_border"
+      return new String[] {
+        "Editor.ZoneHighlight.coverage_full", "Editor.ZoneHighlight.coverage_border"
       };
     }
   }
@@ -230,17 +208,12 @@ public class ZoneHighlight extends AbstractConfigurable  {
   public static class Style extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{
-        STYLE_PLAIN,
-        STYLE_STRIPES,
-        STYLE_CROSS,
-        STYLE_IMAGE
-      };
+      return new String[] {STYLE_PLAIN, STYLE_STRIPES, STYLE_CROSS, STYLE_IMAGE};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[]{
+      return new String[] {
         "Editor.ZoneHighlight.style_plain",
         "Editor.ZoneHighlight.style_stripes",
         "Editor.ZoneHighlight.style_cross",
@@ -273,30 +246,24 @@ public class ZoneHighlight extends AbstractConfigurable  {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ZonedGrid.html", "ZoneHighlighter"); //NON-NLS
+    return HelpFile.getReferenceManualPage("ZonedGrid.html", "ZoneHighlighter"); // NON-NLS
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else if (COVERAGE.equals(key)) {
+    } else if (COVERAGE.equals(key)) {
       return coverage;
-    }
-    else if (WIDTH.equals(key)) {
+    } else if (WIDTH.equals(key)) {
       return String.valueOf(width);
-    }
-    else if (STYLE.equals(key)) {
+    } else if (STYLE.equals(key)) {
       return style;
-    }
-    else if (OPACITY.equals(key)) {
+    } else if (OPACITY.equals(key)) {
       return String.valueOf(opacity);
-    }
-    else if (IMAGE.equals(key)) {
+    } else if (IMAGE.equals(key)) {
       return imageName;
     }
     return null;
@@ -304,40 +271,33 @@ public class ZoneHighlight extends AbstractConfigurable  {
 
   @Override
   public void setAttribute(String key, Object val) {
-    if (val == null)
-      return;
+    if (val == null) return;
 
     if (NAME.equals(key)) {
       setConfigureName((String) val);
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (val instanceof String) {
         val = ColorConfigurer.stringToColor((String) val);
       }
       if (val != null) {
         color = (Color) val;
       }
-    }
-    else if (COVERAGE.equals(key)) {
+    } else if (COVERAGE.equals(key)) {
       coverage = (String) val;
-    }
-    else if (WIDTH.equals(key)) {
+    } else if (WIDTH.equals(key)) {
       if (val instanceof String) {
         val = Integer.valueOf((String) val);
       }
       width = (Integer) val;
-    }
-    else if (STYLE.equals(key)) {
+    } else if (STYLE.equals(key)) {
       style = (String) val;
       paint = null;
-    }
-    else if (OPACITY.equals(key)) {
+    } else if (OPACITY.equals(key)) {
       if (val instanceof String) {
         val = Integer.valueOf((String) val);
       }
       opacity = (Integer) val;
-    }
-    else if (IMAGE.equals(key)) {
+    } else if (IMAGE.equals(key)) {
       imageName = (String) val;
       srcOp = imageName.isBlank() ? null : Op.load(imageName);
     }
@@ -352,11 +312,9 @@ public class ZoneHighlight extends AbstractConfigurable  {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (IMAGE.equals(name)) {
       return () -> STYLE_IMAGE.equals(style);
-    }
-    else if (WIDTH.equals(name)) {
+    } else if (WIDTH.equals(name)) {
       return () -> COVERAGE_BORDER.equals(coverage);
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -394,12 +352,13 @@ public class ZoneHighlight extends AbstractConfigurable  {
       slider.setLabelTable(new Hashtable<>(labelTable));
       slider.setPaintLabels(true);
       slider.setBorder(javax.swing.BorderFactory.createTitledBorder(name));
-      slider.addChangeListener(e -> {
-        final JSlider source = (JSlider) e.getSource();
-        if (!source.getValueIsAdjusting()) {
-          opacity = source.getValue();
-        }
-      });
+      slider.addChangeListener(
+          e -> {
+            final JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+              opacity = source.getValue();
+            }
+          });
 
       return slider;
     }

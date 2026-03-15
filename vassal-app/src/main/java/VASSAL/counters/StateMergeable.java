@@ -19,15 +19,16 @@ package VASSAL.counters;
  */
 
 /**
- * {@link GamePiece}s may implement this interface to implement "merge" functionality of
- * their state.  The <code>merge</code> method applies the diff between an "old" and a "new"
- * state to the current state of the piece.
+ * {@link GamePiece}s may implement this interface to implement "merge" functionality of their
+ * state. The <code>merge</code> method applies the diff between an "old" and a "new" state to the
+ * current state of the piece.
  */
 @FunctionalInterface
 public interface StateMergeable {
   /**
-   * Compute the difference between <code>newState</code> and <code>oldState</code>
-   * and apply that difference to the current state
+   * Compute the difference between <code>newState</code> and <code>oldState</code> and apply that
+   * difference to the current state
+   *
    * @param newState new serialized game state string
    * @param oldState old serialized game state string
    */

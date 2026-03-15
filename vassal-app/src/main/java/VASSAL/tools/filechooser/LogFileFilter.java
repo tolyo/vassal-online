@@ -20,14 +20,14 @@ package VASSAL.tools.filechooser;
 import VASSAL.i18n.Resources;
 
 /**
- * A {@link FileFilter} for VASSAL logs. Used by file choosers to filter
- * out files which aren't logs.
+ * A {@link FileFilter} for VASSAL logs. Used by file choosers to filter out files which aren't
+ * logs.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public class LogFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".vlog" }; //NON-NLS
+  public static final String[] types = {".vlog"}; // NON-NLS
 
   public LogFileFilter() {
     super(Resources.getString("Editor.FileFilter.vassal_log"), types);

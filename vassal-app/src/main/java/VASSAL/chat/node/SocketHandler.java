@@ -19,8 +19,8 @@ package VASSAL.chat.node;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -39,13 +39,15 @@ public class SocketHandler {
   private Thread readThread = null;
   private Thread writeThread = null;
 
-  private static final String SIGN_OFF = "!BYE"; //$NON-NLS-1$
+  private static final String SIGN_OFF = "!BYE"; // $NON-NLS-1$
 
   public SocketHandler(Socket sock, SocketWatcher handler) throws IOException {
     this.sock = sock;
     this.handler = handler;
-    reader = new BufferedReader(new InputStreamReader(sock.getInputStream(), StandardCharsets.UTF_8));
-    writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), StandardCharsets.UTF_8));
+    reader =
+        new BufferedReader(new InputStreamReader(sock.getInputStream(), StandardCharsets.UTF_8));
+    writer =
+        new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), StandardCharsets.UTF_8));
   }
 
   public void start() {
@@ -58,36 +60,38 @@ public class SocketHandler {
   }
 
   private Thread startReadThread() {
-    final Runnable r = () -> {
-      String line;
-      try {
-        while ((line = reader.readLine()) != null) {
-          if (SIGN_OFF.equals(line)) {
-            break;
-          }
-          else if (line.length() > 0) {
-            try {
-              handler.handleMessage(line);
+    final Runnable r =
+        () -> {
+          String line;
+          try {
+            while ((line = reader.readLine()) != null) {
+              if (SIGN_OFF.equals(line)) {
+                break;
+              } else if (line.length() > 0) {
+                try {
+                  handler.handleMessage(line);
+                } catch (Exception e) {
+                  // FIXME: review error message
+                  // Handler threw an exception.  Keep reading.
+                  System.err.println(
+                      "Caught "
+                          + e.getClass().getName()
+                          + " handling "
+                          + line); //$NON-NLS-1$ //$NON-NLS-2$
+                  e.printStackTrace();
+                }
+              }
             }
-            catch (Exception e) {
-              // FIXME: review error message
-              // Handler threw an exception.  Keep reading.
-              System.err.println("Caught " + e.getClass().getName() + " handling " + line); //$NON-NLS-1$ //$NON-NLS-2$
-              e.printStackTrace();
-            }
+          } catch (IOException ignore) {
+            // FIXME: review error message
+            /*
+                    String msg = ignore.getClass().getName();
+                    msg = msg.substring(msg.lastIndexOf('.') + 1);
+                    System.err.println("Caught " + msg + "(" + ignore.getMessage() + ") reading socket.");
+            */
           }
-        }
-      }
-      catch (IOException ignore) {
-        // FIXME: review error message
-/*
-        String msg = ignore.getClass().getName();
-        msg = msg.substring(msg.lastIndexOf('.') + 1);
-        System.err.println("Caught " + msg + "(" + ignore.getMessage() + ") reading socket.");
-*/
-      }
-      closeSocket();
-    };
+          closeSocket();
+        };
 
     final Thread t = new Thread(r, "read " + sock.getInetAddress());
     t.start();
@@ -95,43 +99,41 @@ public class SocketHandler {
   }
 
   private Thread startWriteThread() {
-    final Runnable r = () -> {
-      String line;
-      try {
-        while (true) {
+    final Runnable r =
+        () -> {
+          String line;
           try {
-            line = writeQueue.poll(2, TimeUnit.MINUTES);
-          }
-          catch (InterruptedException e) {
-            // FIXME: should we really ignore this?!
-            e.printStackTrace();
-            continue;
-          }
+            while (true) {
+              try {
+                line = writeQueue.poll(2, TimeUnit.MINUTES);
+              } catch (InterruptedException e) {
+                // FIXME: should we really ignore this?!
+                e.printStackTrace();
+                continue;
+              }
 
-          if (line != null) {
-            // send the message we took off the queue
-            writeNext(line);
-            if (SIGN_OFF.equals(line)) {
-              break;
+              if (line != null) {
+                // send the message we took off the queue
+                writeNext(line);
+                if (SIGN_OFF.equals(line)) {
+                  break;
+                }
+              } else {
+                // send a keep-alive, since we timed out
+                writeLine("");
+                System.err.println("Sent keep-alive"); // NON-NLS
+              }
             }
+          } catch (IOException ignore) {
+            // FIXME: review error message
+            /*
+                    String msg = ignore.getClass().getName();
+                    msg = msg.substring(msg.lastIndexOf('.') + 1);
+                    System.err.println("Caught " + msg + "(" + ignore.getMessage() + ") writing to socket.");
+            */
           }
-          else {
-            // send a keep-alive, since we timed out
-            writeLine("");
-            System.err.println("Sent keep-alive"); //NON-NLS
-          }
-        }
-      }
-      catch (IOException ignore) {
-        // FIXME: review error message
-/*
-        String msg = ignore.getClass().getName();
-        msg = msg.substring(msg.lastIndexOf('.') + 1);
-        System.err.println("Caught " + msg + "(" + ignore.getMessage() + ") writing to socket.");
-*/
-      }
-      closeSocket();
-    };
+          closeSocket();
+        };
 
     final Thread t = new Thread(r, "write " + sock.getInetAddress());
     t.start();
@@ -146,8 +148,7 @@ public class SocketHandler {
   public void writeLine(String pMessage) {
     try {
       writeQueue.put(pMessage);
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       // The queue can have Integer.MAX_VALUE elements, so if put() ever
       // blocks and gets interrupted, everything is hosed anyway so it
       // doesn't matter what we do here.
@@ -170,14 +171,12 @@ public class SocketHandler {
     if (isOpen) {
       try {
         closeStreams();
-      }
-      catch (IOException ignore) {
+      } catch (IOException ignore) {
         // FIXME: review error message
       }
       try {
         sock.close();
-      }
-      catch (IOException ignore) {
+      } catch (IOException ignore) {
         // FIXME: review error message
       }
 

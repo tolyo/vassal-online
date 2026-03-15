@@ -25,7 +25,6 @@ import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -58,17 +57,17 @@ public class AboutWindow extends JWindow {
     pack();
 
     final Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    setLocation(d.width / 2 - getWidth() / 2,
-                d.height / 2 - getHeight() / 2);
+    setLocation(d.width / 2 - getWidth() / 2, d.height / 2 - getHeight() / 2);
 
-    addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        if (SwingUtils.isMainMouseButtonDown(e)) {
-          setVisible(false);
-          dispose();
-        }
-      }
-    });
+    addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            if (SwingUtils.isMainMouseButtonDown(e)) {
+              setVisible(false);
+              dispose();
+            }
+          }
+        });
   }
 }

@@ -17,18 +17,14 @@
  */
 package VASSAL.build.module.documentation;
 
+import VASSAL.tools.swing.HTMLWindowHelper;
 import java.awt.Dialog;
 import java.net.URL;
-
 import javax.swing.JDialog;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import VASSAL.tools.swing.HTMLWindowHelper;
-
-/**
- * A Dialog that displays HTML content, with navigation
- */
+/** A Dialog that displays HTML content, with navigation */
 public class DialogHelpWindow extends JDialog implements HyperlinkListener {
   private static final long serialVersionUID = 1L;
 

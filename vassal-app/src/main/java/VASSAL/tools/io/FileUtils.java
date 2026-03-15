@@ -32,9 +32,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-/**
- * Custom Implementation of FileUtils.byteCountToDisplaySize to fix rounding bug
- */
+/** Custom Implementation of FileUtils.byteCountToDisplaySize to fix rounding bug */
 public class FileUtils {
 
   private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
@@ -79,27 +77,29 @@ public class FileUtils {
     }
 
     // always round so that at least 3 numerics are displayed (###, ##.#, #.##)
-    if (fileSizeInUnit.divide(BigDecimal.valueOf(100.0), RoundingMode.DOWN).compareTo(BigDecimal.ONE) >= 0) {
+    if (fileSizeInUnit
+            .divide(BigDecimal.valueOf(100.0), RoundingMode.DOWN)
+            .compareTo(BigDecimal.ONE)
+        >= 0) {
       val = fileSizeInUnit.setScale(0, ROUNDING_MODE).toString();
-    }
-    else if (fileSizeInUnit.divide(BigDecimal.valueOf(10.0), RoundingMode.DOWN).compareTo(BigDecimal.ONE) >= 0) {
+    } else if (fileSizeInUnit
+            .divide(BigDecimal.valueOf(10.0), RoundingMode.DOWN)
+            .compareTo(BigDecimal.ONE)
+        >= 0) {
       val = fileSizeInUnit.setScale(1, ROUNDING_MODE).toString();
-    }
-    else {
+    } else {
       val = fileSizeInUnit.setScale(2, ROUNDING_MODE).toString();
     }
 
     // trim zeros at the end
     if (val.endsWith(".00")) {
       val = val.substring(0, val.length() - 3);
-    }
-    else if (val.endsWith(".0")) {
+    } else if (val.endsWith(".0")) {
       val = val.substring(0, val.length() - 2);
     }
 
     return String.format("%s %s", val, unit); // NON-NLS
   }
-
 
   /**
    * Formats a file's size into a human readable format
@@ -110,5 +110,4 @@ public class FileUtils {
   public static String byteCountToDisplaySize(final long fileSize) {
     return byteCountToDisplaySize(BigInteger.valueOf(fileSize));
   }
-
 }

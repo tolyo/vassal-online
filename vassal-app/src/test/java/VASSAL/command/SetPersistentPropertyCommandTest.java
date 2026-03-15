@@ -11,7 +11,6 @@ import VASSAL.build.module.GameState;
 import VASSAL.counters.BasicPiece;
 import VASSAL.counters.Decorator;
 import VASSAL.counters.Delete;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -26,7 +25,8 @@ public class SetPersistentPropertyCommandTest {
 
   @Test
   public void constructorTest() {
-    final SetPersistentPropertyCommand p = new SetPersistentPropertyCommand(id, key, oldValue, newValue);
+    final SetPersistentPropertyCommand p =
+        new SetPersistentPropertyCommand(id, key, oldValue, newValue);
     assertThat(p.getId(), is(equalTo(id)));
     assertThat(p.getKey(), is(equalTo(key)));
     assertThat(p.getOldValue(), is(equalTo(oldValue)));
@@ -39,7 +39,7 @@ public class SetPersistentPropertyCommandTest {
    * the target of a SetPersistentProperty Command.
    */
   @Test
-  public void execution_test () {
+  public void execution_test() {
 
     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
 
@@ -67,7 +67,8 @@ public class SetPersistentPropertyCommandTest {
       assertThat(bp.getPersistentProperty(key), is(equalTo(oldValue)));
 
       // Set the property to a new value and save the command it generates
-      final SetPersistentPropertyCommand command = (SetPersistentPropertyCommand) bp.setPersistentProperty(key, newValue);
+      final SetPersistentPropertyCommand command =
+          (SetPersistentPropertyCommand) bp.setPersistentProperty(key, newValue);
       assertThat(bp.getPersistentProperty(key), is(equalTo(newValue)));
       assertThat(command.getId(), is(equalTo(id)));
       assertThat(command.getKey(), is(equalTo(key)));
@@ -89,7 +90,8 @@ public class SetPersistentPropertyCommandTest {
       assertThat(bp2.getPersistentProperty(key), is(equalTo(oldValue)));
 
       // Set the property to a new value and save the command it generates
-      final SetPersistentPropertyCommand command2 = (SetPersistentPropertyCommand) bp2.setPersistentProperty(key, newValue);
+      final SetPersistentPropertyCommand command2 =
+          (SetPersistentPropertyCommand) bp2.setPersistentProperty(key, newValue);
       assertThat(bp2.getPersistentProperty(key), is(equalTo(newValue)));
       assertThat(command2.getId(), is(equalTo(id2)));
       assertThat(command2.getKey(), is(equalTo(key)));
@@ -103,7 +105,6 @@ public class SetPersistentPropertyCommandTest {
       // Execute the command and check it changes the property
       command2.execute();
       assertThat(bp2.getPersistentProperty(key), is(equalTo(newValue)));
-
     }
   }
 }

@@ -23,8 +23,8 @@ import VASSAL.tools.DataArchive;
 import VASSAL.tools.io.FileArchive;
 
 /**
- * An {@link ImageOp} which loads an image from the {@link DataArchive},
- * but produces tiles loaded from the tile cache.
+ * An {@link ImageOp} which loads an image from the {@link DataArchive}, but produces tiles loaded
+ * from the tile cache.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -34,8 +34,7 @@ public class SourceOpTiledBitmapImpl extends SourceOpBitmapImpl {
    * Constructs an <code>ImageOp</code> which will load the given file.
    *
    * @param name the name of the image to load
-   * @throws IllegalArgumentException
-   *    if <code>name</code> is <code>null</code>.
+   * @throws IllegalArgumentException if <code>name</code> is <code>null</code>.
    */
   public SourceOpTiledBitmapImpl(String name) {
     super(name, GameModule.getGameModule().getDataArchive());

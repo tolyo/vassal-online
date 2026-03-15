@@ -22,8 +22,8 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.DataArchive;
 
 /**
- * A ModulePlugin is basically identical to a ModuleExtension except
- * that is loaded earlier and must throw Plugin specific error messages
+ * A ModulePlugin is basically identical to a ModuleExtension except that is loaded earlier and must
+ * throw Plugin specific error messages
  */
 public class ModulePlugin extends ModuleExtension {
 
@@ -44,13 +44,17 @@ public class ModulePlugin extends ModuleExtension {
 
     @Override
     protected String getVersionErrorMsg(String v) {
-      return Resources.getString("ModulePlugin.wrong_plugin_version", //$NON-NLS-1$
-          getVersion(), getName(), v);
+      return Resources.getString(
+          "ModulePlugin.wrong_plugin_version", //$NON-NLS-1$
+          getVersion(),
+          getName(),
+          v);
     }
 
     @Override
     protected String getNotLoadedMsg() {
-      return Resources.getString("ModulePlugin.load_plugin", getName(), PluginsLoader.getPluginDirectory()); //$NON-NLS-1$
+      return Resources.getString(
+          "ModulePlugin.load_plugin", getName(), PluginsLoader.getPluginDirectory()); // $NON-NLS-1$
     }
   }
 }

@@ -40,7 +40,8 @@ public class DepreportFlattener {
 
       final boolean isClassFeature = line.matches("^[ ]{8}\\S.*$");
       if (isClassFeature) {
-        outputAggregator.addLine(String.format("%s.%s.%s", packageName, className, stripStarSuffix(line)));
+        outputAggregator.addLine(
+            String.format("%s.%s.%s", packageName, className, stripStarSuffix(line)));
       }
     }
   }

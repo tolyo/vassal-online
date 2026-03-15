@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]bsh[/\\].*" checks=".*"/>
+    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]org[/\\]litesoft[/\\].*" checks=".*"/>
+    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]org[/\\]netbeans[/\\].*" checks=".*"/>
+    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]map[/\\]LOS_Thread\.java" checks="TypeName"/>
+    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]properties[/\\]ListScenarioProperty\.java" checks="TypeName"/>
+    <suppress files=".*" checks="LineLength"/>
+    <suppress files=".*" checks="PackageName"/>
+    <suppress files=".*" checks="NeedBraces"/>
+    <suppress files=".*" checks="EmptyLineSeparator"/>
+    <suppress files=".*" checks="RightCurly"/>
+    <suppress files=".*" checks="OverloadMethodsDeclarationOrder"/>
+    <suppress files=".*" checks="MultipleVariableDeclarations"/>
+    <suppress files=".*" checks="MissingSwitchDefault"/>
+    <suppress files=".*" checks="EmptyCatchBlock"/>
+    <suppress files=".*" checks="ConstructorsDeclarationGrouping"/>
+    <suppress files=".*" checks="VariableDeclarationUsageDistance"/>
+    <suppress files=".*" checks="Indentation"/>
+    <suppress files=".*" checks="AvoidStarImport"/>
+    <suppress files=".*" checks="AbbreviationAsWordInName"/>
+    <suppress files=".*" checks="MemberName"/>
+    <suppress files=".*" checks="ParameterName"/>
+    <suppress files=".*" checks="MethodName"/>
+    <suppress files=".*" checks="LocalVariableName"/>
+    <suppress files=".*" checks="CatchParameterName"/>
+    <suppress files=".*" checks="TodoComment"/>
+    <suppress files=".*" checks="MatchXpath"/>
+    <suppress files=".*" checks="MissingJavadocType"/>
+    <suppress files=".*" checks="MissingJavadocMethod"/>
+    <suppress files=".*" checks="SummaryJavadoc"/>
+    <suppress files=".*" checks="JavadocMethod"/>
+    <suppress files=".*" checks="AtclauseOrder"/>
+    <suppress files=".*" checks="NonEmptyAtclauseDescription"/>
+    <suppress files=".*" checks="JavadocParagraph"/>
+    <suppress files=".*" checks="JavadocTagContinuationIndentation"/>
+    <suppress files=".*" checks="RequireEmptyLineBeforeBlockTagGroup"/>
+    <suppress files=".*" checks="JavadocLeadingAsteriskAlign"/>
+    <suppress files=".*" checks="JavadocMissingLeadingAsterisk"/>
+    <suppress files=".*" checks="SingleLineJavadoc"/>
+</suppressions>

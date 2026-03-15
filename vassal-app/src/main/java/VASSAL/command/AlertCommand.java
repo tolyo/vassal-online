@@ -16,10 +16,9 @@
  */
 package VASSAL.command;
 
+import VASSAL.build.GameModule;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import VASSAL.build.GameModule;
 
 /** This command, when executed, displays a Dialog box with a message */
 public class AlertCommand extends Command {
@@ -31,7 +30,13 @@ public class AlertCommand extends Command {
 
   @Override
   protected void executeCommand() {
-    final Runnable runnable = () -> JOptionPane.showMessageDialog(GameModule.getGameModule() == null ? null : GameModule.getGameModule().getPlayerWindow(), msg);
+    final Runnable runnable =
+        () ->
+            JOptionPane.showMessageDialog(
+                GameModule.getGameModule() == null
+                    ? null
+                    : GameModule.getGameModule().getPlayerWindow(),
+                msg);
     SwingUtilities.invokeLater(runnable);
   }
 

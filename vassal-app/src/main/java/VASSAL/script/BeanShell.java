@@ -17,6 +17,10 @@
  */
 package VASSAL.script;
 
+import VASSAL.tools.WarningDialog;
+import bsh.BeanShellExpressionValidator;
+import bsh.EvalError;
+import bsh.NameSpace;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,16 +28,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import VASSAL.tools.WarningDialog;
-import bsh.BeanShellExpressionValidator;
-import bsh.EvalError;
-import bsh.NameSpace;
-
-/**
- *
- * Class encapsulating BeanShell support in Vassal
- *
- */
+/** Class encapsulating BeanShell support in Vassal */
 public class BeanShell {
 
   public static final String TRUE = "true"; // NON-NLS
@@ -60,16 +55,15 @@ public class BeanShell {
   public void init() {
     // Read in the Vassal Script init script
     final URL ini = instance.getClass().getResource(INIT_SCRIPT);
-    try (BufferedReader in = new BufferedReader(
-      new InputStreamReader(ini.openStream(), StandardCharsets.UTF_8))) {
+    try (BufferedReader in =
+        new BufferedReader(new InputStreamReader(ini.openStream(), StandardCharsets.UTF_8))) {
 
       final CompileResult result = compile(in);
       if (!result.isSuccess()) {
         result.printStackTrace();
       }
-    }
-    catch (IOException e) {
-      //FIXME: Error message
+    } catch (IOException e) {
+      // FIXME: Error message
       WarningDialog.show(e, "");
     }
   }
@@ -77,8 +71,7 @@ public class BeanShell {
   public CompileResult compile(Reader in) {
     try {
       globalInterpreter.eval(in);
-    }
-    catch (EvalError e) {
+    } catch (EvalError e) {
       return new CompileResult(e);
     }
     return new CompileResult();
@@ -94,22 +87,22 @@ public class BeanShell {
   }
 
   /**
-   * Execute a Script named in a component DoAction or trait DoAction.
-   * Action Scripts take no parameters and return no value.
+   * Execute a Script named in a component DoAction or trait DoAction. Action Scripts take no
+   * parameters and return no value.
+   *
    * @param scriptName Script name
    */
   public void executeActionScript(String scriptName) {
     try {
       globalInterpreter.evaluate(scriptName + "();");
-    }
-    catch (EvalError e) {
+    } catch (EvalError e) {
       e.printStackTrace();
     }
   }
 
   /**
-   * Parse and validate a single expression or script. No evaluation or checking
-   * for undefined variables
+   * Parse and validate a single expression or script. No evaluation or checking for undefined
+   * variables
    *
    * @param expression Expression to validate
    */
@@ -126,18 +119,14 @@ public class BeanShell {
   public static Object wrap(String value) {
     if (value == null) {
       return "";
-    }
-    else if (TRUE.equals(value)) {
+    } else if (TRUE.equals(value)) {
       return Boolean.TRUE;
-    }
-    else if (FALSE.equals(value)) {
+    } else if (FALSE.equals(value)) {
       return Boolean.FALSE;
-    }
-    else {
+    } else {
       try {
         return Integer.valueOf(value);
-      }
-      catch (NumberFormatException e) {
+      } catch (NumberFormatException e) {
         return value;
       }
     }

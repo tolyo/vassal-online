@@ -21,10 +21,8 @@ import VASSAL.counters.DynamicProperty;
 import VASSAL.script.expression.Auditable;
 
 /**
- * Change for updating a remote DP by a prompted entry.
- * Only change from standard is that since Set Piece Property affects mulitiple pieces, we
- * can't define an Old Value.
- *
+ * Change for updating a remote DP by a prompted entry. Only change from standard is that since Set
+ * Piece Property affects mulitiple pieces, we can't define an Old Value.
  */
 public class RemotePropertyPrompt extends PropertyPrompt implements RemotePropertyChanger {
 

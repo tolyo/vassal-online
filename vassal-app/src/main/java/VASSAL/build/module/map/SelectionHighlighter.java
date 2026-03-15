@@ -17,18 +17,6 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.util.Collection;
-import java.util.List;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
@@ -45,16 +33,27 @@ import VASSAL.counters.Highlighter;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.imageop.ScaledImagePainter;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.util.Collection;
+import java.util.List;
 
 public class SelectionHighlighter extends AbstractConfigurable implements Highlighter {
-  public static final String NAME = "name"; //NON-NLS
-  public static final String MATCH = "match"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String THICKNESS = "thickness"; //NON-NLS
-  public static final String USE_IMAGE = "useImage"; //NON-NLS
-  public static final String IMAGE = "image"; //NON-NLS
-  public static final String X_OFFSET = "xoffset"; //NON-NLS
-  public static final String Y_OFFSET = "yoffset"; //NON-NLS
+  public static final String NAME = "name"; // NON-NLS
+  public static final String MATCH = "match"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String THICKNESS = "thickness"; // NON-NLS
+  public static final String USE_IMAGE = "useImage"; // NON-NLS
+  public static final String IMAGE = "image"; // NON-NLS
+  public static final String X_OFFSET = "xoffset"; // NON-NLS
+  public static final String Y_OFFSET = "yoffset"; // NON-NLS
   protected PropertyExpression matchProperties = new PropertyExpression();
   protected Color color = Color.RED;
   protected int thickness = 3;
@@ -66,6 +65,7 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
 
   @Deprecated(since = "2021-04-05", forRemoval = true)
   protected int x = 0;
+
   @Deprecated(since = "2021-04-05", forRemoval = true)
   protected int y = 0;
 
@@ -81,8 +81,7 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
         final int x1 = x + xOff - (int) (imagePainter.getImageSize().width * zoom / 2);
         final int y1 = y + yOff - (int) (imagePainter.getImageSize().height * zoom / 2);
         imagePainter.draw(g, x1, y1, zoom, obs);
-      }
-      else {
+      } else {
         if (color == null || thickness <= 0) {
           return;
         }
@@ -104,8 +103,7 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
     if (accept(p)) {
       if (useImage) {
         r.add(ImageUtils.getBounds(imagePainter.getImageSize()));
-      }
-      else {
+      } else {
         r.translate(-thickness, -thickness);
         r.setSize(r.width + 2 * thickness, r.height + 2 * thickness);
       }
@@ -118,27 +116,37 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.SelectionHighlight.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.SelectionHighlight.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString(Resources.NAME_LABEL),
-        Resources.getString("Editor.SelectionHighlight.active_property"), //$NON-NLS-1$
-        Resources.getString("Editor.SelectionHighlight.use_image"), //$NON-NLS-1$
-        Resources.getString("Editor.border_color"), //$NON-NLS-1$
-        Resources.getString("Editor.border_thickness"), //$NON-NLS-1$
-        Resources.getString("Editor.image_label"), //$NON-NLS-1$
-        Resources.getString("Editor.x_offset"), //$NON-NLS-1$
-        Resources.getString("Editor.y_offset"), //$NON-NLS-1$
+    return new String[] {
+      Resources.getString(Resources.NAME_LABEL),
+      Resources.getString("Editor.SelectionHighlight.active_property"), // $NON-NLS-1$
+      Resources.getString("Editor.SelectionHighlight.use_image"), // $NON-NLS-1$
+      Resources.getString("Editor.border_color"), // $NON-NLS-1$
+      Resources.getString("Editor.border_thickness"), // $NON-NLS-1$
+      Resources.getString("Editor.image_label"), // $NON-NLS-1$
+      Resources.getString("Editor.x_offset"), // $NON-NLS-1$
+      Resources.getString("Editor.y_offset"), // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{String.class, PropertyExpression.class, Boolean.class, Color.class, Integer.class, IconConfig.class, Integer.class, Integer.class};
+    return new Class<?>[] {
+      String.class,
+      PropertyExpression.class,
+      Boolean.class,
+      Color.class,
+      Integer.class,
+      IconConfig.class,
+      Integer.class,
+      Integer.class
+    };
   }
+
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
@@ -148,18 +156,16 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, MATCH, USE_IMAGE, COLOR, THICKNESS, IMAGE, X_OFFSET, Y_OFFSET};
+    return new String[] {NAME, MATCH, USE_IMAGE, COLOR, THICKNESS, IMAGE, X_OFFSET, Y_OFFSET};
   }
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
     if (COLOR.equals(name) || THICKNESS.equals(name)) {
       return () -> !useImage;
-    }
-    else if (List.of(IMAGE, X_OFFSET, Y_OFFSET).contains(name)) {
+    } else if (List.of(IMAGE, X_OFFSET, Y_OFFSET).contains(name)) {
       return () -> useImage;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -168,53 +174,44 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
   public void setAttribute(String key, Object value) {
     if (key.equals(NAME)) {
       setConfigureName((String) value);
-    }
-    else if (key.equals(MATCH)) {
+    } else if (key.equals(MATCH)) {
       matchProperties.setExpression((String) value);
-    }
-    else if (key.equals(USE_IMAGE)) {
+    } else if (key.equals(USE_IMAGE)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       useImage = (Boolean) value;
-    }
-    else if (key.equals(COLOR)) {
+    } else if (key.equals(COLOR)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
       if (value != null) {
         color = ((Color) value);
       }
-    }
-    else if (key.equals(THICKNESS)) {
+    } else if (key.equals(THICKNESS)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       thickness = (Integer) value;
-    }
-    else if (key.equals(IMAGE)) {
+    } else if (key.equals(IMAGE)) {
       imageName = (String) value;
       imagePainter.setImageName(imageName);
-    }
-    else if (key.equals(X_OFFSET)) {
+    } else if (key.equals(X_OFFSET)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       try {
         xOff = x = (Integer) value;
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         throw new IllegalBuildException(ex);
       }
-    }
-    else if (key.equals(Y_OFFSET)) {
+    } else if (key.equals(Y_OFFSET)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       try {
         yOff = y = (Integer) value;
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         throw new IllegalBuildException(ex);
       }
     }
@@ -224,26 +221,19 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
   public String getAttributeValueString(String key) {
     if (key.equals(NAME)) {
       return getConfigureName();
-    }
-    else if (key.equals(MATCH)) {
+    } else if (key.equals(MATCH)) {
       return matchProperties.getExpression();
-    }
-    else if (key.equals(USE_IMAGE)) {
+    } else if (key.equals(USE_IMAGE)) {
       return String.valueOf(useImage);
-    }
-    else if (key.equals(COLOR)) {
+    } else if (key.equals(COLOR)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else if (key.equals(THICKNESS)) {
+    } else if (key.equals(THICKNESS)) {
       return String.valueOf(thickness);
-    }
-    else if (key.equals(IMAGE)) {
+    } else if (key.equals(IMAGE)) {
       return imageName;
-    }
-    else if (key.equals(X_OFFSET)) {
+    } else if (key.equals(X_OFFSET)) {
       return String.valueOf(xOff);
-    }
-    else if (key.equals(Y_OFFSET)) {
+    } else if (key.equals(Y_OFFSET)) {
       return String.valueOf(yOff);
     }
     return null;
@@ -256,7 +246,7 @@ public class SelectionHighlighter extends AbstractConfigurable implements Highli
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "SelectionHighlighter"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "SelectionHighlighter"); // NON-NLS
   }
 
   @Override

@@ -17,14 +17,13 @@
  */
 package VASSAL.tools;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.zip.CRC32;
+import org.slf4j.LoggerFactory;
 
 /**
  * Some general purpose CRC utilities.
@@ -40,8 +39,8 @@ public class CRCUtils {
   /**
    * Calculate a cumulative CRC over a series of files
    *
-   * NOTE: It is up to the calling routine to ensure that the order of
-   * Files in the list is consistent across all platforms.
+   * <p>NOTE: It is up to the calling routine to ensure that the order of Files in the list is
+   * consistent across all platforms.
    *
    * @param files List of files
    * @return CRC
@@ -52,9 +51,12 @@ public class CRCUtils {
     for (final File file : files) {
       try {
         buildCRC(file, crc, buffer);
-      }
-      catch (IOException e) {
-        log.error("Error reading file " + file.getAbsolutePath() + " to generate CRC: " + e.getMessage()); // NON-NLS
+      } catch (IOException e) {
+        log.error(
+            "Error reading file "
+                + file.getAbsolutePath()
+                + " to generate CRC: "
+                + e.getMessage()); // NON-NLS
         return 0L;
       }
     }
@@ -90,5 +92,4 @@ public class CRCUtils {
       crc.update(buffer, 0, count);
     }
   }
-
 }

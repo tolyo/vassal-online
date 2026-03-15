@@ -21,8 +21,8 @@ package VASSAL.launch;
 import VASSAL.i18n.Resources;
 
 /**
- * The {@link Exception} thrown by {@link LaunchRequest} when command line
- * arguments cannot be parsed.
+ * The {@link Exception} thrown by {@link LaunchRequest} when command line arguments cannot be
+ * parsed.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -31,8 +31,8 @@ public class LaunchRequestException extends Exception {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Constructs a new exception with the argument list interpolated
-   * into the i18n string specified by the key.
+   * Constructs a new exception with the argument list interpolated into the i18n string specified
+   * by the key.
    *
    * @param key {@link Resources} key
    * @param vals {@link Resources} arguments

@@ -25,31 +25,34 @@ import VASSAL.i18n.Translatable;
 import VASSAL.script.expression.Auditable;
 import VASSAL.search.AbstractImageFinder;
 import VASSAL.search.ImageSearchTarget;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 /**
- * Abstract implementation of the {@link Buildable} interface. To make a Buildable component, in other words a component
- * which can be read from the XML buildFile along with a set of attributes, extend this class -- or more likely
- * {@link AbstractConfigurable} if the component is also to be editable/configurable in the Editor window.
- * You'll need to implement the methods and specify the Buildable attributes of this class, and the build process is
- * handled automatically.
+ * Abstract implementation of the {@link Buildable} interface. To make a Buildable component, in
+ * other words a component which can be read from the XML buildFile along with a set of attributes,
+ * extend this class -- or more likely {@link AbstractConfigurable} if the component is also to be
+ * editable/configurable in the Editor window. You'll need to implement the methods and specify the
+ * Buildable attributes of this class, and the build process is handled automatically.
  */
-public abstract class AbstractBuildable extends AbstractImageFinder implements Buildable, ValidityChecker, PropertyNameSource, Auditable {
+public abstract class AbstractBuildable extends AbstractImageFinder
+    implements Buildable, ValidityChecker, PropertyNameSource, Auditable {
   protected List<Buildable> buildComponents = new ArrayList<>();
 
   // Sub-classes can set this reference to perform validity checking
   protected ValidityChecker validator;
 
-  private Buildable ancestor; // Used for tracking folder chains to their source. Because "parent" was already taken by existing subclasses.
+  private Buildable
+      ancestor; // Used for tracking folder chains to their source. Because "parent" was already
+
+  // taken by existing subclasses.
 
   /**
    * @return direct ancestor of this item
@@ -71,14 +74,14 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
   public Buildable getNonFolderAncestor() {
     Buildable nonFolderAncestor = ancestor;
     while (nonFolderAncestor instanceof AbstractFolder) {
-      nonFolderAncestor = ((AbstractFolder)nonFolderAncestor).getAncestor();
+      nonFolderAncestor = ((AbstractFolder) nonFolderAncestor).getAncestor();
     }
     return nonFolderAncestor;
   }
 
   /**
-   * Build this component by getting all XML attributes of the XML element and
-   * calling {@link #setAttribute} with the String value of the attribute
+   * Build this component by getting all XML attributes of the XML element and calling {@link
+   * #setAttribute} with the String value of the attribute
    */
   @Override
   public void build(Element e) {
@@ -98,38 +101,43 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
        * cannot be built.
        */
       if (this instanceof Translatable) {
-        Localization.getInstance().saveTranslatableAttribute((Translatable) this, att.getName(), att.getValue());
+        Localization.getInstance()
+            .saveTranslatableAttribute((Translatable) this, att.getName(), att.getValue());
       }
     }
     Builder.build(e, this);
   }
 
   /**
-   * Lists all the buildFile (XML) attribute names for this component.
-   * If this component is ALSO an {@link AbstractConfigurable}, then this list of attributes determines the appropriate
-   * attribute order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link AbstractConfigurable#getAttributeTypes()}.
+   * Lists all the buildFile (XML) attribute names for this component. If this component is ALSO an
+   * {@link AbstractConfigurable}, then this list of attributes determines the appropriate attribute
+   * order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link
+   * AbstractConfigurable#getAttributeTypes()}.
+   *
    * @return a list of all buildFile (XML) attribute names for this component
    */
   public abstract String[] getAttributeNames();
 
   /**
-   * Sets a buildFile (XML) attribute value for this component. The <code>key</code> parameter will be one of those listed in {@link #getAttributeNames}.
-   * If the <code>value</code> parameter is a String, it will be the value returned by {@link #getAttributeValueString} for the same
-   * <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value</code> will be an instance of
-   * the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
+   * Sets a buildFile (XML) attribute value for this component. The <code>key</code> parameter will
+   * be one of those listed in {@link #getAttributeNames}. If the <code>value</code> parameter is a
+   * String, it will be the value returned by {@link #getAttributeValueString} for the same <code>
+   * key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value
+   * </code> will be an instance of the corresponding Class listed in {@link
+   * AbstractConfigurable#getAttributeTypes}
    *
    * @param key the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
-   * @param value If the <code>value</code> parameter is a String, it will be the value returned by {@link #getAttributeValueString} for the same
-   *              <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
-   *              the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
+   * @param value If the <code>value</code> parameter is a String, it will be the value returned by
+   *     {@link #getAttributeValueString} for the same <code>key</code>. If the implementing class
+   *     extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
+   *     the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
    */
   public abstract void setAttribute(String key, Object value);
 
   /**
-   * @return a String representation of the XML buildFile attribute with the given name. When initializing a module,
-   * this String value will loaded from the XML and passed to {@link #setAttribute}. It is also frequently used for
-   * checking the current value of an attribute.
-   *
+   * @return a String representation of the XML buildFile attribute with the given name. When
+   *     initializing a module, this String value will loaded from the XML and passed to {@link
+   *     #setAttribute}. It is also frequently used for checking the current value of an attribute.
    * @param key the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
    */
   public abstract String getAttributeValueString(String key);
@@ -151,18 +159,17 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
     for (final Buildable b : buildComponents) {
       if (target.isInstance(b)) {
         l.add(target.cast(b));
-      }
-      else if (b instanceof AbstractFolder) {
+      } else if (b instanceof AbstractFolder) {
         // Folders (only) are descended through recursively
-        l.addAll(((AbstractFolder)b).getComponentsOf(target));
+        l.addAll(((AbstractFolder) b).getComponentsOf(target));
       }
     }
     return l;
   }
 
   /**
-   * Recursively descend the build tree and return a {@link List} of all
-   * components that are instances of the given class
+   * Recursively descend the build tree and return a {@link List} of all components that are
+   * instances of the given class
    *
    * @param target Target class
    * @return {@link List} of all components that are instances of the given class
@@ -193,7 +200,6 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
     return Builder.toString(doc);
   }
 
-
   @Override
   public Element getBuildElement(Document doc) {
     final Element el = doc.createElement(getClass().getName());
@@ -211,23 +217,19 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
     return el;
   }
 
-  /**
-   * Add a Buildable object to this object
-   */
+  /** Add a Buildable object to this object */
   @Override
   public void add(Buildable b) {
     buildComponents.add(b);
     if (b instanceof AbstractBuildable) {
-      ((AbstractBuildable)b).setAncestor(this);
+      ((AbstractBuildable) b).setAncestor(this);
     }
   }
 
   /**
-   * @return an enumeration of Buildable objects which are the direct children
-   * of this object in the Buildable containment hierarchy. The
-   * {@link #getBuildElement} method uses these objects to construct the XML
-   * element from which this object can be built.
-   *
+   * @return an enumeration of Buildable objects which are the direct children of this object in the
+   *     Buildable containment hierarchy. The {@link #getBuildElement} method uses these objects to
+   *     construct the XML element from which this object can be built.
    * @deprecated Use {@link #getBuildables()} instead.
    */
   @Deprecated(since = "2020-08-06", forRemoval = true)
@@ -236,10 +238,9 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
   }
 
   /**
-   * @return a Collection of Buildable objects which are the direct children
-   * of this object in the Buildable containment hierarchy. The
-   * {@link #getBuildElement} method uses these objects to construct the XML
-   * element from which this object can be built.
+   * @return a Collection of Buildable objects which are the direct children of this object in the
+   *     Buildable containment hierarchy. The {@link #getBuildElement} method uses these objects to
+   *     construct the XML element from which this object can be built.
    */
   public List<Buildable> getBuildables() {
     return Collections.unmodifiableList(buildComponents);
@@ -258,7 +259,9 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
   }
 
   /**
-   * Override this method to provide a list of properties to be exposed for use by expressions in the module.
+   * Override this method to provide a list of properties to be exposed for use by expressions in
+   * the module.
+   *
    * @return Default implementation of PropertyNameSource - No properties exposed
    */
   @Override
@@ -268,6 +271,7 @@ public abstract class AbstractBuildable extends AbstractImageFinder implements B
 
   /**
    * Adds all images used by this component AND any subcomponents to the collection
+   *
    * @param s Collection to add image names to
    */
   @Override

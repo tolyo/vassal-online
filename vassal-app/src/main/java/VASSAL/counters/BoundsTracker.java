@@ -17,16 +17,14 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.module.Map;
 import java.util.HashSet;
 import java.util.Set;
 
-import VASSAL.build.module.Map;
-
 /**
- * Records the bounding boxes of GamePieces.  Use addPiece() to
- * record the bounding box of a GamePiece at a certain time.  Use
- * repaint() to repaint the appropriate areas of the maps to which the
- * added pieces belonged.
+ * Records the bounding boxes of GamePieces. Use addPiece() to record the bounding box of a
+ * GamePiece at a certain time. Use repaint() to repaint the appropriate areas of the maps to which
+ * the added pieces belonged.
  */
 public class BoundsTracker {
   private final Set<Map> maps;

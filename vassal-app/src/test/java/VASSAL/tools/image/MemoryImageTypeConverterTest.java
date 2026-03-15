@@ -18,16 +18,14 @@
 
 package VASSAL.tools.image;
 
+import static VASSAL.tools.image.AssertImage.*;
+
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
-import VASSAL.tools.lang.Reference;
-
 import org.junit.jupiter.api.Test;
-
-import static VASSAL.tools.image.AssertImage.*;
 
 public class MemoryImageTypeConverterTest {
 

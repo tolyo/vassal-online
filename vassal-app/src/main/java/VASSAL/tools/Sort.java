@@ -21,17 +21,18 @@ import java.util.Vector;
 
 /**
  * Quicksort implementation so we can sort using JRE 1.1
+ *
  * @deprecated Use {link java.util.Collections.sort} instead.
  */
 @Deprecated(since = "2021-12-01", forRemoval = true)
 public class Sort {
-  private static void swap(Vector<Object> v, int i, int j) { //NOPMD
+  private static void swap(Vector<Object> v, int i, int j) { // NOPMD
     final Object tmp = v.elementAt(i);
     v.setElementAt(v.elementAt(j), i);
     v.setElementAt(tmp, j);
   }
 
-  //------------------------------------------------------------------
+  // ------------------------------------------------------------------
   /*
    * quicksort a vector of objects.
    *
@@ -39,8 +40,7 @@ public class Sort {
    * @param left - the start index - from where to begin sorting
    * @param right - the last index.
    */
-  private static void quicksort(
-    Vector<Object> v, int left, int right, Comparator comp) { //NOPMD
+  private static void quicksort(Vector<Object> v, int left, int right, Comparator comp) { // NOPMD
 
     if (left >= right) { // do nothing if array size < 2
       return;
@@ -60,8 +60,9 @@ public class Sort {
   }
 
   /**
-   * Quicksort will rearrange elements when they are all equal. Make sure
-   * at least two elements differ. Sort using the specified comparator object
+   * Quicksort will rearrange elements when they are all equal. Make sure at least two elements
+   * differ. Sort using the specified comparator object
+   *
    * <pre>{@code
    * public static boolean needsSorting(Vector v) {
    *   IComparable prev = null;
@@ -74,9 +75,9 @@ public class Sort {
    *   }
    *   return false;
    * }
-   *}</pre>
+   * }</pre>
    */
-  public static void quicksort(Vector<Object> v, Comparator comp) { //NOPMD
+  public static void quicksort(Vector<Object> v, Comparator comp) { // NOPMD
     quicksort(v, 0, v.size() - 1, comp);
   }
 
@@ -91,8 +92,8 @@ public class Sort {
 
   /**
    * Compares two String objects
-   * @deprecated Use the natural ordering on Strings instead.
-   * see java.lang.String.compareTo(String)
+   *
+   * @deprecated Use the natural ordering on Strings instead. see java.lang.String.compareTo(String)
    */
   @Deprecated(since = "2021-12-01", forRemoval = true)
   public static class Alpha implements Comparator {
@@ -110,14 +111,11 @@ public class Sort {
       }
       if (s1.length() > len) {
         return 1;
-      }
-      else if (s2.length() > len) {
+      } else if (s2.length() > len) {
         return -1;
-      }
-      else {
+      } else {
         return 0;
       }
     }
   }
-
 }

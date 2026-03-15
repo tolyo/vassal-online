@@ -17,20 +17,18 @@
  */
 package VASSAL.chat.peer2peer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.litesoft.p2pchat.PeerInfo;
-
 import VASSAL.chat.Player;
 import VASSAL.chat.Room;
 import VASSAL.chat.SimpleRoom;
 import VASSAL.i18n.Resources;
+import java.util.ArrayList;
+import java.util.List;
+import org.litesoft.p2pchat.PeerInfo;
 
 public class RoomManager {
   private final List<Room> rooms = new ArrayList<>();
   private final SimpleRoom defaultRoom =
-    new SimpleRoom(Resources.getString("Chat.main_room")); //$NON-NLS-1$
+      new SimpleRoom(Resources.getString("Chat.main_room")); // $NON-NLS-1$
 
   public RoomManager() {
     rooms.add(defaultRoom);
@@ -42,15 +40,13 @@ public class RoomManager {
     Room newRoom = new SimpleRoom(p.getRoom());
     if (rooms.contains(newRoom)) {
       newRoom = rooms.get(rooms.indexOf(newRoom));
-    }
-    else {
+    } else {
       rooms.add(newRoom);
     }
     newRoom.addPlayer(p);
     if (oldRoom != null && !oldRoom.equals(newRoom)) {
       oldRoom.removePlayer(p);
-      if (oldRoom.getPlayerList().isEmpty() &&
-          !oldRoom.equals(defaultRoom)) {
+      if (oldRoom.getPlayerList().isEmpty() && !oldRoom.equals(defaultRoom)) {
         rooms.remove(oldRoom);
       }
     }
@@ -62,8 +58,7 @@ public class RoomManager {
     for (int i = 0; i < rooms.size(); ++i) {
       final Room r = rooms.get(i);
       r.removePlayer(p);
-      if (r.getPlayerList().isEmpty() &&
-          !r.equals(defaultRoom)) {
+      if (r.getPlayerList().isEmpty() && !r.equals(defaultRoom)) {
         rooms.remove(i--);
       }
     }
@@ -84,18 +79,18 @@ public class RoomManager {
 
   public Room[] getRooms() {
     return rooms.toArray(new Room[0]);
-/*
-//  System.err.println("--------");
-    Room[] r = new Room[rooms.size()];
-    for (int i = 0; i < r.length; ++i) {
-      r[i] = (VASSAL.chat.Room) rooms.elementAt(i);
-      //      System.err.println("Room "+r[i]);
-      //      for (int j=0;j<r[i].players.length;++j) {
-      //    System.err.println("  "+((P2PPlayer)r[i].players[j]).summary());
-      //      }
-    }
-    return r;
-*/
+    /*
+    //  System.err.println("--------");
+        Room[] r = new Room[rooms.size()];
+        for (int i = 0; i < r.length; ++i) {
+          r[i] = (VASSAL.chat.Room) rooms.elementAt(i);
+          //      System.err.println("Room "+r[i]);
+          //      for (int j=0;j<r[i].players.length;++j) {
+          //    System.err.println("  "+((P2PPlayer)r[i].players[j]).summary());
+          //      }
+        }
+        return r;
+    */
   }
 
   public SimpleRoom getRoomContaining(Player p) {

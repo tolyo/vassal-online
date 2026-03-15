@@ -18,11 +18,10 @@
 
 package VASSAL.tools.image;
 
-import java.awt.image.BufferedImage;
-
-import org.junit.jupiter.api.Disabled;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.awt.image.BufferedImage;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * A set of assertion methods for writing tests involving images.
@@ -32,21 +31,19 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Disabled
 public class AssertImage {
-  public static void assertImageEquals(BufferedImage expected,
-                                       BufferedImage actual) {
+  public static void assertImageEquals(BufferedImage expected, BufferedImage actual) {
     assertEquals(expected.getType(), actual.getType());
     assertImageContentEquals(expected, actual);
   }
 
-  public static void assertImageContentEquals(BufferedImage expected,
-                                              BufferedImage actual) {
-    assertEquals(expected.getWidth(),  actual.getWidth());
+  public static void assertImageContentEquals(BufferedImage expected, BufferedImage actual) {
+    assertEquals(expected.getWidth(), actual.getWidth());
     assertEquals(expected.getHeight(), actual.getHeight());
 
     final int w = expected.getWidth();
     final int h = expected.getHeight();
 
-    assertArrayEquals(expected.getRGB(0, 0, w, h, null, 0, w),
-                        actual.getRGB(0, 0, w, h, null, 0, w));
+    assertArrayEquals(
+        expected.getRGB(0, 0, w, h, null, 0, w), actual.getRGB(0, 0, w, h, null, 0, w));
   }
 }

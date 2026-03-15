@@ -54,8 +54,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.UniqueIdManager;
-
-import javax.swing.JPopupMenu;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -64,9 +62,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JPopupMenu;
 
-public class DrawPile extends SetupStack implements PropertySource, PropertyNameSource, ComponentDescription {
-  public static final String DESCRIPTION = "description"; //NON-NLS
+public class DrawPile extends SetupStack
+    implements PropertySource, PropertyNameSource, ComponentDescription {
+  public static final String DESCRIPTION = "description"; // NON-NLS
 
   protected Deck dummy = new Deck(GameModule.getGameModule()); // Used for storing type information
   protected boolean reshufflable;
@@ -79,38 +79,50 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   private final VisibilityCondition reshuffleVisibleCondition = () -> reshufflable;
 
-  private final VisibilityCondition faceDownFormatVisibleCondition = () -> (dummy.getFaceDownOption().equals(USE_MENU) || dummy.getFaceDownOption().equals(USE_MENU_UP));
+  private final VisibilityCondition faceDownFormatVisibleCondition =
+      () ->
+          (dummy.getFaceDownOption().equals(USE_MENU)
+              || dummy.getFaceDownOption().equals(USE_MENU_UP));
 
   private final VisibilityCondition reverseFormatVisibleCondition = () -> dummy.isReversible();
 
-  private final VisibilityCondition shuffleFormatVisibleCondition = () -> dummy.getShuffleOption().equals(USE_MENU);
+  private final VisibilityCondition shuffleFormatVisibleCondition =
+      () -> dummy.getShuffleOption().equals(USE_MENU);
 
-  private final VisibilityCondition expressionCountingVisibleCondition = () -> dummy.doesExpressionCounting();
+  private final VisibilityCondition expressionCountingVisibleCondition =
+      () -> dummy.doesExpressionCounting();
 
   private final VisibilityCondition hotkeyOnEmptyVisibleCondition = () -> dummy.isHotkeyOnEmpty();
 
-  private final VisibilityCondition selectionAllowedVisibleCondition = () -> dummy.isAllowSelectDraw();
+  private final VisibilityCondition selectionAllowedVisibleCondition =
+      () -> dummy.isAllowSelectDraw();
 
-  private final VisibilityCondition restrictExpressionVisibleCondition = () -> dummy.isRestrictOption();
+  private final VisibilityCondition restrictExpressionVisibleCondition =
+      () -> dummy.isRestrictOption();
 
-  private final VisibilityCondition drawMultipleMessageVisibleCondition = () -> dummy.isAllowMultipleDraw();
+  private final VisibilityCondition drawMultipleMessageVisibleCondition =
+      () -> dummy.isAllowMultipleDraw();
 
-  private final VisibilityCondition drawSpecificMessageVisibleCondition = () -> dummy.isAllowSelectDraw();
+  private final VisibilityCondition drawSpecificMessageVisibleCondition =
+      () -> dummy.isAllowSelectDraw();
 
-  private final VisibilityCondition faceUpDownMessageVisibleCondition = () -> Deck.USE_MENU.equals(dummy.getFaceDownOption()) || USE_MENU_UP.equals(dummy.getFaceDownOption());
+  private final VisibilityCondition faceUpDownMessageVisibleCondition =
+      () ->
+          Deck.USE_MENU.equals(dummy.getFaceDownOption())
+              || USE_MENU_UP.equals(dummy.getFaceDownOption());
 
   private final VisibilityCondition saveVisibleCondition = () -> dummy.isPersistable();
 
   private final VisibilityCondition ownersVisibleCondition = () -> dummy.isRestrictAccess();
 
-  protected static final UniqueIdManager idMgr = new UniqueIdManager("Deck"); //NON-NLS
+  protected static final UniqueIdManager idMgr = new UniqueIdManager("Deck"); // NON-NLS
 
   @Override
   public void addTo(Buildable parent) {
     super.addTo(parent);
 
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     idMgr.add(this);
@@ -127,6 +139,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   /**
    * Deck doesn't join in any SetupStack reindeer games.
+   *
    * @return configure name for deck
    */
   @Override
@@ -140,8 +153,8 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
   }
 
   /**
-   * Decks can contain child Global Key Commands that only apply
-   * to cards in the Deck. Pass these to the dummy Deck component
+   * Decks can contain child Global Key Commands that only apply to cards in the Deck. Pass these to
+   * the dummy Deck component
    */
   public void addGlobalKeyCommand(DeckGlobalKeyCommand globalCommand) {
     dummy.addGlobalKeyCommand(globalCommand);
@@ -153,6 +166,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   /**
    * Return the DrawPile instance with the matching id or name
+   *
    * @param id the Id or ConfigureName of the target DrawPile
    * @return the matching {@link DrawPile}, or null if none found
    * @see DrawPile#getId
@@ -162,92 +176,91 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     return (DrawPile) idMgr.findInstance(id);
   }
 
-  public static final String WIDTH = "width"; //NON-NLS
-  public static final String HEIGHT = "height"; //NON-NLS
-  public static final String ALLOW_MULTIPLE = "allowMultiple"; //NON-NLS
-  public static final String ALLOW_SELECT = "allowSelect"; //NON-NLS
-  public static final String SELECT_DISPLAY_PROPERTY = "selectDisplayProperty"; //NON-NLS
-  public static final String SELECT_SORT_PROPERTY = "selectSortProperty"; //NON-NLS
-  public static final String FACE_DOWN = "faceDown"; //NON-NLS
-  public static final String DRAW_FACE_UP = "drawFaceUp"; //NON-NLS
-  public static final String FACE_DOWN_REPORT_FORMAT = "faceDownFormat"; //NON-NLS
-  public static final String SHUFFLE = "shuffle";                       // "Re-shuffle deck" - see below //NON-NLS
-  public static final String SHUFFLE_REPORT_FORMAT = "shuffleFormat"; //NON-NLS
-  public static final String SHUFFLE_HOTKEY = "shuffleHotkey"; //NON-NLS
-  public static final String SHUFFLE_COMMAND = "shuffleCommand"; //NON-NLS //NON-NLS
-  public static final String REVERSIBLE = "reversible"; //NON-NLS
-  public static final String REVERSE_REPORT_FORMAT = "reverseFormat"; //NON-NLS
-  public static final String REVERSE_HOTKEY = "reverseHotkey"; //NON-NLS
-  public static final String REVERSE_COMMAND = "reverseCommand"; //NON-NLS
-  public static final String DRAW = "draw"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String MAXSTACK = "maxStack"; //NON-NLS
-  public static final String EXPRESSIONCOUNTING = "expressionCounting"; //NON-NLS
-  public static final String COUNTEXPRESSIONS = "countExpressions"; //NON-NLS
-  public static final String RESHUFFLABLE = "reshufflable";             // "Send to another deck" -- see above //NON-NLS
-  public static final String RESHUFFLE_COMMAND = "reshuffleCommand"; //NON-NLS
-  public static final String RESHUFFLE_TARGET = "reshuffleTarget"; //NON-NLS
-  public static final String RESHUFFLE_MESSAGE = "reshuffleMessage"; //NON-NLS
-  public static final String RESHUFFLE_HOTKEY = "reshuffleHotkey"; //NON-NLS
-  public static final String REPORT_FORMAT = "reportFormat"; //NON-NLS
-  public static final String CAN_SAVE = "canSave"; //NON-NLS
-  public static final String HOTKEY_ON_EMPTY = "hotkeyOnEmpty"; //NON-NLS
-  public static final String EMPTY_HOTKEY = "emptyHotkey"; //NON-NLS
-  public static final String RESTRICT_OPTION = "restrictOption"; //NON-NLS
-  public static final String RESTRICT_EXPRESSION = "restrictExpression"; //NON-NLS
+  public static final String WIDTH = "width"; // NON-NLS
+  public static final String HEIGHT = "height"; // NON-NLS
+  public static final String ALLOW_MULTIPLE = "allowMultiple"; // NON-NLS
+  public static final String ALLOW_SELECT = "allowSelect"; // NON-NLS
+  public static final String SELECT_DISPLAY_PROPERTY = "selectDisplayProperty"; // NON-NLS
+  public static final String SELECT_SORT_PROPERTY = "selectSortProperty"; // NON-NLS
+  public static final String FACE_DOWN = "faceDown"; // NON-NLS
+  public static final String DRAW_FACE_UP = "drawFaceUp"; // NON-NLS
+  public static final String FACE_DOWN_REPORT_FORMAT = "faceDownFormat"; // NON-NLS
+  public static final String SHUFFLE = "shuffle"; // "Re-shuffle deck" - see below //NON-NLS
+  public static final String SHUFFLE_REPORT_FORMAT = "shuffleFormat"; // NON-NLS
+  public static final String SHUFFLE_HOTKEY = "shuffleHotkey"; // NON-NLS
+  public static final String SHUFFLE_COMMAND = "shuffleCommand"; // NON-NLS //NON-NLS
+  public static final String REVERSIBLE = "reversible"; // NON-NLS
+  public static final String REVERSE_REPORT_FORMAT = "reverseFormat"; // NON-NLS
+  public static final String REVERSE_HOTKEY = "reverseHotkey"; // NON-NLS
+  public static final String REVERSE_COMMAND = "reverseCommand"; // NON-NLS
+  public static final String DRAW = "draw"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String MAXSTACK = "maxStack"; // NON-NLS
+  public static final String EXPRESSIONCOUNTING = "expressionCounting"; // NON-NLS
+  public static final String COUNTEXPRESSIONS = "countExpressions"; // NON-NLS
+  public static final String RESHUFFLABLE =
+      "reshufflable"; // "Send to another deck" -- see above //NON-NLS
+  public static final String RESHUFFLE_COMMAND = "reshuffleCommand"; // NON-NLS
+  public static final String RESHUFFLE_TARGET = "reshuffleTarget"; // NON-NLS
+  public static final String RESHUFFLE_MESSAGE = "reshuffleMessage"; // NON-NLS
+  public static final String RESHUFFLE_HOTKEY = "reshuffleHotkey"; // NON-NLS
+  public static final String REPORT_FORMAT = "reportFormat"; // NON-NLS
+  public static final String CAN_SAVE = "canSave"; // NON-NLS
+  public static final String HOTKEY_ON_EMPTY = "hotkeyOnEmpty"; // NON-NLS
+  public static final String EMPTY_HOTKEY = "emptyHotkey"; // NON-NLS
+  public static final String RESTRICT_OPTION = "restrictOption"; // NON-NLS
+  public static final String RESTRICT_EXPRESSION = "restrictExpression"; // NON-NLS
 
-  public static final String ALWAYS = "Always"; //NON-NLS
-  public static final String NEVER = "Never"; //NON-NLS
-  public static final String USE_MENU = "Via right-click Menu"; //NON-NLS
-  public static final String USE_MENU_UP = "MenuDefaultUp"; //NON-NLS
+  public static final String ALWAYS = "Always"; // NON-NLS
+  public static final String NEVER = "Never"; // NON-NLS
+  public static final String USE_MENU = "Via right-click Menu"; // NON-NLS
+  public static final String USE_MENU_UP = "MenuDefaultUp"; // NON-NLS
 
-  public static final String COMMAND_NAME = "commandName"; //NON-NLS
-  public static final String DECK_NAME = "deckName"; //NON-NLS
+  public static final String COMMAND_NAME = "commandName"; // NON-NLS
+  public static final String DECK_NAME = "deckName"; // NON-NLS
 
-  public static final String DRAW_MULTIPLE_MESSAGE = "drawMultipleMessage"; //NON-NLS
-  public static final String DRAW_SPECIFIC_MESSAGE = "drawSpecificMessage"; //NON-NLS
-  public static final String FACE_UP_MESSAGE = "faceUpMessage"; //NON-NLS
-  public static final String FACE_DOWN_MESSAGE = "faceDownMessage"; //NON-NLS
+  public static final String DRAW_MULTIPLE_MESSAGE = "drawMultipleMessage"; // NON-NLS
+  public static final String DRAW_SPECIFIC_MESSAGE = "drawSpecificMessage"; // NON-NLS
+  public static final String FACE_UP_MESSAGE = "faceUpMessage"; // NON-NLS
+  public static final String FACE_DOWN_MESSAGE = "faceDownMessage"; // NON-NLS
 
-  public static final String FACE_UP_HOTKEY = "faceUpHotkey"; //NON-NLS
-  public static final String FACE_DOWN_HOTKEY = "faceDownHotkey"; //NON-NLS
-  public static final String FACE_FLIP_HOTKEY = "faceFlipHotkey"; //NON-NLS
-  public static final String FACE_UP_REPORT_FORMAT = "faceUpReportFormat"; //NON-NLS
+  public static final String FACE_UP_HOTKEY = "faceUpHotkey"; // NON-NLS
+  public static final String FACE_DOWN_HOTKEY = "faceDownHotkey"; // NON-NLS
+  public static final String FACE_FLIP_HOTKEY = "faceFlipHotkey"; // NON-NLS
+  public static final String FACE_UP_REPORT_FORMAT = "faceUpReportFormat"; // NON-NLS
 
-  public static final String SAVE_MESSAGE = "saveMessage"; //NON-NLS
-  public static final String LOAD_MESSAGE = "loadMessage"; //NON-NLS
-  public static final String SAVE_HOTKEY  = "saveHotkey"; //NON-NLS
-  public static final String LOAD_HOTKEY  = "loadHotkey"; //NON-NLS
-  public static final String SAVE_REPORT_FORMAT = "saveReportFormat"; //NON-NLS
-  public static final String LOAD_REPORT_FORMAT = "loadReportFormat"; //NON-NLS
+  public static final String SAVE_MESSAGE = "saveMessage"; // NON-NLS
+  public static final String LOAD_MESSAGE = "loadMessage"; // NON-NLS
+  public static final String SAVE_HOTKEY = "saveHotkey"; // NON-NLS
+  public static final String LOAD_HOTKEY = "loadHotkey"; // NON-NLS
+  public static final String SAVE_REPORT_FORMAT = "saveReportFormat"; // NON-NLS
+  public static final String LOAD_REPORT_FORMAT = "loadReportFormat"; // NON-NLS
 
-  public static final String DECK_RESTRICT_ACCESS = "deckRestrictAccess"; //NON-NLS
-  public static final String DECK_OWNERS = "deckOwners"; //NON-NLS
+  public static final String DECK_RESTRICT_ACCESS = "deckRestrictAccess"; // NON-NLS
+  public static final String DECK_OWNERS = "deckOwners"; // NON-NLS
 
   public static class Prompt extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{ ALWAYS, NEVER, USE_MENU };
+      return new String[] {ALWAYS, NEVER, USE_MENU};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[] { "Editor.always",
-                            "Editor.never",
-                            "Editor.DrawPile.use_menu"
-      };
+      return new String[] {"Editor.always", "Editor.never", "Editor.DrawPile.use_menu"};
     }
   }
 
   public static class Prompt2 extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[]{ ALWAYS, NEVER, USE_MENU, USE_MENU_UP };
+      return new String[] {ALWAYS, NEVER, USE_MENU, USE_MENU_UP};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      return new String[] { "Editor.always",
+      return new String[] {
+        "Editor.always",
         "Editor.never",
         "Editor.DrawPile.use_menu_down",
         "Editor.DrawPile.use_menu_up",
@@ -255,16 +268,14 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     }
   }
 
-
-  /**
-   * generates a prompt with the names of all decks already defined
-   */
+  /** generates a prompt with the names of all decks already defined */
   public static class AssignedDeckPrompt extends TranslatableStringEnum {
-    public static final String NONE = "<none>"; //NON-NLS
+    public static final String NONE = "<none>"; // NON-NLS
     public static final String NONE_NAME = Resources.getString("Editor.DrawPile.none");
 
     /**
      * For this one we need to use pre-translated display names.
+     *
      * @return true
      */
     @Override
@@ -272,38 +283,30 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
       return true;
     }
 
-    /**
-     * looks for the names of all decks already defined
-     */
+    /** looks for the names of all decks already defined */
     @Override
     public String[] getValidValues(AutoConfigurable target) {
       final List<String> l = new ArrayList<>();
       l.add(NONE);
-      for (final GameComponent g :
-           GameModule.getGameModule().getGameState().getGameComponents()) {
+      for (final GameComponent g : GameModule.getGameModule().getGameState().getGameComponents()) {
         if (g instanceof Map) {
           for (final DrawPile dp : ((Map) g).getComponentsOf(DrawPile.class)) {
-            if (dp.getConfigureName() != null)
-              l.add(dp.getConfigureName());
+            if (dp.getConfigureName() != null) l.add(dp.getConfigureName());
           }
         }
       }
       return l.toArray(new String[0]);
     }
 
-    /**
-     * looks for the names of all decks already defined
-     */
+    /** looks for the names of all decks already defined */
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
       final List<String> l = new ArrayList<>();
       l.add(NONE_NAME);
-      for (final GameComponent g :
-        GameModule.getGameModule().getGameState().getGameComponents()) {
+      for (final GameComponent g : GameModule.getGameModule().getGameState().getGameComponents()) {
         if (g instanceof Map) {
           for (final DrawPile dp : ((Map) g).getComponentsOf(DrawPile.class)) {
-            if (dp.getLocalizedConfigureName() != null)
-              l.add(dp.getLocalizedConfigureName());
+            if (dp.getLocalizedConfigureName() != null) l.add(dp.getLocalizedConfigureName());
           }
         }
       }
@@ -313,7 +316,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
+    return new String[] {
       NAME,
       DESCRIPTION,
       OWNING_BOARD,
@@ -336,7 +339,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
       FACE_DOWN_HOTKEY,
       FACE_DOWN_REPORT_FORMAT,
       DRAW_FACE_UP,
-      SHUFFLE,                        // These commands match "Reshuffle" in the visible menus
+      SHUFFLE, // These commands match "Reshuffle" in the visible menus
       SHUFFLE_COMMAND,
       SHUFFLE_REPORT_FORMAT,
       SHUFFLE_HOTKEY,
@@ -348,7 +351,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
       COLOR,
       HOTKEY_ON_EMPTY,
       EMPTY_HOTKEY,
-      RESHUFFLABLE,                  // These commands match "Send to another deck" in the visible menus
+      RESHUFFLABLE, // These commands match "Send to another deck" in the visible menus
       RESHUFFLE_COMMAND,
       RESHUFFLE_MESSAGE,
       RESHUFFLE_HOTKEY,
@@ -372,66 +375,68 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString(Resources.NAME_LABEL),
-        Resources.getString(Resources.DESCRIPTION),
-        Resources.getString("Editor.DrawPile.owning_board"), //$NON-NLS-1$
-        Resources.getString("Editor.x_position"), //$NON-NLS-1$
-        Resources.getString("Editor.y_position"), //$NON-NLS-1$
-        Resources.getString("Editor.width"), //$NON-NLS-1$
-        Resources.getString("Editor.height"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.multi_draw"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.draw_multiple_message"), //NON-NLS
-        Resources.getString("Editor.DrawPile.specific_draw"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.draw_specific_message"), //NON-NLS
-        Resources.getString("Editor.DrawPile.list_cards"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.sort_cards"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.facedown"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.face_flip_hotkey"),
-        Resources.getString("Editor.DrawPile.face_up_message"),
-        Resources.getString("Editor.DrawPile.face_up_hotkey"),
-        Resources.getString("Editor.DrawPile.face_up_report"),
-        Resources.getString("Editor.DrawPile.face_down_message"),
-        Resources.getString("Editor.DrawPile.face_down_hotkey"),
-        Resources.getString("Editor.DrawPile.facedown_report"),
-        Resources.getString("Editor.DrawPile.faceup"),
-        Resources.getString("Editor.DrawPile.reshuffle"), //$NON-NLS-1$        // Internally these match "SHUFFLE"
-        Resources.getString("Editor.DrawPile.reshuffle_text"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reshuffle_report"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reshuffle_key"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reverse"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reverse_text"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reverse_report"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.reverse_key"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.outline"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.color"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.empty_key"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.empty_keyfrom"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.send_deck"), //$NON-NLS-1$        // Internally these match "RESHUFFLE"
-        Resources.getString("Editor.DrawPile.send_text"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.send_report"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.send_key"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.send_deck_name"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.saved"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.save_message"),
-        Resources.getString("Editor.DrawPile.save_key"),
-        Resources.getString("Editor.DrawPile.save_report"),
-        Resources.getString("Editor.DrawPile.load_message"),
-        Resources.getString("Editor.DrawPile.load_key"),
-        Resources.getString("Editor.DrawPile.load_report"),
-        Resources.getString("Editor.DrawPile.maxdisplay"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.perform_express"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.count_express"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.restrict_drag"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.match_express"), //$NON-NLS-1$
-        Resources.getString("Editor.DrawPile.deck_restrict_access"), //NON-NLS
-        Resources.getString("Editor.DrawPile.deck_owners"), //NON-NLS
+    return new String[] {
+      Resources.getString(Resources.NAME_LABEL),
+      Resources.getString(Resources.DESCRIPTION),
+      Resources.getString("Editor.DrawPile.owning_board"), // $NON-NLS-1$
+      Resources.getString("Editor.x_position"), // $NON-NLS-1$
+      Resources.getString("Editor.y_position"), // $NON-NLS-1$
+      Resources.getString("Editor.width"), // $NON-NLS-1$
+      Resources.getString("Editor.height"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.multi_draw"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.draw_multiple_message"), // NON-NLS
+      Resources.getString("Editor.DrawPile.specific_draw"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.draw_specific_message"), // NON-NLS
+      Resources.getString("Editor.DrawPile.list_cards"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.sort_cards"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.facedown"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.face_flip_hotkey"),
+      Resources.getString("Editor.DrawPile.face_up_message"),
+      Resources.getString("Editor.DrawPile.face_up_hotkey"),
+      Resources.getString("Editor.DrawPile.face_up_report"),
+      Resources.getString("Editor.DrawPile.face_down_message"),
+      Resources.getString("Editor.DrawPile.face_down_hotkey"),
+      Resources.getString("Editor.DrawPile.facedown_report"),
+      Resources.getString("Editor.DrawPile.faceup"),
+      Resources.getString(
+          "Editor.DrawPile.reshuffle"), //$NON-NLS-1$        // Internally these match "SHUFFLE"
+      Resources.getString("Editor.DrawPile.reshuffle_text"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reshuffle_report"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reshuffle_key"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reverse"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reverse_text"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reverse_report"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.reverse_key"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.outline"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.color"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.empty_key"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.empty_keyfrom"), // $NON-NLS-1$
+      Resources.getString(
+          "Editor.DrawPile.send_deck"), //$NON-NLS-1$        // Internally these match "RESHUFFLE"
+      Resources.getString("Editor.DrawPile.send_text"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.send_report"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.send_key"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.send_deck_name"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.saved"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.save_message"),
+      Resources.getString("Editor.DrawPile.save_key"),
+      Resources.getString("Editor.DrawPile.save_report"),
+      Resources.getString("Editor.DrawPile.load_message"),
+      Resources.getString("Editor.DrawPile.load_key"),
+      Resources.getString("Editor.DrawPile.load_report"),
+      Resources.getString("Editor.DrawPile.maxdisplay"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.perform_express"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.count_express"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.restrict_drag"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.match_express"), // $NON-NLS-1$
+      Resources.getString("Editor.DrawPile.deck_restrict_access"), // NON-NLS
+      Resources.getString("Editor.DrawPile.deck_owners"), // NON-NLS
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class, // NAME
       String.class, // DESCRIPTION
       OwningBoardPrompt.class, // OWNING_BOARD
@@ -482,7 +487,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
       Boolean.class, // EXPRESSIONCOUNTING
       String[].class, // COUNTEXPRESSIONS
       Boolean.class, // RESTRICT_OPTION
-      PropertyExpression.class, //RESTRICT_EXPRESSION
+      PropertyExpression.class, // RESTRICT_EXPRESSION
       Boolean.class, // DECK_RESTRICT_ACCESS
       String[].class, // DECK_OWNERS
     };
@@ -491,8 +496,8 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
   public static class FormattedStringConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[]{DECK_NAME,
-                                                                               COMMAND_NAME});
+      return new PlayerIdFormattedExpressionConfigurer(
+          key, name, new String[] {DECK_NAME, COMMAND_NAME});
     }
   }
 
@@ -504,167 +509,117 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
   }
 
   public boolean isReshufflable() {
-    return "true".equals(getAttributeValueString(RESHUFFLABLE));  //NON-NLS
+    return "true".equals(getAttributeValueString(RESHUFFLABLE)); // NON-NLS
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (WIDTH.equals(key)) {
       return String.valueOf(dummy.getSize().width);
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       return String.valueOf(dummy.getSize().height);
-    }
-    else if (FACE_DOWN.equals(key)) {
+    } else if (FACE_DOWN.equals(key)) {
       return dummy.getFaceDownOption();
-    }
-    else if (DRAW_FACE_UP.equals(key)) {
+    } else if (DRAW_FACE_UP.equals(key)) {
       return String.valueOf(dummy.isDrawFaceUp());
-    }
-    else if (SHUFFLE.equals(key)) {
+    } else if (SHUFFLE.equals(key)) {
       return dummy.getShuffleOption();
-    }
-    else if (REVERSIBLE.equals(key)) {
+    } else if (REVERSIBLE.equals(key)) {
       return String.valueOf(dummy.isReversible());
-    }
-    else if (ALLOW_MULTIPLE.equals(key)) {
+    } else if (ALLOW_MULTIPLE.equals(key)) {
       return String.valueOf(dummy.isAllowMultipleDraw());
-    }
-    else if (ALLOW_SELECT.equals(key)) {
+    } else if (ALLOW_SELECT.equals(key)) {
       return String.valueOf(dummy.isAllowSelectDraw());
-    }
-    else if (SELECT_DISPLAY_PROPERTY.equals(key)) {
+    } else if (SELECT_DISPLAY_PROPERTY.equals(key)) {
       return dummy.getSelectDisplayProperty();
-    }
-    else if (SELECT_SORT_PROPERTY.equals(key)) {
+    } else if (SELECT_SORT_PROPERTY.equals(key)) {
       return dummy.getSelectSortProperty();
-    }
-    else if (DRAW.equals(key)) {
+    } else if (DRAW.equals(key)) {
       return String.valueOf(dummy.isDrawOutline());
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(dummy.getOutlineColor());
-    }
-    else if (MAXSTACK.equals(key)) {
+    } else if (MAXSTACK.equals(key)) {
       return String.valueOf(dummy.getMaxStack());
-    }
-    else if (EXPRESSIONCOUNTING.equals(key)) {
+    } else if (EXPRESSIONCOUNTING.equals(key)) {
       return String.valueOf(dummy.doesExpressionCounting());
-    }
-    else if (COUNTEXPRESSIONS.equals(key)) {
+    } else if (COUNTEXPRESSIONS.equals(key)) {
       return StringArrayConfigurer.arrayToString(dummy.getCountExpressions());
-    }
-    else if (RESHUFFLABLE.equals(key)) {
+    } else if (RESHUFFLABLE.equals(key)) {
       // We check all of these due to Bug 11112 making the value of
       // reshufflable unreliable in modules created prior to 3.2.13.
       return String.valueOf(
-        reshufflable ||
-        dummy.getReshuffleCommand().length() > 0 ||
-        dummy.getReshuffleTarget().length() > 0 ||
-        dummy.getReshuffleMsgFormat().length() > 0 ||
-        dummy.getReshuffleKey() != NamedKeyStroke.NULL_KEYSTROKE
-      );
-    }
-    else if (RESHUFFLE_COMMAND.equals(key)) {
+          reshufflable
+              || dummy.getReshuffleCommand().length() > 0
+              || dummy.getReshuffleTarget().length() > 0
+              || dummy.getReshuffleMsgFormat().length() > 0
+              || dummy.getReshuffleKey() != NamedKeyStroke.NULL_KEYSTROKE);
+    } else if (RESHUFFLE_COMMAND.equals(key)) {
       return dummy.getReshuffleCommand();
-    }
-    else if (RESHUFFLE_TARGET.equals(key)) {
+    } else if (RESHUFFLE_TARGET.equals(key)) {
       return dummy.getReshuffleTarget();
-    }
-    else if (RESHUFFLE_MESSAGE.equals(key)) {
+    } else if (RESHUFFLE_MESSAGE.equals(key)) {
       return dummy.getReshuffleMsgFormat();
-    }
-    else if (RESHUFFLE_HOTKEY.equals(key)) {
+    } else if (RESHUFFLE_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getReshuffleKey());
-    }
-    else if (SHUFFLE_COMMAND.equals(key)) {
+    } else if (SHUFFLE_COMMAND.equals(key)) {
       return dummy.getShuffleCommand();
-    }
-    else if (SHUFFLE_REPORT_FORMAT.equals(key)) {
+    } else if (SHUFFLE_REPORT_FORMAT.equals(key)) {
       return dummy.getShuffleMsgFormat();
-    }
-    else if (SHUFFLE_HOTKEY.equals(key)) {
+    } else if (SHUFFLE_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getShuffleKey());
-    }
-    else if (REVERSE_COMMAND.equals(key)) {
+    } else if (REVERSE_COMMAND.equals(key)) {
       return dummy.getReverseCommand();
-    }
-    else if (REVERSE_REPORT_FORMAT.equals(key)) {
+    } else if (REVERSE_REPORT_FORMAT.equals(key)) {
       return dummy.getReverseMsgFormat();
-    }
-    else if (REVERSE_HOTKEY.equals(key)) {
+    } else if (REVERSE_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getReverseKey());
-    }
-    else if (FACE_DOWN_REPORT_FORMAT.equals(key)) {
+    } else if (FACE_DOWN_REPORT_FORMAT.equals(key)) {
       return dummy.getFaceDownMsgFormat();
-    }
-    else if (CAN_SAVE.equals(key)) {
+    } else if (CAN_SAVE.equals(key)) {
       return String.valueOf(dummy.isPersistable());
-    }
-    else if (HOTKEY_ON_EMPTY.equals(key)) {
+    } else if (HOTKEY_ON_EMPTY.equals(key)) {
       return String.valueOf(dummy.isHotkeyOnEmpty());
-    }
-    else if (EMPTY_HOTKEY.equals(key)) {
+    } else if (EMPTY_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getNamedEmptyKey());
-    }
-    else if (RESTRICT_OPTION.equals(key)) {
+    } else if (RESTRICT_OPTION.equals(key)) {
       return String.valueOf(dummy.isRestrictOption());
-    }
-    else if (RESTRICT_EXPRESSION.equals(key)) {
+    } else if (RESTRICT_EXPRESSION.equals(key)) {
       return dummy.getRestrictExpression().getExpression();
-    }
-    else if (DRAW_MULTIPLE_MESSAGE.equals(key)) {
+    } else if (DRAW_MULTIPLE_MESSAGE.equals(key)) {
       return dummy.getDrawMultipleMessage();
-    }
-    else if (DRAW_SPECIFIC_MESSAGE.equals(key)) {
+    } else if (DRAW_SPECIFIC_MESSAGE.equals(key)) {
       return dummy.getDrawSpecificMessage();
-    }
-    else if (FACE_UP_MESSAGE.equals(key)) {
+    } else if (FACE_UP_MESSAGE.equals(key)) {
       return dummy.getFaceUpMessage();
-    }
-    else if (FACE_DOWN_MESSAGE.equals(key)) {
+    } else if (FACE_DOWN_MESSAGE.equals(key)) {
       return dummy.getFaceDownMessage();
-    }
-    else if (FACE_UP_HOTKEY.equals(key)) {
+    } else if (FACE_UP_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getFaceUpKey());
-    }
-    else if (FACE_FLIP_HOTKEY.equals(key)) {
+    } else if (FACE_FLIP_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getFaceFlipKey());
-    }
-    else if (FACE_DOWN_HOTKEY.equals(key)) {
+    } else if (FACE_DOWN_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getFaceDownKey());
-    }
-    else if (FACE_UP_REPORT_FORMAT.equals(key)) {
+    } else if (FACE_UP_REPORT_FORMAT.equals(key)) {
       return dummy.getFaceUpMsgFormat();
-    }
-    else if (SAVE_MESSAGE.equals(key)) {
+    } else if (SAVE_MESSAGE.equals(key)) {
       return dummy.getSaveMessage();
-    }
-    else if (SAVE_HOTKEY.equals(key)) {
+    } else if (SAVE_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getSaveKey());
-    }
-    else if (SAVE_REPORT_FORMAT.equals(key)) {
+    } else if (SAVE_REPORT_FORMAT.equals(key)) {
       return dummy.getSaveReport();
-    }
-    else if (LOAD_MESSAGE.equals(key)) {
+    } else if (LOAD_MESSAGE.equals(key)) {
       return dummy.getLoadMessage();
-    }
-    else if (LOAD_HOTKEY.equals(key)) {
+    } else if (LOAD_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(dummy.getLoadKey());
-    }
-    else if (LOAD_REPORT_FORMAT.equals(key)) {
+    } else if (LOAD_REPORT_FORMAT.equals(key)) {
       return dummy.getLoadReport();
-    }
-    else if (DECK_RESTRICT_ACCESS.equals(key)) {
+    } else if (DECK_RESTRICT_ACCESS.equals(key)) {
       return String.valueOf(dummy.isRestrictAccess());
-    }
-    else if (DECK_OWNERS.equals(key)) {
+    } else if (DECK_OWNERS.equals(key)) {
       return StringArrayConfigurer.arrayToString(dummy.getOwners());
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -679,74 +634,56 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
         value = Integer.valueOf((String) value);
       }
       dummy.getSize().width = (Integer) value;
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       dummy.getSize().height = (Integer) value;
-    }
-    else if (FACE_DOWN.equals(key)) {
+    } else if (FACE_DOWN.equals(key)) {
       dummy.setFaceDownOption((String) value);
-    }
-    else if (DRAW_FACE_UP.equals(key)) {
+    } else if (DRAW_FACE_UP.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setDrawFaceUp(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setDrawFaceUp("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setDrawFaceUp("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (CAN_SAVE.equals(key)) {
+    } else if (CAN_SAVE.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setPersistable(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setPersistable("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setPersistable("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (SHUFFLE.equals(key)) {
+    } else if (SHUFFLE.equals(key)) {
       dummy.setShuffleOption((String) value);
-    }
-    else if (REVERSIBLE.equals(key)) {
+    } else if (REVERSIBLE.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setReversible(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setReversible("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setReversible("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (ALLOW_MULTIPLE.equals(key)) {
+    } else if (ALLOW_MULTIPLE.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setAllowMultipleDraw(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setAllowMultipleDraw("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setAllowMultipleDraw("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (ALLOW_SELECT.equals(key)) {
+    } else if (ALLOW_SELECT.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setAllowSelectDraw(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setAllowSelectDraw("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setAllowSelectDraw("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (SELECT_DISPLAY_PROPERTY.equals(key)) {
+    } else if (SELECT_DISPLAY_PROPERTY.equals(key)) {
       dummy.setSelectDisplayProperty((String) value);
-    }
-    else if (SELECT_SORT_PROPERTY.equals(key)) {
+    } else if (SELECT_SORT_PROPERTY.equals(key)) {
       dummy.setSelectSortProperty((String) value);
-    }
-    else if (DRAW.equals(key)) {
+    } else if (DRAW.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setDrawOutline(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setDrawOutline("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setDrawOutline("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
@@ -761,9 +698,8 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     if (EXPRESSIONCOUNTING.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setExpressionCounting(Boolean.TRUE.equals(value));
-      }
-      else {
-        dummy.setExpressionCounting("true".equals(value)); //NON-NLS
+      } else {
+        dummy.setExpressionCounting("true".equals(value)); // NON-NLS
       }
     }
     if (COUNTEXPRESSIONS.equals(key)) {
@@ -771,167 +707,128 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
         value = StringArrayConfigurer.stringToArray((String) value);
       }
       dummy.setCountExpressions((String[]) value);
-    }
-    else if (RESHUFFLABLE.equals(key)) {
-      reshufflable = "true".equals(value) || Boolean.TRUE.equals(value); //NON-NLS
+    } else if (RESHUFFLABLE.equals(key)) {
+      reshufflable = "true".equals(value) || Boolean.TRUE.equals(value); // NON-NLS
       if (!reshufflable) {
         dummy.setReshuffleCommand("");
         dummy.setReshuffleKey(NamedKeyStroke.NULL_KEYSTROKE);
         dummy.setReshuffleTarget("");
         dummy.setReshuffleMsgFormat("");
       }
-    }
-    else if (RESHUFFLE_COMMAND.equals(key)) {
+    } else if (RESHUFFLE_COMMAND.equals(key)) {
       dummy.setReshuffleCommand((String) value);
-    }
-    else if (RESHUFFLE_HOTKEY.equals(key)) {
+    } else if (RESHUFFLE_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setReshuffleKey((NamedKeyStroke) value);
-    }
-    else if (RESHUFFLE_TARGET.equals(key)) {
+    } else if (RESHUFFLE_TARGET.equals(key)) {
       dummy.setReshuffleTarget((String) value);
-    }
-    else if (RESHUFFLE_MESSAGE.equals(key)) {
+    } else if (RESHUFFLE_MESSAGE.equals(key)) {
       dummy.setReshuffleMsgFormat((String) value);
-    }
-    else if (REVERSE_COMMAND.equals(key)) {
+    } else if (REVERSE_COMMAND.equals(key)) {
       dummy.setReverseCommand((String) value);
-    }
-    else if (REVERSE_REPORT_FORMAT.equals(key)) {
+    } else if (REVERSE_REPORT_FORMAT.equals(key)) {
       dummy.setReverseMsgFormat((String) value);
-    }
-    else if (REVERSE_HOTKEY.equals(key)) {
+    } else if (REVERSE_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setReverseKey((NamedKeyStroke) value);
-    }
-    else if (SHUFFLE_COMMAND.equals(key)) {
+    } else if (SHUFFLE_COMMAND.equals(key)) {
       dummy.setShuffleCommand((String) value);
-    }
-    else if (SHUFFLE_REPORT_FORMAT.equals(key)) {
+    } else if (SHUFFLE_REPORT_FORMAT.equals(key)) {
       dummy.setShuffleMsgFormat((String) value);
-    }
-    else if (SHUFFLE_HOTKEY.equals(key)) {
+    } else if (SHUFFLE_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setShuffleKey((NamedKeyStroke) value);
-    }
-    else if (FACE_DOWN_REPORT_FORMAT.equals(key)) {
+    } else if (FACE_DOWN_REPORT_FORMAT.equals(key)) {
       dummy.setFaceDownMsgFormat((String) value);
-    }
-    else if (NAME.equals(key)) {
+    } else if (NAME.equals(key)) {
       dummy.setDeckName((String) value);
       super.setAttribute(key, value);
-    }
-    else if (HOTKEY_ON_EMPTY.equals(key)) {
+    } else if (HOTKEY_ON_EMPTY.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setHotkeyOnEmpty(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setHotkeyOnEmpty("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setHotkeyOnEmpty("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (EMPTY_HOTKEY.equals(key)) {
+    } else if (EMPTY_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setEmptyKey((NamedKeyStroke) value);
-    }
-    else if (RESTRICT_OPTION.equals(key)) {
+    } else if (RESTRICT_OPTION.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setRestrictOption(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setRestrictOption("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setRestrictOption("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (RESTRICT_EXPRESSION.equals(key)) {
+    } else if (RESTRICT_EXPRESSION.equals(key)) {
       if (value instanceof String) {
         value = new PropertyExpression((String) value);
       }
       dummy.setRestrictExpression((PropertyExpression) value);
-    }
-    else if (DRAW_MULTIPLE_MESSAGE.equals(key)) {
+    } else if (DRAW_MULTIPLE_MESSAGE.equals(key)) {
       dummy.setDrawMultipleMessage((String) value);
-    }
-    else if (DRAW_SPECIFIC_MESSAGE.equals(key)) {
+    } else if (DRAW_SPECIFIC_MESSAGE.equals(key)) {
       dummy.setDrawSpecificMessage((String) value);
-    }
-    else if (FACE_UP_MESSAGE.equals(key)) {
+    } else if (FACE_UP_MESSAGE.equals(key)) {
       dummy.setFaceUpMessage((String) value);
-    }
-    else if (FACE_DOWN_MESSAGE.equals(key)) {
+    } else if (FACE_DOWN_MESSAGE.equals(key)) {
       dummy.setFaceDownMessage((String) value);
-    }
-    else if (FACE_UP_HOTKEY.equals(key)) {
+    } else if (FACE_UP_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setFaceUpKey((NamedKeyStroke) value);
-    }
-    else if (FACE_FLIP_HOTKEY.equals(key)) {
+    } else if (FACE_FLIP_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setFaceFlipKey((NamedKeyStroke) value);
-    }
-    else if (FACE_DOWN_HOTKEY.equals(key)) {
+    } else if (FACE_DOWN_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setFaceDownKey((NamedKeyStroke) value);
-    }
-    else if (FACE_UP_REPORT_FORMAT.equals(key)) {
+    } else if (FACE_UP_REPORT_FORMAT.equals(key)) {
       dummy.setFaceUpMsgFormat((String) value);
-    }
-    else if (SAVE_MESSAGE.equals(key)) {
+    } else if (SAVE_MESSAGE.equals(key)) {
       dummy.setSaveMessage((String) value);
-    }
-    else if (SAVE_HOTKEY.equals(key)) {
+    } else if (SAVE_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setSaveKey((NamedKeyStroke) value);
-    }
-    else if (SAVE_REPORT_FORMAT.equals(key)) {
+    } else if (SAVE_REPORT_FORMAT.equals(key)) {
       dummy.setSaveReport((String) value);
-    }
-    else if (LOAD_MESSAGE.equals(key)) {
+    } else if (LOAD_MESSAGE.equals(key)) {
       dummy.setLoadMessage((String) value);
-    }
-    else if (LOAD_HOTKEY.equals(key)) {
+    } else if (LOAD_HOTKEY.equals(key)) {
       if (value instanceof String) {
         value = NamedHotKeyConfigurer.decode((String) value);
       }
       dummy.setLoadKey((NamedKeyStroke) value);
-    }
-    else if (LOAD_REPORT_FORMAT.equals(key)) {
+    } else if (LOAD_REPORT_FORMAT.equals(key)) {
       dummy.setLoadReport((String) value);
-    }
-    else if (DECK_RESTRICT_ACCESS.equals(key)) {
+    } else if (DECK_RESTRICT_ACCESS.equals(key)) {
       if (value instanceof Boolean) {
         dummy.setRestrictAccess(Boolean.TRUE.equals(value));
+      } else {
+        dummy.setRestrictAccess("true".equals(value)); // NON-NLS
       }
-      else {
-        dummy.setRestrictAccess("true".equals(value)); //NON-NLS
-      }
-    }
-    else if (DECK_OWNERS.equals(key)) {
+    } else if (DECK_OWNERS.equals(key)) {
       if (value instanceof String) {
         dummy.setOwners(StringArrayConfigurer.stringToArray((String) value));
+      } else if (value instanceof String[]) {
+        dummy.setOwners((String[]) value);
       }
-      else if (value instanceof String[]) {
-        dummy.setOwners((String [])value);
-      }
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)value;
-    }
-    else {
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) value;
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -940,54 +837,62 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
   public VisibilityCondition getAttributeVisibility(String name) {
     if (COLOR.equals(name)) {
       return colorVisibleCondition;
-    }
-    else if (List.of(RESHUFFLE_COMMAND, RESHUFFLE_MESSAGE, RESHUFFLE_TARGET, RESHUFFLE_HOTKEY).contains(name)) {
+    } else if (List.of(RESHUFFLE_COMMAND, RESHUFFLE_MESSAGE, RESHUFFLE_TARGET, RESHUFFLE_HOTKEY)
+        .contains(name)) {
       return reshuffleVisibleCondition;
-    }
-    else if (FACE_DOWN_REPORT_FORMAT.equals(name)) {
+    } else if (FACE_DOWN_REPORT_FORMAT.equals(name)) {
       return faceDownFormatVisibleCondition;
-    }
-    else if (List.of(SHUFFLE_REPORT_FORMAT, SHUFFLE_HOTKEY, SHUFFLE_COMMAND).contains(name)) {
+    } else if (List.of(SHUFFLE_REPORT_FORMAT, SHUFFLE_HOTKEY, SHUFFLE_COMMAND).contains(name)) {
       return shuffleFormatVisibleCondition;
-    }
-    else if (List.of(REVERSE_REPORT_FORMAT, REVERSE_HOTKEY, REVERSE_COMMAND).contains(name)) {
+    } else if (List.of(REVERSE_REPORT_FORMAT, REVERSE_HOTKEY, REVERSE_COMMAND).contains(name)) {
       return reverseFormatVisibleCondition;
-    }
-    else if (COUNTEXPRESSIONS.equals(name)) {
+    } else if (COUNTEXPRESSIONS.equals(name)) {
       return expressionCountingVisibleCondition;
-    }
-    else if (EMPTY_HOTKEY.equals(name)) {
+    } else if (EMPTY_HOTKEY.equals(name)) {
       return hotkeyOnEmptyVisibleCondition;
-    }
-    else if (SELECT_DISPLAY_PROPERTY.equals(name) || SELECT_SORT_PROPERTY.equals(name)) {
+    } else if (SELECT_DISPLAY_PROPERTY.equals(name) || SELECT_SORT_PROPERTY.equals(name)) {
       return selectionAllowedVisibleCondition;
-    }
-    else if (RESTRICT_EXPRESSION.equals(name)) {
+    } else if (RESTRICT_EXPRESSION.equals(name)) {
       return restrictExpressionVisibleCondition;
-    }
-    else if (DRAW_MULTIPLE_MESSAGE.equals(name)) {
+    } else if (DRAW_MULTIPLE_MESSAGE.equals(name)) {
       return drawMultipleMessageVisibleCondition;
-    }
-    else if (DRAW_SPECIFIC_MESSAGE.equals(name)) {
+    } else if (DRAW_SPECIFIC_MESSAGE.equals(name)) {
       return drawSpecificMessageVisibleCondition;
-    }
-    else if (List.of(FACE_DOWN_MESSAGE, FACE_UP_MESSAGE, FACE_DOWN_HOTKEY, FACE_UP_HOTKEY, FACE_FLIP_HOTKEY, FACE_DOWN_REPORT_FORMAT, FACE_UP_REPORT_FORMAT).contains(name)) {
+    } else if (List.of(
+            FACE_DOWN_MESSAGE,
+            FACE_UP_MESSAGE,
+            FACE_DOWN_HOTKEY,
+            FACE_UP_HOTKEY,
+            FACE_FLIP_HOTKEY,
+            FACE_DOWN_REPORT_FORMAT,
+            FACE_UP_REPORT_FORMAT)
+        .contains(name)) {
       return faceUpDownMessageVisibleCondition;
-    }
-    else if (List.of(SAVE_MESSAGE, SAVE_HOTKEY, SAVE_REPORT_FORMAT, LOAD_MESSAGE, LOAD_HOTKEY, LOAD_REPORT_FORMAT).contains(name)) {
+    } else if (List.of(
+            SAVE_MESSAGE,
+            SAVE_HOTKEY,
+            SAVE_REPORT_FORMAT,
+            LOAD_MESSAGE,
+            LOAD_HOTKEY,
+            LOAD_REPORT_FORMAT)
+        .contains(name)) {
       return saveVisibleCondition;
-    }
-    else if (DECK_OWNERS.equals(name)) {
+    } else if (DECK_OWNERS.equals(name)) {
       return ownersVisibleCondition;
-    }
-    else {
+    } else {
       return null;
     }
   }
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{ DeckSubFolder.class, CardSlot.class, DeckGlobalKeyCommand.class, DeckSortKeyCommand.class, DeckSendKeyCommand.class };
+    return new Class<?>[] {
+      DeckSubFolder.class,
+      CardSlot.class,
+      DeckGlobalKeyCommand.class,
+      DeckSortKeyCommand.class,
+      DeckSendKeyCommand.class
+    };
   }
 
   public Point getPosition() {
@@ -995,8 +900,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     final Board b = getMap().getBoardByName(owningBoardName);
     if (b == null) {
       p.translate(getMap().getEdgeBuffer().width, getMap().getEdgeBuffer().height);
-    }
-    else {
+    } else {
       p.translate(b.bounds().x, b.bounds().y);
     }
     return p;
@@ -1031,7 +935,9 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
   public Deck makeDeck() {
     myDeck = new Deck(GameModule.getGameModule(), getDeckType());
     myDeck.setPropertySource(source);
-    myDeck.setFaceDown(!Deck.NEVER.equals(dummy.getFaceDownOption()) && !Deck.USE_MENU_UP.equals(dummy.getFaceDownOption()));
+    myDeck.setFaceDown(
+        !Deck.NEVER.equals(dummy.getFaceDownOption())
+            && !Deck.USE_MENU_UP.equals(dummy.getFaceDownOption()));
     return myDeck;
   }
 
@@ -1041,7 +947,9 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     myDeck = new Deck(GameModule.getGameModule(), getDeckType());
     myDeck.setPropertySource(source);
     s.asList().forEach(gamePiece -> myDeck.add(gamePiece));
-    myDeck.setFaceDown(!Deck.NEVER.equals(dummy.getFaceDownOption()) && !Deck.USE_MENU_UP.equals(dummy.getFaceDownOption()));
+    myDeck.setFaceDown(
+        !Deck.NEVER.equals(dummy.getFaceDownOption())
+            && !Deck.USE_MENU_UP.equals(dummy.getFaceDownOption()));
     return myDeck;
   }
 
@@ -1068,11 +976,11 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Deck.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Deck.html"); // NON-NLS
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.DrawPile.deck"); //$NON-NLS-1$
+    return Resources.getString("Editor.DrawPile.deck"); // $NON-NLS-1$
   }
 
   @Override
@@ -1099,14 +1007,11 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     return null;
   }
 
-  /**
-   * Implement PropertyNameSource - Expose the numPieces property
-   * and any counting properties.
-   */
+  /** Implement PropertyNameSource - Expose the numPieces property and any counting properties. */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
-    l.add(getConfigureName() + "_numPieces"); //NON-NLS
+    l.add(getConfigureName() + "_numPieces"); // NON-NLS
     for (final String ce : dummy.getCountExpressions()) {
       l.add(getConfigureName() + "_" + (new Deck.CountExpression(ce)).getName());
     }
@@ -1116,9 +1021,9 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     return l;
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -1139,18 +1044,22 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
     if (dummy != null) {
       final List<String> l = new ArrayList<>();
 
-      if (USE_MENU.equals(dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to "Re-shuffle" in external menus...
+      if (USE_MENU.equals(
+          dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to
+        // "Re-shuffle" in external menus...
         l.add(dummy.getShuffleMsgFormat());
       }
 
-      if (isReshufflable()) {                          // ... whereas this one matches to "send to deck".
+      if (isReshufflable()) { // ... whereas this one matches to "send to deck".
         l.add(dummy.getReshuffleMsgFormat());
       }
 
@@ -1163,44 +1072,48 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
         l.add(dummy.getLoadReport());
       }
 
-      if (Deck.USE_MENU.equals(dummy.getFaceDownOption()) || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
+      if (Deck.USE_MENU.equals(dummy.getFaceDownOption())
+          || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
         l.add(dummy.getFaceDownMsgFormat());
         l.add(dummy.getFaceUpMsgFormat());
       }
 
       return l;
-    }
-    else {
+    } else {
       return Collections.emptyList();
     }
   }
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
   public List<String> getPropertyList() {
     if (dummy != null) {
-      return List.of(dummy.getSelectDisplayProperty(),
-                     dummy.getSelectSortProperty());
+      return List.of(dummy.getSelectDisplayProperty(), dummy.getSelectSortProperty());
     }
     return Collections.emptyList();
   }
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
     final List<String> l = new ArrayList<>();
     if (dummy != null) {
-      if (USE_MENU.equals(dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to "Re-shuffle" in external menus...
+      if (USE_MENU.equals(
+          dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to
+        // "Re-shuffle" in external menus...
         l.add(dummy.getShuffleCommand());
       }
 
-      if (isReshufflable()) {                          // ... whereas this one matches to "send to deck".
+      if (isReshufflable()) { // ... whereas this one matches to "send to deck".
         l.add(dummy.getReshuffleCommand());
       }
 
@@ -1213,7 +1126,8 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
         l.add(dummy.getLoadMessage());
       }
 
-      if (Deck.USE_MENU.equals(dummy.getFaceDownOption()) || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
+      if (Deck.USE_MENU.equals(dummy.getFaceDownOption())
+          || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
         l.add(dummy.getFaceDownMessage());
         l.add(dummy.getFaceUpMessage());
       }
@@ -1228,8 +1142,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     if (myDeck != null) {
       if (gameStarting) {
         myDeck.addListeners();
-      }
-      else {
+      } else {
         myDeck.removeListeners();
       }
     }
@@ -1237,6 +1150,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override
@@ -1246,11 +1160,13 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
 
       l.add(dummy.getNamedEmptyKey());
 
-      if (USE_MENU.equals(dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to "Re-shuffle" in external menus...
+      if (USE_MENU.equals(
+          dummy.getShuffleOption())) { // Confusingly, the term "shuffle" internally matches to
+        // "Re-shuffle" in external menus...
         l.add(dummy.getShuffleKey());
       }
 
-      if (isReshufflable()) {                          // ... whereas this one matches to "send to deck".
+      if (isReshufflable()) { // ... whereas this one matches to "send to deck".
         l.add(dummy.getReshuffleKey());
       }
 
@@ -1263,21 +1179,22 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
         l.add(dummy.getLoadKey());
       }
 
-      if (Deck.USE_MENU.equals(dummy.getFaceDownOption()) || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
+      if (Deck.USE_MENU.equals(dummy.getFaceDownOption())
+          || Deck.USE_MENU_UP.equals(dummy.getFaceDownOption())) {
         l.add(dummy.getFaceDownKey());
         l.add(dummy.getFaceUpKey());
         l.add(dummy.getFaceFlipKey());
       }
 
       return l;
-    }
-    else {
+    } else {
       return Collections.emptyList();
     }
   }
 
   /**
    * Retrieve all child DeckKeyCommands
+   *
    * @return List of DeckKeyCommands
    */
   public List<DeckKeyCommand> getDeckKeyCommands() {
@@ -1293,7 +1210,7 @@ public class DrawPile extends SetupStack implements PropertySource, PropertyName
     for (final Command command : sub) {
       if (!(command instanceof AddPiece)) continue;
 
-      final AddPiece ap = (AddPiece)command;
+      final AddPiece ap = (AddPiece) command;
       final CardSlot cs = new CardSlot();
       final GamePiece p = ap.getTarget();
       p.setState(ap.getState());

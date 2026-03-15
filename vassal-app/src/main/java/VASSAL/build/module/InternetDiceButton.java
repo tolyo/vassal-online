@@ -23,8 +23,6 @@ package VASSAL.build.module;
  *
  * Enhanced Dice Button includes access to Internet Die Servers via the DieManager.
  */
-import org.apache.commons.lang3.ArrayUtils;
-
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -34,19 +32,21 @@ import VASSAL.command.CommandEncoder;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.FormattedStringConfigurer;
 import VASSAL.i18n.Resources;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * This component places a button into the controls window toolbar. Pressing the button generates random numbers and
- * displays the result in the Chatter
+ * This component places a button into the controls window toolbar. Pressing the button generates
+ * random numbers and displays the result in the Chatter
  */
 public class InternetDiceButton extends DiceButton implements GameComponent, CommandEncoder {
   protected static DieManager dieManager;
-  private static final String COMMAND_PREFIX = "SEMAIL\t"; //$NON-NLS-1$
+  private static final String COMMAND_PREFIX = "SEMAIL\t"; // $NON-NLS-1$
+
   /** Report format variale */
-  public static final String DETAILS = "rollDetails"; //$NON-NLS-1$
+  public static final String DETAILS = "rollDetails"; // $NON-NLS-1$
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.InternetDiceButton.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.InternetDiceButton.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -64,15 +64,13 @@ public class InternetDiceButton extends DiceButton implements GameComponent, Com
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
       final FormattedStringConfigurer config =
-        (FormattedStringConfigurer) super.getConfigurer(c, key, name);
+          (FormattedStringConfigurer) super.getConfigurer(c, key, name);
       config.setOptions(ArrayUtils.add(config.getOptions(), DETAILS));
       return config;
     }
   }
 
-  /**
-   * Ask the die manager to do our roll!
-   */
+  /** Ask the die manager to do our roll! */
   @SuppressWarnings("removal")
   @Override
   protected void DR() {
@@ -80,9 +78,7 @@ public class InternetDiceButton extends DiceButton implements GameComponent, Com
     dieManager.roll(nDice, nSides, plus, reportTotal, getLocalizedConfigureName(), reportFormat);
   }
 
-  /**
-   * Expects to be added to the DieManager.
-   */
+  /** Expects to be added to the DieManager. */
   @Override
   public void addTo(Buildable parent) {
     initDieManager();
@@ -108,8 +104,7 @@ public class InternetDiceButton extends DiceButton implements GameComponent, Com
   }
 
   @Override
-  public void setup(boolean gameStarting) {
-  }
+  public void setup(boolean gameStarting) {}
 
   @Override
   public Command getRestoreCommand() {
@@ -154,6 +149,7 @@ public class InternetDiceButton extends DiceButton implements GameComponent, Com
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html", "InternetDiceButton"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GameModule.html", "InternetDiceButton"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 }

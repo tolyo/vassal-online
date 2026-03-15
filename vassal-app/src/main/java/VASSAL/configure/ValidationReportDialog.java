@@ -21,18 +21,15 @@ import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ScrollPane;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import java.util.List;
+import net.miginfocom.swing.MigLayout;
 
-/**
- * Dialog for reporting the results of validating a GameModule
- */
+/** Dialog for reporting the results of validating a GameModule */
 public class ValidationReportDialog extends JDialog {
   private static final long serialVersionUID = 1L;
 
@@ -52,22 +49,26 @@ public class ValidationReportDialog extends JDialog {
 
     final List<String> warnings = report.getWarnings();
     switch (warnings.size()) {
-    case 0:
-      add(new JLabel(Resources.getString("Editor.ValidationReportDialog.no_problems")), "wrap");
-      okButton = createOkButton();
-      buttonPanel.add(okButton);
-      cancelButton = okButton;
-      break;
-    default:
-      add(new JLabel(Resources.getString("Editor.ValidationReportDialog.following_problems")), "wrap");
-      add(new JLabel(Resources.getString("Editor.ValidationReportDialog.danger_will_robinson")), "wrap");
-      final JList<String> list = new JList<>(warnings.toArray(new String[0]));
-      list.setVisibleRowCount(Math.min(list.getVisibleRowCount(), warnings.size()));
-      add(new ScrollPane(list), "wrap");
-      okButton = createOkButton();
-      cancelButton = createCancelButton();
-      buttonPanel.add(okButton, "sg 1, tag ok");
-      buttonPanel.add(cancelButton, "sg 1, tag cancel");
+      case 0:
+        add(new JLabel(Resources.getString("Editor.ValidationReportDialog.no_problems")), "wrap");
+        okButton = createOkButton();
+        buttonPanel.add(okButton);
+        cancelButton = okButton;
+        break;
+      default:
+        add(
+            new JLabel(Resources.getString("Editor.ValidationReportDialog.following_problems")),
+            "wrap");
+        add(
+            new JLabel(Resources.getString("Editor.ValidationReportDialog.danger_will_robinson")),
+            "wrap");
+        final JList<String> list = new JList<>(warnings.toArray(new String[0]));
+        list.setVisibleRowCount(Math.min(list.getVisibleRowCount(), warnings.size()));
+        add(new ScrollPane(list), "wrap");
+        okButton = createOkButton();
+        cancelButton = createCancelButton();
+        buttonPanel.add(okButton, "sg 1, tag ok");
+        buttonPanel.add(cancelButton, "sg 1, tag cancel");
     }
 
     // Default actions on Enter/ESC
@@ -80,24 +81,27 @@ public class ValidationReportDialog extends JDialog {
 
   private JButton createCancelButton() {
     final JButton cancel = new JButton(Resources.getString("General.cancel"));
-    cancel.addActionListener(e -> {
-      callback.cancel();
-      dispose();
-    });
+    cancel.addActionListener(
+        e -> {
+          callback.cancel();
+          dispose();
+        });
     return cancel;
   }
 
   private JButton createOkButton() {
     final JButton ok = new JButton(Resources.getString("Editor.ValidationReportDialog.ignore"));
-    ok.addActionListener(e -> {
-      callback.ok();
-      dispose();
-    });
+    ok.addActionListener(
+        e -> {
+          callback.ok();
+          dispose();
+        });
     return ok;
   }
 
   public interface CallBack {
     void ok();
+
     void cancel();
   }
 }

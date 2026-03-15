@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 /**
- * An iterator for GamePieces.  Takes an optional PieceFilter to
- * extract GamePiece instances from an Enumeration or Iterator.
+ * An iterator for GamePieces. Takes an optional PieceFilter to extract GamePiece instances from an
+ * Enumeration or Iterator.
  */
 public class PieceIterator {
   private final Iterator<? extends GamePiece> pi;
@@ -35,44 +35,45 @@ public class PieceIterator {
 
   public PieceIterator(final Iterator<? extends GamePiece> i, PieceFilter f) {
     filter = f;
-    pi = new Iterator<>() {
-      private GamePiece next;
+    pi =
+        new Iterator<>() {
+          private GamePiece next;
 
-      @Override
-      public boolean hasNext() {
-        if (next != null) return true;
+          @Override
+          public boolean hasNext() {
+            if (next != null) return true;
 
-        while (i.hasNext()) {
-          next = i.next();
-          if (filter == null || filter.accept(next)) return true;
-        }
+            while (i.hasNext()) {
+              next = i.next();
+              if (filter == null || filter.accept(next)) return true;
+            }
 
-        next = null;
-        return false;
-      }
-
-      @Override
-      public GamePiece next() {
-        if (next != null) {
-          final GamePiece ret = next;
-          next = null;
-          return ret;
-        }
-
-        for (; ; next = i.next()) {
-          if (filter == null || filter.accept(next)) {
-            final GamePiece ret = next;
             next = null;
-            return ret;
+            return false;
           }
-        }
-      }
 
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-    };
+          @Override
+          public GamePiece next() {
+            if (next != null) {
+              final GamePiece ret = next;
+              next = null;
+              return ret;
+            }
+
+            for (; ; next = i.next()) {
+              if (filter == null || filter.accept(next)) {
+                final GamePiece ret = next;
+                next = null;
+                return ret;
+              }
+            }
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
   }
 
   @Deprecated(since = "2021-12-01", forRemoval = true)
@@ -89,7 +90,7 @@ public class PieceIterator {
   }
 
   public static final Predicate<GamePiece> VISIBLE =
-    gamePiece -> !Boolean.TRUE.equals(gamePiece.getProperty(Properties.INVISIBLE_TO_ME));
+      gamePiece -> !Boolean.TRUE.equals(gamePiece.getProperty(Properties.INVISIBLE_TO_ME));
 
   public static <T extends GamePiece> PieceIterator visible(Iterator<T> i) {
     return new PieceIterator(i, VISIBLE::test);

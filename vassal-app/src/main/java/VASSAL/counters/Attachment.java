@@ -40,9 +40,6 @@ import VASSAL.search.SearchTarget;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.RecursionLimiter;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.JLabel;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -53,31 +50,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JLabel;
+import javax.swing.KeyStroke;
 
 /**
- * Trait allowing creation of an "attachment" to one or more other pieces, which can then be sent GKCs very swiftly and whose
- * properties can be easily read (and if a Dynamic Property can also be set with a Set Global Property trait)
+ * Trait allowing creation of an "attachment" to one or more other pieces, which can then be sent
+ * GKCs very swiftly and whose properties can be easily read (and if a Dynamic Property can also be
+ * set with a Set Global Property trait)
  */
 public class Attachment extends Decorator implements TranslatablePiece, RecursionLimiter.Loopable {
   public static final String ID = "attach;"; // NON-NLS
-  public static final String ATTACH_NAME = "AttachName"; //NON-NLS
-  public static final String ATTACH_LIST = "AttachList"; //NON-NLS
-  public static final String ATTACH_COUNT = "AttachCount"; //NON-NLS
+  public static final String ATTACH_NAME = "AttachName"; // NON-NLS
+  public static final String ATTACH_LIST = "AttachList"; // NON-NLS
+  public static final String ATTACH_COUNT = "AttachCount"; // NON-NLS
 
-  public static final String BEFORE_ATTACH_NOTHING = "nothing"; //NON-NLS
-  public static final String BEFORE_ATTACH_CLEAR = "clear"; //NON-NLS
+  public static final String BEFORE_ATTACH_NOTHING = "nothing"; // NON-NLS
+  public static final String BEFORE_ATTACH_CLEAR = "clear"; // NON-NLS
   protected static final String[] BEFORE_ATTACH_OPTIONS = {
     BEFORE_ATTACH_NOTHING, BEFORE_ATTACH_CLEAR
   };
   protected static final String[] BEFORE_ATTACH_KEYS = {
-    "Editor.Attachment.leave_existing",
-    "Editor.Attachment.clear_existing"
+    "Editor.Attachment.leave_existing", "Editor.Attachment.clear_existing"
   };
 
-
-  public static final String ON_ATTACH_NOTHING = "nothing"; //NON-NLS
-  public static final String ON_ATTACH_FOLLOW_BACK = "follow"; //NON-NLS
-  public static final String ON_ATTACH_ATTACH_ALL = "attachAll"; //NON-NLS
+  public static final String ON_ATTACH_NOTHING = "nothing"; // NON-NLS
+  public static final String ON_ATTACH_FOLLOW_BACK = "follow"; // NON-NLS
+  public static final String ON_ATTACH_ATTACH_ALL = "attachAll"; // NON-NLS
   protected static final String[] ON_ATTACH_OPTIONS = {
     ON_ATTACH_NOTHING, ON_ATTACH_FOLLOW_BACK, ON_ATTACH_ATTACH_ALL
   };
@@ -87,15 +85,11 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     "Editor.Attachment.attach_to_all"
   };
 
-
-  public static final String ON_DETACH_NOTHING = "nothing"; //NON-NLS
-  public static final String ON_DETACH_REMOVE  = "remove"; //NON-NLS
-  protected static final String[] ON_DETACH_OPTIONS = {
-    ON_DETACH_NOTHING, ON_DETACH_REMOVE
-  };
+  public static final String ON_DETACH_NOTHING = "nothing"; // NON-NLS
+  public static final String ON_DETACH_REMOVE = "remove"; // NON-NLS
+  protected static final String[] ON_DETACH_OPTIONS = {ON_DETACH_NOTHING, ON_DETACH_REMOVE};
   protected static final String[] ON_DETACH_KEYS = {
-    "Editor.Attachment.no_additional_action",
-    "Editor.Attachment.remove_incoming_attachment",
+    "Editor.Attachment.no_additional_action", "Editor.Attachment.remove_incoming_attachment",
   };
 
   protected String attachName;
@@ -103,8 +97,10 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   protected List<GamePiece> contents = new ArrayList<>();
 
-  protected GlobalCommandTarget target = new GlobalCommandTarget(GlobalCommandTarget.GKCtype.COUNTER);
-  protected GlobalCommandTarget clearTarget = new GlobalCommandTarget(GlobalCommandTarget.GKCtype.COUNTER);
+  protected GlobalCommandTarget target =
+      new GlobalCommandTarget(GlobalCommandTarget.GKCtype.COUNTER);
+  protected GlobalCommandTarget clearTarget =
+      new GlobalCommandTarget(GlobalCommandTarget.GKCtype.COUNTER);
   protected KeyCommand[] command;
   protected String attachCommandName;
   protected NamedKeyStroke attachKey;
@@ -152,8 +148,9 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * Return the named attachment list on the supplied GamePiece
+   *
    * @param attachmentName Attachment name to look up
-   * @return               List of attached pieces
+   * @return List of attached pieces
    */
   public static List<GamePiece> getAttachList(GamePiece piece, String attachmentName) {
     GamePiece p = getOutermost(piece);
@@ -191,7 +188,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     target.setGKCtype(GlobalCommandTarget.GKCtype.COUNTER);
     target.setCurPiece(this);
 
-    clearMatchingCommandName = st.nextToken(Resources.getString("Editor.Attachment.clear_matching_command"));
+    clearMatchingCommandName =
+        st.nextToken(Resources.getString("Editor.Attachment.clear_matching_command"));
     clearMatchingKey = st.nextNamedKeyStroke(null);
     clearMatchingFilter.setExpression(st.nextToken(""));
 
@@ -208,26 +206,26 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(attachName)
-      .append(desc)
-      .append(attachCommandName)
-      .append(attachKey)
-      .append(clearAllCommandName)
-      .append(clearAllKey)
-      .append(propertiesFilter)
-      .append(restrictRange)
-      .append(range)
-      .append(fixedRange)
-      .append(rangeProperty)
-      .append(globalAttach.getSelectFromDeckExpression())
-      .append(target.encode())
-      .append(clearMatchingCommandName)
-      .append(clearMatchingKey)
-      .append(clearMatchingFilter)
-      .append(onAttach)
-      .append(onDetach)
-      .append(beforeAttach)
-      .append(allowSelfAttach)
-      .append(autoAttach);
+        .append(desc)
+        .append(attachCommandName)
+        .append(attachKey)
+        .append(clearAllCommandName)
+        .append(clearAllKey)
+        .append(propertiesFilter)
+        .append(restrictRange)
+        .append(range)
+        .append(fixedRange)
+        .append(rangeProperty)
+        .append(globalAttach.getSelectFromDeckExpression())
+        .append(target.encode())
+        .append(clearMatchingCommandName)
+        .append(clearMatchingKey)
+        .append(clearMatchingFilter)
+        .append(onAttach)
+        .append(onDetach)
+        .append(beforeAttach)
+        .append(allowSelfAttach)
+        .append(autoAttach);
     return ID + se.getValue();
   }
 
@@ -239,41 +237,41 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
     if (command == null) {
       myAttachCommand = new KeyCommand(attachCommandName, attachKey, getOutermost(this), this);
-      myClearAllCommand  = new KeyCommand(clearAllCommandName, clearAllKey, getOutermost(this), this);
-      myClearMatchingCommand = new KeyCommand(clearMatchingCommandName, clearMatchingKey, getOutermost(this), this);
+      myClearAllCommand =
+          new KeyCommand(clearAllCommandName, clearAllKey, getOutermost(this), this);
+      myClearMatchingCommand =
+          new KeyCommand(clearMatchingCommandName, clearMatchingKey, getOutermost(this), this);
 
-      final boolean doAttach = (!attachCommandName.isEmpty()) && attachKey != null && !attachKey.isNull();
-      final boolean doClearAll = (!clearAllCommandName.isEmpty()) && clearAllKey != null && !clearAllKey.isNull();
-      final boolean doClearMatching = (!clearMatchingCommandName.isEmpty()) && clearMatchingKey != null && !clearMatchingKey.isNull();
+      final boolean doAttach =
+          (!attachCommandName.isEmpty()) && attachKey != null && !attachKey.isNull();
+      final boolean doClearAll =
+          (!clearAllCommandName.isEmpty()) && clearAllKey != null && !clearAllKey.isNull();
+      final boolean doClearMatching =
+          (!clearMatchingCommandName.isEmpty())
+              && clearMatchingKey != null
+              && !clearMatchingKey.isNull();
 
       if (doAttach) {
         if (doClearAll) {
           if (doClearMatching) {
-            command = new KeyCommand[]{myAttachCommand, myClearMatchingCommand, myClearAllCommand};
+            command = new KeyCommand[] {myAttachCommand, myClearMatchingCommand, myClearAllCommand};
+          } else {
+            command = new KeyCommand[] {myAttachCommand, myClearAllCommand};
           }
-          else {
-            command = new KeyCommand[]{myAttachCommand, myClearAllCommand};
-          }
+        } else if (doClearMatching) {
+          command = new KeyCommand[] {myAttachCommand, myClearMatchingCommand};
+        } else {
+          command = new KeyCommand[] {myAttachCommand};
         }
-        else if (doClearMatching) {
-          command = new KeyCommand[]{myAttachCommand, myClearMatchingCommand};
-        }
-        else {
-          command = new KeyCommand[]{myAttachCommand};
-        }
-      }
-      else if (doClearAll) {
+      } else if (doClearAll) {
         if (doClearMatching) {
-          command = new KeyCommand[]{myClearMatchingCommand, myClearAllCommand};
+          command = new KeyCommand[] {myClearMatchingCommand, myClearAllCommand};
+        } else {
+          command = new KeyCommand[] {myClearAllCommand};
         }
-        else {
-          command = new KeyCommand[]{myClearAllCommand};
-        }
-      }
-      else if (doClearMatching) {
-        command = new KeyCommand[]{myClearMatchingCommand};
-      }
-      else {
+      } else if (doClearMatching) {
+        command = new KeyCommand[] {myClearMatchingCommand};
+      } else {
         command = KeyCommand.NONE;
       }
     }
@@ -297,7 +295,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   }
 
   /**
-   * Runs a search using the provided filter (same as a Global Key Command), and any matching pieces become our attachments (stored in our "contents" list)
+   * Runs a search using the provided filter (same as a Global Key Command), and any matching pieces
+   * become our attachments (stored in our "contents" list)
    *
    * @return Command to replicate action
    */
@@ -309,10 +308,15 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     }
 
     final GamePiece outer = getOutermost(this);
-    globalAttach.setPropertySource(outer); // Doing this here ensures trait is linked into GamePiece before finding source
+    globalAttach.setPropertySource(
+        outer); // Doing this here ensures trait is linked into GamePiece before finding source
 
     // Make piece properties filter
-    final AuditTrail audit = AuditTrail.create(this, propertiesFilter.getExpression(), Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
+    final AuditTrail audit =
+        AuditTrail.create(
+            this,
+            propertiesFilter.getExpression(),
+            Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
     PieceFilter filter = propertiesFilter.getFilter(outer, this, audit);
 
     // Make a range filter if applicable
@@ -322,9 +326,12 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
         final String rangeValue = (String) getOutermost(this).getProperty(rangeProperty);
         try {
           r = Integer.parseInt(rangeValue);
-        }
-        catch (NumberFormatException e) {
-          reportDataError(this, Resources.getString("Error.non_number_error"), "range[" + rangeProperty + "]=" + rangeValue, e); // NON-NLS
+        } catch (NumberFormatException e) {
+          reportDataError(
+              this,
+              Resources.getString("Error.non_number_error"),
+              "range[" + rangeProperty + "]=" + rangeValue,
+              e); // NON-NLS
         }
       }
       filter = new BooleanAndPieceFilter(filter, new RangeFilter(getMap(), getPosition(), r));
@@ -373,10 +380,15 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     clearTarget.fastMatchProperty = false;
     clearTarget.setTargetType(GlobalCommandTarget.Target.CURATTACH);
     clearTarget.setCurPiece(this);
-    globalDetach.setPropertySource(outer); // Doing this here ensures trait is linked into GamePiece before finding source
+    globalDetach.setPropertySource(
+        outer); // Doing this here ensures trait is linked into GamePiece before finding source
 
     // Make piece properties filter
-    final AuditTrail audit = AuditTrail.create(this, clearMatchingFilter.getExpression(), Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
+    final AuditTrail audit =
+        AuditTrail.create(
+            this,
+            clearMatchingFilter.getExpression(),
+            Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
     final PieceFilter filter = clearMatchingFilter.getFilter(outer, this, audit);
 
     // Now apply our filter globally & add any matching pieces as attachments
@@ -391,11 +403,9 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
     if (myAttachCommand.matches(stroke)) {
       return attach();
-    }
-    else if (myClearAllCommand.matches(stroke)) {
+    } else if (myClearAllCommand.matches(stroke)) {
       return clearAll();
-    }
-    else if (myClearMatchingCommand.matches(stroke)) {
+    } else if (myClearMatchingCommand.matches(stroke)) {
       return clearMatching();
     }
 
@@ -422,43 +432,43 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
       final GamePiece piece = gs.getPieceForId(id);
 
       if (piece == null) {
-        // If the piece can't be found, then we are loading a save file and the piece hasn't been loaded yet.
-        // Pass it to the AttachmentManager to handle when the save has finished loading by calling back to
+        // If the piece can't be found, then we are loading a save file and the piece hasn't been
+        // loaded yet.
+        // Pass it to the AttachmentManager to handle when the save has finished loading by calling
+        // back to
         // our resolvePendingAttachment() method.
         am.addPendingAttachment(this, id);
-      }
-      else {
+      } else {
         contents.add(piece);
       }
     }
   }
 
   /**
-   * Auto-attach to a piece
-   * 1. We must be in auto-attach mode
-   * 2. Must not already be attached to the piece.
-   * NOTE: Auto-attach is handled locally by each client, no Commands are generated
+   * Auto-attach to a piece 1. We must be in auto-attach mode 2. Must not already be attached to the
+   * piece. NOTE: Auto-attach is handled locally by each client, no Commands are generated
+   *
    * @param attach Attachment trait within the target piece
    */
   public void autoAttach(Attachment attach) {
     if (isAutoAttach() && attach.getAttachName().equals(getAttachName())) {
       final GamePiece piece = getOutermost(attach);
-      if (! hasTarget(piece)) {
+      if (!hasTarget(piece)) {
         contents.add(piece);
       }
     }
   }
 
   /**
-   * An attachment could not be satisfied during game load. Game Load is now finished
-   * and the Attachment Manager is calling us to retry that attachment.
-   * This does not need to generate any Commands.
+   * An attachment could not be satisfied during game load. Game Load is now finished and the
+   * Attachment Manager is calling us to retry that attachment. This does not need to generate any
+   * Commands.
    *
    * @param target Id of target piece
    */
   public void resolvePendingAtttachment(String target) {
     final GamePiece piece = GameModule.getGameModule().getGameState().getPieceForId(target);
-    if (piece != null && ! hasTarget(piece)) {
+    if (piece != null && !hasTarget(piece)) {
       contents.add(piece);
     }
   }
@@ -473,6 +483,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * Adds a target and returns a command to duplicate the operation on another client
+   *
    * @param p target to add
    * @return Command that adds the target
    */
@@ -497,10 +508,12 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
           if (attachName.equals(targetAttach.attachName)) {
             // Found an attachment w/ the same name
             if (autoAttach || !targetAttach.onAttach.equals(ON_ATTACH_NOTHING)) {
-              // They're either ON_ATTACH_FOLLOW_BACK or ON_ATTACH_ATTACH_ALL, so we probably want at last at an attach-back command
+              // They're either ON_ATTACH_FOLLOW_BACK or ON_ATTACH_ATTACH_ALL, so we probably want
+              // at last at an attach-back command
               c = c.append(targetAttach.makeAddTargetCommand(getOutermost(this)));
 
-              // If they're ON_ATTACH_ATTACH_ALL then they attach to ALL of our previously attached pieces
+              // If they're ON_ATTACH_ATTACH_ALL then they attach to ALL of our previously attached
+              // pieces
               if (autoAttach || targetAttach.onAttach.equals(ON_ATTACH_ATTACH_ALL)) {
                 for (final GamePiece other : getAttachList()) {
                   c = c.append(targetAttach.makeAddTargetCommand(getOutermost(other)));
@@ -518,6 +531,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * Removes a piece from our list of targets
+   *
    * @param p Cargo to remove
    */
   public void removeTarget(GamePiece p) {
@@ -527,7 +541,9 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   }
 
   /**
-   * Removes a piece from our list of targets, and returns a Command to duplicate the changes on another client
+   * Removes a piece from our list of targets, and returns a Command to duplicate the changes on
+   * another client
+   *
    * @param p targetGamePiece to be removed
    * @return Command to remove the piece
    */
@@ -539,7 +555,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
       removeTarget(p);
       c = c.append(ct.getChangeCommand());
 
-      // If our detach condition is ON_DETACH_REMOVE, then remove incoming attachment at the same time
+      // If our detach condition is ON_DETACH_REMOVE, then remove incoming attachment at the same
+      // time
       if (onDetach.equals(ON_DETACH_REMOVE)) {
         GamePiece target = getOutermost(p);
         while (target instanceof Decorator) {
@@ -613,7 +630,6 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     return d;
   }
 
-
   @Override
   public String getBaseDescription() {
     return Resources.getString("Editor.Attachment.trait_description");
@@ -625,7 +641,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   }
 
   /**
-   * @return first piece in our list of attachments that still exists (hasn't been deleted), or null if none
+   * @return first piece in our list of attachments that still exists (hasn't been deleted), or null
+   *     if none
    */
   public GamePiece getPropertyPiece() {
     if (contents.isEmpty()) return null;
@@ -640,14 +657,20 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * Checks if a property reference could be a reference to a property on an attached piece
-   * @param key Property name to be checked if it's an attachment reference (it's a reference if it is attachName_propertyName
-   * @return propertyName for use in reading property from attached piece, if the key referenced a valid attachment property. (null otherwise)
+   *
+   * @param key Property name to be checked if it's an attachment reference (it's a reference if it
+   *     is attachName_propertyName
+   * @return propertyName for use in reading property from attached piece, if the key referenced a
+   *     valid attachment property. (null otherwise)
    */
   public String translatePropertyName(Object key) {
     if (!attachName.isEmpty() && (key instanceof String) && !contents.isEmpty()) {
-      // If property name starts with our non-blank name plus an underscore, use the rest of the string as a property key for our first *target* piece instead.
-      final String k = (String)key;
-      if ((k.length() > attachName.length() + 1) && k.startsWith(attachName) && (k.charAt(attachName.length()) == '_')) {
+      // If property name starts with our non-blank name plus an underscore, use the rest of the
+      // string as a property key for our first *target* piece instead.
+      final String k = (String) key;
+      if ((k.length() > attachName.length() + 1)
+          && k.startsWith(attachName)
+          && (k.charAt(attachName.length()) == '_')) {
         return k.substring(attachName.length() + 1);
       }
     }
@@ -664,7 +687,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   }
 
   /**
-   * @return number of attached pieces, not counting any that have since been deleted (from the game).
+   * @return number of attached pieces, not counting any that have since been deleted (from the
+   *     game).
    */
   public int getAttachCount() {
     int count = 0;
@@ -694,7 +718,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   }
 
   /**
-   * @return A list of attached pieces, not counting any that have since been deleted (from the game)
+   * @return A list of attached pieces, not counting any that have since been deleted (from the
+   *     game)
    */
   public List<GamePiece> getAttachList() {
     final List<GamePiece> attachList = new ArrayList<>();
@@ -705,19 +730,15 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     return attachList;
   }
 
-
   @Override
   public Object getProperty(Object key) {
     if (ATTACH_NAME.equals(key)) {
       return attachName;
-    }
-    else if (ATTACH_LIST.equals(key)) {
+    } else if (ATTACH_LIST.equals(key)) {
       return getAttachList();
-    }
-    else if (attachCountName.equals(key) || ATTACH_COUNT.equals(key)) {
+    } else if (attachCountName.equals(key) || ATTACH_COUNT.equals(key)) {
       return String.valueOf(getAttachCount());
-    }
-    else {
+    } else {
       final String attachProp = translatePropertyName(key);
       if (attachProp != null) {
         final GamePiece propPiece = getPropertyPiece();
@@ -734,11 +755,9 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   public Object getLocalizedProperty(Object key) {
     if (ATTACH_NAME.equals(key)) {
       return attachName;
-    }
-    else if (attachCountName.equals(key) || ATTACH_COUNT.equals(key)) {
+    } else if (attachCountName.equals(key) || ATTACH_COUNT.equals(key)) {
       return String.valueOf(getAttachCount());
-    }
-    else  {
+    } else {
       final String attachProp = translatePropertyName(key);
       if (attachProp != null) {
         final GamePiece propPiece = getPropertyPiece();
@@ -754,7 +773,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   @Override
   public void setProperty(Object key, Object value) {
     if (ATTACH_NAME.equals(key)) {
-      setAttachName((String)value);
+      setAttachName((String) value);
       return;
     }
     super.setProperty(key, value);
@@ -763,7 +782,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Attachment)) return false;
+    if (!(o instanceof Attachment)) return false;
     final Attachment c = (Attachment) o;
     if (!Objects.equals(attachName, c.attachName)) return false;
     if (!Objects.equals(desc, c.desc)) return false;
@@ -771,16 +790,20 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     if (!Objects.equals(attachKey, c.attachKey)) return false;
     if (!Objects.equals(clearAllCommandName, c.clearAllCommandName)) return false;
     if (!Objects.equals(clearAllKey, c.clearAllKey)) return false;
-    if (!Objects.equals(propertiesFilter.getExpression(), c.propertiesFilter.getExpression())) return false;
+    if (!Objects.equals(propertiesFilter.getExpression(), c.propertiesFilter.getExpression()))
+      return false;
     if (!Objects.equals(restrictRange, c.restrictRange)) return false;
     if (!Objects.equals(range, c.range)) return false;
     if (!Objects.equals(fixedRange, c.fixedRange)) return false;
     if (!Objects.equals(rangeProperty, c.rangeProperty)) return false;
     if (!Objects.equals(target, c.target)) return false;
-    if (!Objects.equals(globalAttach.getSelectFromDeckExpression(), c.globalAttach.getSelectFromDeckExpression())) return false;
+    if (!Objects.equals(
+        globalAttach.getSelectFromDeckExpression(), c.globalAttach.getSelectFromDeckExpression()))
+      return false;
     if (!Objects.equals(clearMatchingCommandName, c.clearMatchingCommandName)) return false;
     if (!Objects.equals(clearMatchingKey, c.clearMatchingKey)) return false;
-    if (!Objects.equals(clearMatchingFilter.getExpression(), c.clearMatchingFilter.getExpression())) return false;
+    if (!Objects.equals(clearMatchingFilter.getExpression(), c.clearMatchingFilter.getExpression()))
+      return false;
     if (!Objects.equals(onAttach, c.onAttach)) return false;
     if (!Objects.equals(onDetach, c.onDetach)) return false;
     if (!Objects.equals(beforeAttach, c.beforeAttach)) return false;
@@ -793,9 +816,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     return HelpFile.getReferenceManualPage("Attachment.html"); // NON-NLS
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -853,7 +874,6 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
     protected Attachment attachment;
 
-
     public Ed(Attachment p) {
       attachment = p;
       traitPanel = new TraitConfigPanel();
@@ -872,7 +892,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
       allowSelfAttachInput = new BooleanConfigurer(p.allowSelfAttach);
       traitPanel.add("Editor.Attachment.allow_self_attach", allowSelfAttachInput);
 
-      beforeAttachInput = new TranslatingStringEnumConfigurer(BEFORE_ATTACH_OPTIONS, BEFORE_ATTACH_KEYS);
+      beforeAttachInput =
+          new TranslatingStringEnumConfigurer(BEFORE_ATTACH_OPTIONS, BEFORE_ATTACH_KEYS);
       beforeAttachInput.setValue(BEFORE_ATTACH_CLEAR);
       for (final String option : BEFORE_ATTACH_OPTIONS) {
         if (option.equals(p.beforeAttach)) {
@@ -894,7 +915,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
       attachCommandNameInput = new StringConfigurer(p.attachCommandName);
       attachCommandNameInput.setHintKey("Editor.menu_command_hint");
-      attachCommandNameLabel = new JLabel(Resources.getString("Editor.Attachment.attach_menu_command"));
+      attachCommandNameLabel =
+          new JLabel(Resources.getString("Editor.Attachment.attach_menu_command"));
       traitPanel.add(attachCommandNameLabel, attachCommandNameInput);
 
       attachKeyInput = new NamedHotKeyConfigurer(p.attachKey);
@@ -906,7 +928,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
       traitPanel.add(targetLabel, targetConfig);
 
       propertyMatch = new PropertyExpressionConfigurer(p.propertiesFilter, p);
-      propertyLabel = new JLabel(Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
+      propertyLabel =
+          new JLabel(Resources.getString("Editor.GlobalKeyCommand.matching_properties"));
       traitPanel.add(propertyLabel, propertyMatch);
 
       deckPolicy = new MassKeyCommand.DeckPolicyConfig(false, p);
@@ -928,7 +951,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
       rangeProperty = new StringConfigurer(p.rangeProperty);
       rangeProperty.setHintKey("Editor.GlobalKeyCommand.range_property_hint");
-      rangePropertyLabel = new JLabel(Resources.getString("Editor.GlobalKeyCommand.range_property"));
+      rangePropertyLabel =
+          new JLabel(Resources.getString("Editor.GlobalKeyCommand.range_property"));
       traitPanel.add(rangePropertyLabel, rangeProperty);
 
       onDetachInput = new TranslatingStringEnumConfigurer(ON_DETACH_OPTIONS, ON_DETACH_KEYS);
@@ -943,7 +967,8 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
       clearAllCommandNameInput = new StringConfigurer(p.clearAllCommandName);
       clearAllCommandNameInput.setHintKey("Editor.menu_command_hint");
-      clearAllCommandNameLabel = new JLabel(Resources.getString("Editor.Attachment.clear_all_menu_command"));
+      clearAllCommandNameLabel =
+          new JLabel(Resources.getString("Editor.Attachment.clear_all_menu_command"));
       traitPanel.add(clearAllCommandNameLabel, clearAllCommandNameInput);
 
       clearAllKeyInput = new NamedHotKeyConfigurer(p.clearAllKey);
@@ -952,63 +977,66 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
       clearMatchingCommandNameInput = new StringConfigurer(p.clearMatchingCommandName);
       clearMatchingCommandNameInput.setHintKey("Editor.menu_command_hint");
-      clearMatchingCommandNameLabel = new JLabel(Resources.getString("Editor.Attachment.clear_matching_menu_command"));
+      clearMatchingCommandNameLabel =
+          new JLabel(Resources.getString("Editor.Attachment.clear_matching_menu_command"));
       traitPanel.add(clearMatchingCommandNameLabel, clearMatchingCommandNameInput);
 
       clearMatchingKeyInput = new NamedHotKeyConfigurer(p.clearMatchingKey);
-      clearMatchingKeyLabel = new JLabel(Resources.getString("Editor.Attachment.clear_matching_key_command"));
+      clearMatchingKeyLabel =
+          new JLabel(Resources.getString("Editor.Attachment.clear_matching_key_command"));
       traitPanel.add(clearMatchingKeyLabel, clearMatchingKeyInput);
 
       clearMatchingMatch = new PropertyExpressionConfigurer(p.clearMatchingFilter, p);
-      clearMatchingMatchLabel = new JLabel(Resources.getString("Editor.Attachment.clear_matching_properties"));
+      clearMatchingMatchLabel =
+          new JLabel(Resources.getString("Editor.Attachment.clear_matching_properties"));
       traitPanel.add(clearMatchingMatchLabel, clearMatchingMatch);
 
-      final PropertyChangeListener pl = evt -> {
+      final PropertyChangeListener pl =
+          evt -> {
+            final boolean isAuto = Boolean.TRUE.equals(autoAttachInput.getValue());
+            final boolean isRange = Boolean.TRUE.equals(restrictRange.getValue());
+            final boolean isFixed = Boolean.TRUE.equals(fixedRange.getValue());
 
-        final boolean isAuto = Boolean.TRUE.equals(autoAttachInput.getValue());
-        final boolean isRange = Boolean.TRUE.equals(restrictRange.getValue());
-        final boolean isFixed = Boolean.TRUE.equals(fixedRange.getValue());
+            range.getControls().setVisible(isRange && isFixed && !isAuto);
+            rangeLabel.setVisible(isRange && isFixed && !isAuto);
+            fixedRange.getControls().setVisible(isRange && !isAuto);
+            fixedRangeLabel.setVisible(isRange && !isAuto);
+            rangeProperty.getControls().setVisible(isRange && !isFixed && !isAuto);
+            rangePropertyLabel.setVisible(isRange && !isFixed && !isAuto);
 
-        range.getControls().setVisible(isRange && isFixed && !isAuto);
-        rangeLabel.setVisible(isRange && isFixed && !isAuto);
-        fixedRange.getControls().setVisible(isRange && !isAuto);
-        fixedRangeLabel.setVisible(isRange && !isAuto);
-        rangeProperty.getControls().setVisible(isRange && !isFixed && !isAuto);
-        rangePropertyLabel.setVisible(isRange && !isFixed && !isAuto);
+            beforeAttachInput.getControls().setVisible(!isAuto);
+            onAttachInput.getControls().setVisible(!isAuto);
+            attachCommandNameInput.getControls().setVisible(!isAuto);
+            attachKeyInput.getControls().setVisible(!isAuto);
+            targetConfig.getControls().setVisible(!isAuto);
+            propertyMatch.getControls().setVisible(!isAuto);
+            deckPolicy.getControls().setVisible(!isAuto);
+            restrictRange.getControls().setVisible(!isAuto);
+            onDetachInput.getControls().setVisible(!isAuto);
+            clearAllCommandNameInput.getControls().setVisible(!isAuto);
+            clearAllKeyInput.getControls().setVisible(!isAuto);
+            clearMatchingCommandNameInput.getControls().setVisible(!isAuto);
+            clearMatchingKeyInput.getControls().setVisible(!isAuto);
+            clearMatchingMatch.getControls().setVisible(!isAuto);
 
-        beforeAttachInput.getControls().setVisible(!isAuto);
-        onAttachInput.getControls().setVisible(!isAuto);
-        attachCommandNameInput.getControls().setVisible(!isAuto);
-        attachKeyInput.getControls().setVisible(!isAuto);
-        targetConfig.getControls().setVisible(!isAuto);
-        propertyMatch.getControls().setVisible(!isAuto);
-        deckPolicy.getControls().setVisible(!isAuto);
-        restrictRange.getControls().setVisible(!isAuto);
-        onDetachInput.getControls().setVisible(!isAuto);
-        clearAllCommandNameInput.getControls().setVisible(!isAuto);
-        clearAllKeyInput.getControls().setVisible(!isAuto);
-        clearMatchingCommandNameInput.getControls().setVisible(!isAuto);
-        clearMatchingKeyInput.getControls().setVisible(!isAuto);
-        clearMatchingMatch.getControls().setVisible(!isAuto);
+            beforeAttachLabel.setVisible(!isAuto);
+            onAttachLabel.setVisible(!isAuto);
+            attachCommandNameLabel.setVisible(!isAuto);
+            attachKeyLabel.setVisible(!isAuto);
+            targetLabel.setVisible(!isAuto);
+            propertyLabel.setVisible(!isAuto);
+            deckLabel.setVisible(!isAuto);
+            restrictLabel.setVisible(!isAuto);
+            onDetachLabel.setVisible(!isAuto);
+            clearAllCommandNameLabel.setVisible(!isAuto);
+            clearAllKeyLabel.setVisible(!isAuto);
+            clearMatchingCommandNameLabel.setVisible(!isAuto);
+            clearMatchingKeyLabel.setVisible(!isAuto);
+            clearMatchingMatchLabel.setVisible(!isAuto);
 
-        beforeAttachLabel.setVisible(!isAuto);
-        onAttachLabel.setVisible(!isAuto);
-        attachCommandNameLabel.setVisible(!isAuto);
-        attachKeyLabel.setVisible(!isAuto);
-        targetLabel.setVisible(!isAuto);
-        propertyLabel.setVisible(!isAuto);
-        deckLabel.setVisible(!isAuto);
-        restrictLabel.setVisible(!isAuto);
-        onDetachLabel.setVisible(!isAuto);
-        clearAllCommandNameLabel.setVisible(!isAuto);
-        clearAllKeyLabel.setVisible(!isAuto);
-        clearMatchingCommandNameLabel.setVisible(!isAuto);
-        clearMatchingKeyLabel.setVisible(!isAuto);
-        clearMatchingMatchLabel.setVisible(!isAuto);
-
-        repack(range);
-        repack(autoAttachInput);
-      };
+            repack(range);
+            repack(autoAttachInput);
+          };
 
       autoAttachInput.addPropertyChangeListener(pl);
       restrictRange.addPropertyChangeListener(pl);
@@ -1026,26 +1054,26 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(attachNameInput.getValueString())
-        .append(descInput.getValueString())
-        .append(attachCommandNameInput.getValueString())
-        .append(attachKeyInput.getValueString())
-        .append(clearAllCommandNameInput.getValueString())
-        .append(clearAllKeyInput.getValueString())
-        .append(propertyMatch.getValueString())
-        .append(restrictRange.getValueString())
-        .append(range.getValueString())
-        .append(fixedRange.getValueString())
-        .append(rangeProperty.getValueString())
-        .append(deckPolicy.getValueString())
-        .append(targetConfig.getValueString())
-        .append(clearMatchingCommandNameInput.getValueString())
-        .append(clearMatchingKeyInput.getValueString())
-        .append(clearMatchingMatch.getValueString())
-        .append(onAttachInput.getValueString())
-        .append(onDetachInput.getValueString())
-        .append(beforeAttachInput.getValueString())
-        .append(allowSelfAttachInput.getValueString())
-        .append(autoAttachInput.getValueString());
+          .append(descInput.getValueString())
+          .append(attachCommandNameInput.getValueString())
+          .append(attachKeyInput.getValueString())
+          .append(clearAllCommandNameInput.getValueString())
+          .append(clearAllKeyInput.getValueString())
+          .append(propertyMatch.getValueString())
+          .append(restrictRange.getValueString())
+          .append(range.getValueString())
+          .append(fixedRange.getValueString())
+          .append(rangeProperty.getValueString())
+          .append(deckPolicy.getValueString())
+          .append(targetConfig.getValueString())
+          .append(clearMatchingCommandNameInput.getValueString())
+          .append(clearMatchingKeyInput.getValueString())
+          .append(clearMatchingMatch.getValueString())
+          .append(onAttachInput.getValueString())
+          .append(onDetachInput.getValueString())
+          .append(beforeAttachInput.getValueString())
+          .append(allowSelfAttachInput.getValueString())
+          .append(autoAttachInput.getValueString());
       return ID + se.getValue();
     }
 
@@ -1057,6 +1085,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of the Decorator's string/expression fields if any (for search)
    */
   @Override
@@ -1069,7 +1098,9 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * {@link SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Decorator, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Decorator, if any (for
+   *     search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -1078,6 +1109,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Decorator, if any (for search)
    */
   @Override
@@ -1087,6 +1119,7 @@ public class Attachment extends Decorator implements TranslatablePiece, Recursio
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Decorator, if any (for search)
    */
   @Override

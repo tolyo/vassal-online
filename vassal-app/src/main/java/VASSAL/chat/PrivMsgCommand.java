@@ -17,17 +17,15 @@
  */
 package VASSAL.chat;
 
+import VASSAL.command.Command;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
-
 import javax.swing.SwingUtilities;
 
-import VASSAL.command.Command;
-
 /**
- * A Command that encapsulates a private chat message from another
- * {@link VASSAL.chat.SimplePlayer} */
+ * A Command that encapsulates a private chat message from another {@link VASSAL.chat.SimplePlayer}
+ */
 public class PrivMsgCommand extends Command {
   private final PrivateChatManager mgr;
   private final String msg;
@@ -47,15 +45,15 @@ public class PrivMsgCommand extends Command {
     }
 
     final Window f = SwingUtilities.getWindowAncestor(chat);
-    f.setAutoRequestFocus(false); //BR// Don't grab focus whenever we receive a message from somebody else (ugh)
+    f.setAutoRequestFocus(
+        false); // BR// Don't grab focus whenever we receive a message from somebody else (ugh)
     if (!f.isVisible()) {
       f.setVisible(true);
-      final Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                                        .getFocusOwner();
+      final Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
       if (c == null || !SwingUtilities.isDescendingFrom(c, f)) {
         java.awt.Toolkit.getDefaultToolkit().beep();
 
-        //BR// Don't grab focus whenever we receive a message from somebody else (ugh)
+        // BR// Don't grab focus whenever we receive a message from somebody else (ugh)
         /*
         final int j = chat.getComponentCount();
         for (int i = 0; i < j; ++i) {
@@ -66,8 +64,7 @@ public class PrivMsgCommand extends Command {
         }
         */
       }
-    }
-    else {
+    } else {
       f.toFront();
     }
     chat.show(msg);
@@ -78,9 +75,7 @@ public class PrivMsgCommand extends Command {
     return null;
   }
 
-  /**
-   * Return true, as this command should not be logged
-   */
+  /** Return true, as this command should not be logged */
   @Override
   public boolean isLoggable() {
     return false;

@@ -16,18 +16,14 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.chat.HttpRequestWrapper;
+import VASSAL.chat.SimpleStatus;
+import VASSAL.tools.PropertiesEncoder;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
-import VASSAL.chat.HttpRequestWrapper;
-import VASSAL.chat.SimpleStatus;
-import VASSAL.tools.PropertiesEncoder;
-
-/**
- * Copyright (c) 2003 by Rodney Kinney.  All rights reserved.
- * Date: Jun 7, 2003
- */
+/** Copyright (c) 2003 by Rodney Kinney. All rights reserved. Date: Jun 7, 2003 */
 public class StatusReporter implements Runnable {
   private final HttpRequestWrapper reportStatus;
   private String lastReportedContents;
@@ -51,14 +47,16 @@ public class StatusReporter implements Runnable {
     for (final Node pl : players) {
       final Node mod = server.getModule(pl);
       try {
-        final String name = new PropertiesEncoder(pl.getInfo()).getProperties().getProperty(SimpleStatus.NAME);
+        final String name =
+            new PropertiesEncoder(pl.getInfo()).getProperties().getProperty(SimpleStatus.NAME);
         if (name != null) {
-          buffer.append(mod.getId())
-                .append('\t')
-                .append(pl.getParent().getId())
-                .append('\t')
-                .append(name)
-                .append('\n');
+          buffer
+              .append(mod.getId())
+              .append('\t')
+              .append(pl.getParent().getId())
+              .append('\t')
+              .append(name)
+              .append('\n');
         }
       }
       // FIXME: review error message
@@ -72,12 +70,11 @@ public class StatusReporter implements Runnable {
   }
 
   private synchronized void sendContents() {
-    if (currentContents != null
-        && !currentContents.equals(lastReportedContents)) {
+    if (currentContents != null && !currentContents.equals(lastReportedContents)) {
       try {
         final Properties props = new Properties();
-        props.put("STATUS", currentContents); //$NON-NLS-1$
-        reportStatus.doPost("updateConnections", props); //$NON-NLS-1$
+        props.put("STATUS", currentContents); // $NON-NLS-1$
+        reportStatus.doPost("updateConnections", props); // $NON-NLS-1$
         sleepInterval = MIN_SLEEP;
       }
       // FIXME: review error message
@@ -85,7 +82,7 @@ public class StatusReporter implements Runnable {
         sleepInterval = Math.min(2 * sleepInterval, MAX_SLEEP);
       }
       lastReportedContents = currentContents;
-      System.err.println("----" + new Date()); //$NON-NLS-1$
+      System.err.println("----" + new Date()); // $NON-NLS-1$
       System.err.println(currentContents);
     }
   }

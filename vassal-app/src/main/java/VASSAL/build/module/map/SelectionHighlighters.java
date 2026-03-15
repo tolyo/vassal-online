@@ -1,8 +1,5 @@
 package VASSAL.build.module.map;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.Map;
@@ -10,6 +7,8 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.counters.ColoredBorder;
 import VASSAL.i18n.Resources;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * A Container for Selection Highlighters
@@ -19,7 +18,7 @@ public class SelectionHighlighters extends AbstractConfigurable {
   protected List<SelectionHighlighter> highlighters = new ArrayList<>();
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.AddedSelectionHighlights.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.AddedSelectionHighlights.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -38,8 +37,7 @@ public class SelectionHighlighters extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public String getAttributeValueString(String key) {
@@ -53,7 +51,7 @@ public class SelectionHighlighters extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{SelectionHighlighter.class};
+    return new Class<?>[] {SelectionHighlighter.class};
   }
 
   @Override

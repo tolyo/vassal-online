@@ -32,7 +32,7 @@ public class Compressor {
   public static byte[] compress(byte[] in) throws IOException {
     final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
     try (ZipOutputStream zipOut = new ZipOutputStream(byteOut)) {
-      zipOut.putNextEntry(new ZipEntry("Dummy")); //$NON-NLS-1$
+      zipOut.putNextEntry(new ZipEntry("Dummy")); // $NON-NLS-1$
       zipOut.write(in);
     }
     return byteOut.toByteArray();

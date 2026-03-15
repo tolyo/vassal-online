@@ -44,5 +44,4 @@ public class ExpressionException extends AuditableException {
   public String getError() {
     return error;
   }
-
 }

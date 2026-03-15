@@ -21,7 +21,11 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SwingUtils;
-
+import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -33,16 +37,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
-import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 
-/**
- * UI controls for posting and retrieving messages from a
- * message board.
- */
+/** UI controls for posting and retrieving messages from a message board. */
 public class MessageBoardControls {
   private MessageBoard server;
   private String serverName;
@@ -65,50 +61,47 @@ public class MessageBoardControls {
   }
 
   public void showMessages(Message[] m) {
-    viewer.setMessages(
-      Collections.enumeration(
-        Collections.unmodifiableList((Arrays.asList(m)))));
+    viewer.setMessages(Collections.enumeration(Collections.unmodifiableList((Arrays.asList(m)))));
   }
 
   private void initComponents() {
     viewer = new MessageViewer();
 
-    msgFrame = new JFrame(Resources.getString("Chat.message_board"));  //$NON-NLS-1$
+    msgFrame = new JFrame(Resources.getString("Chat.message_board")); // $NON-NLS-1$
     msgFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-    msgFrame.setLayout(
-      new BoxLayout(msgFrame.getContentPane(), BoxLayout.Y_AXIS));
+    msgFrame.setLayout(new BoxLayout(msgFrame.getContentPane(), BoxLayout.Y_AXIS));
     msgFrame.setJMenuBar(MenuManager.getInstance().getMenuBarFor(msgFrame));
     msgFrame.add(viewer);
 
     final Box box = Box.createHorizontalBox();
-    final JButton refresh = new JButton(
-      Resources.getString("Chat.refresh"));  //$NON-NLS-1$
-    refresh.addActionListener(evt -> {
-      refresh.setEnabled(false);
+    final JButton refresh = new JButton(Resources.getString("Chat.refresh")); // $NON-NLS-1$
+    refresh.addActionListener(
+        evt -> {
+          refresh.setEnabled(false);
 
-      new SwingWorker<Message[], Void>() {
-        @Override
-        protected Message[] doInBackground() {
-          return server.getMessages();
-        }
+          new SwingWorker<Message[], Void>() {
+            @Override
+            protected Message[] doInBackground() {
+              return server.getMessages();
+            }
 
-        @Override
-        protected void done() {
-          try {
-            showMessages(get());
-          }
-          catch (final InterruptedException | ExecutionException e) {
-            ErrorDialog.bug(e);
-          }
+            @Override
+            protected void done() {
+              try {
+                showMessages(get());
+              } catch (final InterruptedException | ExecutionException e) {
+                ErrorDialog.bug(e);
+              }
 
-          msgFrame.setTitle(serverName != null ?
-            Resources.getString("Chat.message_board_title", serverName) :
-            Resources.getString("Chat.message_board"));   //$NON-NLS-1$
+              msgFrame.setTitle(
+                  serverName != null
+                      ? Resources.getString("Chat.message_board_title", serverName)
+                      : Resources.getString("Chat.message_board")); // $NON-NLS-1$
 
-          refresh.setEnabled(true);
-        }
-      }.execute();
-    });
+              refresh.setEnabled(true);
+            }
+          }.execute();
+        });
     box.add(refresh);
 
     final JButton b = new JButton(Resources.getString(Resources.CLOSE));
@@ -118,66 +111,70 @@ public class MessageBoardControls {
 
     msgComposer = new Comp();
 
-    checkMessagesAction = new AbstractAction(
-                  Resources.getString("Chat.check_messages")) {  //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        setEnabled(false);
-
-        new SwingWorker<Message[], Void>() {
-          @Override
-          protected Message[] doInBackground() {
-            return server.getMessages();
-          }
+    checkMessagesAction =
+        new AbstractAction(Resources.getString("Chat.check_messages")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
           @Override
-          protected void done() {
-            try {
-              showMessages(get());
-            }
-            catch (final InterruptedException | ExecutionException e) {
-              ErrorDialog.bug(e);
-            }
+          public void actionPerformed(ActionEvent evt) {
+            setEnabled(false);
 
-            msgFrame.setTitle(serverName != null ?
-              Resources.getString("Chat.message_board_title", serverName) :
-              Resources.getString("Chat.message_board"));   //$NON-NLS-1$
+            new SwingWorker<Message[], Void>() {
+              @Override
+              protected Message[] doInBackground() {
+                return server.getMessages();
+              }
 
-            msgFrame.setVisible(true);
-            setEnabled(true);
+              @Override
+              protected void done() {
+                try {
+                  showMessages(get());
+                } catch (final InterruptedException | ExecutionException e) {
+                  ErrorDialog.bug(e);
+                }
+
+                msgFrame.setTitle(
+                    serverName != null
+                        ? Resources.getString("Chat.message_board_title", serverName)
+                        : Resources.getString("Chat.message_board")); // $NON-NLS-1$
+
+                msgFrame.setVisible(true);
+                setEnabled(true);
+              }
+            }.execute();
           }
-        }.execute();
-      }
-    };
+        };
 
-    URL imageURL = getClass().getResource("/images/getMessages.gif");  //$NON-NLS-1$
+    URL imageURL = getClass().getResource("/images/getMessages.gif"); // $NON-NLS-1$
     if (imageURL != null) {
-      checkMessagesAction.putValue(Action.SHORT_DESCRIPTION, checkMessagesAction.getValue(Action.NAME));
-      checkMessagesAction.putValue(Action.NAME, "");  //$NON-NLS-1$
+      checkMessagesAction.putValue(
+          Action.SHORT_DESCRIPTION, checkMessagesAction.getValue(Action.NAME));
+      checkMessagesAction.putValue(Action.NAME, ""); // $NON-NLS-1$
       checkMessagesAction.putValue(Action.SMALL_ICON, new ImageIcon(imageURL));
     }
 
-    postMessageAction = new AbstractAction(
-                      Resources.getString("Chat.post_message")) {  //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
+    postMessageAction =
+        new AbstractAction(Resources.getString("Chat.post_message")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        msgComposer.setVisible(true);
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent evt) {
+            msgComposer.setVisible(true);
+          }
+        };
 
-    imageURL = getClass().getResource("/images/postMessage.gif");  //$NON-NLS-1$
+    imageURL = getClass().getResource("/images/postMessage.gif"); // $NON-NLS-1$
     if (imageURL != null) {
       postMessageAction.putValue(Action.SHORT_DESCRIPTION, postMessageAction.getValue(Action.NAME));
-      postMessageAction.putValue(Action.NAME, "");  //$NON-NLS-1$
+      postMessageAction.putValue(Action.NAME, ""); // $NON-NLS-1$
       postMessageAction.putValue(Action.SMALL_ICON, new ImageIcon(imageURL));
     }
 
     msgFrame.pack();
-    msgFrame.setLocation(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2 - msgFrame.getSize().width / 2, 0);
+    msgFrame.setLocation(
+        java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2
+            - msgFrame.getSize().width / 2,
+        0);
   }
 
   public Action getCheckMessagesAction() {
@@ -192,7 +189,7 @@ public class MessageBoardControls {
     private static final long serialVersionUID = 1L;
 
     private Comp() {
-      super(Resources.getString("Chat.message_composer"));  //$NON-NLS-1$
+      super(Resources.getString("Chat.message_composer")); // $NON-NLS-1$
       setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
       setDefaultCloseOperation(HIDE_ON_CLOSE);
       setJMenuBar(MenuManager.getInstance().getMenuBarFor(this));
@@ -200,35 +197,36 @@ public class MessageBoardControls {
       final JTextArea msgArea = new JTextArea(15, 60);
       final Box b = Box.createHorizontalBox();
 
-      final JButton okButton =
-        new JButton(Resources.getString("Chat.send"));  //$NON-NLS-1$
-      okButton.addActionListener(evt -> {
-        okButton.setEnabled(false);
-        msgArea.setEnabled(false);
+      final JButton okButton = new JButton(Resources.getString("Chat.send")); // $NON-NLS-1$
+      okButton.addActionListener(
+          evt -> {
+            okButton.setEnabled(false);
+            msgArea.setEnabled(false);
 
-        new SwingWorker<Void, Void>() {
-          @Override
-          protected Void doInBackground() {
-            server.postMessage(msgArea.getText());
-            return null;
-          }
+            new SwingWorker<Void, Void>() {
+              @Override
+              protected Void doInBackground() {
+                server.postMessage(msgArea.getText());
+                return null;
+              }
 
-          @Override
-          protected void done() {
-            setVisible(false);
-            okButton.setEnabled(true);
-            msgArea.setText("");  //$NON-NLS-1$
-            msgArea.setEnabled(true);
-          }
-        }.execute();
-      });
+              @Override
+              protected void done() {
+                setVisible(false);
+                okButton.setEnabled(true);
+                msgArea.setText(""); // $NON-NLS-1$
+                msgArea.setEnabled(true);
+              }
+            }.execute();
+          });
 
-// FIXME: Cancel does not cancel sending a message!
+      // FIXME: Cancel does not cancel sending a message!
       final JButton cancelButton = new JButton(Resources.getString(Resources.CANCEL));
-      cancelButton.addActionListener(evt -> {
-        setVisible(false);
-        msgArea.setText("");  //$NON-NLS-1$
-      });
+      cancelButton.addActionListener(
+          evt -> {
+            setVisible(false);
+            msgArea.setText(""); // $NON-NLS-1$
+          });
 
       b.add(okButton);
       b.add(cancelButton);
@@ -239,7 +237,8 @@ public class MessageBoardControls {
       SwingUtils.setDefaultButtons(getRootPane(), okButton, cancelButton);
 
       pack();
-      setLocation(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2 - getSize().width / 2, 0);
+      setLocation(
+          java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2 - getSize().width / 2, 0);
     }
   }
 }

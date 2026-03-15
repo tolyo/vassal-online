@@ -17,58 +17,52 @@
  */
 package VASSAL.build;
 
+import VASSAL.configure.AutoConfigurer;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Localization;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-import VASSAL.configure.AutoConfigurer;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.i18n.Localization;
-
 /**
- * A class that implements AutoConfigurable can use the {@link AutoConfigurer}
- * class to automatically build a property editor.
+ * A class that implements AutoConfigurable can use the {@link AutoConfigurer} class to
+ * automatically build a property editor.
  */
 public interface AutoConfigurable extends Configurable {
   /**
-   * @return an array of Strings giving all attributes of this Buildable
-   * component that will be written to/read from an XML element
+   * @return an array of Strings giving all attributes of this Buildable component that will be
+   *     written to/read from an XML element
    */
   String[] getAttributeNames();
 
   /**
-   * Called by the {@link #build} method, where <code>value</code> is the
-   * String value read by the XML attribute.
-   * Can also be called with Object value to set the attribute.
+   * Called by the {@link #build} method, where <code>value</code> is the String value read by the
+   * XML attribute. Can also be called with Object value to set the attribute.
    */
   @Override
   void setAttribute(String key, Object value);
 
-  /**
-   * Called by the {@link #getBuildElement} method to write the
-   * attributes into an XML element
-   */
+  /** Called by the {@link #getBuildElement} method to write the attributes into an XML element */
   @Override
   String getAttributeValueString(String key);
 
   /**
-   * Return an array of Strings describing the attributes
-   * of this object.  These strings are used as prompts in
-   * the Properties window for this object.
+   * Return an array of Strings describing the attributes of this object. These strings are used as
+   * prompts in the Properties window for this object.
    */
   String[] getAttributeDescriptions();
 
   /**
-   * Return the Class for the attributes of this object.
-   * Valid classes are:  String, Integer, Double, Boolean, Image,
-   * File, Color, and KeyStroke
+   * Return the Class for the attributes of this object. Valid classes are: String, Integer, Double,
+   * Boolean, Image, File, Color, and KeyStroke
    */
   Class<?>[] getAttributeTypes();
 
   /**
-   * Because attributes are not always applicable in all cases, this method returns an interface
-   * to determine when the controls for specifying the named attribute should be visible.
+   * Because attributes are not always applicable in all cases, this method returns an interface to
+   * determine when the controls for specifying the named attribute should be visible.
+   *
    * @param name
    * @return null if the attribute controls should always be visible;
    */
@@ -81,7 +75,8 @@ public interface AutoConfigurable extends Configurable {
         for (int i = 0; i < n.getLength(); ++i) {
           final Attr att = (Attr) n.item(i);
           parent.setAttribute(att.getName(), att.getValue());
-          Localization.getInstance().saveTranslatableAttribute(parent, att.getName(), att.getValue());
+          Localization.getInstance()
+              .saveTranslatableAttribute(parent, att.getName(), att.getValue());
         }
       }
     }

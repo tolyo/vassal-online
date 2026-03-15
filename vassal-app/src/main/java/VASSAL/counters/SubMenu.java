@@ -25,7 +25,6 @@ import VASSAL.i18n.PieceI18nData;
 import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.KeyStroke;
 
 /** A trait that groups menu items of other traits into a sub-menu */
@@ -43,7 +41,8 @@ public class SubMenu extends Decorator implements TranslatablePiece {
   private String subMenu;
   private KeyCommandSubMenu keyCommandSubMenu;
   private final KeyCommand[] keyCommands = new KeyCommand[1];
-  private static final String DEFAULT_MENU_NAME = Resources.getString("Editor.SubMenu.default_menu_name");
+  private static final String DEFAULT_MENU_NAME =
+      Resources.getString("Editor.SubMenu.default_menu_name");
   private String description = "";
 
   public SubMenu() {
@@ -57,7 +56,10 @@ public class SubMenu extends Decorator implements TranslatablePiece {
 
   @Override
   public String getDescription() {
-    return buildDescription("Editor.SubMenu.trait_description", DEFAULT_MENU_NAME.equals(subMenu) ? "" : subMenu, description);
+    return buildDescription(
+        "Editor.SubMenu.trait_description",
+        DEFAULT_MENU_NAME.equals(subMenu) ? "" : subMenu,
+        description);
   }
 
   @Override
@@ -105,8 +107,8 @@ public class SubMenu extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(getMenuName())
-      .append(StringArrayConfigurer.arrayToString(getSubcommands()))
-      .append(description);
+        .append(StringArrayConfigurer.arrayToString(getSubcommands()))
+        .append(description);
     return ID + se.getValue();
   }
 
@@ -128,8 +130,7 @@ public class SubMenu extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -159,10 +160,12 @@ public class SubMenu extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof SubMenu)) return false;
+    if (!(o instanceof SubMenu)) return false;
     final SubMenu c = (SubMenu) o;
-    if (! Objects.equals(subMenu, c.subMenu)) return false;
-    return Objects.equals(StringArrayConfigurer.arrayToString(getSubcommands()), StringArrayConfigurer.arrayToString(c.getSubcommands()));
+    if (!Objects.equals(subMenu, c.subMenu)) return false;
+    return Objects.equals(
+        StringArrayConfigurer.arrayToString(getSubcommands()),
+        StringArrayConfigurer.arrayToString(c.getSubcommands()));
   }
 
   public static class Editor implements PieceEditor {
@@ -199,7 +202,9 @@ public class SubMenu extends Decorator implements TranslatablePiece {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(nameConfig.getValueString()).append(commandsConfig.getValueString()).append(descConfig.getValueString());
+      se.append(nameConfig.getValueString())
+          .append(commandsConfig.getValueString())
+          .append(descConfig.getValueString());
       return ID + se.getValue();
     }
   }

@@ -21,9 +21,7 @@ package VASSAL.counters;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A utility class for holding and manipulating Mats and their Cargo
- */
+/** A utility class for holding and manipulating Mats and their Cargo */
 public class MatHolder {
   private final GamePiece matPiece;
   private final Mat mat;
@@ -35,8 +33,8 @@ public class MatHolder {
   }
 
   /**
-   * Remove any cargo on this mat from the supplied allCargo list
-   * and add to the MatHolders cargo list
+   * Remove any cargo on this mat from the supplied allCargo list and add to the MatHolders cargo
+   * list
    *
    * @param allCargo
    */
@@ -45,7 +43,6 @@ public class MatHolder {
       cargo.add(cargoPiece);
       allCargo.remove(cargoPiece);
     }
-
   }
 
   public GamePiece getMatPiece() {

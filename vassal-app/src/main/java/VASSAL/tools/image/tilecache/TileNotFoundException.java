@@ -16,9 +16,8 @@
  */
 package VASSAL.tools.image.tilecache;
 
-import java.io.File;
-
 import VASSAL.tools.image.ImageNotFoundException;
+import java.io.File;
 
 /**
  * An exception indicating that a tile file was not found.
@@ -29,7 +28,8 @@ import VASSAL.tools.image.ImageNotFoundException;
 public class TileNotFoundException extends ImageNotFoundException {
   private static final long serialVersionUID = 1L;
 
-  public TileNotFoundException(String srcname, int tileX, int tileY, double scale, Throwable cause) {
+  public TileNotFoundException(
+      String srcname, int tileX, int tileY, double scale, Throwable cause) {
     super(srcname + ':' + tileX + ',' + tileY + '@' + scale, cause);
   }
 

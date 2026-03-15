@@ -17,6 +17,8 @@
  */
 package VASSAL.preferences;
 
+import VASSAL.build.BadDataReport;
+import VASSAL.tools.ErrorDialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
@@ -28,12 +30,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.StringTokenizer;
 
-import VASSAL.build.BadDataReport;
-import VASSAL.tools.ErrorDialog;
-
-public class PositionOption extends VASSAL.configure.Configurer
-  implements ComponentListener {
-  public static final String key = "BoundsOf"; //NON-NLS
+public class PositionOption extends VASSAL.configure.Configurer implements ComponentListener {
+  public static final String key = "BoundsOf"; // NON-NLS
   private static final Point initialPos = new Point(0, 0);
 
   protected Window theFrame;
@@ -53,11 +51,9 @@ public class PositionOption extends VASSAL.configure.Configurer
 
   private static void adjustInitialOffset() {
     final Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    if (initialPos.x >= d.width - 30
-      || initialPos.y >= d.height - 30) {
+    if (initialPos.x >= d.width - 30 || initialPos.y >= d.height - 30) {
       initialPos.move(0, 0);
-    }
-    else {
+    } else {
       initialPos.translate(30, 30);
     }
   }
@@ -91,19 +87,21 @@ public class PositionOption extends VASSAL.configure.Configurer
   public void setValue(String in) {
     final StringTokenizer st = new StringTokenizer(in, ",");
     try {
-      setValue(new Rectangle(Integer.parseInt(st.nextToken()),
-                             Integer.parseInt(st.nextToken()),
-                             Integer.parseInt(st.nextToken()),
-                             Integer.parseInt(st.nextToken())));
-    }
-    catch (NumberFormatException e) {
+      setValue(
+          new Rectangle(
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken())));
+    } catch (NumberFormatException e) {
       // This can happen if a VisibilityOption has the same name
       // as a PositionOption, either currently, or due to editing.
       // Don't throw a bug, just log it.
       if (in.indexOf('\t') > 0) {
-        ErrorDialog.dataWarning(new BadDataReport("Map or Chart window with same name as piece Palette", getKey(), e));  //NON-NLS
-      }
-      else {
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Map or Chart window with same name as piece Palette", getKey(), e)); // NON-NLS
+      } else {
         ErrorDialog.bug(e);
       }
     }
@@ -111,14 +109,12 @@ public class PositionOption extends VASSAL.configure.Configurer
 
   @Override
   public String getValueString() {
-    return bounds.x + "," + bounds.y + "," +
-      bounds.width + "," + bounds.height;
+    return bounds.x + "," + bounds.y + "," + bounds.width + "," + bounds.height;
   }
 
   private boolean isOnScreen(Point p) {
-    return
-      p.x < Toolkit.getDefaultToolkit().getScreenSize().width &&
-      p.y < Toolkit.getDefaultToolkit().getScreenSize().height;
+    return p.x < Toolkit.getDefaultToolkit().getScreenSize().width
+        && p.y < Toolkit.getDefaultToolkit().getScreenSize().height;
   }
 
   @Override
@@ -138,27 +134,26 @@ public class PositionOption extends VASSAL.configure.Configurer
     if (theFrame.isShowing()) {
       // A resize when the window is already maximised only happens when
       // a window is first resized. Record the pre-maximised bounds.
-      if (theFrame instanceof Frame &&
-          previousBounds != null &&
-          ((((Frame) theFrame).getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH)) {
+      if (theFrame instanceof Frame
+          && previousBounds != null
+          && ((((Frame) theFrame).getExtendedState() & Frame.MAXIMIZED_BOTH)
+              == Frame.MAXIMIZED_BOTH)) {
         bounds.setBounds(previousBounds);
-      }
-      else {
+      } else {
         bounds.setSize(theFrame.getSize());
       }
     }
   }
 
   @Override
-  public void componentShown(ComponentEvent e) {
-  }
+  public void componentShown(ComponentEvent e) {}
 
   @Override
-  public void componentHidden(ComponentEvent e) {
-  }
+  public void componentHidden(ComponentEvent e) {}
 
   protected void setFrameBounds() {
-    final Rectangle desktopBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    final Rectangle desktopBounds =
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
     // Respect any existing bounds
     if (bounds.width != 0 && bounds.height != 0) {
@@ -190,5 +185,4 @@ public class PositionOption extends VASSAL.configure.Configurer
       theFrame.setLocation(x, y);
     }
   }
-
 }

@@ -17,17 +17,14 @@
  */
 package VASSAL.counters;
 
+import VASSAL.build.Configurable;
+import VASSAL.build.widget.PieceSlot;
 import VASSAL.configure.ConfigureTree;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import VASSAL.build.Configurable;
-import VASSAL.build.widget.PieceSlot;
-
-/**
- * Edits an entire set of GamePieces at once
- */
+/** Edits an entire set of GamePieces at once */
 public class MassPieceDefiner extends PieceDefiner {
   private static final long serialVersionUID = 1L;
 
@@ -71,7 +68,8 @@ public class MassPieceDefiner extends PieceDefiner {
   }
 
   private List<Class<? extends GamePiece>> getTemplate() {
-    GamePiece p = PieceCloner.getInstance().clonePieceUnexpanded(definers.get(0).definer.getPiece());
+    GamePiece p =
+        PieceCloner.getInstance().clonePieceUnexpanded(definers.get(0).definer.getPiece());
     final List<Class<? extends GamePiece>> types = new ArrayList<>();
     while (p instanceof Decorator) {
       types.add(p.getClass());
@@ -81,8 +79,7 @@ public class MassPieceDefiner extends PieceDefiner {
     return types;
   }
 
-  private boolean matchesTemplate(GamePiece p,
-                                  List<Class<? extends GamePiece>> template) {
+  private boolean matchesTemplate(GamePiece p, List<Class<? extends GamePiece>> template) {
     final Iterator<Class<? extends GamePiece>> i = template.iterator();
     while (p instanceof Decorator && i.hasNext()) {
       if (p.getClass() != i.next()) {
@@ -181,8 +178,7 @@ public class MassPieceDefiner extends PieceDefiner {
       myPiece.mySetType(template.getType());
       if (myPiece instanceof Decorator) {
         ((Decorator) myPiece).mySetState(template.getState());
-      }
-      else {
+      } else {
         myPiece.setState(template.getState());
       }
       return true;

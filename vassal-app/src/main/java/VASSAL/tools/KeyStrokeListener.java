@@ -16,13 +16,13 @@
  */
 package VASSAL.tools;
 
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.AWTEventMulticaster;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -30,11 +30,9 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import VASSAL.tools.swing.SwingUtils;
-
 /**
- * Utility class for associating an Action with a keystroke from multiple
- * different component sources
+ * Utility class for associating an Action with a keystroke from multiple different component
+ * sources
  *
  * @see VASSAL.build.GameModule#addKeyStrokeListener
  * @see VASSAL.build.GameModule#addKeyStrokeSource
@@ -79,10 +77,10 @@ public class KeyStrokeListener {
   }
 
   public void keyPressed(KeyStroke stroke) {
-    //BR// We are receiving events directly from components, so we perform our
+    // BR// We are receiving events directly from components, so we perform our
     // special Mac keyboard translations.
     if (stroke != null && key != null && stroke.equals(SwingUtils.genericToSystem(key))) {
-      l.actionPerformed(new ActionEvent(this, 0, "Direct Invocation")); //NON-NLS
+      l.actionPerformed(new ActionEvent(this, 0, "Direct Invocation")); // NON-NLS
     }
   }
 
@@ -96,8 +94,7 @@ public class KeyStrokeListener {
     }
 
     public static ActionChain add(ActionListener l, ActionListener r) {
-      final ActionChain c = l instanceof ActionChain ?
-        (ActionChain) l : new ActionChain(l);
+      final ActionChain c = l instanceof ActionChain ? (ActionChain) l : new ActionChain(l);
       c.l = AWTEventMulticaster.add(c.l, r);
       return c;
     }
@@ -107,8 +104,7 @@ public class KeyStrokeListener {
         final ActionChain c = (ActionChain) l;
         c.l = AWTEventMulticaster.remove(c.l, r);
         return c.l == null ? null : c;
-      }
-      else {
+      } else {
         l = AWTEventMulticaster.remove(l, r);
         return l == null ? null : new ActionChain(l);
       }
@@ -123,13 +119,10 @@ public class KeyStrokeListener {
     public boolean isEnabled() {
       if (l instanceof Action) {
         return ((Action) l).isEnabled();
-      }
-      else if (l instanceof AWTEventMulticaster) {
-        return Arrays.stream(
-          AWTEventMulticaster.getListeners(l, ActionListener.class)
-        ).anyMatch(el -> !(el instanceof Action) || ((Action) el).isEnabled());
-      }
-      else {
+      } else if (l instanceof AWTEventMulticaster) {
+        return Arrays.stream(AWTEventMulticaster.getListeners(l, ActionListener.class))
+            .anyMatch(el -> !(el instanceof Action) || ((Action) el).isEnabled());
+      } else {
         // non-actions are considered enabled
         return true;
       }

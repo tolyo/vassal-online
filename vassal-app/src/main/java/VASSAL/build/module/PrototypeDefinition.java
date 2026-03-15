@@ -45,17 +45,6 @@ import VASSAL.search.ImageSearchTarget;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.UniqueIdManager;
-import net.miginfocom.swing.MigLayout;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -63,17 +52,25 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.HashMap;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
+import net.miginfocom.swing.MigLayout;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class PrototypeDefinition extends AbstractConfigurable
-                                 implements UniqueIdManager.Identifyable,
-                                            ValidityChecker,
-                                            ComponentDescription {
-  private String name = "Prototype"; //$NON-NLS-1$
+    implements UniqueIdManager.Identifyable, ValidityChecker, ComponentDescription {
+  private String name = "Prototype"; // $NON-NLS-1$
   private String description = "";
   private static final String DESCRIPTION_PROPERTY = "description";
   private final java.util.Map<String, GamePiece> pieces = new HashMap<>();
   private String pieceDefinition;
-  private static final UniqueIdManager idMgr = new UniqueIdManager("prototype-"); //$NON-NLS-1$
+  private static final UniqueIdManager idMgr = new UniqueIdManager("prototype-"); // $NON-NLS-1$
   private final PropertyChangeSupport propSupport = new PropertyChangeSupport(this);
 
   @Override
@@ -110,7 +107,8 @@ public class PrototypeDefinition extends AbstractConfigurable
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html", "Definition"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GameModule.html", "Definition"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override
@@ -119,12 +117,10 @@ public class PrototypeDefinition extends AbstractConfigurable
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
-  public void add(Buildable child) {
-  }
+  public void add(Buildable child) {}
 
   @Override
   public String getId() {
@@ -132,8 +128,7 @@ public class PrototypeDefinition extends AbstractConfigurable
   }
 
   @Override
-  public void setId(String id) {
-  }
+  public void setId(String id) {}
 
   @Override
   public void validate(Buildable target, ValidationReport report) {
@@ -151,7 +146,7 @@ public class PrototypeDefinition extends AbstractConfigurable
 
     final GamePiece p = getPiece();
     if (p instanceof ImageSearchTarget) {
-      ((ImageSearchTarget)p).addImageNamesRecursively(s);
+      ((ImageSearchTarget) p).addImageNamesRecursively(s);
     }
   }
 
@@ -160,13 +155,18 @@ public class PrototypeDefinition extends AbstractConfigurable
   }
 
   /**
-   * For the case when the piece definition is a Message Format, expand the definition using the given properties
+   * For the case when the piece definition is a Message Format, expand the definition using the
+   * given properties
    *
    * @param props PropertySource providing property values
    * @return Created Piece
    */
   public GamePiece getPiece(PropertySource props) {
-    final String def = props == null ? pieceDefinition : new FormattedString(pieceDefinition).getText(props, this, "Editor.Prototype.component_type");
+    final String def =
+        props == null
+            ? pieceDefinition
+            : new FormattedString(pieceDefinition)
+                .getText(props, this, "Editor.Prototype.component_type");
     return getPiece(def);
   }
 
@@ -176,31 +176,29 @@ public class PrototypeDefinition extends AbstractConfigurable
       try {
         final AddPiece comm = (AddPiece) GameModule.getGameModule().decode(def);
         if (comm == null) {
-          ErrorDialog.dataWarning(new BadDataReport("Couldn't build piece ", def, null)); //$NON-NLS-1$
-        }
-        else {
+          ErrorDialog.dataWarning(
+              new BadDataReport("Couldn't build piece ", def, null)); // $NON-NLS-1$
+        } else {
           piece = comm.getTarget();
           piece.setState(comm.getState());
         }
-      }
-      catch (RuntimeException e) {
-        ErrorDialog.dataWarning(new BadDataReport("Couldn't build piece", def, e)); //NON-NLS
+      } catch (RuntimeException e) {
+        ErrorDialog.dataWarning(new BadDataReport("Couldn't build piece", def, e)); // NON-NLS
       }
     }
     return piece;
   }
 
-
   public void clearCache() {
     pieces.clear();
   }
-
 
   public void setPiece(GamePiece p) {
     pieceDefinition = p == null ? null : GameModule.getGameModule().encode(new AddPiece(p));
     pieces.clear();
 
-    //BR// Clear the cached pieces array for ALL existing prototypes when any of them changes. Thus chained/nested prototypes will be properly rebuilt.
+    // BR// Clear the cached pieces array for ALL existing prototypes when any of them changes. Thus
+    // chained/nested prototypes will be properly rebuilt.
     final PrototypesContainer container = PrototypesContainer.findInstance();
     if (container != null) {
       container.resetCache();
@@ -235,7 +233,7 @@ public class PrototypeDefinition extends AbstractConfigurable
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.Prototype.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.Prototype.component_type"); // $NON-NLS-1$
   }
 
   public static class Config extends Configurer {
@@ -247,33 +245,36 @@ public class PrototypeDefinition extends AbstractConfigurable
 
     public Config(PrototypeDefinition def) {
       super(null, null, def);
-      box = new JPanel(new MigLayout("ins 0", "[grow,fill]", "[][grow]"));  // NON-NLS
+      box = new JPanel(new MigLayout("ins 0", "[grow,fill]", "[][grow]")); // NON-NLS
 
       pieceDefiner = new Definer(GameModule.getGameModule().getGpIdSupport());
 
       final JPanel namePanel = new JPanel(new MigLayout("ins 0", "[]rel[grow,fill]")); // NON-NLS
       namePanel.add(new JLabel(Resources.getString(Resources.NAME_LABEL)));
       name = new StringConfigurer(def.name);
-      //BR// Autorenames BasicName trait to match prototype, if they matched to begin with
-      name.addPropertyChangeListener(evt -> {
-        final String oldValue = (String)evt.getOldValue();
-        final String newValue = (String)evt.getNewValue();
-        pieceDefiner.setPrototypeName(newValue);
-        if (!oldValue.equals(newValue)) {
-          final GamePiece piece = pieceDefiner.getPiece();
-          if (piece != null) {
-            for (GamePiece p = Decorator.getOutermost(piece); p instanceof Decorator; p = ((Decorator) p).getInner()) {
-              if (p instanceof BasicName) {
-                if (oldValue.equals(p.getProperty(BasicPiece.BASIC_NAME))) {
-                  ((BasicName) p).setName(newValue);
-                  def.setPiece(piece);
-                  pieceDefiner.setPiece(def.getPiece());
+      // BR// Autorenames BasicName trait to match prototype, if they matched to begin with
+      name.addPropertyChangeListener(
+          evt -> {
+            final String oldValue = (String) evt.getOldValue();
+            final String newValue = (String) evt.getNewValue();
+            pieceDefiner.setPrototypeName(newValue);
+            if (!oldValue.equals(newValue)) {
+              final GamePiece piece = pieceDefiner.getPiece();
+              if (piece != null) {
+                for (GamePiece p = Decorator.getOutermost(piece);
+                    p instanceof Decorator;
+                    p = ((Decorator) p).getInner()) {
+                  if (p instanceof BasicName) {
+                    if (oldValue.equals(p.getProperty(BasicPiece.BASIC_NAME))) {
+                      ((BasicName) p).setName(newValue);
+                      def.setPiece(piece);
+                      pieceDefiner.setPiece(def.getPiece());
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-      });
+          });
       namePanel.add(name.getControls(), "grow, wrap"); // NON-NLS
 
       namePanel.add(new JLabel(Resources.getString(Resources.DESCRIPTION)));
@@ -284,7 +285,7 @@ public class PrototypeDefinition extends AbstractConfigurable
 
       pieceDefiner.setPiece(def.getPiece());
       pieceDefiner.setPrototypeName(def.name);
-      box.add(pieceDefiner, "growy");  // NON-NLS
+      box.add(pieceDefiner, "growy"); // NON-NLS
       this.def = def;
     }
 
@@ -295,15 +296,19 @@ public class PrototypeDefinition extends AbstractConfigurable
       }
 
       final JRootPane rp = d.getRootPane();
-      rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), "ToName"); //$NON-NLS-1$
-      rp.getActionMap().put("ToName", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          name.requestFocus();
-        }
-      });
-
+      rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK),
+              "ToName"); //$NON-NLS-1$
+      rp.getActionMap()
+          .put(
+              "ToName",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  name.requestFocus();
+                }
+              });
     }
 
     @Override
@@ -327,8 +332,7 @@ public class PrototypeDefinition extends AbstractConfigurable
     }
 
     @Override
-    public void setValue(String s) {
-    }
+    public void setValue(String s) {}
 
     public static class Definer extends PieceDefiner {
       private static final long serialVersionUID = 1L;
@@ -349,8 +353,7 @@ public class PrototypeDefinition extends AbstractConfigurable
             }
             piece = Decorator.getOutermost(plain);
           }
-        }
-        else {
+        } else {
           piece = new Plain();
         }
         super.setPiece(piece);
@@ -365,7 +368,7 @@ public class PrototypeDefinition extends AbstractConfigurable
 
       private static class Plain extends BasicPiece {
         public Plain() {
-          super(ID + ";;;;"); //$NON-NLS-1$
+          super(ID + ";;;;"); // $NON-NLS-1$
         }
 
         @Override
@@ -388,8 +391,7 @@ public class PrototypeDefinition extends AbstractConfigurable
    */
 
   @Override
-  public void setAttribute(String attr, Object value) {
-  }
+  public void setAttribute(String attr, Object value) {}
 
   @Override
   public String[] getAttributeDescriptions() {

@@ -17,14 +17,11 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.i18n.Resources;
 import java.util.HashMap;
 import java.util.Map;
 
-import VASSAL.i18n.Resources;
-
-/**
- * Limits connections to the server to one per registered username
- */
+/** Limits connections to the server to one per registered username */
 public class ConnectionLimiter {
   private final Map<String, SocketHandler> connections = new HashMap<>();
 
@@ -36,7 +33,7 @@ public class ConnectionLimiter {
   }
 
   private void kickOff(SocketHandler handler) {
-    handler.writeLine(Resources.getString("Chat.too_many")); //$NON-NLS-1$
+    handler.writeLine(Resources.getString("Chat.too_many")); // $NON-NLS-1$
     handler.close();
   }
 }

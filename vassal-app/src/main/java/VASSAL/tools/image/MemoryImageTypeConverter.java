@@ -18,10 +18,9 @@
 
 package VASSAL.tools.image;
 
+import VASSAL.tools.lang.Reference;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
-import VASSAL.tools.lang.Reference;
 
 /**
  * Convert a {@link BufferedImage} to a different type, in memory.
@@ -33,8 +32,7 @@ public class MemoryImageTypeConverter implements ImageTypeConverter {
 
   /** {@inheritDoc} */
   @Override
-  public BufferedImage convert(Reference<BufferedImage> ref, int type)
-                                                      throws ImageIOException {
+  public BufferedImage convert(Reference<BufferedImage> ref, int type) throws ImageIOException {
     if (ref == null) throw new IllegalArgumentException();
 
     // NB: We don't bother clearing the ref because this method requires

@@ -17,7 +17,6 @@
 package VASSAL.configure.password;
 
 import VASSAL.configure.Configurer;
-
 import java.awt.Component;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -33,26 +32,27 @@ public class ToggleablePasswordConfigurer extends Configurer {
   public ToggleablePasswordConfigurer(String key, String name, Object val) {
     super(key, name, val);
     panel = new ToggleablePasswordFieldPanel(name, (String) val);
-    panel.addPasswordFieldListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        update();
-      }
+    panel.addPasswordFieldListener(
+        new DocumentListener() {
+          @Override
+          public void insertUpdate(DocumentEvent e) {
+            update();
+          }
 
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        update();
-      }
+          @Override
+          public void removeUpdate(DocumentEvent e) {
+            update();
+          }
 
-      @Override
-      public void changedUpdate(DocumentEvent e) {}
+          @Override
+          public void changedUpdate(DocumentEvent e) {}
 
-      private void update() {
-        noUpdate = true;
-        setValue(panel.getPassword());
-        noUpdate = false;
-      }
-    });
+          private void update() {
+            noUpdate = true;
+            setValue(panel.getPassword());
+            noUpdate = false;
+          }
+        });
   }
 
   @Override

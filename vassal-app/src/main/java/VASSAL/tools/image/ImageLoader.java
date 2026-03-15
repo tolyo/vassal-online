@@ -38,18 +38,13 @@ public interface ImageLoader {
    * @param typeIfTransparent the requested image type for transparent images
    * @param managed <code>true</code> if a managed image should be returned
    * @return the image
-   *
    * @throws BrokenImageException if the image is faulty
    * @throws UnrecognizedImageTypeException if the image type is not recognized
    * @throws ImageIOException if reading the image goes wrong
    */
   BufferedImage load(
-    String name,
-    InputStream in,
-    int typeIfOpaque,
-    int typeIfTransparent,
-    boolean managed
-  ) throws ImageIOException;
+      String name, InputStream in, int typeIfOpaque, int typeIfTransparent, boolean managed)
+      throws ImageIOException;
 
   /**
    * Gets the size of an image.
@@ -57,7 +52,6 @@ public interface ImageLoader {
    * @param name the image name
    * @param in the input stream
    * @return the size of the image
-   *
    * @throws BrokenImageException if the image is faulty
    * @throws UnrecognizedImageTypeException if the image type is not recognized
    * @throws ImageIOException if reading the image goes wrong

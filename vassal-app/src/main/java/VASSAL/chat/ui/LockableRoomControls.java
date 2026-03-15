@@ -17,13 +17,11 @@
  */
 package VASSAL.chat.ui;
 
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.LockableRoom;
 import VASSAL.chat.Room;
-
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
 
 /**
  * @author rkinney
@@ -38,8 +36,7 @@ public abstract class LockableRoomControls extends RoomInteractionControlsInitia
 
   @Override
   public void doubleClickRoom(Room room, JTree tree) {
-    if (!(room instanceof LockableRoom)
-        || !((LockableRoom) room).isLocked()) {
+    if (!(room instanceof LockableRoom) || !((LockableRoom) room).isLocked()) {
       super.doubleClickRoom(room, tree);
     }
   }
@@ -67,5 +64,4 @@ public abstract class LockableRoomControls extends RoomInteractionControlsInitia
   }
 
   protected abstract void addLockRoomAction(JPopupMenu popup, Room target);
-
 }

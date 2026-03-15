@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 by Brian Reynolds, Joel Uckelman 
+ * Copyright (c) 2023 by Brian Reynolds, Joel Uckelman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,31 +19,24 @@ package VASSAL.counters;
 
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeckManager {
-  
+
   protected List<Deck> deckEmptiedKeyQueue = new ArrayList<>();
 
-  /**
-   * Add an emptied deck that wants to sent an I-am-empty key
-   */
+  /** Add an emptied deck that wants to sent an I-am-empty key */
   public void addEmptyDeck(Deck d) {
     deckEmptiedKeyQueue.add(d);
   }
 
-  /**
-   * Clears the list of I-am-empty decks
-   */
+  /** Clears the list of I-am-empty decks */
   public void clearEmptyDecksList() {
     deckEmptiedKeyQueue.clear();
   }
 
-  /**
-   * If any decks want to send their I-am-empty key, send it now.
-   */
+  /** If any decks want to send their I-am-empty key, send it now. */
   public Command checkEmptyDecks(Command c) {
     final GameModule gm = GameModule.getGameModule();
     gm.pauseLogging();

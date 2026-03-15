@@ -17,9 +17,8 @@
 
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-
 import VASSAL.configure.SaveAsAction;
+import java.awt.event.ActionEvent;
 
 public class SaveModuleAsAction extends SaveAsAction {
   private static final long serialVersionUID = 1L;

@@ -17,18 +17,19 @@
  */
 package VASSAL.tools.io;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import org.junit.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class DeobfuscatingInputStreamTest {
   // A popular pangram.
   private final String plain = "All jackdaws love my great sphinx of quartz.";
 
   // The same pangram, obfuscated.
-  private final String obfus = "!VCSK581934347832393b333c392f2b7834372e3d783521783f2a3d392c782b283031362078373e78292d392a2c2276";
+  private final String obfus =
+      "!VCSK581934347832393b333c392f2b7834372e3d783521783f2a3d392c782b283031362078373e78292d392a2c2276";
 
   /** Test plain text input. */
   @Test
@@ -36,8 +37,7 @@ public class DeobfuscatingInputStreamTest {
     final byte[] expected = plain.getBytes("UTF-8");
 
     final DeobfuscatingInputStream in =
-      new DeobfuscatingInputStream(
-        new ByteArrayInputStream(expected));
+        new DeobfuscatingInputStream(new ByteArrayInputStream(expected));
 
     final byte[] result = in.readAllBytes();
     in.close();
@@ -51,9 +51,7 @@ public class DeobfuscatingInputStreamTest {
     final byte[] b = obfus.getBytes("UTF-8");
     final byte[] expected = plain.getBytes("UTF-8");
 
-    final DeobfuscatingInputStream in =
-      new DeobfuscatingInputStream(
-        new ByteArrayInputStream(b));
+    final DeobfuscatingInputStream in = new DeobfuscatingInputStream(new ByteArrayInputStream(b));
 
     final byte[] result = in.readAllBytes();
     in.close();
@@ -67,9 +65,7 @@ public class DeobfuscatingInputStreamTest {
     final byte[] b = obfus.toUpperCase().getBytes("UTF-8");
     final byte[] expected = plain.getBytes("UTF-8");
 
-    final DeobfuscatingInputStream in =
-      new DeobfuscatingInputStream(
-        new ByteArrayInputStream(b));
+    final DeobfuscatingInputStream in = new DeobfuscatingInputStream(new ByteArrayInputStream(b));
 
     final byte[] result = in.readAllBytes();
     in.close();

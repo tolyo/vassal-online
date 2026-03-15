@@ -10,8 +10,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -19,12 +17,13 @@ import java.awt.Shape;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
 /**
- * Adds a menu entry that fires a specified key event to the module window.
- * Effectively allows a Game Piece to activate a button in the toolbar
- * @author rkinney
+ * Adds a menu entry that fires a specified key event to the module window. Effectively allows a
+ * Game Piece to activate a button in the toolbar
  *
+ * @author rkinney
  */
 public class GlobalHotKey extends Decorator implements TranslatablePiece {
   public static final String ID = "globalhotkey;"; // NON-NLS
@@ -50,10 +49,12 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
     if (commands == null) {
       command = new KeyCommand(commandName, commandKey, getOutermost(this), this);
       command.setEnabled(getMap() != null);
-      if (commandName != null && commandName.length() > 0 && commandKey != null && ! commandKey.isNull()) {
-        commands = new KeyCommand[]{command};
-      }
-      else {
+      if (commandName != null
+          && commandName.length() > 0
+          && commandKey != null
+          && !commandKey.isNull()) {
+        commands = new KeyCommand[] {command};
+      } else {
         commands = KeyCommand.NONE;
       }
     }
@@ -87,8 +88,7 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -112,7 +112,10 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
 
   @Override
   public String getDescription() {
-    return buildDescription("Editor.GlobalHotKey.trait_description", description) + getCommandDesc(commandName, commandKey) + " => " + getCommandDesc("", globalHotKey);
+    return buildDescription("Editor.GlobalHotKey.trait_description", description)
+        + getCommandDesc(commandName, commandKey)
+        + " => "
+        + getCommandDesc("", globalHotKey);
   }
 
   @Override
@@ -132,7 +135,8 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
 
   @Override
   public void mySetType(String type) {
-    final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(type.substring(ID.length()), ';');
+    final SequenceEncoder.Decoder sd =
+        new SequenceEncoder.Decoder(type.substring(ID.length()), ';');
     commandName = sd.nextToken();
     commandKey = sd.nextNamedKeyStroke('H');
     globalHotKey = sd.nextNamedKeyStroke(null);
@@ -147,17 +151,18 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(commandName, Resources.getString("Editor.GlobalHoyKey.global_hotkey_command")); // NON-NLS
+    return getI18nData(
+        commandName, Resources.getString("Editor.GlobalHoyKey.global_hotkey_command")); // NON-NLS
   }
 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof GlobalHotKey)) return false;
+    if (!(o instanceof GlobalHotKey)) return false;
     final GlobalHotKey c = (GlobalHotKey) o;
-    if (! Objects.equals(commandName, c.commandName)) return false;
-    if (! Objects.equals(commandKey, c.commandKey)) return false;
-    if (! Objects.equals(globalHotKey, c.globalHotKey)) return false;
+    if (!Objects.equals(commandName, c.commandName)) return false;
+    if (!Objects.equals(commandKey, c.commandKey)) return false;
+    if (!Objects.equals(globalHotKey, c.globalHotKey)) return false;
     return Objects.equals(description, c.description);
   }
 
@@ -201,10 +206,12 @@ public class GlobalHotKey extends Decorator implements TranslatablePiece {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(commandConfig.getValueString()).append(commandKeyConfig.getValueString()).append(hotKeyConfig.getValueString()).append(descConfig.getValueString());
+      se.append(commandConfig.getValueString())
+          .append(commandKeyConfig.getValueString())
+          .append(hotKeyConfig.getValueString())
+          .append(descConfig.getValueString());
       return ID + se.getValue();
     }
-
   }
 
   /**

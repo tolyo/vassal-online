@@ -33,7 +33,6 @@ import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.tools.LaunchButton;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.ToolBarComponent;
-
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -44,39 +43,46 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Creates an item that is both configurable w/ an edit box {@link AbstractConfigurable} and buildable from the
- * XML buildFile {@link AbstractBuildable}, but which also has a Toolbar launch button.
+ * Creates an item that is both configurable w/ an edit box {@link AbstractConfigurable} and
+ * buildable from the XML buildFile {@link AbstractBuildable}, but which also has a Toolbar launch
+ * button.
  */
-public abstract class AbstractToolbarItem extends AbstractConfigurable implements GameComponent, PropertyChangeListener {
+public abstract class AbstractToolbarItem extends AbstractConfigurable
+    implements GameComponent, PropertyChangeListener {
 
   // These are the "standard keys" - recommended for all new classes extending AbstractToolbarItem
-  public static final String NAME          = "name";    //$NON-NLS-1$
-  public static final String TOOLTIP       = "tooltip"; //$NON-NLS-1$
-  public static final String BUTTON_TEXT   = "text";    //$NON-NLS-1$
-  public static final String HOTKEY        = "hotkey";  //$NON-NLS-1$
-  public static final String ICON          = "icon";    //$NON-NLS-1$
-  public static final String CAN_DISABLE   = "canDisable";   //NON-NLS
-  public static final String PROPERTY_GATE = "propertyGate"; //NON-NLS
-  public static final String DISABLED_ICON = "disabledIcon"; //NON-NLS
-  public static final String HIDE_WHEN_DISABLED = "hideWhenDisabled"; //NON-NLS
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String TOOLTIP = "tooltip"; // $NON-NLS-1$
+  public static final String BUTTON_TEXT = "text"; // $NON-NLS-1$
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
+  public static final String ICON = "icon"; // $NON-NLS-1$
+  public static final String CAN_DISABLE = "canDisable"; // NON-NLS
+  public static final String PROPERTY_GATE = "propertyGate"; // NON-NLS
+  public static final String DISABLED_ICON = "disabledIcon"; // NON-NLS
+  public static final String HIDE_WHEN_DISABLED = "hideWhenDisabled"; // NON-NLS
 
-  protected LaunchButton launch;              // Our toolbar "launch button"
+  protected LaunchButton launch; // Our toolbar "launch button"
 
   protected IconConfigurer disabledIconConfig = new IconConfigurer(DISABLED_ICON, null, null);
 
-  protected boolean showDisabledOptions = true; // True if our configurers are allowed to show the disable-this-button properties
-  protected boolean canDisable = false;         // True if we have a disable-this-button property
-  protected boolean hideWhenDisabled = false;   // True if we hide the button when disabled
-  protected String propertyGate = "";           // Name of our gating property (button is disabled if this global property is "true")
+  protected boolean showDisabledOptions =
+      true; // True if our configurers are allowed to show the disable-this-button properties
+  protected boolean canDisable = false; // True if we have a disable-this-button property
+  protected boolean hideWhenDisabled = false; // True if we hide the button when disabled
+  protected String propertyGate =
+      ""; // Name of our gating property (button is disabled if this global property is "true")
   protected MutableProperty.Impl property;
 
-  private String nameKey       = NAME;        // Some legacy objects will want to use a non-standard key (or none)
-  private String tooltipKey    = TOOLTIP;     // Some legacy objects will want to use a non-standard key
-  private String buttonTextKey = BUTTON_TEXT; // Some legacy objects will want to use a non-standard key
-  private String hotKeyKey     = HOTKEY;      // Some legacy objects will want to use a non-standard key
-  private String iconKey       = ICON;        // Some legacy objects will want to use a non-standard key
+  private String nameKey =
+      NAME; // Some legacy objects will want to use a non-standard key (or none)
+  private String tooltipKey = TOOLTIP; // Some legacy objects will want to use a non-standard key
+  private String buttonTextKey =
+      BUTTON_TEXT; // Some legacy objects will want to use a non-standard key
+  private String hotKeyKey = HOTKEY; // Some legacy objects will want to use a non-standard key
+  private String iconKey = ICON; // Some legacy objects will want to use a non-standard key
 
-  private String namePrompt = ""; // Overrides the default value returned for the name key by getAttributeDescriptions.
+  private String namePrompt =
+      ""; // Overrides the default value returned for the name key by getAttributeDescriptions.
 
   protected void setNamePrompt(String namePrompt) {
     this.namePrompt = namePrompt;
@@ -120,11 +126,13 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
    * @param tooltip String tooltip for button
    * @param button_text Text for button
    * @param iconFile filename for icon default
-   * @param action  Action Listener when launch button is clicked
+   * @param action Action Listener when launch button is clicked
    * @return launch button
    */
-  protected LaunchButton makeLaunchButton(String tooltip, String button_text, String iconFile, ActionListener action) {
-    launch = new LaunchButton(button_text, tooltipKey, buttonTextKey, hotKeyKey, iconKey, action, true);
+  protected LaunchButton makeLaunchButton(
+      String tooltip, String button_text, String iconFile, ActionListener action) {
+    launch =
+        new LaunchButton(button_text, tooltipKey, buttonTextKey, hotKeyKey, iconKey, action, true);
 
     if (!tooltip.isEmpty()) {
       setAttribute(tooltipKey, tooltip);
@@ -159,6 +167,7 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
 
   /**
    * Sets launch button for this toolbar item
+   *
    * @param launch - launch button
    */
   protected void setLaunchButton(LaunchButton launch) {
@@ -169,9 +178,7 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     addPropertyGateListener(false);
   }
 
-  /**
-   * If we have a disable-this-button property, set a listener on it
-   */
+  /** If we have a disable-this-button property, set a listener on it */
   protected void addPropertyGateListener(boolean dontCheck) {
     if (property != null) {
       removePropertyGateListener();
@@ -180,9 +187,13 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     if (isShowDisabledOptions() && canDisable) {
       if (!propertyGate.isEmpty()) {
         final Buildable ancestor = getNonFolderAncestor();
-        property = (ancestor instanceof Map) ? (MutableProperty.Impl) ((Map)ancestor).getMutableProperty(propertyGate) : null;
+        property =
+            (ancestor instanceof Map)
+                ? (MutableProperty.Impl) ((Map) ancestor).getMutableProperty(propertyGate)
+                : null;
         if (property == null) {
-          property = (MutableProperty.Impl) GameModule.getGameModule().getMutableProperty(propertyGate);
+          property =
+              (MutableProperty.Impl) GameModule.getGameModule().getMutableProperty(propertyGate);
         }
         if (property != null) {
           property.addMutablePropertyChangeListener(this);
@@ -195,9 +206,7 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     }
   }
 
-  /**
-   * Remove any existing disable-this-button property
-   */
+  /** Remove any existing disable-this-button property */
   protected void removePropertyGateListener() {
     if (property != null) {
       property.removeMutablePropertyChangeListener(this);
@@ -206,7 +215,9 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
   }
 
   /**
-   * Listens to our disable-this-button property; enables/disables our button as appropriate when it changes
+   * Listens to our disable-this-button property; enables/disables our button as appropriate when it
+   * changes
+   *
    * @param evt property change event
    */
   @Override
@@ -214,20 +225,21 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     final String name = evt.getPropertyName();
     if (name.equals(propertyGate)) {
       final String value = String.valueOf(evt.getNewValue());
-      disableIfTrue("true".equals(value)); //NON-NLS
+      disableIfTrue("true".equals(value)); // NON-NLS
     }
   }
 
   /**
-   * Check our disable-this-button property and enable/disable our button as appropriate based on its value
+   * Check our disable-this-button property and enable/disable our button as appropriate based on
+   * its value
    */
   public void checkDisabled() {
     if ((!isShowDisabledOptions() || !canDisable) && (launch != null)) {
       launch.setEnabled(true);
 
       // Disabling hide-when-disabled for now, it seems to be creating problems
-      //launch.setForceInvisible(false);
-      //launch.checkVisibility();
+      // launch.setForceInvisible(false);
+      // launch.checkVisibility();
 
       return;
     }
@@ -235,7 +247,7 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
       addPropertyGateListener(true);
     }
     if (property != null) {
-      disableIfTrue("true".equals(property.getPropertyValue())); //NON-NLS
+      disableIfTrue("true".equals(property.getPropertyValue())); // NON-NLS
     }
   }
 
@@ -247,8 +259,8 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
       launch.setEnabled(!isShowDisabledOptions() || !canDisable || !disable);
 
       // Disabling hide-when-disabled for now, it seems to be creating problems
-      //launch.setForceInvisible(disable && canDisable && hideWhenDisabled);
-      //launch.checkVisibility();
+      // launch.setForceInvisible(disable && canDisable && hideWhenDisabled);
+      // launch.checkVisibility();
     }
   }
 
@@ -263,41 +275,63 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
   }
 
   /**
-   * This getAttributeNames() will return the items specific to the Toolbar Button - classes extending this should
-   * add their own items as well. If the "nameKey" is blank, then no "name" configure entry will be generated.
-   * Extending classes can use ArrayUtils.addAll(super.getAttributeNames(), key1, ..., keyN), or supply their own
-   * order from scratch.
-   * <p>
-   * Lists all the buildFile (XML) attribute names for this component.
-   * If this component is ALSO an {@link AbstractConfigurable}, then this list of attributes determines the appropriate
-   * attribute order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link AbstractConfigurable#getAttributeTypes()}.
+   * This getAttributeNames() will return the items specific to the Toolbar Button - classes
+   * extending this should add their own items as well. If the "nameKey" is blank, then no "name"
+   * configure entry will be generated. Extending classes can use
+   * ArrayUtils.addAll(super.getAttributeNames(), key1, ..., keyN), or supply their own order from
+   * scratch.
+   *
+   * <p>Lists all the buildFile (XML) attribute names for this component. If this component is ALSO
+   * an {@link AbstractConfigurable}, then this list of attributes determines the appropriate
+   * attribute order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link
+   * AbstractConfigurable#getAttributeTypes()}.
    *
    * @return an array of all buildFile (XML) attribute names for this component
    */
   @Override
   public String[] getAttributeNames() {
     if (!nameKey.isEmpty()) {
-      return new String[]{nameKey, buttonTextKey, tooltipKey, iconKey, hotKeyKey, CAN_DISABLE, PROPERTY_GATE, HIDE_WHEN_DISABLED, DISABLED_ICON};
-    }
-    else {
-      return new String[]{buttonTextKey, tooltipKey, iconKey, hotKeyKey, CAN_DISABLE, PROPERTY_GATE, HIDE_WHEN_DISABLED, DISABLED_ICON};
+      return new String[] {
+        nameKey,
+        buttonTextKey,
+        tooltipKey,
+        iconKey,
+        hotKeyKey,
+        CAN_DISABLE,
+        PROPERTY_GATE,
+        HIDE_WHEN_DISABLED,
+        DISABLED_ICON
+      };
+    } else {
+      return new String[] {
+        buttonTextKey,
+        tooltipKey,
+        iconKey,
+        hotKeyKey,
+        CAN_DISABLE,
+        PROPERTY_GATE,
+        HIDE_WHEN_DISABLED,
+        DISABLED_ICON
+      };
     }
   }
 
   /**
-   * This getAttributeDescriptions() will return the items specific to the Toolbar Button - classes extending this should
-   * add their own items as well. If the "nameKey" is blank, then no "name" configure entry will be generated.
-   * Extending classes can use ArrayUtils.addAll(super.getAttributeDescriptions(), key1, ..., keyN), or supply their own
-   * order from scratch.
+   * This getAttributeDescriptions() will return the items specific to the Toolbar Button - classes
+   * extending this should add their own items as well. If the "nameKey" is blank, then no "name"
+   * configure entry will be generated. Extending classes can use
+   * ArrayUtils.addAll(super.getAttributeDescriptions(), key1, ..., keyN), or supply their own order
+   * from scratch.
    *
-   * @return an array of Strings describing the buildFile (XML) attributes of this component. These strings are used as prompts in the
-   * Properties window for this object, when the component is configured in the Editor. The order of descriptions should
-   * be the same as the order of names in {@link AbstractBuildable#getAttributeNames}
+   * @return an array of Strings describing the buildFile (XML) attributes of this component. These
+   *     strings are used as prompts in the Properties window for this object, when the component is
+   *     configured in the Editor. The order of descriptions should be the same as the order of
+   *     names in {@link AbstractBuildable#getAttributeNames}
    */
   @Override
   public String[] getAttributeDescriptions() {
     if (!nameKey.isEmpty()) {
-      return new String[]{
+      return new String[] {
         namePrompt.isEmpty() ? Resources.getString(Resources.DESCRIPTION) : namePrompt,
         Resources.getString(Resources.BUTTON_TEXT),
         Resources.getString(Resources.TOOLTIP_TEXT),
@@ -308,9 +342,8 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
         Resources.getString("Editor.AbstractToolbarItem.hide_when_disabled"),
         Resources.getString("Editor.AbstractToolbarItem.disabled_icon"),
       };
-    }
-    else {
-      return new String[]{
+    } else {
+      return new String[] {
         Resources.getString(Resources.BUTTON_TEXT),
         Resources.getString(Resources.TOOLTIP_TEXT),
         Resources.getString(Resources.BUTTON_ICON),
@@ -324,21 +357,24 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
   }
 
   /**
-   * This getAttributeTypes() will return the items specific to the Toolbar Button - classes extending this should
-   * add their own items as well. If the "nameKey" is blank, then no "name" configure entry will be generated.
-   * Extending classes can use ArrayUtils.addAll(super.getAttributeTypes(), key1, ..., keyN), or supply their own
-   * order from scratch.
+   * This getAttributeTypes() will return the items specific to the Toolbar Button - classes
+   * extending this should add their own items as well. If the "nameKey" is blank, then no "name"
+   * configure entry will be generated. Extending classes can use
+   * ArrayUtils.addAll(super.getAttributeTypes(), key1, ..., keyN), or supply their own order from
+   * scratch.
    *
-   * @return the Class for the buildFile (XML) attributes of this component. Valid classes include: String, Integer, Double, Boolean, Image,
-   * Color, and KeyStroke, along with any class for which a Configurer exists in VASSAL.configure. The class determines, among other things,
-   * which type of {@link AutoConfigurer} will be used to configure the attribute when the object is configured in the Editor.
-   * <p>
-   * The order of classes should be the same as the order of names in {@link AbstractBuildable#getAttributeNames}
+   * @return the Class for the buildFile (XML) attributes of this component. Valid classes include:
+   *     String, Integer, Double, Boolean, Image, Color, and KeyStroke, along with any class for
+   *     which a Configurer exists in VASSAL.configure. The class determines, among other things,
+   *     which type of {@link AutoConfigurer} will be used to configure the attribute when the
+   *     object is configured in the Editor.
+   *     <p>The order of classes should be the same as the order of names in {@link
+   *     AbstractBuildable#getAttributeNames}
    */
   @Override
   public Class<?>[] getAttributeTypes() {
     if (!nameKey.isEmpty()) {
-      return new Class<?>[]{
+      return new Class<?>[] {
         String.class,
         FormattedStringConfig.class,
         String.class,
@@ -349,9 +385,8 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
         Boolean.class,
         IconConfig.class,
       };
-    }
-    else {
-      return new Class<?>[]{
+    } else {
+      return new Class<?>[] {
         FormattedStringConfig.class,
         String.class,
         IconConfig.class,
@@ -364,113 +399,104 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     }
   }
 
-
   public static class FormattedStringConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[]{});
+      return new PlayerIdFormattedExpressionConfigurer(key, name, new String[] {});
     }
   }
 
   /**
-   * Configures the toolbar's button icon. Classes extending AbstractToolbarItem no longer need their own IconConfig
-   * for the toolbar button, though some must presently keep it for binary compatibility.
+   * Configures the toolbar's button icon. Classes extending AbstractToolbarItem no longer need
+   * their own IconConfig for the toolbar button, though some must presently keep it for binary
+   * compatibility.
    */
   public static class IconConfig implements ConfigurerFactory {
     /**
-     * @param c    AutoConfigurable
-     * @param key  Key
+     * @param c AutoConfigurable
+     * @param key Key
      * @param name Name
      * @return Configurer for the icon
      */
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new IconConfigurer(key, name, ((AbstractToolbarItem) c).getLaunchButton().getAttributeValueString(ICON));
+      return new IconConfigurer(
+          key, name, ((AbstractToolbarItem) c).getLaunchButton().getAttributeValueString(ICON));
     }
   }
 
   /**
-   * Classes extending AbstractToolbarItem can call this as a super() method after checking for their own keys, to
-   * avoid needing to deal with the nitty gritty of the toolbar button.
-   * <p>
-   * Sets a buildFile (XML) attribute value for this component. The <code>key</code> parameter will be one of those listed in {@link #getAttributeNames}.
-   * If the <code>value</code> parameter is a String, it will be the value returned by {@link #getAttributeValueString} for the same
-   * <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value</code> will be an instance of
-   * the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
+   * Classes extending AbstractToolbarItem can call this as a super() method after checking for
+   * their own keys, to avoid needing to deal with the nitty gritty of the toolbar button.
+   *
+   * <p>Sets a buildFile (XML) attribute value for this component. The <code>key</code> parameter
+   * will be one of those listed in {@link #getAttributeNames}. If the <code>value</code> parameter
+   * is a String, it will be the value returned by {@link #getAttributeValueString} for the same
+   * <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>
+   * value</code> will be an instance of the corresponding Class listed in {@link
+   * AbstractConfigurable#getAttributeTypes}
    *
    * @param key the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
-   * @param value If the <code>value</code> parameter is a String, it will be the value returned by {@link #getAttributeValueString} for the same
-   *              <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
-   *              the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
+   * @param value If the <code>value</code> parameter is a String, it will be the value returned by
+   *     {@link #getAttributeValueString} for the same <code>key</code>. If the implementing class
+   *     extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
+   *     the corresponding Class listed in {@link AbstractConfigurable#getAttributeTypes}
    */
   @Override
   public void setAttribute(String key, Object value) {
     if (!nameKey.isEmpty() && nameKey.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (CAN_DISABLE.equals(key)) {
+    } else if (CAN_DISABLE.equals(key)) {
       if (value instanceof String) {
-        canDisable = "true".equals(value); //NON-NLS
-      }
-      else if (value instanceof Boolean) {
-        canDisable = (Boolean)value;
+        canDisable = "true".equals(value); // NON-NLS
+      } else if (value instanceof Boolean) {
+        canDisable = (Boolean) value;
       }
       checkDisabled();
-    }
-    else if (PROPERTY_GATE.equals(key)) {
-      propertyGate = (String)value;
+    } else if (PROPERTY_GATE.equals(key)) {
+      propertyGate = (String) value;
       addPropertyGateListener();
-    }
-    else if (DISABLED_ICON.equals(key)) {
+    } else if (DISABLED_ICON.equals(key)) {
       if (value instanceof String) {
         disabledIconConfig.setValue((String) value);
         if (launch != null) {
           launch.setDisabledIcon(disabledIconConfig.getIconValue());
         }
       }
-    }
-    else if (HIDE_WHEN_DISABLED.equals(key)) {
+    } else if (HIDE_WHEN_DISABLED.equals(key)) {
       if (value instanceof String) {
-        hideWhenDisabled = "true".equals(value); //NON-NLS
-      }
-      else if (value instanceof Boolean) {
-        hideWhenDisabled = (Boolean)value;
+        hideWhenDisabled = "true".equals(value); // NON-NLS
+      } else if (value instanceof Boolean) {
+        hideWhenDisabled = (Boolean) value;
       }
       checkDisabled();
-    }
-    else {
+    } else {
       launch.setAttribute(key, value);
     }
   }
 
   /**
-   * Classes extending AbstractToolbarItem can call this as a super() method after checking for their own keys, to
-   * avoid needing to deal with the nitty gritty of the toolbar button.
+   * Classes extending AbstractToolbarItem can call this as a super() method after checking for
+   * their own keys, to avoid needing to deal with the nitty gritty of the toolbar button.
    *
-   * @return a String representation of the XML buildFile attribute with the given name. When initializing a module,
-   * this String value will loaded from the XML and passed to {@link #setAttribute}. It is also frequently used for
-   * checking the current value of an attribute.
-   *
+   * @return a String representation of the XML buildFile attribute with the given name. When
+   *     initializing a module, this String value will loaded from the XML and passed to {@link
+   *     #setAttribute}. It is also frequently used for checking the current value of an attribute.
    * @param key the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
    */
   @Override
   public String getAttributeValueString(String key) {
     if (!nameKey.isEmpty() && nameKey.equals(key)) {
       return getConfigureName();
-    }
-    else if (CAN_DISABLE.equals(key)) {
+    } else if (CAN_DISABLE.equals(key)) {
       return String.valueOf(canDisable);
-    }
-    else if (PROPERTY_GATE.equals(key)) {
+    } else if (PROPERTY_GATE.equals(key)) {
       return propertyGate;
-    }
-    else if (DISABLED_ICON.equals(key)) {
+    } else if (DISABLED_ICON.equals(key)) {
       return disabledIconConfig.getValueString();
-    }
-    else if (HIDE_WHEN_DISABLED.equals(key)) {
+    } else if (HIDE_WHEN_DISABLED.equals(key)) {
       return String.valueOf(hideWhenDisabled);
-    }
-    else {
+    } else {
       return launch.getAttributeValueString(key);
     }
   }
@@ -481,28 +507,27 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
       return () -> isShowDisabledOptions() && canDisable;
     }
     if (HIDE_WHEN_DISABLED.equals(key)) {
-      return () -> false;  // Disabling hide-when-disabled for now, it seems to be creating problems
+      return () -> false; // Disabling hide-when-disabled for now, it seems to be creating problems
     }
     if (DISABLED_ICON.equals(key)) {
-      return () -> isShowDisabledOptions() && canDisable; // && !hideWhenDisabled; // removed hide-when-disabled feature for now
-    }
-    else if (CAN_DISABLE.equals(key)) {
+      return () ->
+          isShowDisabledOptions()
+              && canDisable; // && !hideWhenDisabled; // removed hide-when-disabled feature for now
+    } else if (CAN_DISABLE.equals(key)) {
       return this::isShowDisabledOptions;
-    }
-    else {
+    } else {
       return null;
     }
   }
 
-  /**
-   * The component to be added to the control window toolbar
-   */
+  /** The component to be added to the control window toolbar */
   protected Component getComponent() {
     return launch;
   }
 
   /**
    * Default behavior adds the button to the parent component
+   *
    * @param parent parent Buildable to add this component to as a subcomponent.
    */
   @Override
@@ -511,16 +536,17 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     gm.getGameState().addGameComponent(this);
 
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     if (parent instanceof ToolBarComponent) {
-      ((ToolBarComponent)parent).getToolBar().add(getComponent());
+      ((ToolBarComponent) parent).getToolBar().add(getComponent());
     }
   }
 
   /**
    * Remove from our parent
+   *
    * @param parent parent
    */
   @Override
@@ -529,12 +555,12 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
     gm.getGameState().removeGameComponent(this);
 
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     if (parent instanceof ToolBarComponent) {
-      ((ToolBarComponent)parent).getToolBar().remove(getComponent());
-      ((ToolBarComponent)parent).getToolBar().revalidate();
+      ((ToolBarComponent) parent).getToolBar().remove(getComponent());
+      ((ToolBarComponent) parent).getToolBar().revalidate();
     }
   }
 
@@ -555,11 +581,13 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
   }
 
   /**
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
-    return Arrays.asList(getAttributeValueString(buttonTextKey), getAttributeValueString(tooltipKey));
+    return Arrays.asList(
+        getAttributeValueString(buttonTextKey), getAttributeValueString(tooltipKey));
   }
 
   /**
@@ -571,21 +599,22 @@ public abstract class AbstractToolbarItem extends AbstractConfigurable implement
   }
 
   /**
-   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order to add
-   * the names of any image files they use to the collection. For "find unused images" and "search".
+   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order
+   * to add the names of any image files they use to the collection. For "find unused images" and
+   * "search".
    *
    * @param s Collection to add image names to
    */
   @Override
   public void addLocalImageNames(Collection<String> s) {
     final String string = launch.getAttributeValueString(launch.getIconAttribute());
-    if (string != null && !string.isEmpty()) { // Launch buttons sometimes have null icon attributes - yay
+    if (string != null
+        && !string.isEmpty()) { // Launch buttons sometimes have null icon attributes - yay
       s.add(string);
     }
     final String disabledIconName = disabledIconConfig.getValueString();
     if (disabledIconName != null && !disabledIconName.isEmpty()) {
       s.add(disabledIconName);
     }
-
   }
 }

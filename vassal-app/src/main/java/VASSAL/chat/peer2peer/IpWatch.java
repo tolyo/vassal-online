@@ -44,13 +44,12 @@ public class IpWatch implements Runnable {
   public void run() {
     while (true) {
       final String newIp = findIp();
-      propSupport.firePropertyChange("address", currentIp, newIp); //$NON-NLS-1$
+      propSupport.firePropertyChange("address", currentIp, newIp); // $NON-NLS-1$
       currentIp = newIp;
 
       try {
         Thread.sleep(wait);
-      }
-      catch (InterruptedException ex) {
+      } catch (InterruptedException ex) {
       }
     }
   }
@@ -79,10 +78,11 @@ public class IpWatch implements Runnable {
 
   public static void main(String[] args) {
     final IpWatch w = new IpWatch();
-    w.addPropertyChangeListener(evt -> {
-      System.out.println("Address = " + evt.getNewValue()); //$NON-NLS-1$
-    });
-    System.out.println("Address = " + w.getCurrentIp()); //$NON-NLS-1$
+    w.addPropertyChangeListener(
+        evt -> {
+          System.out.println("Address = " + evt.getNewValue()); // $NON-NLS-1$
+        });
+    System.out.println("Address = " + w.getCurrentIp()); // $NON-NLS-1$
     new Thread(w).start();
   }
 }

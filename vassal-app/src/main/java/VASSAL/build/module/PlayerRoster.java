@@ -42,18 +42,6 @@ import VASSAL.tools.LaunchButton;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.swing.FlowLabel;
-import net.miginfocom.swing.MigLayout;
-import org.netbeans.spi.wizard.WizardController;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -62,33 +50,47 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import net.miginfocom.swing.MigLayout;
+import org.netbeans.spi.wizard.WizardController;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
-/**
- * Maintains a list of players involved in the current game
- */
-public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder, GameComponent, GameSetupStep, ComponentDescription {
-  public static final String DESCRIPTION = "description"; //NON-NLS
+/** Maintains a list of players involved in the current game */
+public class PlayerRoster extends AbstractToolbarItem
+    implements CommandEncoder, GameComponent, GameSetupStep, ComponentDescription {
+  public static final String DESCRIPTION = "description"; // NON-NLS
 
-  public static final String BUTTON_ICON = "buttonIcon"; //$NON-NLS-1$
-  public static final String BUTTON_TEXT = "buttonText"; //$NON-NLS-1$
-  public static final String TOOL_TIP = "buttonToolTip"; //$NON-NLS-1$
-  public static final String BUTTON_KEYSTROKE = "buttonKeyStroke"; //$NON-NLS-1$
+  public static final String BUTTON_ICON = "buttonIcon"; // $NON-NLS-1$
+  public static final String BUTTON_TEXT = "buttonText"; // $NON-NLS-1$
+  public static final String TOOL_TIP = "buttonToolTip"; // $NON-NLS-1$
+  public static final String BUTTON_KEYSTROKE = "buttonKeyStroke"; // $NON-NLS-1$
 
-  public static final String SIDES = "sides"; //$NON-NLS-1$
-  public static final String COMMAND_PREFIX = "PLAYER\t"; //$NON-NLS-1$
-  public static final String REMOVE_PREFIX = "PYREMOVE\t"; //NON-NLS
-  public static final String OBSERVER = "<observer>"; //$NON-NLS-1$
+  public static final String SIDES = "sides"; // $NON-NLS-1$
+  public static final String COMMAND_PREFIX = "PLAYER\t"; // $NON-NLS-1$
+  public static final String REMOVE_PREFIX = "PYREMOVE\t"; // NON-NLS
+  public static final String OBSERVER = "<observer>"; // $NON-NLS-1$
 
-  public static final String SOLITAIRE = "Solitaire"; // Various common names for sides that have access to all pieces (and chess clocks) // NON-NLS
-  public static final String REFEREE   = "Referee";   // NON-NLS
-  public static final String SOLO      = "Solo";      // NON-NLS
+  public static final String SOLITAIRE =
+      "Solitaire"; // Various common names for sides that have access to all pieces (and chess
+  // clocks) // NON-NLS
+  public static final String REFEREE = "Referee"; // NON-NLS
+  public static final String SOLO = "Solo"; // NON-NLS
   public static final String MODERATOR = "Moderator"; // NON-NLS
 
   protected List<PlayerInfo> players = new ArrayList<>();
   protected List<String> sides = new ArrayList<>();
   protected String[] untranslatedSides;
 
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton retireButton;
 
@@ -100,7 +102,10 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
   protected String description;
 
-  /** Controls how the pick side drop-down interacts with the Startup Wizard. See below for full details */
+  /**
+   * Controls how the pick side drop-down interacts with the Startup Wizard. See below for full
+   * details
+   */
   protected boolean freshStart = true;
 
   public PlayerRoster() {
@@ -109,19 +114,19 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     setIconKey(BUTTON_ICON);
     setHotKeyKey(BUTTON_KEYSTROKE);
 
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("PlayerRoster.allow_another"),
-      Resources.getString("PlayerRoster.retire"),
-      "",
-      e -> launch()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("PlayerRoster.allow_another"),
+            Resources.getString("PlayerRoster.retire"),
+            "",
+            e -> launch()));
 
     getLaunchButton().setEnabled(false); // not usable without a game
     retireButton = getLaunchButton(); // for compatibility
 
-    setShowDisabledOptions(false); //AbstractToolbarItem
+    setShowDisabledOptions(false); // AbstractToolbarItem
 
-    translatedObserver = Resources.getString("PlayerRoster.observer"); //$NON-NLS-1$
+    translatedObserver = Resources.getString("PlayerRoster.observer"); // $NON-NLS-1$
   }
 
   @Override
@@ -133,8 +138,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   @Override
-  public void remove(Buildable child) {
-  }
+  public void remove(Buildable child) {}
 
   @Override
   public void build(Element e) {
@@ -149,32 +153,29 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
         // errors due to nonexistent "Retire" images, by ignoring
         // the buttonIcon attribute when the value is "Retire" but
         // no such image can be found in the archive.
-        if (BUTTON_ICON.equals(att.getName()) && //$NON-NLS-1$
-            "Retire".equals(att.getValue())) { //$NON-NLS-1$
+        if (BUTTON_ICON.equals(att.getName())
+            && //$NON-NLS-1$
+            "Retire".equals(att.getValue())) { // $NON-NLS-1$
           try {
             GameModule.getGameModule()
-                      .getDataArchive()
-                      .getInputStream(DataArchive.IMAGE_DIR + att.getValue());
-          }
-          catch (IOException ex) {
+                .getDataArchive()
+                .getInputStream(DataArchive.IMAGE_DIR + att.getValue());
+          } catch (IOException ex) {
             continue;
           }
         }
 
         getLaunchButton().setAttribute(att.getName(), att.getValue());
-        Localization.getInstance()
-                    .saveTranslatableAttribute(this, att.getName(),
-                                                     att.getValue());
+        Localization.getInstance().saveTranslatableAttribute(this, att.getName(), att.getValue());
       }
 
-      final NodeList n = e.getElementsByTagName("*"); //$NON-NLS-1$
+      final NodeList n = e.getElementsByTagName("*"); // $NON-NLS-1$
       sides.clear();
       for (int i = 0; i < n.getLength(); ++i) {
         final Element el = (Element) n.item(i);
         sides.add(Builder.getText(el));
       }
-      Localization.getInstance()
-                  .saveTranslatableAttribute(this, SIDES, getSidesAsString());
+      Localization.getInstance().saveTranslatableAttribute(this, SIDES, getSidesAsString());
     }
   }
 
@@ -184,12 +185,11 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PlayerRoster.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PlayerRoster.component_type"); // $NON-NLS-1$
   }
 
   @Override
-  public void add(Buildable child) {
-  }
+  public void add(Buildable child) {}
 
   @Override
   public Configurable[] getConfigureComponents() {
@@ -221,7 +221,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     }
 
     for (final String s : sides) {
-      final Element sub = doc.createElement("entry"); //$NON-NLS-1$
+      final Element sub = doc.createElement("entry"); // $NON-NLS-1$
       sub.appendChild(doc.createTextNode(s));
       el.appendChild(sub);
     }
@@ -230,8 +230,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   @Override
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-  }
+  public void addPropertyChangeListener(PropertyChangeListener l) {}
 
   public void addSideChangeListenerToInstance(SideChangeListener l) {
     sideChangeListeners.add(l);
@@ -243,7 +242,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html", "Definition_of_Player_Sides"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GameModule.html", "Definition_of_Player_Sides"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override
@@ -262,7 +262,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   /**
-   * Called when the Launch Button for the player roster is clicked (i.e. the "Retire" or "Change Sides" button)
+   * Called when the Launch Button for the player roster is clicked (i.e. the "Retire" or "Change
+   * Sides" button)
    */
   protected void launch() {
     final String mySide = getMySide();
@@ -281,13 +282,20 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
       return;
     }
 
-    final PlayerInfo me = new PlayerInfo(
-      GameModule.getActiveUserId(),
-      GlobalOptions.getInstance().getPlayerId(),
-      newSide
-    );
+    final PlayerInfo me =
+        new PlayerInfo(
+            GameModule.getActiveUserId(), GlobalOptions.getInstance().getPlayerId(), newSide);
 
-    Command c = new Chatter.DisplayText(gm.getChatter(), Resources.getString(GlobalOptions.getInstance().chatterHTMLSupport() ? "PlayerRoster.changed_sides_2" : "PlayerRoster.changed_sides", GameModule.getGameModule().getPrefs().getValue(GameModule.REAL_NAME), translateSide(mySide), translateSide(newSide)));
+    Command c =
+        new Chatter.DisplayText(
+            gm.getChatter(),
+            Resources.getString(
+                GlobalOptions.getInstance().chatterHTMLSupport()
+                    ? "PlayerRoster.changed_sides_2"
+                    : "PlayerRoster.changed_sides",
+                GameModule.getGameModule().getPrefs().getValue(GameModule.REAL_NAME),
+                translateSide(mySide),
+                translateSide(newSide)));
     c.execute();
 
     final Remove r = new Remove(this, GameModule.getActiveUserId());
@@ -342,9 +350,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
    */
   protected static List<String> getCurrentPasswords() {
     return List.of(
-      GameModule.getUserId(),
-      Resources.getString("Prefs.password_prompt", System.getProperty("user.name"))
-    );
+        GameModule.getUserId(),
+        Resources.getString("Prefs.password_prompt", System.getProperty("user.name")));
   }
 
   protected static String getMySide(boolean localized) {
@@ -372,15 +379,18 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   public String[] getUntranslatedSides() {
-    // If the module is loaded in the editor, the module translation step does not run, so the untranslated side
+    // If the module is loaded in the editor, the module translation step does not run, so the
+    // untranslated side
     // list will not have been set
     if (untranslatedSides == null) {
       untranslatedSides = sides.toArray(new String[0]);
     }
     return untranslatedSides;
   }
+
   /**
    * Adds a player to the list of active players occupying sides
+   *
    * @param playerId player unique id (password)
    * @param playerName player name
    * @param side player side
@@ -389,21 +399,21 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     final PlayerInfo e = new PlayerInfo(playerId, playerName, side);
     if (players.contains(e)) {
       players.set(players.indexOf(e), e);
-    }
-    else {
+    } else {
       players.add(e);
     }
 
     if (GameModule.getGameModule().isMultiPlayer()) {
       final Logger log = GameModule.getGameModule().getLogger();
       if (log instanceof BasicLogger) {
-        ((BasicLogger)log).setMultiPlayer(true);
+        ((BasicLogger) log).setMultiPlayer(true);
       }
     }
   }
 
   /**
    * Remove a player from the list of active players occupying sides
+   *
    * @param playerId player unique id (password)
    */
   public void remove(String playerId) {
@@ -432,12 +442,9 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     if (c instanceof Add) {
       final Add a = (Add) c;
       final SequenceEncoder se = new SequenceEncoder('\t');
-      se.append(a.id)
-        .append(a.name)
-        .append(a.side);
+      se.append(a.id).append(a.name).append(a.side);
       return COMMAND_PREFIX + se.getValue();
-    }
-    else if (c instanceof Remove) {
+    } else if (c instanceof Remove) {
       final Remove a = (Remove) c;
       final SequenceEncoder se = new SequenceEncoder('\t');
       se.append(a.id);
@@ -464,11 +471,10 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
       if (GameModule.getGameModule().isMultiPlayer()) {
         final Logger log = GameModule.getGameModule().getLogger();
         if (log instanceof BasicLogger) {
-          ((BasicLogger)log).setMultiPlayer(true);
+          ((BasicLogger) log).setMultiPlayer(true);
         }
       }
-    }
-    else {
+    } else {
       GameModule.setTempUserId(null);
       players.clear();
     }
@@ -476,35 +482,46 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     pickedSide = false;
   }
 
-  /**
-   * finish() step for Wizard
-   */
+  /** finish() step for Wizard */
   @Override
   public void finish() {
     final GameModule gm = GameModule.getGameModule();
-    // In case we set a new password at this step, update the prefs configurer, and write module preferences.
+    // In case we set a new password at this step, update the prefs configurer, and write module
+    // preferences.
     gm.getPasswordConfigurer().setValue(GameModule.getUserId());
     try {
       gm.getPrefs().save();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       gm.warn(Resources.getString("PlayerRoster.failed_pref_write", e.getLocalizedMessage()));
     }
 
-   // Drop into standard routine, starting with checking that the side is still available (race condition mitigation)
+    // Drop into standard routine, starting with checking that the side is still available (race
+    // condition mitigation)
     // returns untranslated side
     final String newSide = promptForSide(sideConfig.getValueString());
 
     // null is a cancel op - player will not connect to the game
     if (newSide != null) {
       if (gm.isMultiplayerConnected()) {
-        final Command c = new Chatter.DisplayText(gm.getChatter(), Resources.getString(GlobalOptions.getInstance().chatterHTMLSupport() ? "PlayerRoster.joined_side_2" : "PlayerRoster.joined_side", gm.getPrefs().getValue(GameModule.REAL_NAME), translateSide(newSide)));
+        final Command c =
+            new Chatter.DisplayText(
+                gm.getChatter(),
+                Resources.getString(
+                    GlobalOptions.getInstance().chatterHTMLSupport()
+                        ? "PlayerRoster.joined_side_2"
+                        : "PlayerRoster.joined_side",
+                    gm.getPrefs().getValue(GameModule.REAL_NAME),
+                    translateSide(newSide)));
         c.execute();
         gm.sendAndLog(c);
-
       }
 
-      final Add a = new Add(this, GameModule.getActiveUserId(), GlobalOptions.getInstance().getPlayerId(), newSide);
+      final Add a =
+          new Add(
+              this,
+              GameModule.getActiveUserId(),
+              GlobalOptions.getInstance().getPlayerId(),
+              newSide);
       a.execute();
       gm.sendAndLog(a);
 
@@ -534,57 +551,71 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     availableSides.add(0, translatedObserver);
     //
     // *** WARNING*** Major Fudge Alert
-    // The following code is completely ridiculous, but necessary as we have no access to the inner workings of
+    // The following code is completely ridiculous, but necessary as we have no access to the inner
+    // workings of
     // the Wizard.
     //
-    // PlayerRoster.getControls() is called each time a PDS is selected, either from a PDS menu option
+    // PlayerRoster.getControls() is called each time a PDS is selected, either from a PDS menu
+    // option
     // OR each time a PDS is selected from the wizard drop-down menu.
     //
-    // There is a bug in the Wizard (or we are not using it properly) so that if the 'Prev' button is pressed
-    // to return from the side selection page to the Scenario selection page, then a new Scenario is selected,
-    // then 'Next' is pressed, then the previously generated Side selection page is used EVEN THOUGH the wizard
-    // has just called here to create a new set of controls. This new set of controls is added to a page that
-    // is never shown, the user is shown the old out-of-date drop-down for the previous scenario selected
+    // There is a bug in the Wizard (or we are not using it properly) so that if the 'Prev' button
+    // is pressed
+    // to return from the side selection page to the Scenario selection page, then a new Scenario is
+    // selected,
+    // then 'Next' is pressed, then the previously generated Side selection page is used EVEN THOUGH
+    // the wizard
+    // has just called here to create a new set of controls. This new set of controls is added to a
+    // page that
+    // is never shown, the user is shown the old out-of-date drop-down for the previous scenario
+    // selected
     //
     // The work-around is to
     // a) reuse sideConfig rather than regenerate it, so the existing Wizard page sees the changes
     // and
-    // b) return a set of dummy controls that get attached to the page that is never seen. If we return the
-    //    sideConfig controls again, they get removed from the existing page, since a Swing component can only
+    // b) return a set of dummy controls that get attached to the page that is never seen. If we
+    // return the
+    //    sideConfig controls again, they get removed from the existing page, since a Swing
+    // component can only
     //    be attached to one parent.
     //
-    // If the Wizard fully completes (PlayerRoster.finish() is called) OR is cancelled (PlayerRoster.reset() is called)
-    // then we do want to return the real sideConfig controls for the next full Wizard. The freshStart variable tracks this.
+    // If the Wizard fully completes (PlayerRoster.finish() is called) OR is cancelled
+    // (PlayerRoster.reset() is called)
+    // then we do want to return the real sideConfig controls for the next full Wizard. The
+    // freshStart variable tracks this.
     //
     final Component controls;
     if (sideConfig == null || freshStart) {
-      sideConfig = new StringEnumConfigurer(null,
-        Resources.getString("PlayerRoster.join_game_as"), //$NON-NLS-1$
-        availableSides.toArray(new String[0]));
+      sideConfig =
+          new StringEnumConfigurer(
+              null,
+              Resources.getString("PlayerRoster.join_game_as"), // $NON-NLS-1$
+              availableSides.toArray(new String[0]));
       controls = sideConfig.getControls();
       freshStart = false;
-    }
-    else {
+    } else {
       sideConfig.setValidValues(availableSides.toArray(new String[0]));
       controls = new JPanel();
     }
     sideConfig.setValue(translatedObserver);
 
     // If they have a non-blank password already, then we just return the side-picking controls
-    final String pwd = (String)GameModule.getGameModule().getPrefs().getValue(GameModule.SECRET_NAME);
+    final String pwd =
+        (String) GameModule.getGameModule().getPrefs().getValue(GameModule.SECRET_NAME);
     if (!forcePwd || ((pwd != null) && !pwd.isEmpty())) {
       return controls;
     }
 
     // Or, if they haven't set a password yet, we plead with them to set one.
-    final JPanel panel = new JPanel(new MigLayout("ins 0", "[]", "[]para[]rel[]")); //NON-NLS
-    panel.add(sideConfig.getControls(), "wrap"); //NON-NLS
+    final JPanel panel = new JPanel(new MigLayout("ins 0", "[]", "[]para[]rel[]")); // NON-NLS
+    panel.add(sideConfig.getControls(), "wrap"); // NON-NLS
 
-    final FlowLabel message = new FlowLabel(Resources.getString("PlayerRoster.need_non_blank_password"));
-    panel.add(message, "wrap"); //NON-NLS
+    final FlowLabel message =
+        new FlowLabel(Resources.getString("PlayerRoster.need_non_blank_password"));
+    panel.add(message, "wrap"); // NON-NLS
 
     final JLabel label = new JLabel(Resources.getString("PlayerRoster.please_set_your_password"));
-    panel.add(label, "split 2"); //NON-NLS
+    panel.add(label, "split 2"); // NON-NLS
 
     tpc = new ToggleablePasswordConfigurer(GameModule.SECRET_NAME, "", "");
     tpc.addPropertyChangeListener(evt -> GameModule.setUserId((String) evt.getNewValue()));
@@ -600,7 +631,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
    */
   @Override
   public String getStepTitle() {
-    return Resources.getString("PlayerRoster.choose_side"); //$NON-NLS-1$
+    return Resources.getString("PlayerRoster.choose_side"); // $NON-NLS-1$
   }
 
   private ToggleablePasswordConfigurer tpc;
@@ -612,11 +643,11 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
       return;
     }
 
-    final String pwd = (String)GameModule.getGameModule().getPrefs().getValue(GameModule.SECRET_NAME);
+    final String pwd =
+        (String) GameModule.getGameModule().getPrefs().getValue(GameModule.SECRET_NAME);
     if ((pwd != null) && !pwd.isEmpty()) {
       wc.setProblem(null);
-    }
-    else {
+    } else {
       wc.setProblem(Resources.getString("PlayerRoster.please_set_non_blank_password"));
     }
   }
@@ -626,15 +657,15 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     this.wc = wc;
 
     if (forcePwd && (wc != null) && (tpc != null)) {
-      tpc.addPropertyChangeListener(evt -> {
-        final String newPwd = (String) evt.getNewValue();
-        if (newPwd.isEmpty()) {
-          wc.setProblem(Resources.getString("PlayerRoster.please_set_non_blank_password"));
-        }
-        else {
-          wc.setProblem(null);
-        }
-      });
+      tpc.addPropertyChangeListener(
+          evt -> {
+            final String newPwd = (String) evt.getNewValue();
+            if (newPwd.isEmpty()) {
+              wc.setProblem(Resources.getString("PlayerRoster.please_set_non_blank_password"));
+            } else {
+              wc.setProblem(null);
+            }
+          });
       SwingUtilities.invokeLater(this::validatePassword);
     }
   }
@@ -645,6 +676,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
   /**
    * Implement GameSetupStep for Wizard
+   *
    * @return true if Wizard GameSetupStep is finished
    */
   @Override
@@ -662,10 +694,9 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
     // If we are already recorded as a player (i.e. in Saved Game), then
     // the step is only finished if we are not the Observer.
-    final PlayerInfo newPlayerInfo = new PlayerInfo(
-      GameModule.getActiveUserId(),
-      GlobalOptions.getInstance().getPlayerId(), null
-    );
+    final PlayerInfo newPlayerInfo =
+        new PlayerInfo(
+            GameModule.getActiveUserId(), GlobalOptions.getInstance().getPlayerId(), null);
 
     final int i = players.indexOf(newPlayerInfo);
     // true if step is finished
@@ -673,7 +704,6 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   /**
-   *
    * @return true if all sides have been claimed by a player
    */
   protected boolean allSidesAllocated() {
@@ -691,21 +721,22 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
    * @return True if the side is "Solitaire", "Solo", "Moderator", or "Referee"
    */
   public static boolean isTranslatedSoloSide(String side) {
-    return Resources.getString("PlayerRoster.solitaire").equals(side) ||
-           Resources.getString("PlayerRoster.solo").equals(side) ||
-           Resources.getString("PlayerRoster.moderator").equals(side) ||
-           Resources.getString("PlayerRoster.referee").equals(side);
+    return Resources.getString("PlayerRoster.solitaire").equals(side)
+        || Resources.getString("PlayerRoster.solo").equals(side)
+        || Resources.getString("PlayerRoster.moderator").equals(side)
+        || Resources.getString("PlayerRoster.referee").equals(side);
   }
 
   public static boolean isSoloSide(String side) {
-    return SOLITAIRE.equals(side) ||
-      SOLO.equals(side) ||
-      MODERATOR.equals(side) ||
-      REFEREE.equals(side);
+    return SOLITAIRE.equals(side)
+        || SOLO.equals(side)
+        || MODERATOR.equals(side)
+        || REFEREE.equals(side);
   }
 
   /**
-   * @return True if this is currently a multiPlayer game (either connected to a server, or more than one player side allocated)
+   * @return True if this is currently a multiPlayer game (either connected to a server, or more
+   *     than one player side allocated)
    */
   public boolean isMultiPlayer() {
     if (!sides.isEmpty()) {
@@ -715,8 +746,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
         if (sides.contains(p.side)) takenSideCount++;
       }
       return takenSideCount > 1;
-    }
-    else {
+    } else {
       // No sides, need to check Observer Count
       return players.size() > 1;
     }
@@ -724,6 +754,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
   /**
    * Claims an existing slot for the current player, and sets our temporary user id appropriately
+   *
    * @param index The index of the slot to be claimed in the roster
    */
   protected void claimSlot(int index) {
@@ -734,7 +765,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   /**
-   * Claims the appropriate occupied side, if any, for the current player. If more than one is available, prompts.
+   * Claims the appropriate occupied side, if any, for the current player. If more than one is
+   * available, prompts.
    */
   protected void claimOccupiedSide() {
     final List<Integer> indices = new ArrayList<>();
@@ -747,7 +779,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     if (r != null) {
       int index = 0;
 
-      // First check for passwords that either (a) precisely match our actual *current* password, or (b) match our non-blank default password
+      // First check for passwords that either (a) precisely match our actual *current* password, or
+      // (b) match our non-blank default password
       for (final PlayerInfo pi : r.getPlayers()) {
         if (pwdsToMatch.contains(pi.playerId)) {
           allowedSides.add(pi);
@@ -756,7 +789,8 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
         index++;
       }
 
-      // Only if we don't match *any* of those do we try auto-matching a blank password, and then only for non-observer slots
+      // Only if we don't match *any* of those do we try auto-matching a blank password, and then
+      // only for non-observer slots
       if (allowedSides.isEmpty()) {
         index = 0;
         for (final PlayerInfo pi : r.getPlayers()) {
@@ -774,8 +808,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
     if (allowedSides.isEmpty()) {
       return;
-    }
-    else if ((allowedSides.size() == 1) && (!blankMatch || allSidesAllocated())) {
+    } else if ((allowedSides.size() == 1) && (!blankMatch || allSidesAllocated())) {
       claimSlot(indices.get(0));
       return;
     }
@@ -784,32 +817,32 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
       final String s;
       if (p.playerId.equals(GameModule.getUserId())) {
         s = Resources.getString("PlayerRoster.current_password");
-      }
-      else if (p.playerId.isEmpty()) {
+      } else if (p.playerId.isEmpty()) {
         s = Resources.getString("PlayerRoster.empty_password");
-      }
-      else {
+      } else {
         // must be the "UserName's Password" version
         s = Resources.getString("PlayerRoster.quoted_password", p.playerId);
       }
 
-      availableNames.add(Resources.getString("PlayerRoster.occupied_side", p.getLocalizedSide(), s));
+      availableNames.add(
+          Resources.getString("PlayerRoster.occupied_side", p.getLocalizedSide(), s));
     }
 
     if (blankMatch) {
-      availableNames.add(Resources.getString("PlayerRoster.none_of_the_above")); //NON-NLS
+      availableNames.add(Resources.getString("PlayerRoster.none_of_the_above")); // NON-NLS
     }
 
     final GameModule g = GameModule.getGameModule();
-    final String choice = (String) JOptionPane.showInputDialog(
-      g.getPlayerWindow(),
-      Resources.getString("PlayerRoster.pick_an_occupied_side"),
-      Resources.getString("PlayerRoster.choose_side"),
-      JOptionPane.QUESTION_MESSAGE,
-      null,
-      availableNames.toArray(new String[0]),
-      availableNames.get(0)
-    );
+    final String choice =
+        (String)
+            JOptionPane.showInputDialog(
+                g.getPlayerWindow(),
+                Resources.getString("PlayerRoster.pick_an_occupied_side"),
+                Resources.getString("PlayerRoster.choose_side"),
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                availableNames.toArray(new String[0]),
+                availableNames.get(0));
 
     final int pick = availableNames.indexOf(choice);
     if ((pick >= 0) && (pick < indices.size())) {
@@ -837,12 +870,11 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     final boolean alreadyConnected;
     if (newSide != null && newSide.isEmpty()) {
       alreadyConnected = true;
-    }
-    else {
-      if (newSide == null || translatedObserver.equals(newSide)) { // Observer checked and returned translated here
+    } else {
+      if (newSide == null
+          || translatedObserver.equals(newSide)) { // Observer checked and returned translated here
         return OBSERVER;
-      }
-      else {
+      } else {
         alreadyConnected = false;
       }
     }
@@ -852,7 +884,9 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     final List<String> alreadyTaken = new ArrayList<>();
     final GameModule g = GameModule.getGameModule();
 
-    while (newSide != null) { // Loops until a valid side is found or op is canceled (repeats side check to minimise race condition window)
+    while (newSide
+        != null) { // Loops until a valid side is found or op is canceled (repeats side check to
+      // minimise race condition window)
       // Refresh from current game state
       for (final PlayerInfo p : players) {
         alreadyTaken.add(p.getLocalizedSide());
@@ -867,8 +901,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
         // side is returned in English for sharing in the game.
         newSide = untranslateSide(newSide);
         break;
-      }
-      else {
+      } else {
         // Set up for another try...
         availableSides.clear();
         availableSides.addAll(sides);
@@ -878,18 +911,33 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
       String nextChoice = translatedObserver; // default for dropdown
 
       // When player is already connected, offer a hot-seat...
-      // If a "real" player side is available, we want to offer "the next one" as the default, rather than observer.
-      // Thus, hotseat players can easily cycle through the player positions as they will appear successively as the default.
-      // Common names for Solitaire players (Solitaire, Solo, Referee) do not count as "real" player sides, and will be skipped.
-      // If we have no "next" side available to offer, we stay with the observer side as our default offering.
+      // If a "real" player side is available, we want to offer "the next one" as the default,
+      // rather than observer.
+      // Thus, hotseat players can easily cycle through the player positions as they will appear
+      // successively as the default.
+      // Common names for Solitaire players (Solitaire, Solo, Referee) do not count as "real" player
+      // sides, and will be skipped.
+      // If we have no "next" side available to offer, we stay with the observer side as our default
+      // offering.
       if (alreadyConnected) {
-        final String mySide = getMyLocalizedSide(); // Get our own side, so we can find the "next" one
-        final int myidx = (mySide != null) ? sides.indexOf(mySide) : -1; // See if we have a current non-observe side.
-        int i = (myidx >= 0) ? ((myidx + 1) % sides.size()) : 0;   // If we do, start looking in the "next" slot, otherwise start at beginning.
-        for (int tries = 0; i != myidx && tries < sides.size(); i = (i + 1) % sides.size(), tries++) { // Wrap-around search of sides
+        final String mySide =
+            getMyLocalizedSide(); // Get our own side, so we can find the "next" one
+        final int myidx =
+            (mySide != null)
+                ? sides.indexOf(mySide)
+                : -1; // See if we have a current non-observe side.
+        int i =
+            (myidx >= 0)
+                ? ((myidx + 1) % sides.size())
+                : 0; // If we do, start looking in the "next" slot, otherwise start at beginning.
+        for (int tries = 0;
+            i != myidx && tries < sides.size();
+            i = (i + 1) % sides.size(), tries++) { // Wrap-around search of sides
           final String s = sides.get(i);
           if (!alreadyTaken.contains(s) && !isSoloSide(untranslateSide(s))) {
-            nextChoice = sides.get(i); // Found an available slot that's not our current one and not a "solo" slot.
+            nextChoice =
+                sides.get(
+                    i); // Found an available slot that's not our current one and not a "solo" slot.
             break;
           }
         }
@@ -897,21 +945,28 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
       availableSides.add(0, translatedObserver);
 
-      newSide = (String) JOptionPane.showInputDialog(
-              g.getPlayerWindow(),
-              newSide.isEmpty() ? Resources.getString("PlayerRoster.switch_sides", getMyLocalizedSide()) : Resources.getString("PlayerRoster.switch_sides2", newSide, getMyLocalizedSide()), //$NON-NLS-1$
-              Resources.getString("PlayerRoster.choose_side"), //$NON-NLS-1$
-              JOptionPane.QUESTION_MESSAGE,
-              null,
-              availableSides.toArray(new String[0]),
-              nextChoice // Offer calculated most likely "next side" as the default
-      );
+      newSide =
+          (String)
+              JOptionPane.showInputDialog(
+                  g.getPlayerWindow(),
+                  newSide.isEmpty()
+                      ? Resources.getString("PlayerRoster.switch_sides", getMyLocalizedSide())
+                      : Resources.getString(
+                          "PlayerRoster.switch_sides2",
+                          newSide,
+                          getMyLocalizedSide()), //$NON-NLS-1$
+                  Resources.getString("PlayerRoster.choose_side"), // $NON-NLS-1$
+                  JOptionPane.QUESTION_MESSAGE,
+                  null,
+                  availableSides.toArray(new String[0]),
+                  nextChoice // Offer calculated most likely "next side" as the default
+                  );
 
       // side must be returned in English
-      if (translatedObserver.equals(newSide)) { // Observer returns here, other returns are checked once more.
+      if (translatedObserver.equals(
+          newSide)) { // Observer returns here, other returns are checked once more.
         return OBSERVER;
-      }
-      else {
+      } else {
         alreadyTaken.clear(); // prepare to loop again for exit check
       }
     }
@@ -933,8 +988,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     public boolean equals(Object o) {
       if (o instanceof PlayerInfo && playerId != null) {
         return playerId.equals(((PlayerInfo) o).playerId);
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -963,8 +1017,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     private final String name;
     private final String side;
 
-    public Add(PlayerRoster r, String playerId,
-               String playerName, String side) {
+    public Add(PlayerRoster r, String playerId, String playerName, String side) {
       roster = r;
       id = playerId;
       name = playerName;
@@ -1002,7 +1055,6 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     }
   }
 
-
   /** Call-back interface for when a player changes sides during a game */
   @FunctionalInterface
   public interface SideChangeListener {
@@ -1014,12 +1066,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   @Override
   public String[] getAttributeNames() {
     return new String[] {
-      DESCRIPTION,
-      SIDES,
-      BUTTON_TEXT,
-      TOOL_TIP,
-      BUTTON_ICON,
-      BUTTON_KEYSTROKE,
+      DESCRIPTION, SIDES, BUTTON_TEXT, TOOL_TIP, BUTTON_ICON, BUTTON_KEYSTROKE,
     };
   }
 
@@ -1039,8 +1086,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   public String getAttributeValueString(String key) {
     if (SIDES.equals(key)) {
       return getSidesAsString();
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
     }
     return super.getAttributeValueString(key);
@@ -1053,20 +1099,18 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   public void setAttribute(String key, Object value) {
     if (SIDES.equals(key)) {
       untranslatedSides = sides.toArray(new String[0]);
-      // When the module is being translated, the translated sides are passed in as a comma delimited string, not as an array
+      // When the module is being translated, the translated sides are passed in as a comma
+      // delimited string, not as an array
       if (value instanceof String) {
         setSidesFromString((String) value);
-      }
-      else {
+      } else {
         final String[] s = (String[]) value;
         sides = new ArrayList<>(s.length);
         Collections.addAll(sides, s);
       }
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)value;
-    }
-    else {
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) value;
+    } else {
       super.setAttribute(key, value);
     }
   }
@@ -1077,18 +1121,23 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
   }
 
   /**
-   * Set a new set of side names from a translation
-   * DO NOT apply if the number of sides does not match the number of currently defined sides as
-   * there is no way to tell which translation applies to which existing side
-   * @param newSides  Comma delimited string of translated sides
+   * Set a new set of side names from a translation DO NOT apply if the number of sides does not
+   * match the number of currently defined sides as there is no way to tell which translation
+   * applies to which existing side
+   *
+   * @param newSides Comma delimited string of translated sides
    */
   protected void setSidesFromString(String newSides) {
     final String[] newSideArray = StringArrayConfigurer.stringToArray(newSides);
     if (newSideArray.length == untranslatedSides.length) {
       sides = Arrays.asList(StringArrayConfigurer.stringToArray(newSides));
-    }
-    else {
-      GameModule.getGameModule().warn(Resources.getString("PlayerRoster.side_translation_error", untranslatedSides.length, newSideArray.length));
+    } else {
+      GameModule.getGameModule()
+          .warn(
+              Resources.getString(
+                  "PlayerRoster.side_translation_error",
+                  untranslatedSides.length,
+                  newSideArray.length));
     }
   }
 
@@ -1139,6 +1188,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
@@ -1165,9 +1215,7 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
     return true;
   }
 
-  /**
-   * Validator to check that the correct number of sides exist in any translations
-   */
+  /** Validator to check that the correct number of sides exist in any translations */
   private static class SideTranslationValidator implements ValidityChecker {
 
     @Override
@@ -1176,17 +1224,19 @@ public class PlayerRoster extends AbstractToolbarItem implements CommandEncoder,
         final PlayerRoster pr = (PlayerRoster) target;
         for (final String language : Localization.getInstance().getTranslationList()) {
           final Translation translation = Localization.getInstance().getTranslation(language);
-          final String translatedSides = translation.translate(pr.getI18nData().getPrefix() + SIDES);
+          final String translatedSides =
+              translation.translate(pr.getI18nData().getPrefix() + SIDES);
           if (translatedSides != null && !translatedSides.isEmpty()) {
             final int translatedSideCount = translatedSides.split(",").length;
             final int untranslatedSideCount = pr.sides.size();
             if (translatedSideCount != untranslatedSideCount) {
-              report.addWarning(Resources.getString(
-                "Editor.ValidityChecker.side_warning",
-                language,
-                translatedSideCount,
-                ConfigureTree.getConfigureName(target.getClass()),
-                untranslatedSideCount));
+              report.addWarning(
+                  Resources.getString(
+                      "Editor.ValidityChecker.side_warning",
+                      language,
+                      translatedSideCount,
+                      ConfigureTree.getConfigureName(target.getClass()),
+                      untranslatedSideCount));
             }
           }
         }

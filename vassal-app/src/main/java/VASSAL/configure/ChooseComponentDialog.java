@@ -23,7 +23,8 @@ import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ScrollPane;
 import VASSAL.tools.swing.SwingUtils;
-
+import java.awt.Frame;
+import java.awt.event.MouseEvent;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,12 +34,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.Frame;
-import java.awt.event.MouseEvent;
 
-/**
- * Dialog that prompts the user to select a component from the {@link ConfigureTree}
- */
+/** Dialog that prompts the user to select a component from the {@link ConfigureTree} */
 public class ChooseComponentDialog extends JDialog implements TreeSelectionListener {
   private static final long serialVersionUID = 1L;
 
@@ -52,22 +49,21 @@ public class ChooseComponentDialog extends JDialog implements TreeSelectionListe
     this.targetClass = targetClass;
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-    tree = new ConfigureTree(GameModule.getGameModule(), null, null, true) {
-      private static final long serialVersionUID = 1L;
+    tree =
+        new ConfigureTree(GameModule.getGameModule(), null, null, true) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void mousePressed(MouseEvent e) {
-      }
+          @Override
+          public void mousePressed(MouseEvent e) {}
 
-      @Override
-      public void mouseReleased(MouseEvent e) {
-      }
+          @Override
+          public void mouseReleased(MouseEvent e) {}
 
-      @Override
-      protected Action buildEditAction(Configurable target) {
-        return null;
-      }
-    };
+          @Override
+          protected Action buildEditAction(Configurable target) {
+            return null;
+          }
+        };
     tree.addTreeSelectionListener(this);
     add(new ScrollPane(tree));
     final Box b = Box.createHorizontalBox();
@@ -75,10 +71,11 @@ public class ChooseComponentDialog extends JDialog implements TreeSelectionListe
     okButton.setEnabled(false);
     okButton.addActionListener(e -> dispose());
     final JButton cancelButton = new JButton(Resources.getString("General.cancel"));
-    cancelButton.addActionListener(e -> {
-      target = null;
-      dispose();
-    });
+    cancelButton.addActionListener(
+        e -> {
+          target = null;
+          dispose();
+        });
     b.add(okButton);
     b.add(cancelButton);
     add(b);
@@ -95,7 +92,8 @@ public class ChooseComponentDialog extends JDialog implements TreeSelectionListe
     target = null;
     final TreePath path = tree.getSelectionPath();
     if (path != null) {
-      final Object selected = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+      final Object selected =
+          ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
       enabled = isValidTarget(selected);
       if (enabled) {
         target = (Configurable) selected;

@@ -18,8 +18,8 @@
 package VASSAL.build;
 
 /**
- * An Exception indicating that an illegal operation was performed
- * when building a Buildable component.
+ * An Exception indicating that an illegal operation was performed when building a Buildable
+ * component.
  */
 public class IllegalBuildException extends RuntimeException {
   private static final long serialVersionUID = 1L;

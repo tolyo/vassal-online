@@ -18,21 +18,17 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.opcache.OpObserver;
 import java.awt.image.BufferedImage;
 
-import VASSAL.tools.opcache.OpObserver;
-
 /**
- * <code>ImageOpObserver</code>s can be notified on the completion
- * of an <code>ImageOp</code>.
+ * <code>ImageOpObserver</code>s can be notified on the completion of an <code>ImageOp</code>.
  *
- * <p>Objects implementing <code>ImageOpObserver</code> are intended to
- * be passed as an argument to {link ImageOp.getImage}, which which
- * call back {@link #imageOpChange} on completion.</p>
+ * <p>Objects implementing <code>ImageOpObserver</code> are intended to be passed as an argument to
+ * {link ImageOp.getImage}, which which call back {@link #imageOpChange} on completion.
  *
- * <p>The most common implementation of this interface is {@link Repainter},
- * which can be used to repaint portions of {@link java.awt.Component}s
- * which are waiting for images to be computed.</p>
+ * <p>The most common implementation of this interface is {@link Repainter}, which can be used to
+ * repaint portions of {@link java.awt.Component}s which are waiting for images to be computed.
  *
  * @since 3.1.0
  * @author Joel Uckelman

@@ -16,11 +16,6 @@
  */
 package VASSAL.build.module;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -36,40 +31,41 @@ import VASSAL.configure.StringEnumConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
 import VASSAL.tools.FormattedString;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Brent Easton
- *
- * Internet Die Roller Manager. Includes all the smarts to interface to web-based
- * Die Servers
+ *     <p>Internet Die Roller Manager. Includes all the smarts to interface to web-based Die Servers
  */
-
 public class DieManager extends AbstractConfigurable {
   private final Map<String, DieServer> servers;
   private final List<InternetDiceButton> dieButtons = new ArrayList<>();
-  private String desc = "Die Manager"; //NON-NLS
+  private String desc = "Die Manager"; // NON-NLS
   private boolean useMultiRoll;
   private int defaultNDice = 2;
   private int defaultNSides = 6;
 
   private DieServer server;
-  private String lastServerName = ""; //NON-NLS
+  private String lastServerName = ""; // NON-NLS
   private MultiRoll myMultiRoll;
   final StringEnumConfigurer semail;
 
-  public static final String USE_INTERNET_DICE = "useinternetdice"; //NON-NLS
-  public static final String DICE_SERVER = "diceserver"; //NON-NLS
-  public static final String SERVER_PW = "serverpw"; //NON-NLS
-  public static final String USE_EMAIL = "useemail"; //NON-NLS
-  public static final String PRIMARY_EMAIL = "primaryemail"; //NON-NLS
-  public static final String SECONDARY_EMAIL = "secondaryemail"; //NON-NLS
-  public static final String ADDRESS_BOOK = "addressbook"; //NON-NLS
-  public static final String MULTI_ROLL = "multiroll"; //NON-NLS
-  public static final String DIE_MANAGER = "Internet Die Roller"; //NON-NLS
+  public static final String USE_INTERNET_DICE = "useinternetdice"; // NON-NLS
+  public static final String DICE_SERVER = "diceserver"; // NON-NLS
+  public static final String SERVER_PW = "serverpw"; // NON-NLS
+  public static final String USE_EMAIL = "useemail"; // NON-NLS
+  public static final String PRIMARY_EMAIL = "primaryemail"; // NON-NLS
+  public static final String SECONDARY_EMAIL = "secondaryemail"; // NON-NLS
+  public static final String ADDRESS_BOOK = "addressbook"; // NON-NLS
+  public static final String MULTI_ROLL = "multiroll"; // NON-NLS
+  public static final String DIE_MANAGER = "Internet Die Roller"; // NON-NLS
 
-  public static final String DESC = "description"; //NON-NLS
-  public static final String DFLT_NSIDES = "dfltnsides"; //NON-NLS
-  public static final String DFLT_NDICE = "dfltndice"; //NON-NLS
+  public static final String DESC = "description"; // NON-NLS
+  public static final String DFLT_NSIDES = "dfltnsides"; // NON-NLS
+  public static final String DFLT_NDICE = "dfltndice"; // NON-NLS
 
   public DieManager() {
 
@@ -79,18 +75,18 @@ public class DieManager extends AbstractConfigurable {
     /*
      * Create the Internet Dice Servers we know about
      */
-//    d = new InbuiltDieServer();
-//    servers.put(d.getName(), d);
-//    server = d; // Set the default Internet Server
+    //    d = new InbuiltDieServer();
+    //    servers.put(d.getName(), d);
+    //    server = d; // Set the default Internet Server
 
-//        d = new IronyDieServer();
-//        servers.put(d.getName(), d);
-//
-//        d = new InternetGamesDieServer();
-//        servers.put(d.getName(), d);
+    //        d = new IronyDieServer();
+    //        servers.put(d.getName(), d);
+    //
+    //        d = new InternetGamesDieServer();
+    //        servers.put(d.getName(), d);
 
-//    d = new ShadowDiceDieServer();
-//    servers.put(d.getName(), d);
+    //    d = new ShadowDiceDieServer();
+    //    servers.put(d.getName(), d);
 
     d = new BonesDiceServer();
     servers.put(d.getName(), d);
@@ -101,20 +97,23 @@ public class DieManager extends AbstractConfigurable {
      * The Dice Manager needs some preferences
      */
 
-    final StringEnumConfigurer dieserver = new StringEnumConfigurer(DICE_SERVER, "Internet Dice Server", getDescriptions());
+    final StringEnumConfigurer dieserver =
+        new StringEnumConfigurer(DICE_SERVER, "Internet Dice Server", getDescriptions());
     dieserver.setValue(server.getDescription());
     final StringConfigurer serverpw = new StringConfigurer(SERVER_PW, "Dice Server Password");
     final BooleanConfigurer useemail = new BooleanConfigurer(USE_EMAIL, "Email results?");
     final StringConfigurer pemail = new StringConfigurer(PRIMARY_EMAIL, "Primary Email");
     final StringArrayConfigurer abook = new StringArrayConfigurer(ADDRESS_BOOK, "Address Book");
-    final BooleanConfigurer multiroll = new BooleanConfigurer(MULTI_ROLL, "Put multiple rolls into single email");
+    final BooleanConfigurer multiroll =
+        new BooleanConfigurer(MULTI_ROLL, "Put multiple rolls into single email");
 
     GameModule.getGameModule().getPrefs().addOption(null, dieserver);
     GameModule.getGameModule().getPrefs().addOption(null, serverpw);
     GameModule.getGameModule().getPrefs().addOption(DIE_MANAGER, useemail);
 
     GameModule.getGameModule().getPrefs().addOption(DIE_MANAGER, abook);
-    final String[] addressList = (String[]) GameModule.getGameModule().getPrefs().getValue(ADDRESS_BOOK);
+    final String[] addressList =
+        (String[]) GameModule.getGameModule().getPrefs().getValue(ADDRESS_BOOK);
     semail = new StringEnumConfigurer(SECONDARY_EMAIL, "Secondary Email", addressList);
 
     GameModule.getGameModule().getPrefs().addOption(DIE_MANAGER, pemail);
@@ -126,30 +125,30 @@ public class DieManager extends AbstractConfigurable {
   }
 
   public void setSemailValues() {
-    final String currentSemail = (String) GameModule.getGameModule().getPrefs().getValue(SECONDARY_EMAIL);
-    final String[] addressBook = (String[]) GameModule.getGameModule().getPrefs().getValue(ADDRESS_BOOK);
+    final String currentSemail =
+        (String) GameModule.getGameModule().getPrefs().getValue(SECONDARY_EMAIL);
+    final String[] addressBook =
+        (String[]) GameModule.getGameModule().getPrefs().getValue(ADDRESS_BOOK);
     semail.setValidValues(addressBook);
     semail.setValue(currentSemail);
   }
 
   // Return names of all known Dice Servers
   public String[] getNames() {
-// FIXME: better to return zero-length array
+    // FIXME: better to return zero-length array
     if (servers == null) {
       return null;
-    }
-    else {
+    } else {
       return servers.keySet().toArray(new String[0]);
     }
   }
 
   // Return descriptions of all known dice servers
   public String[] getDescriptions() {
-// FIXME: better to return zero-length array
+    // FIXME: better to return zero-length array
     if (servers == null) {
       return null;
-    }
-    else {
+    } else {
       final String[] s = new String[servers.size()];
       int i = 0;
       for (final DieServer d : servers.values()) {
@@ -205,7 +204,13 @@ public class DieManager extends AbstractConfigurable {
     return myMultiRoll;
   }
 
-  public void roll(int nDice, int nSides, int plus, boolean reportTotal, String description, FormattedString format) {
+  public void roll(
+      int nDice,
+      int nSides,
+      int plus,
+      boolean reportTotal,
+      String description,
+      FormattedString format) {
     final MultiRoll mroll = getMultiRoll(nDice, nSides);
     getPrefs();
 
@@ -235,22 +240,28 @@ public class DieManager extends AbstractConfigurable {
       desc = "";
     }
 
-    final Command chatCommand = new Chatter.DisplayText(GameModule.getGameModule().getChatter(),
-                                                  " - Roll sent to " + server.getDescription());
+    final Command chatCommand =
+        new Chatter.DisplayText(
+            GameModule.getGameModule().getChatter(), " - Roll sent to " + server.getDescription());
 
     if (desc == null || desc.length() == 0) {
       desc = GameModule.getGameModule().getChatter().getInputField().getText();
     }
     if (server.getUseEmail()) {
       if (desc == null || desc.length() == 0) {
-        chatCommand.append(new Chatter.DisplayText(GameModule.getGameModule().getChatter(),
-                                                   " - Emailing " + server.getSecondaryEmail() + " (no subject line)"));
-        chatCommand.append(new Chatter.DisplayText(GameModule.getGameModule().getChatter(),
-                                                   " - Leave text in the chat input area to provide a subject line"));
-      }
-      else {
-        chatCommand.append(new Chatter.DisplayText(GameModule.getGameModule().getChatter(),
-                                                   " - Emailing " + server.getSecondaryEmail() + " (Subject:  " + desc + ")"));
+        chatCommand.append(
+            new Chatter.DisplayText(
+                GameModule.getGameModule().getChatter(),
+                " - Emailing " + server.getSecondaryEmail() + " (no subject line)"));
+        chatCommand.append(
+            new Chatter.DisplayText(
+                GameModule.getGameModule().getChatter(),
+                " - Leave text in the chat input area to provide a subject line"));
+      } else {
+        chatCommand.append(
+            new Chatter.DisplayText(
+                GameModule.getGameModule().getChatter(),
+                " - Emailing " + server.getSecondaryEmail() + " (Subject:  " + desc + ")"));
       }
     }
     chatCommand.execute();
@@ -281,7 +292,6 @@ public class DieManager extends AbstractConfigurable {
     server.setSecondaryEmail((String) prefs.getValue(SECONDARY_EMAIL));
 
     useMultiRoll = (Boolean) prefs.getValue(MULTI_ROLL);
-
   }
 
   /*
@@ -304,43 +314,33 @@ public class DieManager extends AbstractConfigurable {
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString("Editor.description_label"), //$NON-NLS-1$
-        Resources.getString("Editor.DieManager.ndice"), //$NON-NLS-1$
-        Resources.getString("Editor.DieManager.nsides") //$NON-NLS-1$
+    return new String[] {
+      Resources.getString("Editor.description_label"), // $NON-NLS-1$
+      Resources.getString("Editor.DieManager.ndice"), // $NON-NLS-1$
+      Resources.getString("Editor.DieManager.nsides") // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      Integer.class,
-      Integer.class
-    };
+    return new Class<?>[] {String.class, Integer.class, Integer.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      DESC,
-      DFLT_NDICE,
-      DFLT_NSIDES
-    };
+    return new String[] {DESC, DFLT_NDICE, DFLT_NSIDES};
   }
 
   @Override
   public void setAttribute(String key, Object value) {
     if (DESC.equals(key)) {
       desc = (String) value;
-    }
-    else if (DFLT_NDICE.equals(key)) {
+    } else if (DFLT_NDICE.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       defaultNDice = (Integer) value;
-    }
-    else if (DFLT_NSIDES.equals(key)) {
+    } else if (DFLT_NSIDES.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
@@ -352,20 +352,15 @@ public class DieManager extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (DESC.equals(key)) {
       return desc;
-    }
-    else if (DFLT_NDICE.equals(key)) {
+    } else if (DFLT_NDICE.equals(key)) {
       return Integer.toString(defaultNDice);
-    }
-    else if (DFLT_NSIDES.equals(key)) {
+    } else if (DFLT_NSIDES.equals(key)) {
       return Integer.toString(defaultNSides);
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
@@ -374,15 +369,14 @@ public class DieManager extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{InternetDiceButton.class};
+    return new Class<?>[] {InternetDiceButton.class};
   }
 
   @Override
-  public void addTo(Buildable parent) {
-  }
+  public void addTo(Buildable parent) {}
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.DieManager.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.DieManager.component_type"); // $NON-NLS-1$
   }
 
   public void setSecondaryEmail(String email) {

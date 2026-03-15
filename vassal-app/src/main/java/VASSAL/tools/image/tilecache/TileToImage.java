@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -36,9 +35,8 @@ public class TileToImage {
   /**
    * Converts a tile file to an image file.
    *
-   * @param args the first argument is the path of the source tile file,
-   * the second is the path of the PNG to write
-   *
+   * @param args the first argument is the path of the source tile file, the second is the path of
+   *     the PNG to write
    * @throws IOException if something goes wrong
    */
   public static void main(String[] args) throws IOException {
@@ -47,6 +45,6 @@ public class TileToImage {
 
     final File tfile = new File(args[0]);
     final BufferedImage img = TileUtils.read(tfile);
-    ImageIO.write(img, "PNG", Files.newOutputStream(Path.of(args[1]))); //NON-NLS
+    ImageIO.write(img, "PNG", Files.newOutputStream(Path.of(args[1]))); // NON-NLS
   }
 }

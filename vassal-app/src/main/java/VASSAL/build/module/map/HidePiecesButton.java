@@ -17,22 +17,6 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.Graphics;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.JPanel;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.Configurable;
@@ -54,14 +38,29 @@ import VASSAL.search.ImageSearchTarget;
 import VASSAL.search.SearchTarget;
 import VASSAL.tools.LaunchButton;
 import VASSAL.tools.NamedKeyStroke;
+import java.awt.Graphics;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import javax.swing.JPanel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-/**
- * This removes all game pieces from the (@link Map)
- * therefore providing an un-cluttered view.
- */
-//FIXME - Why on earth does this extend JPanel instead of e.g. AbstractConfigurable
-public class HidePiecesButton extends JPanel implements MouseListener,
-    AutoConfigurable, GameComponent, Drawable, SearchTarget, ImageSearchTarget {
+/** This removes all game pieces from the (@link Map) therefore providing an un-cluttered view. */
+// FIXME - Why on earth does this extend JPanel instead of e.g. AbstractConfigurable
+public class HidePiecesButton extends JPanel
+    implements MouseListener,
+        AutoConfigurable,
+        GameComponent,
+        Drawable,
+        SearchTarget,
+        ImageSearchTarget {
   private static final long serialVersionUID = 1L;
 
   protected boolean piecesVisible = false;
@@ -70,28 +69,29 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   protected String showingIcon;
   protected String hiddenIcon;
   protected ComponentI18nData myI18nData;
-  public static final String DEFAULT_SHOWING_ICON = "/images/globe_unselected.gif"; //NON-NLS
-  public static final String DEFAULT_HIDDEN_ICON = "/images/globe_selected.gif"; //NON-NLS
+  public static final String DEFAULT_SHOWING_ICON = "/images/globe_unselected.gif"; // NON-NLS
+  public static final String DEFAULT_HIDDEN_ICON = "/images/globe_selected.gif"; // NON-NLS
 
-  public static final String LAUNCH_ICON = "icon"; //NON-NLS
-  public static final String TOOLTIP = "tooltip"; //NON-NLS
-  public static final String BUTTON_TEXT = "buttonText"; //NON-NLS
-  public static final String HOTKEY = "hotkey"; //NON-NLS
+  public static final String LAUNCH_ICON = "icon"; // NON-NLS
+  public static final String TOOLTIP = "tooltip"; // NON-NLS
+  public static final String BUTTON_TEXT = "buttonText"; // NON-NLS
+  public static final String HOTKEY = "hotkey"; // NON-NLS
 
-  public static final String HIDDEN_ICON = "hiddenIcon"; //NON-NLS
-  public static final String SHOWING_ICON = "showingIcon"; //NON-NLS
-
+  public static final String HIDDEN_ICON = "hiddenIcon"; // NON-NLS
+  public static final String SHOWING_ICON = "showingIcon"; // NON-NLS
 
   public HidePiecesButton() {
     final ActionListener al = e -> setPiecesVisible(!piecesVisible);
     launch = new LaunchButton(null, TOOLTIP, BUTTON_TEXT, HOTKEY, LAUNCH_ICON, al);
-    launch.setAttribute(TOOLTIP, Resources.getString("Editor.HidePiecesButton.hide_all_pieces_on_this_map"));
+    launch.setAttribute(
+        TOOLTIP, Resources.getString("Editor.HidePiecesButton.hide_all_pieces_on_this_map"));
     addMouseListener(this);
   }
 
   /**
-   * Expects to be added to a {@link Map}.  Adds itself as a {@link
-   * GameComponent} and a {@link Drawable} component */
+   * Expects to be added to a {@link Map}. Adds itself as a {@link GameComponent} and a {@link
+   * Drawable} component
+   */
   @Override
   public void addTo(Buildable b) {
     map = (Map) b;
@@ -115,12 +115,10 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
-  public void remove(Buildable b) {
-  }
+  public void remove(Buildable b) {}
 
   @Override
   public void removeFrom(Buildable b) {
@@ -134,11 +132,9 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   public void setAttribute(String key, Object value) {
     if (SHOWING_ICON.equals(key)) {
       showingIcon = (String) value;
-    }
-    else if (HIDDEN_ICON.equals(key)) {
+    } else if (HIDDEN_ICON.equals(key)) {
       hiddenIcon = (String) value;
-    }
-    else {
+    } else {
       launch.setAttribute(key, value);
     }
   }
@@ -150,7 +146,7 @@ public class HidePiecesButton extends JPanel implements MouseListener,
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{BUTTON_TEXT, TOOLTIP, HOTKEY, SHOWING_ICON, HIDDEN_ICON};
+    return new String[] {BUTTON_TEXT, TOOLTIP, HOTKEY, SHOWING_ICON, HIDDEN_ICON};
   }
 
   @Override
@@ -163,11 +159,9 @@ public class HidePiecesButton extends JPanel implements MouseListener,
     final String s;
     if (HIDDEN_ICON.equals(key)) {
       s = hiddenIcon;
-    }
-    else if (SHOWING_ICON.equals(key)) {
+    } else if (SHOWING_ICON.equals(key)) {
       s = showingIcon;
-    }
-    else {
+    } else {
       s = launch.getAttributeValueString(key);
     }
     return s;
@@ -175,18 +169,18 @@ public class HidePiecesButton extends JPanel implements MouseListener,
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString(Resources.BUTTON_TEXT),
       Resources.getString(Resources.TOOLTIP_TEXT),
       Resources.getString(Resources.HOTKEY_LABEL),
-      Resources.getString("Editor.HidePiecesButton.show_icon"), //$NON-NLS-1$
-      Resources.getString("Editor.HidePiecesButton.hide_icon"), //$NON-NLS-1$
+      Resources.getString("Editor.HidePiecesButton.show_icon"), // $NON-NLS-1$
+      Resources.getString("Editor.HidePiecesButton.hide_icon"), // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       String.class,
       NamedKeyStroke.class,
@@ -220,28 +214,22 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   }
 
   @Override
-  public void paint(Graphics g) {
-  }
+  public void paint(Graphics g) {}
 
   @Override
-  public void mousePressed(MouseEvent e) {
-  }
+  public void mousePressed(MouseEvent e) {}
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
-  public void mouseClicked(MouseEvent e) {
-  }
+  public void mouseClicked(MouseEvent e) {}
 
   @Override
-  public void mouseReleased(MouseEvent e) {
-  }
+  public void mouseReleased(MouseEvent e) {}
 
   @Override
   public String getToolTipText(MouseEvent e) {
@@ -261,7 +249,7 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.HidePiecesButton.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.HidePiecesButton.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -285,12 +273,11 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   }
 
   @Override
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-  }
+  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "HidePieces"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "HidePieces"); // NON-NLS
   }
 
   @Override
@@ -301,15 +288,16 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   @Override
   public ComponentI18nData getI18nData() {
     if (myI18nData == null) {
-      myI18nData = new ComponentI18nData(this, "HidePieces"); //NON-NLS
+      myI18nData = new ComponentI18nData(this, "HidePieces"); // NON-NLS
     }
     return myI18nData;
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -318,6 +306,7 @@ public class HidePiecesButton extends JPanel implements MouseListener,
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override
@@ -325,9 +314,9 @@ public class HidePiecesButton extends JPanel implements MouseListener,
     return Arrays.asList(NamedHotKeyConfigurer.decode(getAttributeValueString(HOTKEY)));
   }
 
-
   /**
    * {@link SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -337,7 +326,9 @@ public class HidePiecesButton extends JPanel implements MouseListener,
 
   /**
    * {@link SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -346,13 +337,13 @@ public class HidePiecesButton extends JPanel implements MouseListener,
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
   public List<String> getPropertyList() {
     return Collections.emptyList();
   }
-
 
   /**
    * @return names of all images used by the component and any subcomponents
@@ -366,7 +357,9 @@ public class HidePiecesButton extends JPanel implements MouseListener,
   }
 
   /**
-   * Adds all images used by this component AND any children (or inner decorators/pieces) to the collection.
+   * Adds all images used by this component AND any children (or inner decorators/pieces) to the
+   * collection.
+   *
    * @param s Collection to add image names to
    */
   @Override
@@ -384,10 +377,10 @@ public class HidePiecesButton extends JPanel implements MouseListener,
     return s;
   }
 
-
   /**
-   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order to add
-   * the names of any image files they use to the collection. For "find unused images" and "search".
+   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order
+   * to add the names of any image files they use to the collection. For "find unused images" and
+   * "search".
    *
    * @param s Collection to add image names to
    */

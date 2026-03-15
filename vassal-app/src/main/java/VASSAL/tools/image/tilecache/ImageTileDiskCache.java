@@ -18,6 +18,9 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.image.ImageIOException;
+import VASSAL.tools.image.ImageTileSource;
+import VASSAL.tools.io.FileStore;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,10 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import VASSAL.tools.image.ImageIOException;
-import VASSAL.tools.image.ImageTileSource;
-import VASSAL.tools.io.FileStore;
 
 /**
  * An on-disk {@link ImageTileSource} and {@link FileStore} for image tiles.
@@ -52,48 +51,37 @@ public class ImageTileDiskCache implements ImageTileSource, FileStore {
   }
 
   private String tileNameFor(String name, int tileX, int tileY, double scale) {
-    return cpath + '/' + TileUtils.tileName(name, tileX, tileY, (int)(1.0 / scale));
+    return cpath + '/' + TileUtils.tileName(name, tileX, tileY, (int) (1.0 / scale));
   }
 
   /** {@inheritDoc} */
   @Override
-  public BufferedImage getTile(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException {
+  public BufferedImage getTile(String name, int tileX, int tileY, double scale)
+      throws ImageIOException {
 
     try {
       return TileUtils.read(tileNameFor(name, tileX, tileY, scale));
-    }
-    catch (TileNotFoundException e) {
+    } catch (TileNotFoundException e) {
       throw new TileNotFoundException(name, tileX, tileY, scale, e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public Dimension getTileSize(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException {
+  public Dimension getTileSize(String name, int tileX, int tileY, double scale)
+      throws ImageIOException {
 
     try {
       return TileUtils.size(tileNameFor(name, tileX, tileY, scale));
-    }
-    catch (TileNotFoundException e) {
+    } catch (TileNotFoundException e) {
       throw new TileNotFoundException(name, tileX, tileY, scale, e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public boolean tileExists(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException {
+  public boolean tileExists(String name, int tileX, int tileY, double scale)
+      throws ImageIOException {
 
     final File f = new File(tileNameFor(name, tileX, tileY, scale));
     return f.isFile();

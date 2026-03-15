@@ -34,8 +34,6 @@ import VASSAL.tools.AudioClip;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -43,15 +41,15 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.KeyStroke;
 
 /**
  * A trait that plays a sound clip
  *
  * @author rkinney
- *
  */
 public class PlaySound extends Decorator implements TranslatablePiece {
-  public static final String ID = "playSound;"; //NON-NLS
+  public static final String ID = "playSound;"; // NON-NLS
   protected String menuText;
   protected NamedKeyStroke stroke;
   protected boolean sendToOthers;
@@ -71,8 +69,7 @@ public class PlaySound extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public String myGetState() {
@@ -83,11 +80,11 @@ public class PlaySound extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(format.getFormat())
-      .append(menuText)
-      .append(stroke)
-      .append(sendToOthers)
-      .append(description)
-      .append(noSuppress);
+        .append(menuText)
+        .append(stroke)
+        .append(sendToOthers)
+        .append(description)
+        .append(noSuppress);
     return ID + se.getValue();
   }
 
@@ -97,8 +94,7 @@ public class PlaySound extends Decorator implements TranslatablePiece {
       command = new KeyCommand(menuText, stroke, getOutermost(this), this);
       if (menuText.length() > 0 && stroke != null && !stroke.isNull()) {
         commands = new KeyCommand[] {command};
-      }
-      else {
+      } else {
         commands = KeyCommand.NONE;
       }
     }
@@ -113,23 +109,25 @@ public class PlaySound extends Decorator implements TranslatablePiece {
       final GameModule gm = GameModule.getGameModule();
       if (!gm.getGameState().isFastForwarding()) {
         if (noSuppress || !gm.isSuppressSounds()) {
-          final AuditTrail audit = AuditTrail.create(this, format, Resources.getString("Editor.PlaySound.sound_clip"));
+          final AuditTrail audit =
+              AuditTrail.create(this, format, Resources.getString("Editor.PlaySound.sound_clip"));
           final String clipName = format.getText(getOutermost(this), this, audit);
           c = new PlayAudioClipCommand(clipName);
           try {
             // Play the sound on our client if sounds have not been muted globally
             if (!GlobalOptions.getInstance().isSoundGlobalMute()) {
-              final AudioClip clip = GameModule.getGameModule()
-                .getDataArchive()
-                .getCachedAudioClip(clipName);
+              final AudioClip clip =
+                  GameModule.getGameModule().getDataArchive().getCachedAudioClip(clipName);
               if (clip != null) {
                 clip.play();
               }
             }
-          }
-          catch (IOException e) {
-            reportDataError(this, Resources.getString("Error.not_found", "Audio Clip"), "Clip=" + clipName,
-              new AuditableException(this, audit)); //NON-NLS
+          } catch (IOException e) {
+            reportDataError(
+                this,
+                Resources.getString("Error.not_found", "Audio Clip"),
+                "Clip=" + clipName,
+                new AuditableException(this, audit)); // NON-NLS
           }
         }
       }
@@ -160,7 +158,8 @@ public class PlaySound extends Decorator implements TranslatablePiece {
 
   @Override
   public String getDescription() {
-    String s = buildDescription("Editor.PlaySound.trait_description", format.getFormat(), description);
+    String s =
+        buildDescription("Editor.PlaySound.trait_description", format.getFormat(), description);
     s += getCommandDesc(menuText, stroke);
     return s;
   }
@@ -190,7 +189,7 @@ public class PlaySound extends Decorator implements TranslatablePiece {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("PlaySound.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("PlaySound.html"); // NON-NLS
   }
 
   @Override
@@ -218,7 +217,8 @@ public class PlaySound extends Decorator implements TranslatablePiece {
       menuConfig = new StringConfigurer(p.menuText);
       menuConfig.setHintKey("Editor.menu_command_hint");
       keyConfig = new NamedHotKeyConfigurer(p.stroke);
-      soundConfig = new AudioClipConfigurer(null, "", GameModule.getGameModule().getArchiveWriter(), p);
+      soundConfig =
+          new AudioClipConfigurer(null, "", GameModule.getGameModule().getArchiveWriter(), p);
       soundConfig.setValue(p.format.getFormat());
       soundConfig.setEditable(true);
       sendConfig = new BooleanConfigurer(p.sendToOthers);
@@ -242,7 +242,12 @@ public class PlaySound extends Decorator implements TranslatablePiece {
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(soundConfig.getValueString()).append(menuConfig.getValueString()).append(keyConfig.getValueString()).append(sendConfig.getValueString()).append(descConfig.getValueString()).append(noSuppressConfig.getValueString());
+      se.append(soundConfig.getValueString())
+          .append(menuConfig.getValueString())
+          .append(keyConfig.getValueString())
+          .append(sendConfig.getValueString())
+          .append(descConfig.getValueString())
+          .append(noSuppressConfig.getValueString());
       return ID + se.getValue();
     }
 

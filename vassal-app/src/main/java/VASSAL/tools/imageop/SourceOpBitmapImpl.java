@@ -18,6 +18,13 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.build.GameModule;
+import VASSAL.tools.DataArchive;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.image.ImageIOException;
+import VASSAL.tools.image.ImageNotFoundException;
+import VASSAL.tools.image.ImageUtils;
+import VASSAL.tools.io.FileArchive;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
@@ -27,22 +34,13 @@ import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
 
-import VASSAL.build.GameModule;
-import VASSAL.tools.DataArchive;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.image.ImageIOException;
-import VASSAL.tools.image.ImageNotFoundException;
-import VASSAL.tools.image.ImageUtils;
-import VASSAL.tools.io.FileArchive;
-
 /**
  * An {@link ImageOp} which loads an image from the {@link DataArchive}.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class SourceOpBitmapImpl extends AbstractTiledOpImpl
-                                implements SourceOp {
+public class SourceOpBitmapImpl extends AbstractTiledOpImpl implements SourceOp {
   /** The name of the image file. */
   protected final String name;
 
@@ -51,14 +49,14 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
 
   /** The archive file from which the image will be loaded */
   protected final DataArchive darch;
+
   protected final FileArchive farch;
 
   /**
    * Constructs an <code>ImageOp</code> which will load the given file.
    *
    * @param name the name of the image to load
-   * @throws IllegalArgumentException
-   *    if <code>name</code> is <code>null</code>.
+   * @throws IllegalArgumentException if <code>name</code> is <code>null</code>.
    */
   public SourceOpBitmapImpl(String name) {
     this(name, GameModule.getGameModule().getDataArchive());
@@ -89,8 +87,7 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
     this.darch = da;
     this.farch = fa;
 
-    hash = name.hashCode() ^
-      (darch != null ? darch.hashCode() : farch.hashCode());
+    hash = name.hashCode() ^ (darch != null ? darch.hashCode() : farch.hashCode());
   }
 
   @Override
@@ -99,12 +96,11 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
   }
 
   protected InputStream getInputStream() throws IOException {
-    return darch != null ?
-      darch.getInputStream(name) : farch.getInputStream(name);
+    return darch != null ? darch.getInputStream(name) : farch.getInputStream(name);
   }
 
   /**
-   *  {@inheritDoc}
+   * {@inheritDoc}
    *
    * @throws IOException if the image cannot be loaded from the image file.
    */
@@ -112,15 +108,12 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
   public BufferedImage eval() throws ImageIOException {
     try (InputStream in = getInputStream()) {
       return ImageUtils.getImage(name, in);
-    }
-    catch (ImageIOException e) {
+    } catch (ImageIOException e) {
       // Don't wrap, just rethrow.
       throw e;
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       throw new ImageNotFoundException(name, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(name, e);
     }
   }
@@ -133,26 +126,22 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
     }
   }
 
-// FIXME: we need a way to invalidate ImageOps when an exception is thrown?
-// Maybe size should go to -1,-1 when invalid?
+  // FIXME: we need a way to invalidate ImageOps when an exception is thrown?
+  // Maybe size should go to -1,-1 when invalid?
 
   protected Dimension getImageSize() {
     try {
       try (InputStream in = getInputStream()) {
         return ImageUtils.getImageSize(name, in);
-      }
-      catch (ImageIOException e) {
+      } catch (ImageIOException e) {
         // Don't wrap, just rethrow.
         throw e;
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         throw new ImageNotFoundException(name, e);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         throw new ImageIOException(name, e);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       if (!Op.handleException(e)) ErrorDialog.bug(e);
     }
 
@@ -193,6 +182,6 @@ public class SourceOpBitmapImpl extends AbstractTiledOpImpl
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return getClass().getName() + "[name=" + name + "]";  //NON-NLS
+    return getClass().getName() + "[name=" + name + "]"; // NON-NLS
   }
 }

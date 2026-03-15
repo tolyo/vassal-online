@@ -18,13 +18,12 @@
 
 package VASSAL.build.module.properties;
 
+import VASSAL.counters.GamePiece;
 import java.util.Collection;
 
-import VASSAL.counters.GamePiece;
-
 /**
- * For property names of the form sum(name), returns the value of
- * the named property summed over a list of pieces.
+ * For property names of the form sum(name), returns the value of the named property summed over a
+ * list of pieces.
  *
  * @author rkinney
  */
@@ -39,8 +38,11 @@ public class SumProperties implements PropertySource {
   public Object getProperty(Object key) {
     Object value = null;
     final String keyString = key.toString();
-    if ((keyString.startsWith("sum(") || keyString.startsWith("sumProperties(")) && keyString.endsWith(")")) { //NON-NLS
-      final String propertyName = keyString.substring(keyString.startsWith("sum(") ? 4 : 14, keyString.length() - 1); // NON-NLS
+    if ((keyString.startsWith("sum(") || keyString.startsWith("sumProperties("))
+        && keyString.endsWith(")")) { // NON-NLS
+      final String propertyName =
+          keyString.substring(
+              keyString.startsWith("sum(") ? 4 : 14, keyString.length() - 1); // NON-NLS
       int sum = 0;
       boolean indeterminate = false;
       for (final GamePiece p : pieces) {
@@ -48,26 +50,21 @@ public class SumProperties implements PropertySource {
         if (val != null) {
           try {
             sum += Integer.parseInt(val.toString());
+          } catch (final NumberFormatException e) {
           }
-          catch (final NumberFormatException e) {
-          }
-        }
-        else {
+        } else {
           indeterminate = true;
         }
       }
 
       if (sum == 0 && indeterminate) {
         value = "?";
-      }
-      else {
+      } else {
         value = sum + (indeterminate ? "+?" : "");
       }
-    }
-    else if (keyString.equals("countPieces")) { //NON-NLS
+    } else if (keyString.equals("countPieces")) { // NON-NLS
       value = pieces.size();
-    }
-    else if (!pieces.isEmpty()) {
+    } else if (!pieces.isEmpty()) {
       value = pieces.iterator().next().getProperty(key);
     }
     return value;

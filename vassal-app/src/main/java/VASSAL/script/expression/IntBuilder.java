@@ -25,10 +25,9 @@
 
 package VASSAL.script.expression;
 
-import javax.swing.JDialog;
-
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
+import javax.swing.JDialog;
 
 public class IntBuilder extends StrBuilder {
   private static final long serialVersionUID = 1L;
@@ -38,7 +37,6 @@ public class IntBuilder extends StrBuilder {
     target = c;
     build(Resources.getString("Editor.IntBuilder.object_type"));
   }
-
 
   @Override
   protected void save() {
@@ -66,5 +64,4 @@ public class IntBuilder extends StrBuilder {
     target.setValue(value);
     dispose();
   }
-
 }

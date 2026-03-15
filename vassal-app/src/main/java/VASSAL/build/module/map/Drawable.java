@@ -20,11 +20,11 @@ package VASSAL.build.module.map;
 import VASSAL.build.module.Map;
 
 /**
- * A component may implement the Drawable interface if it has
- * graphical information the should be drawn whenever the Map is
- * drawn.
+ * A component may implement the Drawable interface if it has graphical information the should be
+ * drawn whenever the Map is drawn.
  *
- * @see Map#addDrawComponent */
+ * @see Map#addDrawComponent
+ */
 public interface Drawable {
   void draw(java.awt.Graphics g, Map map);
 

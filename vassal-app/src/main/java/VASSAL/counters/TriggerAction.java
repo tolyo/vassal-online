@@ -40,9 +40,6 @@ import VASSAL.tools.RecursionLimitException;
 import VASSAL.tools.RecursionLimiter;
 import VASSAL.tools.RecursionLimiter.Loopable;
 import VASSAL.tools.SequenceEncoder;
-
-import javax.swing.JLabel;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -54,19 +51,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JLabel;
+import javax.swing.KeyStroke;
 
 /**
- * Macro Execute a series of Keystrokes against this same piece - Triggered by
- * own KeyCommand or list of keystrokes - Match against an optional Property
- * Filter
- * */
-public class TriggerAction extends Decorator implements TranslatablePiece,
-    Loopable {
+ * Macro Execute a series of Keystrokes against this same piece - Triggered by own KeyCommand or
+ * list of keystrokes - Match against an optional Property Filter
+ */
+public class TriggerAction extends Decorator implements TranslatablePiece, Loopable {
 
-  public static final String ID = "macro;"; //$NON-NLS-1$
+  public static final String ID = "macro;"; // $NON-NLS-1$
 
-  protected String name = ""; //$NON-NLS-1$
-  protected String command = ""; //$NON-NLS-1$
+  protected String name = ""; // $NON-NLS-1$
+  protected String command = ""; // $NON-NLS-1$
   protected NamedKeyStroke key = NamedKeyStroke.NULL_KEYSTROKE;
   protected PropertyExpression propertyMatch = new PropertyExpression();
   protected NamedKeyStroke[] watchKeys = new NamedKeyStroke[0];
@@ -77,9 +74,9 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
   protected String loopType = LoopControl.LOOP_COUNTED;
   protected PropertyExpression whileExpression = new PropertyExpression();
   protected PropertyExpression untilExpression = new PropertyExpression();
-  protected FormattedString loopCount = new FormattedString("1"); //$NON-NLS-1$
+  protected FormattedString loopCount = new FormattedString("1"); // $NON-NLS-1$
   protected boolean index = false;
-  protected String indexProperty = ""; //$NON-NLS-1$
+  protected String indexProperty = ""; // $NON-NLS-1$
   protected FormattedString indexStart = new FormattedString("1");
   protected FormattedString indexStep = new FormattedString("1");
   protected int indexValue = 0;
@@ -112,15 +109,12 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
   @Override
   protected KeyCommand[] myGetKeyCommands() {
     if (command.length() > 0 && key != null) {
-      final KeyCommand c =  new KeyCommand(
-        command, key, getOutermost(this), this, matchesFilter()
-      );
+      final KeyCommand c = new KeyCommand(command, key, getOutermost(this), this, matchesFilter());
       if (getMap() == null) {
         c.setEnabled(false);
       }
-      return new KeyCommand[] { c };
-    }
-    else {
+      return new KeyCommand[] {c};
+    } else {
       return KeyCommand.NONE;
     }
   }
@@ -134,22 +128,22 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(name)
-      .append(command)
-      .append(key)
-      .append(propertyMatch.getExpression())
-      .append(NamedKeyStrokeArrayConfigurer.encode(watchKeys))
-      .append(NamedKeyStrokeArrayConfigurer.encode(actionKeys))
-      .append(loop)
-      .append(preLoopKey)
-      .append(postLoopKey)
-      .append(loopType)
-      .append(whileExpression.getExpression())
-      .append(untilExpression.getExpression())
-      .append(loopCount.getFormat())
-      .append(index)
-      .append(indexProperty)
-      .append(indexStart.getFormat())
-      .append(indexStep.getFormat());
+        .append(command)
+        .append(key)
+        .append(propertyMatch.getExpression())
+        .append(NamedKeyStrokeArrayConfigurer.encode(watchKeys))
+        .append(NamedKeyStrokeArrayConfigurer.encode(actionKeys))
+        .append(loop)
+        .append(preLoopKey)
+        .append(postLoopKey)
+        .append(loopType)
+        .append(whileExpression.getExpression())
+        .append(untilExpression.getExpression())
+        .append(loopCount.getFormat())
+        .append(index)
+        .append(indexProperty)
+        .append(indexStart.getFormat())
+        .append(indexStep.getFormat());
 
     return ID + se.getValue();
   }
@@ -201,8 +195,7 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     if (!loop) {
       try {
         c = c.append(doLoopOnce());
-      }
-      catch (RecursionLimitException e) {
+      } catch (RecursionLimitException e) {
         RecursionLimiter.infiniteLoop(e);
       }
       return c;
@@ -221,14 +214,18 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
 
     // Set up counters for a counted loop
     int loopCounter = 0;
-    int loopCountLimit = 1; //BR// Ugly, but detects non-counted loops to get executed once, while not executing "count 0" loops. Doesn't in practice limit number of loops for non-counted loops.
+    int loopCountLimit =
+        1; // BR// Ugly, but detects non-counted loops to get executed once, while not executing
+    // "count 0" loops. Doesn't in practice limit number of loops for non-counted loops.
     if (LoopControl.LOOP_COUNTED.equals(loopType)) {
-      loopCountLimit = loopCount.getTextAsInt(outer, Resources.getString("Editor.LoopControl.loop_count"), this); //$NON-NLS-1$
+      loopCountLimit =
+          loopCount.getTextAsInt(
+              outer, Resources.getString("Editor.LoopControl.loop_count"), this); // $NON-NLS-1$
     }
     RecursionLimitException loopException = null;
 
     if (loopCountLimit > 0) {
-      for (;;) {
+      for (; ; ) {
 
         // While loop - test condition is still true before actions
         if (LoopControl.LOOP_WHILE.equals(loopType)) {
@@ -242,8 +239,7 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
         // to ensure post-loop key is executed.
         try {
           c = c.append(doLoopOnce());
-        }
-        catch (RecursionLimitException ex) {
+        } catch (RecursionLimitException ex) {
           loopException = ex;
           break;
         }
@@ -272,7 +268,6 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
 
         // Increment the Index Variable
         indexValue += step;
-
       }
     }
 
@@ -292,9 +287,12 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     final String val = s.getText(outer, "0", this, fieldKey);
     try {
       i = Integer.parseInt(val);
-    }
-    catch (NumberFormatException e) {
-      reportDataError(this, Resources.getString("Error.non_number_error"), s.debugInfo(val, Resources.getString(fieldKey)), e);
+    } catch (NumberFormatException e) {
+      reportDataError(
+          this,
+          Resources.getString("Error.non_number_error"),
+          s.debugInfo(val, Resources.getString(fieldKey)),
+          e);
     }
     return i;
   }
@@ -326,8 +324,7 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
       for (int i = 0; i < actionKeys.length && getMap() != null; i++) {
         comm = comm.append(outer.keyEvent(actionKeys[i].getKeyStroke()));
       }
-    }
-    finally {
+    } finally {
       RecursionLimiter.endExecution();
     }
     return comm;
@@ -343,24 +340,22 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     try {
       RecursionLimiter.startExecution(this);
       comm = outer.keyEvent(key.getKeyStroke());
-    }
-    catch (RecursionLimitException e) {
+    } catch (RecursionLimitException e) {
       RecursionLimiter.infiniteLoop(e);
-    }
-    finally {
+    } finally {
       RecursionLimiter.endExecution();
     }
     return comm;
   }
 
   protected boolean matchesFilter() {
-    return propertyMatch.isNull() ||
-           propertyMatch.accept(getOutermost(this), this, "Editor.TriggerAction.trigger_when_properties");
+    return propertyMatch.isNull()
+        || propertyMatch.accept(
+            getOutermost(this), this, "Editor.TriggerAction.trigger_when_properties");
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Shape getShape() {
@@ -369,9 +364,9 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
 
   @Override
   public String getDescription() {
-    String s = Resources.getString("Editor.TriggerAction.trait_description"); //$NON-NLS-1$
+    String s = Resources.getString("Editor.TriggerAction.trait_description"); // $NON-NLS-1$
     if (name.length() > 0) {
-      s += " - " + name; //$NON-NLS-1$
+      s += " - " + name; // $NON-NLS-1$
     }
 
     s += getCommandDesc(command, key);
@@ -405,34 +400,32 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("TriggerAction.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("TriggerAction.html"); // $NON-NLS-1$
   }
 
   @Override
   public void mySetType(String type) {
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type, ';');
     st.nextToken();
-    name = st.nextToken(""); //$NON-NLS-1$
-    command = st.nextToken("Trigger"); //$NON-NLS-1$
+    name = st.nextToken(""); // $NON-NLS-1$
+    command = st.nextToken("Trigger"); // $NON-NLS-1$
     key = st.nextNamedKeyStroke('T');
-    propertyMatch.setExpression(st.nextToken("")); //$NON-NLS-1$
+    propertyMatch.setExpression(st.nextToken("")); // $NON-NLS-1$
 
-    String keys = st.nextToken(""); //$NON-NLS-1$
+    String keys = st.nextToken(""); // $NON-NLS-1$
     if (keys.indexOf(',') > 0) {
       watchKeys = NamedKeyStrokeArrayConfigurer.decode(keys);
-    }
-    else {
+    } else {
       watchKeys = new NamedKeyStroke[keys.length()];
       for (int i = 0; i < watchKeys.length; i++) {
         watchKeys[i] = NamedKeyStroke.of(keys.charAt(i), InputEvent.CTRL_DOWN_MASK);
       }
     }
 
-    keys = st.nextToken(""); //$NON-NLS-1$
+    keys = st.nextToken(""); // $NON-NLS-1$
     if (keys.indexOf(',') > 0) {
       actionKeys = NamedKeyStrokeArrayConfigurer.decode(keys);
-    }
-    else {
+    } else {
       actionKeys = new NamedKeyStroke[keys.length()];
       for (int i = 0; i < actionKeys.length; i++) {
         actionKeys[i] = NamedKeyStroke.of(keys.charAt(i), InputEvent.CTRL_DOWN_MASK);
@@ -442,26 +435,23 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     preLoopKey = st.nextNamedKeyStroke();
     postLoopKey = st.nextNamedKeyStroke();
     loopType = st.nextToken(LoopControl.LOOP_COUNTED);
-    whileExpression.setExpression(st.nextToken("")); //$NON-NLS-1$
-    untilExpression.setExpression(st.nextToken("")); //$NON-NLS-1$
-    loopCount.setFormat(st.nextToken("")); //$NON-NLS-1$
+    whileExpression.setExpression(st.nextToken("")); // $NON-NLS-1$
+    untilExpression.setExpression(st.nextToken("")); // $NON-NLS-1$
+    loopCount.setFormat(st.nextToken("")); // $NON-NLS-1$
     index = st.nextBoolean(false);
-    indexProperty = st.nextToken(""); //$NON-NLS-1$
+    indexProperty = st.nextToken(""); // $NON-NLS-1$
     indexStart.setFormat(st.nextToken("1"));
     indexStep.setFormat(st.nextToken("1"));
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     if (isIndex()) {
       final List<String> l = new ArrayList<>();
       l.add(indexProperty);
       return l;
-    }
-    else {
+    } else {
       return super.getPropertyNames();
     }
   }
@@ -486,30 +476,30 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(command, getCommandDescription(name, "Trigger command")); //$NON-NLS-1$
+    return getI18nData(command, getCommandDescription(name, "Trigger command")); // $NON-NLS-1$
   }
 
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof TriggerAction)) return false;
+    if (!(o instanceof TriggerAction)) return false;
     final TriggerAction c = (TriggerAction) o;
 
-    if (! Objects.equals(command, c.command)) return false;
-    if (! Objects.equals(key, c.key)) return false;
-    if (! Objects.equals(propertyMatch, c.propertyMatch)) return false;
-    if (! Arrays.equals(watchKeys, c.watchKeys)) return false;
-    if (! Arrays.equals(actionKeys, c.actionKeys)) return false;
-    if (! Objects.equals(loop, c.loop)) return false;
-    if (! Objects.equals(preLoopKey, c.preLoopKey)) return false;
-    if (! Objects.equals(postLoopKey, c.postLoopKey)) return false;
-    if (! Objects.equals(loopType, c.loopType)) return false;
-    if (! Objects.equals(whileExpression, c.whileExpression)) return false;
-    if (! Objects.equals(untilExpression, c.untilExpression)) return false;
-    if (! Objects.equals(loopCount, c.loopCount)) return false;
-    if (! Objects.equals(index, c.index)) return false;
-    if (! Objects.equals(indexProperty, c.indexProperty)) return false;
-    if (! Objects.equals(indexStart, c.indexStart)) return false;
+    if (!Objects.equals(command, c.command)) return false;
+    if (!Objects.equals(key, c.key)) return false;
+    if (!Objects.equals(propertyMatch, c.propertyMatch)) return false;
+    if (!Arrays.equals(watchKeys, c.watchKeys)) return false;
+    if (!Arrays.equals(actionKeys, c.actionKeys)) return false;
+    if (!Objects.equals(loop, c.loop)) return false;
+    if (!Objects.equals(preLoopKey, c.preLoopKey)) return false;
+    if (!Objects.equals(postLoopKey, c.postLoopKey)) return false;
+    if (!Objects.equals(loopType, c.loopType)) return false;
+    if (!Objects.equals(whileExpression, c.whileExpression)) return false;
+    if (!Objects.equals(untilExpression, c.untilExpression)) return false;
+    if (!Objects.equals(loopCount, c.loopCount)) return false;
+    if (!Objects.equals(index, c.index)) return false;
+    if (!Objects.equals(indexProperty, c.indexProperty)) return false;
+    if (!Objects.equals(indexStart, c.indexStart)) return false;
 
     return Objects.equals(indexStep, c.indexStep);
   }
@@ -576,7 +566,9 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
       box.add("Editor.TriggerAction.repeat_this", loopConfig);
 
       loopTypeLabel = new JLabel(Resources.getString("Editor.LoopControl.type_of_loop"));
-      loopTypeConfig = new TranslatingStringEnumConfigurer(LoopControl.LOOP_TYPES, LoopControl.LOOP_TYPE_DESCS, true);
+      loopTypeConfig =
+          new TranslatingStringEnumConfigurer(
+              LoopControl.LOOP_TYPES, LoopControl.LOOP_TYPE_DESCS, true);
       loopTypeConfig.setValue(piece.loopType);
       loopTypeConfig.addPropertyChangeListener(updateListener);
       box.add(loopTypeLabel, loopTypeConfig);
@@ -675,22 +667,22 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(name.getValueString())
-        .append(command.getValueString())
-        .append(key.getValueString())
-        .append(propertyMatch.getValueString())
-        .append(watchKeys.getValueString())
-        .append(actionKeys.getValueString())
-        .append(loopConfig.getValueString())
-        .append(preLoopKeyConfig.getValueString())
-        .append(postLoopKeyConfig.getValueString())
-        .append(LoopControl.loopDescToType(loopTypeConfig.getValueString()))
-        .append(whileExpressionConfig.getValueString())
-        .append(untilExpressionConfig.getValueString())
-        .append(loopCountConfig.getValueString())
-        .append(indexConfig.getValueString())
-        .append(indexPropertyConfig.getValueString())
-        .append(indexStartConfig.getValueString())
-        .append(indexStepConfig.getValueString());
+          .append(command.getValueString())
+          .append(key.getValueString())
+          .append(propertyMatch.getValueString())
+          .append(watchKeys.getValueString())
+          .append(actionKeys.getValueString())
+          .append(loopConfig.getValueString())
+          .append(preLoopKeyConfig.getValueString())
+          .append(postLoopKeyConfig.getValueString())
+          .append(LoopControl.loopDescToType(loopTypeConfig.getValueString()))
+          .append(whileExpressionConfig.getValueString())
+          .append(untilExpressionConfig.getValueString())
+          .append(loopCountConfig.getValueString())
+          .append(indexConfig.getValueString())
+          .append(indexPropertyConfig.getValueString())
+          .append(indexStartConfig.getValueString())
+          .append(indexStepConfig.getValueString());
 
       return ID + se.getValue();
     }
@@ -706,11 +698,9 @@ public class TriggerAction extends Decorator implements TranslatablePiece,
     if (loop) {
       if (LoopControl.LOOP_WHILE.equals(loopType)) {
         l.add(whileExpression.getExpression());
-      }
-      else if (LoopControl.LOOP_UNTIL.equals(loopType)) {
+      } else if (LoopControl.LOOP_UNTIL.equals(loopType)) {
         l.add(untilExpression.getExpression());
-      }
-      else if (LoopControl.LOOP_COUNTED.equals(loopType)) {
+      } else if (LoopControl.LOOP_COUNTED.equals(loopType)) {
         l.add(indexStart.getFormat());
         l.add(indexStep.getFormat());
       }

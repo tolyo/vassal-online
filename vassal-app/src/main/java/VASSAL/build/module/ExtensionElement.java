@@ -17,36 +17,31 @@
  */
 package VASSAL.build.module;
 
-import VASSAL.search.ImageSearchTarget;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import VASSAL.build.Buildable;
 import VASSAL.build.Builder;
 import VASSAL.build.Configurable;
 import VASSAL.build.GameModule;
+import VASSAL.search.ImageSearchTarget;
 import VASSAL.tools.ComponentPathBuilder;
-
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * An element of a {@link ModuleExtension} that extends an
- * individual {@link VASSAL.build.Buildable} component of the
- * {@link VASSAL.build.GameModule}.
+ * An element of a {@link ModuleExtension} that extends an individual {@link VASSAL.build.Buildable}
+ * component of the {@link VASSAL.build.GameModule}.
  */
 public class ExtensionElement implements Buildable, ImageSearchTarget {
-  /**
-   * An identifier for the component to be extended
-   */
-  public static final String TARGET = "target"; //$NON-NLS-1$
+  /** An identifier for the component to be extended */
+  public static final String TARGET = "target"; // $NON-NLS-1$
+
   private Buildable extension;
   private Configurable[] targetPath;
 
-  public ExtensionElement() {
-  }
+  public ExtensionElement() {}
 
   public ExtensionElement(Buildable extension, Configurable[] targetPath) {
     this.extension = extension;
@@ -61,10 +56,8 @@ public class ExtensionElement implements Buildable, ImageSearchTarget {
   @Override
   public void build(Element e) {
     try {
-      targetPath =
-        ComponentPathBuilder.getInstance().getPath(e.getAttribute(TARGET));
-    }
-    catch (ComponentPathBuilder.PathFormatException e1) {
+      targetPath = ComponentPathBuilder.getInstance().getPath(e.getAttribute(TARGET));
+    } catch (ComponentPathBuilder.PathFormatException e1) {
       throw new ExtensionsLoader.LoadExtensionException(e1.getMessage());
     }
 
@@ -88,16 +81,15 @@ public class ExtensionElement implements Buildable, ImageSearchTarget {
   @Override
   public Element getBuildElement(Document doc) {
     final Element el = doc.createElement(getClass().getName());
-    el.setAttribute(TARGET,
-                    ComponentPathBuilder.getInstance().getId(targetPath));
+    el.setAttribute(TARGET, ComponentPathBuilder.getInstance().getId(targetPath));
     el.appendChild(extension.getBuildElement(doc));
     return el;
   }
 
   @Override
   public void addTo(Buildable parent) {
-    final Configurable target = targetPath.length == 0 ?
-      GameModule.getGameModule() : targetPath[targetPath.length - 1];
+    final Configurable target =
+        targetPath.length == 0 ? GameModule.getGameModule() : targetPath[targetPath.length - 1];
     extension.addTo(target);
     target.add(extension);
   }

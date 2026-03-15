@@ -17,13 +17,6 @@
  */
 package VASSAL.tools;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.util.List;
-
 import VASSAL.Info;
 import VASSAL.build.GameModule;
 import VASSAL.configure.DirectoryConfigurer;
@@ -34,14 +27,19 @@ import VASSAL.tools.image.svg.SVGImageUtils;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.io.FileArchive;
 import VASSAL.tools.io.ZipArchive;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.List;
+import javax.swing.JOptionPane;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.JOptionPane;
-
 /**
- * An ArchiveWriter is a writeable DataArchive. New files may be added
- * with the {@link #addFile} and {@link #addImage} methods. {@link #save()} and {@link #saveAs()} will
- * cause the archive to be written out, with FileChooser invoked if appropriate.
+ * An ArchiveWriter is a writeable DataArchive. New files may be added with the {@link #addFile} and
+ * {@link #addImage} methods. {@link #save()} and {@link #saveAs()} will cause the archive to be
+ * written out, with FileChooser invoked if appropriate.
  */
 public class ArchiveWriter extends DataArchive {
   private String archiveName;
@@ -51,13 +49,12 @@ public class ArchiveWriter extends DataArchive {
   /**
    * Create a new writeable archive.
    *
-   * @param zipName the name of the archive. If null, the user will be
-   * prompted for a filename when saving. If not null, new entries will
-   * be added to the named archive. If the file exists and is not a zip
-   * archive, it will be overwritten.
-   * @param defaultExtension the default file extension for the archive.
-   * If non-null, and the user needs to be prompted for a filename, this will
-   * be the default file extension added automatically.
+   * @param zipName the name of the archive. If null, the user will be prompted for a filename when
+   *     saving. If not null, new entries will be added to the named archive. If the file exists and
+   *     is not a zip archive, it will be overwritten.
+   * @param defaultExtension the default file extension for the archive. If non-null, and the user
+   *     needs to be prompted for a filename, this will be the default file extension added
+   *     automatically.
    */
   public ArchiveWriter(String zipName, String defaultExtension) {
     archiveName = zipName;
@@ -67,13 +64,15 @@ public class ArchiveWriter extends DataArchive {
       isTempArchive = true;
 
       if (this.defaultExtension == null) {
-        this.defaultExtension = ".zip";  //NON-NLS
+        this.defaultExtension = ".zip"; // NON-NLS
       }
 
       try {
-        archiveName = Files.createTempFile(Info.getTempDir().toPath(), "tmp_", this.defaultExtension).toAbsolutePath().toString();  //NON-NLS
-      }
-      catch (IOException e) {
+        archiveName =
+            Files.createTempFile(Info.getTempDir().toPath(), "tmp_", this.defaultExtension)
+                .toAbsolutePath()
+                .toString(); // NON-NLS
+      } catch (IOException e) {
         WriteErrorDialog.error(e, archiveName);
       }
     }
@@ -83,17 +82,14 @@ public class ArchiveWriter extends DataArchive {
       if (f.exists()) {
         try {
           archive = new ZipArchive(archiveName);
-        }
-        catch (IOException e1) {
+        } catch (IOException e1) {
           // the file is not a valid ZIP archive, truncate it
           archive = new ZipArchive(archiveName, true);
         }
-      }
-      else {
+      } else {
         archive = new ZipArchive(archiveName);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       archive = null;
       WriteErrorDialog.error(e, archiveName);
     }
@@ -108,10 +104,9 @@ public class ArchiveWriter extends DataArchive {
   /**
    * Create a new writeable archive.
    *
-   * @param zipName the name of the archive. If null, the user will be
-   * prompted for a filename when saving. If not null, new entries will
-   * be added to the named archive. If the file exists and is not a zip
-   * archive, it will be overwritten.
+   * @param zipName the name of the archive. If null, the user will be prompted for a filename when
+   *     saving. If not null, new entries will be added to the named archive. If the file exists and
+   *     is not a zip archive, it will be overwritten.
    */
   public ArchiveWriter(String zipName) {
     this(zipName, null);
@@ -122,21 +117,19 @@ public class ArchiveWriter extends DataArchive {
   }
 
   /**
-   * Add an image file to the archive. The file will be copied into an
-   * "images" directory in the archive. Storing another image with the
-   * same name will overwrite the previous image.
+   * Add an image file to the archive. The file will be copied into an "images" directory in the
+   * archive. Storing another image with the same name will overwrite the previous image.
    *
    * @param path the full path of the image file on the user's filesystem
    * @param name the name under which to store the image in the archive
    */
   public void addImage(String path, String name) {
     // check SVG for external references and pull them in
-    if (name.toLowerCase().endsWith(".svg")) { //$NON-NLS-1$//
+    if (name.toLowerCase().endsWith(".svg")) { // $NON-NLS-1$//
       final List<String> exrefs;
       try {
         exrefs = SVGImageUtils.getExternalReferences(path);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, name);
         return;
       }
@@ -147,8 +140,7 @@ public class ArchiveWriter extends DataArchive {
         final byte[] buf;
         try {
           buf = SVGImageUtils.relativizeExternalReferences(s);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           ReadErrorDialog.error(e, f);
           continue;
         }
@@ -181,17 +173,16 @@ public class ArchiveWriter extends DataArchive {
 
   /**
    * Removes a file in the archive
+   *
    * @param name file in the archive to be removed
    */
   public void removeFile(String name) {
     try {
       archive.remove(name);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, archive.getName());
     }
   }
-
 
   /**
    * Copy a file from the user's filesystem to the archive.
@@ -202,8 +193,7 @@ public class ArchiveWriter extends DataArchive {
   public void addFile(String path, String fileName) {
     try {
       archive.add(fileName, path);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, archive.getName());
     }
   }
@@ -217,8 +207,7 @@ public class ArchiveWriter extends DataArchive {
   public void addFile(String fileName, InputStream in) {
     try (OutputStream out = archive.getOutputStream(fileName)) {
       in.transferTo(out);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, archive.getName());
     }
   }
@@ -232,8 +221,7 @@ public class ArchiveWriter extends DataArchive {
   public void addFile(String fileName, byte[] content) {
     try {
       archive.add(fileName, content);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, archive.getName());
     }
   }
@@ -254,9 +242,9 @@ public class ArchiveWriter extends DataArchive {
     saveAsButVerify(notifyModuleManager);
   }
 
-
   /**
    * Saves the archive, prompting for a name only if none has ever been provided.
+   *
    * @throws IOException IOException
    */
   public boolean saveButVerify() throws IOException {
@@ -265,14 +253,14 @@ public class ArchiveWriter extends DataArchive {
 
   /**
    * Saves the archive, prompting for a name only if none has ever been provided.
+   *
    * @param notifyModuleManager If true, notifies Module Manager that the save has occurred
    * @throws IOException IOException
    */
   public boolean saveButVerify(boolean notifyModuleManager) throws IOException {
     if (isTempArchive) {
       return saveAsButVerify(notifyModuleManager);
-    }
-    else {
+    } else {
       write(archive, notifyModuleManager);
     }
     return true;
@@ -280,6 +268,7 @@ public class ArchiveWriter extends DataArchive {
 
   /**
    * Saves the archive, always prompting for a new filename.
+   *
    * @throws IOException IOException
    */
   public boolean saveAsButVerify() throws IOException {
@@ -288,33 +277,42 @@ public class ArchiveWriter extends DataArchive {
 
   /**
    * Writes the file archive.
+   *
    * @param fa File archive
    * @param notifyModuleManager if true, notifies the module manager that a file has been saved.
    * @throws IOException IOException
    */
-  protected void write(FileArchive fa, boolean notifyModuleManager)
-                                                           throws IOException {
+  protected void write(FileArchive fa, boolean notifyModuleManager) throws IOException {
     fa.flush();
   }
 
   /**
    * Saves the archive, always prompting for a new filename. If a defaultExtension has been
-   * provided, it will be added to the filename unless the user specifies a different one explicitly.
+   * provided, it will be added to the filename unless the user specifies a different one
+   * explicitly.
+   *
    * @param notifyModuleManager If true, notifies Module Manager that the save has occurred
-   * @return true if operation proceeded, false if it was cancelled by user at file chooser or confirmation dialog
+   * @return true if operation proceeded, false if it was cancelled by user at file chooser or
+   *     confirmation dialog
    * @throws IOException IOException
    */
   public boolean saveAsButVerify(boolean notifyModuleManager) throws IOException {
-    final FileChooser fc = FileChooser.createFileChooser(
-      GameModule.getGameModule().getPlayerWindow(),
-      (DirectoryConfigurer) Prefs.getGlobalPrefs()
-                                 .getOption(Prefs.MODULES_DIR_KEY));
+    final FileChooser fc =
+        FileChooser.createFileChooser(
+            GameModule.getGameModule().getPlayerWindow(),
+            (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
     if (fc.showSaveDialog() != FileChooser.APPROVE_OPTION) return false;
     String filename = fc.getSelectedFile().getPath();
 
     if (!StringUtils.isEmpty(defaultExtension) && (filename.lastIndexOf('.') < 0)) {
       filename = filename + defaultExtension;
-      if (new File(filename).exists() && JOptionPane.NO_OPTION == JOptionPane.showConfirmDialog(GameModule.getGameModule().getPlayerWindow(), Resources.getString("Editor.ArchiveWriter.overwrite", filename), Resources.getString("Editor.ArchiveWriter.file_exists"), JOptionPane.YES_NO_OPTION)) {
+      if (new File(filename).exists()
+          && JOptionPane.NO_OPTION
+              == JOptionPane.showConfirmDialog(
+                  GameModule.getGameModule().getPlayerWindow(),
+                  Resources.getString("Editor.ArchiveWriter.overwrite", filename),
+                  Resources.getString("Editor.ArchiveWriter.file_exists"),
+                  JOptionPane.YES_NO_OPTION)) {
         return false;
       }
     }
@@ -323,7 +321,9 @@ public class ArchiveWriter extends DataArchive {
       // Copy the current state to the new archive.
       final FileArchive tmp = archive;
 
-      archiveName = filename; // Set archive name before we open the new one, so if we get an exception we can complain using specified new filename
+      archiveName =
+          filename; // Set archive name before we open the new one, so if we get an exception we can
+      // complain using specified new filename
       archive = new ZipArchive(tmp, filename);
       archive.flush();
 
@@ -336,8 +336,7 @@ public class ArchiveWriter extends DataArchive {
         tmp.getFile().delete();
         isTempArchive = false;
       }
-    }
-    else {
+    } else {
       write(archive, notifyModuleManager);
     }
 

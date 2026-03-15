@@ -18,13 +18,11 @@
 
 package VASSAL.tools.image;
 
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
 
-import VASSAL.tools.lang.Reference;
-
 /**
- * An interface for converting {@link BufferedImage}s from one type to
- * another.
+ * An interface for converting {@link BufferedImage}s from one type to another.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -37,9 +35,7 @@ public interface ImageTypeConverter {
    * @param ref a holder for the image
    * @param type the type of image to return
    * @return a converted image
-   *
    * @throws ImageIOException if something goes wrong
    */
-  BufferedImage convert(Reference<BufferedImage> ref, int type)
-                                                      throws ImageIOException;
+  BufferedImage convert(Reference<BufferedImage> ref, int type) throws ImageIOException;
 }

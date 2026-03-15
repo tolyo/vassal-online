@@ -18,18 +18,16 @@
 
 package VASSAL.tools.io;
 
-import VASSAL.Info;
+import static org.junit.jupiter.api.Assertions.*;
 
+import VASSAL.Info;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ProcessCallableTest {
 
@@ -40,12 +38,12 @@ public class ProcessCallableTest {
     final byte[] eout = ("Jackdaws love my big sphinx of quartz." + EOL).getBytes();
     final byte[] eerr = ("Veldt jynx grimps waqf zho buck." + EOL).getBytes();
 
-    final ProcessBuilder pb = new ProcessBuilder(
-      Info.getJavaBinPath().getAbsolutePath(),
-      "-cp",
-      System.getProperty("java.class.path"),
-      "VASSAL.tools.io.ProcessCallableTestEchoer"
-    );
+    final ProcessBuilder pb =
+        new ProcessBuilder(
+            Info.getJavaBinPath().getAbsolutePath(),
+            "-cp",
+            System.getProperty("java.class.path"),
+            "VASSAL.tools.io.ProcessCallableTestEchoer");
 
     final Process proc = pb.start();
 
@@ -74,12 +72,12 @@ public class ProcessCallableTest {
 
   @Test
   public void testInterrupt() throws Exception {
-    final ProcessBuilder pb = new ProcessBuilder(
-      "java",
-      "-cp",
-      System.getProperty("java.class.path"),
-      "VASSAL.tools.io.ProcessCallableTestBlocker"
-    );
+    final ProcessBuilder pb =
+        new ProcessBuilder(
+            "java",
+            "-cp",
+            System.getProperty("java.class.path"),
+            "VASSAL.tools.io.ProcessCallableTestBlocker");
 
     final Process proc = pb.start();
 
@@ -99,8 +97,7 @@ public class ProcessCallableTest {
     try {
       f.get();
       fail();
-    }
-    catch (CancellationException e) {
+    } catch (CancellationException e) {
       // expected
     }
 

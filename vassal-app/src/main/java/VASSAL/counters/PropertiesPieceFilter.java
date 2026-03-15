@@ -17,16 +17,12 @@
  */
 package VASSAL.counters;
 
+import VASSAL.script.expression.BeanShellExpression;
+import VASSAL.script.expression.FormattedStringExpression;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import VASSAL.script.expression.BeanShellExpression;
-import VASSAL.script.expression.FormattedStringExpression;
-
-/**
- * Accepts pieces based on whether the piece has properties that
- * match a given set of conditions
- */
+/** Accepts pieces based on whether the piece has properties that match a given set of conditions */
 public class PropertiesPieceFilter {
 
   private static final Pattern[] CONDITIONS = {
@@ -46,14 +42,14 @@ public class PropertiesPieceFilter {
   private static final PieceFilter ACCEPT_ALL = piece -> true;
 
   /**
-   * Return a PieceFilter parsed from a boolean expression such as
-   * prop1 = value1 {@literal &}{@literal &} prop2 = value2 || prop3 = value3
+   * Return a PieceFilter parsed from a boolean expression such as prop1 = value1 {@literal
+   * &}{@literal &} prop2 = value2 || prop3 = value3
+   *
    * @param expression Expression
    * @return Piece Filter
    */
   public static PieceFilter parse(String expression) {
-    if (expression == null
-        || expression.length() == 0) {
+    if (expression == null || expression.length() == 0) {
       return ACCEPT_ALL;
     }
     String[] s = OR.split(expression);
@@ -63,16 +59,14 @@ public class PropertiesPieceFilter {
       for (int i = 1; i < s.length; ++i) {
         f = new BooleanOrPieceFilter(f, parse(s[i]));
       }
-    }
-    else {
+    } else {
       s = AND.split(expression);
       if (s.length > 1) {
         f = parse(s[0]);
         for (int i = 1; i < s.length; ++i) {
           f = new BooleanAndPieceFilter(f, parse(s[i]));
         }
-      }
-      else {
+      } else {
         for (int i = 0; i < CONDITIONS.length && f == null; i++) {
           if (expression.contains(CONDITIONS[i].pattern())) {
             s = CONDITIONS[i].split(expression);
@@ -84,29 +78,29 @@ public class PropertiesPieceFilter {
                 value = s[1].trim();
               }
               switch (i) {
-              case 0:
-                f = new NE(name, value);
-                break;
-              case 1:
-                f = new LE(name, value);
-                break;
-              case 2:
-                f = new GE(name, value);
-                break;
-              case 3:
-                f = new GT(name, value);
-                break;
-              case 4:
-                f = new LT(name, value);
-                break;
-              case 5:
-                f = new MATCH(name, value);
-                break;
-              case 6:
-                f = new EQ(name, value);
-                break;
-              case 7:
-                f = new NOT_MATCH(name, value);
+                case 0:
+                  f = new NE(name, value);
+                  break;
+                case 1:
+                  f = new LE(name, value);
+                  break;
+                case 2:
+                  f = new GE(name, value);
+                  break;
+                case 3:
+                  f = new GT(name, value);
+                  break;
+                case 4:
+                  f = new LT(name, value);
+                  break;
+                case 5:
+                  f = new MATCH(name, value);
+                  break;
+                case 6:
+                  f = new EQ(name, value);
+                  break;
+                case 7:
+                  f = new NotMatch(name, value);
               }
             }
             break;
@@ -128,23 +122,28 @@ public class PropertiesPieceFilter {
 
     if (f instanceof BooleanAndPieceFilter) {
       final BooleanAndPieceFilter and = (BooleanAndPieceFilter) f;
-      return "(" + toBeanShellString(and.getFilter1()) + ") && (" + toBeanShellString(and.getFilter2()) + ")";
-    }
-    else if (f instanceof BooleanOrPieceFilter) {
+      return "("
+          + toBeanShellString(and.getFilter1())
+          + ") && ("
+          + toBeanShellString(and.getFilter2())
+          + ")";
+    } else if (f instanceof BooleanOrPieceFilter) {
       final BooleanOrPieceFilter or = (BooleanOrPieceFilter) f;
-      return "(" + toBeanShellString(or.getFilter1()) + ") || (" + toBeanShellString(or.getFilter2()) + ")";
-    }
-    else if (f instanceof ComparisonFilter) {
-      return  ((ComparisonFilter) f).toBeanShellString();
+      return "("
+          + toBeanShellString(or.getFilter1())
+          + ") || ("
+          + toBeanShellString(or.getFilter2())
+          + ")";
+    } else if (f instanceof ComparisonFilter) {
+      return ((ComparisonFilter) f).toBeanShellString();
     }
     return "";
-
   }
 
   private abstract static class ComparisonFilter implements PieceFilter {
     protected final String name;
     protected final String value;
-    protected Object alternate; //BR// NB - 3.4.2 - reverted from Boolean because of 13425
+    protected Object alternate; // BR// NB - 3.4.2 - reverted from Boolean because of 13425
 
     public ComparisonFilter(String name, String value) {
       this.name = name;
@@ -158,8 +157,7 @@ public class PropertiesPieceFilter {
       final String property = String.valueOf(piece.getProperty(name));
       try {
         return Integer.valueOf(property).compareTo(Integer.valueOf(value));
-      }
-      catch (NumberFormatException e) {
+      } catch (NumberFormatException e) {
         // If both properties are not numbers, compare alphabetically
         return property.compareTo(value);
       }
@@ -169,9 +167,10 @@ public class PropertiesPieceFilter {
 
     protected String toBeanShellName() {
       if (name.indexOf('$') >= 0) {
-        return "GetProperty(" + FormattedStringExpression.instance(name).toBeanShellString() + ")"; // NON-NLS
-      }
-      else {
+        return "GetProperty("
+            + FormattedStringExpression.instance(name).toBeanShellString()
+            + ")"; // NON-NLS
+      } else {
         return BeanShellExpression.convertProperty(name);
       }
     }
@@ -209,7 +208,6 @@ public class PropertiesPieceFilter {
     public String toBeanShellString() {
       return toBeanShellName() + "==" + toBeanShellValue();
     }
-
   }
 
   private static class NE extends ComparisonFilter {
@@ -344,8 +342,8 @@ public class PropertiesPieceFilter {
     }
   }
 
-  private static class NOT_MATCH extends MATCH {
-    public NOT_MATCH(String name, String value) {
+  private static class NotMatch extends MATCH {
+    public NotMatch(String name, String value) {
       super(name, value);
     }
 

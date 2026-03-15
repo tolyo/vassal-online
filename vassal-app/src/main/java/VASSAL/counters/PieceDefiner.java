@@ -34,32 +34,6 @@ import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
 import VASSAL.tools.image.LabelUtils;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.DropMode;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.plaf.SplitPaneUI;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -87,10 +61,35 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
+import javax.swing.plaf.SplitPaneUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+import net.miginfocom.swing.MigLayout;
 
 /**
- * This is the GamePiece designer dialog.  It appears when you edit
- * the properties of a "Single Piece" in the Configuration window.
+ * This is the GamePiece designer dialog. It appears when you edit the properties of a "Single
+ * Piece" in the Configuration window.
  */
 public class PieceDefiner extends JPanel {
   private static final long serialVersionUID = 1L;
@@ -142,7 +141,8 @@ public class PieceDefiner extends JPanel {
   private JLabel scaleLabel;
   private final Prefs prefs;
 
-  private String prototypeName; // If we're editing a prototype definition, this holds the name of it
+  private String
+      prototypeName; // If we're editing a prototype definition, this holds the name of it
 
   // A Configurer to hold the users preferred maximum split size
   private static final int MINIMUM_SPLIT_SIZE = LabelUtils.noImageBoxImage().getWidth();
@@ -201,11 +201,10 @@ public class PieceDefiner extends JPanel {
     alphaMap.put(((EditablePiece) piece).getBaseDescription(), piece);
   }
 
-
   protected static void initDefinitions() {
     if (availableModel == null) {
       availableModel = new DefaultListModel<>();
-      //addElement(new BasicPiece()); // Not needed since you can never add it
+      // addElement(new BasicPiece()); // Not needed since you can never add it
       addElement(new Attachment());
       addElement(new BasicName());
       addElement(new BorderOutline());
@@ -264,10 +263,9 @@ public class PieceDefiner extends JPanel {
   }
 
   /**
-   * Add another definition to the list of available traits.
-   * Add to the bottom of the classic list
-   * Regenerate the Alpha list
-   * reset the model depending on the sort setting
+   * Add another definition to the list of available traits. Add to the bottom of the classic list
+   * Regenerate the Alpha list reset the model depending on the sort setting
+   *
    * @param piece New Definition
    */
   private static void addAdditionalElement(GamePiece piece) {
@@ -278,6 +276,7 @@ public class PieceDefiner extends JPanel {
 
   /**
    * Plugins can add additional GamePiece definitions
+   *
    * @param definition GamePiece definition to add
    */
   public static void addDefinition(GamePiece definition) {
@@ -310,8 +309,7 @@ public class PieceDefiner extends JPanel {
       if (!contains) {
         try {
           addAdditionalElement((GamePiece) pieceClass.getConstructor().newInstance());
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
           ReflectionUtils.handleNewInstanceFailure(t, pieceClass);
         }
       }
@@ -325,15 +323,11 @@ public class PieceDefiner extends JPanel {
     refresh();
   }
 
-  /**
-   * The piece defined has been changed. It may have changed size, or image
-   *
-   */
+  /** The piece defined has been changed. It may have changed size, or image */
   protected void refresh() {
     if (inUseModel.getSize() > 0) {
       piece = inUseModel.lastElement();
-    }
-    else {
+    } else {
       piece = null;
     }
     slot.setPiece(piece);
@@ -346,13 +340,11 @@ public class PieceDefiner extends JPanel {
   }
 
   /**
-   *
    * Re-calculate how to lay out the left hand Piece display panel.
    *
-   * 1. Always try and show the entire image 100% scale, plus PIECE_IMAGE_BORDER pixels
-   * 2. If the image can't fit in the available space, scale it until it can
-   * 3. If the image size is < max split size, then set the divider size = image size to now waste space
-   *
+   * <p>1. Always try and show the entire image 100% scale, plus PIECE_IMAGE_BORDER pixels 2. If the
+   * image can't fit in the available space, scale it until it can 3. If the image size is < max
+   * split size, then set the divider size = image size to now waste space
    */
   private void resizeSlotPanel() {
 
@@ -367,8 +359,7 @@ public class PieceDefiner extends JPanel {
       slot.setScale(1.0);
       newSlotSize = slot.getPreferredSize();
       slot.setScale(oldScale);
-    }
-    else {
+    } else {
       slot.getComponent().revalidate();
       slot.getComponent().repaint();
       final Rectangle r = slot.getPiece().boundingBox();
@@ -381,15 +372,18 @@ public class PieceDefiner extends JPanel {
     // Updated image size, work out a new scale factor and divider position to
     // best display it.
     if (newSlotSize.width <= maxSlotWidth && newSlotSize.height <= maxSlotHeight) {
-      // The new piece will fit at 100% scale. Set the maximum size of the slotPanel to prevent it expanding too far
-      slotPanel.setMaximumSize(new Dimension(newSlotSize.width + PIECE_IMAGE_INSET * 2, maxPanelHeight));
-      final Dimension updatedSlotSize = new Dimension(newSlotSize.width + PIECE_IMAGE_INSET * 2, newSlotSize.height);
+      // The new piece will fit at 100% scale. Set the maximum size of the slotPanel to prevent it
+      // expanding too far
+      slotPanel.setMaximumSize(
+          new Dimension(newSlotSize.width + PIECE_IMAGE_INSET * 2, maxPanelHeight));
+      final Dimension updatedSlotSize =
+          new Dimension(newSlotSize.width + PIECE_IMAGE_INSET * 2, newSlotSize.height);
       slotPanel.setPreferredSize(updatedSlotSize);
       slot.setScale(1.0);
       scaleLabel.setText("");
-    }
-    else {
-      // The new piece is too large to fit in the available space. Scale it to fit on the most oversized axis
+    } else {
+      // The new piece is too large to fit in the available space. Scale it to fit on the most
+      // oversized axis
       final double xRatio = maxSlotWidth / newSlotSize.getWidth();
       final double yRatio = maxSlotHeight / newSlotSize.getHeight();
       final double newScale = Math.min(xRatio, yRatio);
@@ -397,9 +391,15 @@ public class PieceDefiner extends JPanel {
       scaleLabel.setText("(" + (int) (newScale * 100) + "%)");
       slot.getComponent().revalidate();
       slot.getComponent().repaint();
-      final Dimension scaledSlotSize = new Dimension((int) (newSlotSize.width * newScale), (int) (newSlotSize.height * newScale));
-      slotPanel.setMaximumSize(new Dimension(Math.min(scaledSlotSize.width + PIECE_IMAGE_INSET * 2, maxSlotWidth), maxPanelHeight));
-      final Dimension updatedSlotSize = new Dimension(scaledSlotSize.width + PIECE_IMAGE_INSET * 2, scaledSlotSize.height);
+      final Dimension scaledSlotSize =
+          new Dimension(
+              (int) (newSlotSize.width * newScale), (int) (newSlotSize.height * newScale));
+      slotPanel.setMaximumSize(
+          new Dimension(
+              Math.min(scaledSlotSize.width + PIECE_IMAGE_INSET * 2, maxSlotWidth),
+              maxPanelHeight));
+      final Dimension updatedSlotSize =
+          new Dimension(scaledSlotSize.width + PIECE_IMAGE_INSET * 2, scaledSlotSize.height);
       slotPanel.setPreferredSize(updatedSlotSize);
     }
     slotPanel.revalidate();
@@ -448,25 +448,22 @@ public class PieceDefiner extends JPanel {
         final String str;
 
         if (trait instanceof EditablePiece) {
-          str = ((EditablePiece)trait).getDescription();
-        }
-        else {
+          str = ((EditablePiece) trait).getDescription();
+        } else {
           final String s = trait.getClass().getName();
           str = s.substring(s.lastIndexOf('.') + 1);
         }
 
         if (str.toLowerCase().startsWith(key)) {
-          gpl.setSelectedIndex(index);     //change selected item in list
-          gpl.ensureIndexIsVisible(index); //change listbox scroll-position
+          gpl.setSelectedIndex(index); // change selected item in list
+          gpl.ensureIndexIsVisible(index); // change listbox scroll-position
           break;
         }
       }
     }
   }
 
-  /**
-   * This method is called from within the constructor to initialize the form.
-   */
+  /** This method is called from within the constructor to initialize the form. */
   private void initComponents() {
     maxPanelHeight = SwingUtils.getScreenSize().height - 150;
 
@@ -474,7 +471,10 @@ public class PieceDefiner extends JPanel {
     setLayout(new MigLayout("ins 0, fill")); // NON-NLS
 
     // A Panel to hold the trait lists
-    controls = new JPanel(new MigLayout("ins 0, fill", "[grow 1,200!]rel[]rel[grow 4,:600:]rel[]", "[grow]0")); // NON-NLS
+    controls =
+        new JPanel(
+            new MigLayout(
+                "ins 0, fill", "[grow 1,200!]rel[]rel[grow 4,:600:]rel[]", "[grow]0")); // NON-NLS
 
     // A Panel to hold the generated PieceSlot image
     slotPanel = new JPanel(new MigLayout("ins 0", "push[]push", "push[]2[]push")); // NON-NLS
@@ -490,19 +490,22 @@ public class PieceDefiner extends JPanel {
     // Set a MouseListener on the Divider, so we can distinguish manual drags from auto-resizes
     final SplitPaneUI spui = splitPane.getUI();
     if (spui instanceof BasicSplitPaneUI) {
-      ((BasicSplitPaneUI) spui).getDivider().addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-          super.mousePressed(e);
-          setSplitDragInProgress(true);
-        }
+      ((BasicSplitPaneUI) spui)
+          .getDivider()
+          .addMouseListener(
+              new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                  super.mousePressed(e);
+                  setSplitDragInProgress(true);
+                }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-          super.mouseReleased(e);
-          setSplitDragInProgress(false);
-        }
-      });
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                  super.mouseReleased(e);
+                  setSplitDragInProgress(false);
+                }
+              });
     }
 
     add(splitPane, "grow,pushy"); // NON-NLS
@@ -520,43 +523,63 @@ public class PieceDefiner extends JPanel {
     availableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     availableList.setCellRenderer(availableRenderer);
     availableList.setVisibleRowCount(99);
-    availableList.addListSelectionListener(evt -> {
-      final Object o = availableList.getSelectedValue();
-      helpButton.setEnabled(o instanceof EditablePiece && ((EditablePiece) o).getHelpFile() != null);
-      addButton.setEnabled(o instanceof Decorator);
-    });
-    availableList.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-          doAdd();
-        }
-      }
-    });
+    availableList.addListSelectionListener(
+        evt -> {
+          final Object o = availableList.getSelectedValue();
+          helpButton.setEnabled(
+              o instanceof EditablePiece && ((EditablePiece) o).getHelpFile() != null);
+          addButton.setEnabled(o instanceof Decorator);
+        });
+    availableList.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+              doAdd();
+            }
+          }
+        });
 
-    availableList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "AddAvailable"); //$NON-NLS-1$
-    availableList.getActionMap().put("AddAvailable", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doAdd();
-      }
-    });
+    availableList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "AddAvailable"); // $NON-NLS-1$
+    availableList
+        .getActionMap()
+        .put(
+            "AddAvailable",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doAdd();
+              }
+            });
 
-    availableList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()), "ToInUse"); //$NON-NLS-1$
-    availableList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "ToInUse"); //$NON-NLS-1$
-    availableList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()), "ToInUse"); //$NON-NLS-1$
-    availableList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "ToInUse"); //$NON-NLS-1$
-    availableList.getActionMap().put("ToInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        inUseList.requestFocus();
-      }
-    });
+    availableList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()),
+            "ToInUse"); //$NON-NLS-1$
+    availableList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "ToInUse"); // $NON-NLS-1$
+    availableList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()),
+            "ToInUse"); //$NON-NLS-1$
+    availableList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "ToInUse"); // $NON-NLS-1$
+    availableList
+        .getActionMap()
+        .put(
+            "ToInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                inUseList.requestFocus();
+              }
+            });
 
     // Use typed keys to jump to entries in trait list
     availableList.addKeyListener(new SearchHighlighter(availableList));
@@ -565,7 +588,9 @@ public class PieceDefiner extends JPanel {
     availableListPanel.add(availableList, "grow,push"); // NON-NLS
     final JScrollPane availableScroll = new JScrollPane(availableListPanel);
 
-    availableScroll.setBorder(BorderFactory.createTitledBorder(Resources.getString("Editor.PieceDefiner.available_traits")));
+    availableScroll.setBorder(
+        BorderFactory.createTitledBorder(
+            Resources.getString("Editor.PieceDefiner.available_traits")));
     availablePanel.add(availableScroll, "grow,push,wrap"); // NON-NLS
 
     helpButton = new JButton(Resources.getString("General.help"));
@@ -574,12 +599,13 @@ public class PieceDefiner extends JPanel {
 
     final JButton importButton = new JButton(Resources.getString("General.import"));
     importButton.setToolTipText(Resources.getString("Editor.PieceDefiner.import_tip"));
-    importButton.addActionListener(evt -> {
-      final String className = JOptionPane.showInputDialog(
-        this, Resources.getString("Editor.PieceDefiner.enter_class")
-      );
-      importPiece(className);
-    });
+    importButton.addActionListener(
+        evt -> {
+          final String className =
+              JOptionPane.showInputDialog(
+                  this, Resources.getString("Editor.PieceDefiner.enter_class"));
+          importPiece(className);
+        });
 
     controls.add(availablePanel, "grow,pushy"); // NON-NLS
 
@@ -587,14 +613,20 @@ public class PieceDefiner extends JPanel {
     final JPanel addRemovePanel = new JPanel();
     addRemovePanel.setLayout(new MigLayout("ins 0,wrap 1", "[]", "[][][]20[][]")); // NON-NLS
 
-    addButton = new JButton(Resources.getString("Editor.PieceDefiner.add"), IconFactory.getIcon("go-next", IconFamily.SMALL)); // NON-NLS
+    addButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.add"),
+            IconFactory.getIcon("go-next", IconFamily.SMALL)); // NON-NLS
     addButton.setHorizontalTextPosition(SwingUtilities.LEFT);
     addButton.setMargin(buttonInsets);
     addButton.setToolTipText(Resources.getString("Editor.PieceDefiner.add_tip"));
     addButton.addActionListener(evt -> doAdd());
     addRemovePanel.add(addButton, "sg"); // NON-NLS
 
-    removeButton = new JButton(Resources.getString("Editor.PieceDefiner.remove"), IconFactory.getIcon("go-previous", IconFamily.SMALL)); // NON-NLS
+    removeButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.remove"),
+            IconFactory.getIcon("go-previous", IconFamily.SMALL)); // NON-NLS
     removeButton.setMargin(buttonInsets);
     removeButton.setToolTipText(Resources.getString("Editor.PieceDefiner.remove_tip"));
     removeButton.addActionListener(evt -> doRemove());
@@ -606,7 +638,8 @@ public class PieceDefiner extends JPanel {
     controls.add(addRemovePanel, "aligny center"); // NON-NLS
 
     // The list of traits in use in this GamePiece
-    final JPanel inUsePanel = new JPanel(new MigLayout("ins 0,wrap 1,fill", "[]", "[]rel[]0[]")); // NON-NLS
+    final JPanel inUsePanel =
+        new JPanel(new MigLayout("ins 0,wrap 1,fill", "[]", "[]rel[]0[]")); // NON-NLS
     inUseList = new JList<>();
     inUseList.setName(INUSE);
     inUseList.setDragEnabled(true);
@@ -616,131 +649,205 @@ public class PieceDefiner extends JPanel {
     inUseList.setModel(inUseModel);
     inUseList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     inUseList.setCellRenderer(r);
-    inUseList.addListSelectionListener(evt -> {
-      final Object o = inUseList.getSelectedValue();
-      propsButton.setEnabled(o instanceof EditablePiece);
+    inUseList.addListSelectionListener(
+        evt -> {
+          final Object o = inUseList.getSelectedValue();
+          propsButton.setEnabled(o instanceof EditablePiece);
 
-      final int index = inUseList.getSelectedIndex();
-      final boolean copyAndRemove = inUseModel.size() > 0 &&
-        (index > 0 || !(inUseModel.getElementAt(0) instanceof BasicPiece));
-      copyButton.setEnabled(copyAndRemove);
-      removeButton.setEnabled(copyAndRemove);
+          final int index = inUseList.getSelectedIndex();
+          final boolean copyAndRemove =
+              inUseModel.size() > 0
+                  && (index > 0 || !(inUseModel.getElementAt(0) instanceof BasicPiece));
+          copyButton.setEnabled(copyAndRemove);
+          removeButton.setEnabled(copyAndRemove);
 
-      moveUpButton.setEnabled(index > 1);
-      moveTopButton.setEnabled(index > 1);
-      moveDownButton.setEnabled(index > 0 && index < inUseModel.size() - 1);
-      moveBottomButton.setEnabled(index > 0 && index < inUseModel.size() - 1);
-    });
+          moveUpButton.setEnabled(index > 1);
+          moveTopButton.setEnabled(index > 1);
+          moveDownButton.setEnabled(index > 0 && index < inUseModel.size() - 1);
+          moveBottomButton.setEnabled(index > 0 && index < inUseModel.size() - 1);
+        });
 
-    inUseList.addMouseListener(new MouseAdapter() {
-      @Override
-// FIXME: mouseClicked()?
-      public void mouseReleased(MouseEvent e) {
-        if (e.getClickCount() == 2 && SwingUtils.isMainMouseButtonDown(e)) {
-          final int index = inUseList.locationToIndex(e.getPoint());
-          if (index >= 0) {
-            edit(index);
+    inUseList.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          // FIXME: mouseClicked()?
+          public void mouseReleased(MouseEvent e) {
+            if (e.getClickCount() == 2 && SwingUtils.isMainMouseButtonDown(e)) {
+              final int index = inUseList.locationToIndex(e.getPoint());
+              if (index >= 0) {
+                edit(index);
+              }
+            }
           }
-        }
-      }
-    });
+        });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "EditInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("EditInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        propsButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "EditInUse"); // $NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "EditInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                propsButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DeleteInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("DeleteInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        removeButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DeleteInUse"); // $NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "DeleteInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                removeButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_C, SwingUtils.getModifierKeyMask()), "CopyInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("CopyInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        copyButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_C, SwingUtils.getModifierKeyMask()),
+            "CopyInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "CopyInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                copyButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_V, SwingUtils.getModifierKeyMask()), "PasteInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("PasteInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        pasteButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_V, SwingUtils.getModifierKeyMask()),
+            "PasteInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "PasteInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                pasteButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_X, SwingUtils.getModifierKeyMask()), "CutInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("CutInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doCopy();
-        removeButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_X, SwingUtils.getModifierKeyMask()),
+            "CutInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "CutInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                doCopy();
+                removeButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_UP, SwingUtils.getModifierKeyMask()), "UpInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("UpInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        moveUpButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_UP, SwingUtils.getModifierKeyMask()),
+            "UpInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "UpInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                moveUpButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, SwingUtils.getModifierKeyMask()), "DownInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("DownInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        moveDownButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, SwingUtils.getModifierKeyMask()),
+            "DownInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "DownInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                moveDownButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_HOME, SwingUtils.getModifierKeyMask()), "TopInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("TopInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        moveTopButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_HOME, SwingUtils.getModifierKeyMask()),
+            "TopInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "TopInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                moveTopButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_END, SwingUtils.getModifierKeyMask()), "BottomInUse"); //$NON-NLS-1$
-    inUseList.getActionMap().put("BottomInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        moveBottomButton.doClick();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_END, SwingUtils.getModifierKeyMask()),
+            "BottomInUse"); //$NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "BottomInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                moveBottomButton.doClick();
+              }
+            });
 
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()), "ToAvail"); //$NON-NLS-1$
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "ToAvail"); //$NON-NLS-1$
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()), "ToAvail"); //$NON-NLS-1$
-    inUseList.getInputMap(WHEN_FOCUSED).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "ToAvail"); //$NON-NLS-1$
-    inUseList.getActionMap().put("ToAvail", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        availableList.requestFocus();
-      }
-    });
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()),
+            "ToAvail"); //$NON-NLS-1$
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "ToAvail"); // $NON-NLS-1$
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()),
+            "ToAvail"); //$NON-NLS-1$
+    inUseList
+        .getInputMap(WHEN_FOCUSED)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "ToAvail"); // $NON-NLS-1$
+    inUseList
+        .getActionMap()
+        .put(
+            "ToAvail",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                availableList.requestFocus();
+              }
+            });
 
     // Use typed keys to jump to entries in trait list
     inUseList.addKeyListener(new SearchHighlighter(inUseList));
@@ -748,128 +855,161 @@ public class PieceDefiner extends JPanel {
     final JPanel inUseListPanel = new JPanel(new BorderLayout());
     inUseListPanel.add(inUseList, BorderLayout.CENTER);
     final JScrollPane inUseScroll = new JScrollPane(inUseListPanel);
-    inUseScroll.setBorder(BorderFactory.createTitledBorder(Resources.getString("Editor.PieceDefiner.current_traits")));
+    inUseScroll.setBorder(
+        BorderFactory.createTitledBorder(
+            Resources.getString("Editor.PieceDefiner.current_traits")));
     inUsePanel.add(inUseScroll, "grow,push,wrap"); // NON-NLS
 
     // A panel holding the cut/paste/properties buttons below the In Use traits
-    final JPanel inUseButtonPanel = new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
+    final JPanel inUseButtonPanel =
+        new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
     copyButton = new JButton(Resources.getString("Editor.copy") + " (" + getCtrlKeyName('C') + ")");
     copyButton.addActionListener(evt -> doCopy());
     inUseButtonPanel.add(copyButton, "sg 1"); // NON-NLS
 
-    pasteButton = new JButton(Resources.getString("Editor.paste") + " (" + getCtrlKeyName('V') + ")");
+    pasteButton =
+        new JButton(Resources.getString("Editor.paste") + " (" + getCtrlKeyName('V') + ")");
     pasteButton.addActionListener(evt -> doPaste());
     inUseButtonPanel.add(pasteButton, "sg 1"); // NON-NLS
 
     propsButton = new JButton(Resources.getString("Editor.properties"));
-    propsButton.addActionListener(evt -> {
-      final int index = inUseList.getSelectedIndex();
-      if (index >= 0) {
-        edit(index);
-      }
-    });
+    propsButton.addActionListener(
+        evt -> {
+          final int index = inUseList.getSelectedIndex();
+          if (index >= 0) {
+            edit(index);
+          }
+        });
 
     inUseButtonPanel.add(propsButton, "sg 1,wrap"); // NON-NLS
 
     // A label to hold the notes at the bottom of the screen
     final JLabel noteLabel = new JLabel(Resources.getString("Editor.PieceDefiner.note1"));
     final Font standardFont = noteLabel.getFont();
-    final Font italicFont = new Font(standardFont.getFontName(), Font.ITALIC, standardFont.getSize());
+    final Font italicFont =
+        new Font(standardFont.getFontName(), Font.ITALIC, standardFont.getSize());
     noteLabel.setFont(italicFont);
 
     inUsePanel.add(inUseButtonPanel, "center,wrap"); // NON-NLS
     inUsePanel.add(noteLabel, "center"); // NON-NLS
     controls.add(inUsePanel, "grow"); // NON-NLS
 
-
     // A panel to hold the trait navigation buttons.
     final JPanel moveUpDownPanel = new JPanel(new MigLayout("ins 0,wrap 1")); // NON-NLS
 
-    moveTopButton = new JButton(Resources.getString("Editor.PieceDefiner.move_top"), IconFactory.getIcon("go-top", IconFamily.SMALL)); // NON-NLS
+    moveTopButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.move_top"),
+            IconFactory.getIcon("go-top", IconFamily.SMALL)); // NON-NLS
     moveTopButton.setToolTipText(Resources.getString("Editor.PieceDefiner.top_tip"));
     moveTopButton.setHorizontalAlignment(SwingConstants.LEFT);
     moveTopButton.setMargin(buttonInsets);
-    moveTopButton.addActionListener(evt -> {
-      final int index = inUseList.getSelectedIndex();
-      if (index > 1 && index < inUseModel.size()) {
-        moveDecoratorTop(index);
-      }
-    });
+    moveTopButton.addActionListener(
+        evt -> {
+          final int index = inUseList.getSelectedIndex();
+          if (index > 1 && index < inUseModel.size()) {
+            moveDecoratorTop(index);
+          }
+        });
     moveUpDownPanel.add(moveTopButton, "sg"); // NON-NLS
 
-    moveUpButton = new JButton(Resources.getString("Editor.PieceDefiner.move_up"), IconFactory.getIcon("go-up", IconFamily.SMALL)); // NON-NLS
+    moveUpButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.move_up"),
+            IconFactory.getIcon("go-up", IconFamily.SMALL)); // NON-NLS
     moveUpButton.setToolTipText(Resources.getString("Editor.PieceDefiner.up_tip"));
     moveUpButton.setHorizontalAlignment(SwingConstants.LEFT);
     moveUpButton.setMargin(buttonInsets);
-    moveUpButton.addActionListener(evt -> {
-      final int index = inUseList.getSelectedIndex();
-      if (index > 1 && index < inUseModel.size()) {
-        moveDecoratorUp(index);
-      }
-    });
+    moveUpButton.addActionListener(
+        evt -> {
+          final int index = inUseList.getSelectedIndex();
+          if (index > 1 && index < inUseModel.size()) {
+            moveDecoratorUp(index);
+          }
+        });
     moveUpDownPanel.add(moveUpButton, "sg"); // NON-NLS
 
-    moveDownButton = new JButton(Resources.getString("Editor.PieceDefiner.move_down"), IconFactory.getIcon("go-down", IconFamily.SMALL)); // NON-NLS
+    moveDownButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.move_down"),
+            IconFactory.getIcon("go-down", IconFamily.SMALL)); // NON-NLS
     moveDownButton.setToolTipText(Resources.getString("Editor.PieceDefiner.down_tip"));
     moveDownButton.setHorizontalAlignment(SwingConstants.LEFT);
     moveDownButton.setMargin(buttonInsets);
-    moveDownButton.addActionListener(evt -> {
-      final int index = inUseList.getSelectedIndex();
-      if (index > 0 && index < inUseModel.size() - 1) {
-        moveDecoratorDown(index);
-      }
-    });
+    moveDownButton.addActionListener(
+        evt -> {
+          final int index = inUseList.getSelectedIndex();
+          if (index > 0 && index < inUseModel.size() - 1) {
+            moveDecoratorDown(index);
+          }
+        });
     moveUpDownPanel.add(moveDownButton, "sg"); // NON-NLS
 
-    moveBottomButton = new JButton(Resources.getString("Editor.PieceDefiner.move_bottom"), IconFactory.getIcon("go-bottom", IconFamily.SMALL)); // NON-NLS
+    moveBottomButton =
+        new JButton(
+            Resources.getString("Editor.PieceDefiner.move_bottom"),
+            IconFactory.getIcon("go-bottom", IconFamily.SMALL)); // NON-NLS
     moveBottomButton.setToolTipText(Resources.getString("Editor.PieceDefiner.bottom_trait"));
     moveBottomButton.setHorizontalAlignment(SwingConstants.LEFT);
     moveBottomButton.setMargin(buttonInsets);
-    moveBottomButton.addActionListener(evt -> {
-      final int index = inUseList.getSelectedIndex();
-      if (index > 0 && index < inUseModel.size() - 1) {
-        moveDecoratorBottom(index);
-      }
-    });
+    moveBottomButton.addActionListener(
+        evt -> {
+          final int index = inUseList.getSelectedIndex();
+          if (index > 0 && index < inUseModel.size() - 1) {
+            moveDecoratorBottom(index);
+          }
+        });
     moveUpDownPanel.add(moveBottomButton, "sg"); // NON-NLS
 
     controls.add(moveUpDownPanel, "wrap"); // NON-NLS
-
   }
 
   public void initCustomControls(final JDialog d, final Configurable target) {
     final JRootPane rp = d.getRootPane();
-    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()), "ToAvail"); //$NON-NLS-1$
-    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), "ToAvail"); //$NON-NLS-1$
-    rp.getActionMap().put("ToAvail", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        availableList.requestFocus();
-      }
-    });
+    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, SwingUtils.getModifierKeyMask()),
+            "ToAvail"); //$NON-NLS-1$
+    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK),
+            "ToAvail"); //$NON-NLS-1$
+    rp.getActionMap()
+        .put(
+            "ToAvail",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                availableList.requestFocus();
+              }
+            });
 
-    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()), "ToInUse"); //$NON-NLS-1$
-    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
-      KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), "ToInUse"); //$NON-NLS-1$
-    rp.getActionMap().put("ToInUse", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        inUseList.requestFocus();
-      }
-    });
+    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, SwingUtils.getModifierKeyMask()),
+            "ToInUse"); //$NON-NLS-1$
+    rp.getInputMap(WHEN_IN_FOCUSED_WINDOW)
+        .put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK),
+            "ToInUse"); //$NON-NLS-1$
+    rp.getActionMap()
+        .put(
+            "ToInUse",
+            new AbstractAction() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                inUseList.requestFocus();
+              }
+            });
   }
 
   /**
-   * The user has manually dragged the divider to change the split size.
-   * Record the level as current maximum and resize the image if it is not
-   * at 100% already
+   * The user has manually dragged the divider to change the split size. Record the level as current
+   * maximum and resize the image if it is not at 100% already
    */
   private void splitChanged() {
     // Exclude size changes due to resizes not initiated by the user
-    if (! isSplitDragInProgress()) {
+    if (!isSplitDragInProgress()) {
       return;
     }
 
@@ -899,14 +1039,16 @@ public class PieceDefiner extends JPanel {
   }
 
   /**
-   * Return the OS specific name for a control Key.
-   * This will usually be Ctrl+c or Cmd+c on a Mac for character c
+   * Return the OS specific name for a control Key. This will usually be Ctrl+c or Cmd+c on a Mac
+   * for character c
    *
    * @param c Control Char
    * @return OS specific name.
    */
   private String getCtrlKeyName(char c) {
-    return KeyNamer.getKeyString(SwingUtils.genericToSystem(KeyStroke.getKeyStroke(c, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx())));
+    return KeyNamer.getKeyString(
+        SwingUtils.genericToSystem(
+            KeyStroke.getKeyStroke(c, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx())));
   }
 
   private void doCopy() {
@@ -939,8 +1081,14 @@ public class PieceDefiner extends JPanel {
 
   private void doAdd() {
     final int index = availableList.getSelectedIndex();
-    if (index >= 0) { // This is possible, alas. Swing sometimes sends us the "double" part of a double click before the "single" part
-      doAdd(index, inUseList.getSelectedIndex() < 0 ? inUseList.getModel().getSize() : inUseList.getSelectedIndex());
+    if (index
+        >= 0) { // This is possible, alas. Swing sometimes sends us the "double" part of a double
+      // click before the "single" part
+      doAdd(
+          index,
+          inUseList.getSelectedIndex() < 0
+              ? inUseList.getModel().getSize()
+              : inUseList.getSelectedIndex());
     }
   }
 
@@ -961,13 +1109,11 @@ public class PieceDefiner extends JPanel {
           }
         }
       }
-    }
-    else if (selected != null && inUseModel.getSize() == 0) {
+    } else if (selected != null && inUseModel.getSize() == 0) {
       GamePiece p = null;
       try {
         p = (GamePiece) selected.getClass().getConstructor().newInstance();
-      }
-      catch (Throwable t) {
+      } catch (Throwable t) {
         ReflectionUtils.handleNewInstanceFailure(t, selected.getClass());
       }
 
@@ -984,7 +1130,8 @@ public class PieceDefiner extends JPanel {
   }
 
   protected void paste() {
-    final Decorator c = (Decorator) GameModule.getGameModule().createPiece(clipBoard.getType(), null);
+    final Decorator c =
+        (Decorator) GameModule.getGameModule().createPiece(clipBoard.getType(), null);
     if (c instanceof PlaceMarker) {
       ((PlaceMarker) c).updateGpId(GameModule.getGameModule().getGpIdSupport());
     }
@@ -997,7 +1144,10 @@ public class PieceDefiner extends JPanel {
   }
 
   protected void moveDecoratorDown(int index) {
-    moveDecorator(index, index + 2); // Note +2, not +1 because moveDecorator subtracts 1 to take account of entries moving up
+    moveDecorator(
+        index,
+        index + 2); // Note +2, not +1 because moveDecorator subtracts 1 to take account of entries
+    // moving up
   }
 
   protected void moveDecoratorUp(int index) {
@@ -1062,7 +1212,8 @@ public class PieceDefiner extends JPanel {
 
     // Find the existing inner and outer of the piece to be removed
     final GamePiece inner = inUseModel.elementAt(index - 1);
-    final Decorator outer = index < inUseModel.size() - 1 ?  (Decorator) inUseModel.elementAt(index + 1) : null;
+    final Decorator outer =
+        index < inUseModel.size() - 1 ? (Decorator) inUseModel.elementAt(index + 1) : null;
 
     // Remove the piece at index
     final GamePiece piece = inUseModel.remove(index);
@@ -1085,7 +1236,8 @@ public class PieceDefiner extends JPanel {
   protected void insertDecorator(int index, GamePiece piece) {
     // Find the pieces that will be the new inner and outer for our piece
     final GamePiece inner = inUseModel.elementAt(index - 1);
-    final Decorator outer = index < inUseModel.size() ? (Decorator) inUseModel.elementAt(index) : null;
+    final Decorator outer =
+        index < inUseModel.size() ? (Decorator) inUseModel.elementAt(index) : null;
 
     // Insert the new piece
     inUseModel.insertElementAt(piece, index);
@@ -1102,10 +1254,13 @@ public class PieceDefiner extends JPanel {
 
     Object o = null;
     try {
-      o = GameModule.getGameModule().getDataArchive()
-        .loadClass(className).getConstructor().newInstance();
-    }
-    catch (Throwable t) {
+      o =
+          GameModule.getGameModule()
+              .getDataArchive()
+              .loadClass(className)
+              .getConstructor()
+              .newInstance();
+    } catch (Throwable t) {
       ReflectionUtils.handleImportClassFailure(t, className);
     }
 
@@ -1113,8 +1268,7 @@ public class PieceDefiner extends JPanel {
 
     if (o instanceof GamePiece) {
       addAdditionalElement((GamePiece) o);
-    }
-    else {
+    } else {
       ErrorDialog.show("Error.not_a_gamepiece", className); // NON-NLS Error Dialog Key
     }
   }
@@ -1138,11 +1292,9 @@ public class PieceDefiner extends JPanel {
       final Window w = SwingUtilities.getWindowAncestor(this);
       if (w instanceof Frame) {
         ed = new Ed((Frame) w, p);
-      }
-      else if (w instanceof Dialog) {
+      } else if (w instanceof Dialog) {
         ed = new Ed((Dialog) w, p);
-      }
-      else {
+      } else {
         ed = new Ed((Frame) null, p);
       }
       final String oldState = p.getState();
@@ -1153,11 +1305,10 @@ public class PieceDefiner extends JPanel {
         p.mySetType(c.getType());
         if (p instanceof Decorator) {
           ((Decorator) p).mySetState(c.getState());
-        }
-        else {
+        } else {
           p.setState(c.getState());
         }
-        if ((! p.getType().equals(oldType)) || (! p.getState().equals(oldState))) {
+        if ((!p.getType().equals(oldType)) || (!p.getState().equals(oldState))) {
           setChanged(true);
         }
         refresh();
@@ -1174,45 +1325,59 @@ public class PieceDefiner extends JPanel {
     PieceEditor ed;
 
     private Ed(Frame owner, final EditablePiece p) {
-      super(owner, Resources.getString("Editor.PieceDefiner.properties", p.getBaseDescription()), true);
+      super(
+          owner,
+          Resources.getString("Editor.PieceDefiner.properties", p.getBaseDescription()),
+          true);
       initialize(p);
     }
 
     private Ed(Dialog owner, final EditablePiece p) {
-      super(owner, Resources.getString("Editor.PieceDefiner.properties", p.getBaseDescription()), true);
+      super(
+          owner,
+          Resources.getString("Editor.PieceDefiner.properties", p.getBaseDescription()),
+          true);
       initialize(p);
     }
 
     private void initialize(final EditablePiece p) {
       ed = p.getEditor();
-      setLayout(new MigLayout("fill", "[grow,fill]", "[align top]rel[align bottom]")); //NON-NLS
+      setLayout(new MigLayout("fill", "[grow,fill]", "[align top]rel[align bottom]")); // NON-NLS
 
-      final JPanel scrollPanel = new JPanel(new MigLayout("wrap 1", "[grow,fill]", "[top]rel[bottom]")); // NON-NLS
-      final JScrollPane scroll = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      scrollPanel.add(ed.getControls(), "growx,aligny top,wrap"); //NON-NLS
+      final JPanel scrollPanel =
+          new JPanel(new MigLayout("wrap 1", "[grow,fill]", "[top]rel[bottom]")); // NON-NLS
+      final JScrollPane scroll =
+          new JScrollPane(
+              scrollPanel,
+              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      scrollPanel.add(ed.getControls(), "growx,aligny top,wrap"); // NON-NLS
       add(scroll, "growx,wrap"); // NON-NLS
 
-      final JPanel buttonBox = new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
+      final JPanel buttonBox =
+          new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
 
       final JButton ok = new JButton(Resources.getString("General.ok"));
       ok.addActionListener(evt -> dispose());
 
-      buttonBox.add(ok, "sg,tag ok"); //NON-NLS
+      buttonBox.add(ok, "sg,tag ok"); // NON-NLS
 
       final JButton cancel = new JButton(Resources.getString("General.cancel"));
-      cancel.addActionListener(evt -> {
-        ed = null;
-        dispose();
-      });
+      cancel.addActionListener(
+          evt -> {
+            ed = null;
+            dispose();
+          });
 
-      buttonBox.add(cancel, "sg,tag cancel"); //NON-NLS
+      buttonBox.add(cancel, "sg,tag cancel"); // NON-NLS
 
       SwingUtils.setDefaultButtons(getRootPane(), ok, cancel);
 
       if (p.getHelpFile() != null) {
         final JButton help = new JButton(Resources.getString("General.help"));
-        help.addActionListener(evt -> BrowserSupport.openURL(p.getHelpFile().getContents().toString()));
-        buttonBox.add(help, "sg,tag help"); //NON-NLS
+        help.addActionListener(
+            evt -> BrowserSupport.openURL(p.getHelpFile().getContents().toString()));
+        buttonBox.add(help, "sg,tag help"); // NON-NLS
       }
 
       ed.initCustomControls(this);
@@ -1246,8 +1411,7 @@ public class PieceDefiner extends JPanel {
     Decorator d = null;
     try {
       d = cClass.getConstructor().newInstance();
-    }
-    catch (Throwable t) {
+    } catch (Throwable t) {
       ReflectionUtils.handleNewInstanceFailure(t, cClass);
     }
 
@@ -1256,7 +1420,8 @@ public class PieceDefiner extends JPanel {
         ((PlaceMarker) d).updateGpId(gpidSupport);
       }
 
-      //BR// When adding a BasicName trait to a prototype, default its name to the name of the prototype
+      // BR// When adding a BasicName trait to a prototype, default its name to the name of the
+      // prototype
       if (d instanceof BasicName) {
         if (!prototypeName.isEmpty()) {
           ((BasicName) d).setName(prototypeName);
@@ -1272,9 +1437,7 @@ public class PieceDefiner extends JPanel {
     refresh();
   }
 
-  /**
-   * Renderer for currently-in-use traits (includes full description)
-   */
+  /** Renderer for currently-in-use traits (includes full description) */
   private static class Renderer extends DefaultListCellRenderer {
     private static final long serialVersionUID = 1L;
 
@@ -1295,7 +1458,7 @@ public class PieceDefiner extends JPanel {
 
     @Override
     public Component getListCellRendererComponent(
-            JList list, Object value, int index, boolean selected, boolean hasFocus) {
+        JList list, Object value, int index, boolean selected, boolean hasFocus) {
 
       // DO NOT pass value to super.getListCellRendererComponent()
       // It is incredibly inefficient for GamePieces and is not needed
@@ -1305,22 +1468,22 @@ public class PieceDefiner extends JPanel {
       // For Pieces, bump index to 1
       final int lineno = definer.isPrototype() ? index : index + 1;
 
-      // Prototype or MPL Template will be zero for first item and will be skipped (not a real trait)
+      // Prototype or MPL Template will be zero for first item and will be skipped (not a real
+      // trait)
       if (lineno > 0) {
-        if (value instanceof EditablePiece) {     // Safety first
+        if (value instanceof EditablePiece) { // Safety first
 
           final String s = ConfigureTree.noHTML(((EditablePiece) value).getDescription());
 
           if (value instanceof Comment) {
             setText(cellText(lineno, "<b>/* " + s + " */"));
-          }
-          else {
+          } else {
             setText(cellText(lineno, s));
           }
 
-        }
-        else {
-          // Safety net for non-EditablePiece (probably redundant) - item will use last element of class name
+        } else {
+          // Safety net for non-EditablePiece (probably redundant) - item will use last element of
+          // class name
           final String s = value.getClass().getName();
           setText(cellText(lineno, s.substring(s.lastIndexOf('.') + 1)));
         }
@@ -1329,15 +1492,13 @@ public class PieceDefiner extends JPanel {
     }
   }
 
-  /**
-   * Renderer for available traits (trait name only)
-   */
+  /** Renderer for available traits (trait name only) */
   private static class AvailableRenderer extends DefaultListCellRenderer {
     private static final long serialVersionUID = 1L;
 
     @Override
     public Component getListCellRendererComponent(
-      JList list, Object value, int index, boolean selected, boolean hasFocus) {
+        JList list, Object value, int index, boolean selected, boolean hasFocus) {
 
       // DO NOT pass value to super.getListCellRendererComponent()
       // It is incredibly inefficient for GamePieces and is not needed
@@ -1345,30 +1506,32 @@ public class PieceDefiner extends JPanel {
       super.getListCellRendererComponent(list, "", index, selected, hasFocus);
       if (value instanceof EditablePiece) {
         setText(((EditablePiece) value).getBaseDescription());
-      }
-      else {
+      } else {
         final String s = value.getClass().getName();
         setText(s.substring(s.lastIndexOf('.') + 1));
       }
       return this;
     }
   }
-  
+
   /**
    * Contents of the Copy/Paste buffer for traits in the editor
-   * @author rkinney
    *
+   * @author rkinney
    */
   protected static class TraitClipboard {
     private final String type;
     private final String state;
+
     public TraitClipboard(Decorator copy) {
       type = copy.myGetType();
       state = copy.myGetState();
     }
+
     public String getType() {
       return type;
     }
+
     public String getState() {
       return state;
     }
@@ -1381,7 +1544,6 @@ public class PieceDefiner extends JPanel {
     private final PieceDefiner definer;
     private int fromIndex;
     private String fromList;
-
 
     public ListTransferHandler(PieceDefiner definer) {
       super();
@@ -1408,29 +1570,26 @@ public class PieceDefiner extends JPanel {
       this.fromList = fromList;
     }
 
-    /**
-     * Called to see if we can drop our package at this point.
-     */
+    /** Called to see if we can drop our package at this point. */
     @Override
     public boolean canImport(TransferHandler.TransferSupport info) {
       // No Drop allowed in Available list
       if (AVAILABLE.equals((info.getComponent()).getName())) {
         return false;
-      }
-      else {
+      } else {
         // No drop allowed above BasicPiece in InUseList
         final JList<GamePiece> list = (JList<GamePiece>) info.getComponent();
 
-        if (list.getModel().getSize() > 0 && list.getModel().getElementAt(0).getClass() == BasicPiece.class && info.getDropLocation().getDropPoint().y < 10) {
+        if (list.getModel().getSize() > 0
+            && list.getModel().getElementAt(0).getClass() == BasicPiece.class
+            && info.getDropLocation().getDropPoint().y < 10) {
           return false;
         }
       }
       return info.isDataFlavorSupported(DataFlavor.stringFlavor);
     }
 
-    /**
-     * Called when the drag is started on the selected trait
-     */
+    /** Called when the drag is started on the selected trait */
     @Override
     protected Transferable createTransferable(JComponent c) {
       final JList<GamePiece> list = (JList<GamePiece>) c;
@@ -1439,7 +1598,8 @@ public class PieceDefiner extends JPanel {
 
       // Set a DragImage showing the trait description on systems that support it (Windows)
       if (DragSource.isDragImageSupported()) {
-        setDragImage(((EditablePiece) list.getModel().getElementAt(getFromIndex())).getDescription());
+        setDragImage(
+            ((EditablePiece) list.getModel().getElementAt(getFromIndex())).getDescription());
       }
 
       return new StringSelection("");
@@ -1464,9 +1624,8 @@ public class PieceDefiner extends JPanel {
       setDragImage(img);
       setDragImageOffset(new Point(0, h));
     }
-    /**
-     * Move Only
-     */
+
+    /** Move Only */
     @Override
     public int getSourceActions(JComponent c) {
 
@@ -1478,12 +1637,10 @@ public class PieceDefiner extends JPanel {
       return MOVE;
     }
 
-    /**
-     * Perform the actual import. Called when the drag is dropped.
-     */
+    /** Perform the actual import. Called when the drag is dropped. */
     @Override
     public boolean importData(TransferHandler.TransferSupport info) {
-      if (!info.isDrop() || ! (info.getComponent() instanceof JList)) {
+      if (!info.isDrop() || !(info.getComponent() instanceof JList)) {
         return false;
       }
 
@@ -1494,8 +1651,7 @@ public class PieceDefiner extends JPanel {
         // If the source list is AVAILABLE, then we need to an Add
         if (AVAILABLE.equals(getFromList())) {
           getDefiner().doAdd(getFromIndex(), toIndex - 1);
-        }
-        else {
+        } else {
           // Ask the Definer to move the piece within the inUse list.
           getDefiner().moveDecorator(getFromIndex(), toIndex);
         }
@@ -1506,8 +1662,8 @@ public class PieceDefiner extends JPanel {
   }
 
   /**
-   * A PieceSlot that can be scaled externally, instead of relying
-   * on the scale of an enclosing widget
+   * A PieceSlot that can be scaled externally, instead of relying on the scale of an enclosing
+   * widget
    */
   static class ScaleablePieceSlot extends PieceSlot {
     private double scale = 1.0;
@@ -1529,10 +1685,10 @@ public class PieceDefiner extends JPanel {
 
   /**
    * Export a List of all the allowable traits
+   *
    * @return
    */
   public List<GamePiece> getTraitList() {
     return Collections.list(availableModel.elements());
   }
 }
-

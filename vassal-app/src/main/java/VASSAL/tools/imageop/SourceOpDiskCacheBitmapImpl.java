@@ -18,19 +18,17 @@
 
 package VASSAL.tools.imageop;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import VASSAL.build.GameModule;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.image.ImageIOException;
 import VASSAL.tools.image.ImageTileSource;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * An {@link ImageOp} which loads tiles from the tile cache.
@@ -38,8 +36,7 @@ import VASSAL.tools.image.ImageTileSource;
  * @since 3.2.0
  * @author Joel Uckelman
  */
-public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
-                                         implements SourceOp {
+public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl implements SourceOp {
 
   /** The name of the image file. */
   protected final String name;
@@ -57,21 +54,14 @@ public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
    * Constructs an <code>ImageOp</code> which will load the given file.
    *
    * @param name the name of the image to load
-   * @throws IllegalArgumentException
-   *    if <code>name</code> is <code>null</code>.
+   * @throws IllegalArgumentException if <code>name</code> is <code>null</code>.
    */
-  public SourceOpDiskCacheBitmapImpl(String name,
-                                     int tileX, int tileY, double scale) {
-    this(name, tileX, tileY, scale,
-         GameModule.getGameModule().getImageTileSource());
+  public SourceOpDiskCacheBitmapImpl(String name, int tileX, int tileY, double scale) {
+    this(name, tileX, tileY, scale, GameModule.getGameModule().getImageTileSource());
   }
 
   public SourceOpDiskCacheBitmapImpl(
-    String name,
-    int tileX,
-    int tileY,
-    double scale,
-    ImageTileSource tileSrc) {
+      String name, int tileX, int tileY, double scale, ImageTileSource tileSrc) {
 
     if (name == null) throw new IllegalArgumentException();
     if (name.length() == 0) throw new IllegalArgumentException();
@@ -86,11 +76,8 @@ public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
     this.scale = scale;
     this.tileSrc = tileSrc;
 
-    hash = new HashCodeBuilder().append(name)
-                                .append(tileX)
-                                .append(tileY)
-                                .append(scale)
-                                .toHashCode();
+    hash =
+        new HashCodeBuilder().append(name).append(tileX).append(tileY).append(scale).toHashCode();
   }
 
   @Override
@@ -119,8 +106,7 @@ public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
   protected Dimension getImageSize() {
     try {
       return tileSrc.getTileSize(name, tileX, tileY, scale);
-    }
-    catch (ImageIOException e) {
+    } catch (ImageIOException e) {
       if (!Op.handleException(e)) ErrorDialog.bug(e);
     }
 
@@ -144,10 +130,7 @@ public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final SourceOpDiskCacheBitmapImpl s = (SourceOpDiskCacheBitmapImpl) o;
-    return name.equals(s.name) &&
-           tileX == s.tileX &&
-           tileY == s.tileY &&
-           scale == s.scale;
+    return name.equals(s.name) && tileX == s.tileX && tileY == s.tileY && scale == s.scale;
   }
 
   /** {@inheritDoc} */
@@ -159,7 +142,16 @@ public class SourceOpDiskCacheBitmapImpl extends AbstractTileOpImpl
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return getClass().getName() + "[name=" + name + //NON-NLS
-      ",tileX=" + tileX + ",tileY=" + tileY + ",scale=" + scale + "]"; //NON-NLS
+    return getClass().getName()
+        + "[name="
+        + name
+        + // NON-NLS
+        ",tileX="
+        + tileX
+        + ",tileY="
+        + tileY
+        + ",scale="
+        + scale
+        + "]"; // NON-NLS
   }
 }

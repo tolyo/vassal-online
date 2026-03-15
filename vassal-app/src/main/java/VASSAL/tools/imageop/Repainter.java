@@ -18,20 +18,18 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.opcache.Op;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.opcache.Op;
-
 /**
- * An <code>ImageOpObserver</code> which repaints {@link Component}s.
- * This class stores a reference to a <code>Component</code> and a
- * rectangle of that component which will be repainted when
- * {@link #imageOpChange} is called and <code>success</code> is true.
+ * An <code>ImageOpObserver</code> which repaints {@link Component}s. This class stores a reference
+ * to a <code>Component</code> and a rectangle of that component which will be repainted when {@link
+ * #imageOpChange} is called and <code>success</code> is true.
  *
  * @since 3.1.0
  * @author Joel Uckelman
@@ -44,22 +42,17 @@ public class Repainter implements ImageOpObserver {
   protected final int h;
 
   /**
-   * Creates a <code>Repainter</code> for the specified component and
-   * rectangle. <code>Repainter</code>s will usually be constructed
-   * during paint operations on the Event Dispatch Thread, and so will be
-   * created in enormous quantities. In order to minimize object creation,
-   * always use this constructor rather
-   * {@link #Repainter(Component c, Rectangle r)}, except in the case where
+   * Creates a <code>Repainter</code> for the specified component and rectangle. <code>Repainter
+   * </code>s will usually be constructed during paint operations on the Event Dispatch Thread, and
+   * so will be created in enormous quantities. In order to minimize object creation, always use
+   * this constructor rather {@link #Repainter(Component c, Rectangle r)}, except in the case where
    * the <code>Rectangle</code> already exists.
    *
    * @param c the component to repaint
-   * @param x the x coordinate of the upper-left corner of the
-   *          rectangle to repaint
-   * @param y the y coordinate of the upper-left corner of the
-   *          rectangle to repaint
+   * @param x the x coordinate of the upper-left corner of the rectangle to repaint
+   * @param y the y coordinate of the upper-left corner of the rectangle to repaint
    * @param w the width of the rectangle to repaint
    * @param h the height of the rectangle to repaint
-   *
    * @throws IllegalArgumentException if <code>c == null</code>
    */
   public Repainter(Component c, int x, int y, int w, int h) {
@@ -77,7 +70,6 @@ public class Repainter implements ImageOpObserver {
    *
    * @param c the component to be repainted
    * @param r the area to be repainted
-   *
    * @throws IllegalArgumentException if <code>c == null</code>
    */
   public Repainter(Component c, Rectangle r) {

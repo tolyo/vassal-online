@@ -18,7 +18,6 @@
 package VASSAL.build.module.index;
 
 import VASSAL.counters.GamePiece;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,17 +25,17 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Maintain a reverse cross-reference of property values to GamePieces that have that value for
- * a given property.
- *
+ * Maintain a reverse cross-reference of property values to GamePieces that have that value for a
+ * given property.
  */
 public class PiecePropertyIndex {
 
   /** Index of the set of pieces that has each value for this property */
   private final Map<String, Set<GamePiece>> pieces = new HashMap<>();
 
-  /** Index of what the currently stored value of each piece is to ensure we can reliably remove
-   * old values in case of bugs
+  /**
+   * Index of what the currently stored value of each piece is to ensure we can reliably remove old
+   * values in case of bugs
    */
   private final Map<String, String> values = new HashMap<>();
 
@@ -83,6 +82,7 @@ public class PiecePropertyIndex {
   public int getCount() {
     return values.size();
   }
+
   /**
    * Remove a piece from the index
    *
@@ -110,11 +110,10 @@ public class PiecePropertyIndex {
    * Return the set of pieces that have the specified value for the property we are indexing
    *
    * @param propertyValue Value to check
-   * @return              Set of pieces that have that value
+   * @return Set of pieces that have that value
    */
   public Set<GamePiece> getPieces(String propertyValue) {
     final Set<GamePiece> results = pieces.get(propertyValue);
     return results == null ? new HashSet<>() : results;
   }
-
 }

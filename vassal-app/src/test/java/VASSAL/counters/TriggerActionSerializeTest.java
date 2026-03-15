@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2020 Vassal Development Team
  *
@@ -26,7 +25,11 @@ import org.junit.jupiter.api.Test;
 public class TriggerActionSerializeTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     TriggerAction trait = new TriggerAction();
 
@@ -38,8 +41,8 @@ public class TriggerActionSerializeTest extends DecoratorTest {
     trait.command = "xyzzy";
     trait.key = NamedKeyStroke.of("key");
     trait.propertyMatch.setExpression("{abc==2}");
-    trait.watchKeys = new NamedKeyStroke[] { NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2") };
-    trait.actionKeys = new NamedKeyStroke[] { NamedKeyStroke.of("key3"), NamedKeyStroke.of("key4") };
+    trait.watchKeys = new NamedKeyStroke[] {NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2")};
+    trait.actionKeys = new NamedKeyStroke[] {NamedKeyStroke.of("key3"), NamedKeyStroke.of("key4")};
     trait.loop = true;
     trait.preLoopKey = NamedKeyStroke.of("pre");
     trait.postLoopKey = NamedKeyStroke.of("post");
@@ -53,8 +56,5 @@ public class TriggerActionSerializeTest extends DecoratorTest {
     trait.indexStep.setFormat("8");
 
     serializeTest("Complex trait", trait); // NON-NLS
-
-
-
   }
 }

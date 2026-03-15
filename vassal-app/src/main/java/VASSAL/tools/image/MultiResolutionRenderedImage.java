@@ -26,7 +26,7 @@ public class MultiResolutionRenderedImage extends AbstractMultiResolutionImage {
   @FunctionalInterface
   public interface Renderer {
     BufferedImage render(int w, int h, double scale);
-  } 
+  }
 
   private final int baseWidth;
   private final int baseHeight;
@@ -40,11 +40,7 @@ public class MultiResolutionRenderedImage extends AbstractMultiResolutionImage {
 
   @Override
   public Image getResolutionVariant(double w, double h) {
-    return renderer.render(
-      (int) Math.round(w),
-      (int) Math.round(h),
-      w / baseWidth
-    );
+    return renderer.render((int) Math.round(w), (int) Math.round(h), w / baseWidth);
   }
 
   @Override

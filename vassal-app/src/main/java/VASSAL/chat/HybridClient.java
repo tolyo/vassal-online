@@ -17,27 +17,24 @@
  */
 package VASSAL.chat;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeListenerProxy;
-import java.beans.PropertyChangeSupport;
-
-import javax.swing.Icon;
-
 import VASSAL.chat.ui.ChatControlsInitializer;
 import VASSAL.chat.ui.ChatServerControls;
 import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeListenerProxy;
+import java.beans.PropertyChangeSupport;
+import javax.swing.Icon;
 
 /**
  * Delegates calls to another SvrConnection instance, which can be changed programmatically
  *
  * @author rkinney
- *
  */
 public class HybridClient implements ChatServerConnection, PlayerEncoder, ChatControlsInitializer {
   protected ChatServerConnection delegate;
-  protected String defaultRoom = Resources.getString("Chat.main_room"); //$NON-NLS-1$
+  protected String defaultRoom = Resources.getString("Chat.main_room"); // $NON-NLS-1$
   protected PropertyChangeSupport propSupport = new PropertyChangeSupport(this);
   protected ChatServerControls controls;
   protected Icon currentIcon;
@@ -126,7 +123,7 @@ public class HybridClient implements ChatServerConnection, PlayerEncoder, ChatCo
 
   public void setDelegate(ChatServerConnection newDelegate) {
     if (delegate != null && delegate.isConnected()) {
-      throw new IllegalStateException(Resources.getString("Server.error1")); //$NON-NLS-1$
+      throw new IllegalStateException(Resources.getString("Server.error1")); // $NON-NLS-1$
     }
     final ChatServerConnection oldDelegate = delegate;
     if (oldDelegate != null) {
@@ -134,7 +131,8 @@ public class HybridClient implements ChatServerConnection, PlayerEncoder, ChatCo
     }
     final PropertyChangeListener[] listeners = propSupport.getPropertyChangeListeners();
     for (final PropertyChangeListener listener : listeners) {
-      newDelegate.addPropertyChangeListener(((PropertyChangeListenerProxy) listener).getPropertyName(), listener);
+      newDelegate.addPropertyChangeListener(
+          ((PropertyChangeListenerProxy) listener).getPropertyName(), listener);
     }
     if (controls != null) {
       if (delegate instanceof ChatControlsInitializer) {

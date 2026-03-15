@@ -19,11 +19,13 @@ package VASSAL.command;
 
 /**
  * Remove sub-commands from a composite command
+ *
  * @author rkinney
  */
 public abstract class CommandFilter {
   /**
    * Apply the filter
+   *
    * @return the filtered command
    */
   public Command apply(Command c) {
@@ -39,5 +41,4 @@ public abstract class CommandFilter {
   }
 
   protected abstract boolean accept(Command c);
-
 }

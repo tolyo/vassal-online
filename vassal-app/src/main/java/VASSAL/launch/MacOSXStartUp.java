@@ -28,8 +28,7 @@ public class MacOSXStartUp extends StartUp {
     System.setProperty("apple.laf.useScreenMenuBar", "true");
 
     // put "VASSAL" in the system menu bar
-    System.setProperty(
-      "com.apple.mrj.application.apple.menu.about.name", "VASSAL");
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "VASSAL");
 
     // show the grow box in the lower right corner of windows
     System.setProperty("apple.awt.showGrowBox", "true");

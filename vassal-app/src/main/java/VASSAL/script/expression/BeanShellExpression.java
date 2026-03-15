@@ -24,16 +24,11 @@ import VASSAL.i18n.Resources;
 import VASSAL.script.BeanShell;
 import VASSAL.script.ExpressionInterpreter;
 import VASSAL.tools.FormattedString;
-
 import java.util.Map;
-
 import javax.lang.model.SourceVersion;
-
 import org.apache.commons.lang3.tuple.Pair;
 
-/**
- * A basic beanShell expression
- */
+/** A basic beanShell expression */
 public class BeanShellExpression extends Expression {
   public BeanShellExpression(String s) {
     super("{" + s + "}");
@@ -53,22 +48,30 @@ public class BeanShellExpression extends Expression {
    * @param properties A map of additional properties to use
    * @param localized Use localized version of property values
    * @param audit Audit Trail to record significant information for error reporting
-   *
    * @return Evaluated expression value
    * @throws ExpressionException If a catastrophic failure occurs in evaluation
    */
   @Override
-  public String evaluate(PropertySource ps, Map<String, String> properties, boolean localized, Auditable owner, AuditTrail audit) throws ExpressionException {
+  public String evaluate(
+      PropertySource ps,
+      Map<String, String> properties,
+      boolean localized,
+      Auditable owner,
+      AuditTrail audit)
+      throws ExpressionException {
     if (interpreter == null) {
       interpreter = new ExpressionInterpreter(strip(getExpression()));
     }
     return interpreter.evaluate(ps, properties, localized, owner, audit);
   }
 
-  /** @deprecated Use {@link #evaluate(PropertySource, Map, boolean, Auditable, AuditTrail)} */
+  /**
+   * @deprecated Use {@link #evaluate(PropertySource, Map, boolean, Auditable, AuditTrail)}
+   */
   @Deprecated(since = "2021-06-11")
   @Override
-  public String evaluate(PropertySource ps, Map<String, String> properties, boolean localized) throws ExpressionException {
+  public String evaluate(PropertySource ps, Map<String, String> properties, boolean localized)
+      throws ExpressionException {
     return evaluate(ps, properties, localized, null, null);
   }
 
@@ -90,8 +93,8 @@ public class BeanShellExpression extends Expression {
   }
 
   /**
-   * Return a PieceFilter that selects GamePieces that cause
-   * this expression to evaluate to true
+   * Return a PieceFilter that selects GamePieces that cause this expression to evaluate to true
+   *
    * @deprecated Use {@link #getFilter(PropertySource, Auditable, AuditTrail)}
    */
   @Deprecated(since = "2021-06-11")
@@ -137,15 +140,16 @@ public class BeanShellExpression extends Expression {
 
     @Override
     public boolean accept(GamePiece piece, Auditable owner, String fieldKey) {
-      return accept(piece, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
+      return accept(
+          piece, owner, AuditTrail.create(owner, getExpression(), Resources.getString(fieldKey)));
     }
 
     @Override
     public boolean accept(GamePiece piece, Auditable owner, AuditTrail audit) {
       return BeanShell.TRUE.equals(tryEvaluate(piece, owner, audit));
     }
-
   }
+
   /**
    * Convert a Property name to its BeanShell equivalent.
    *
@@ -200,19 +204,19 @@ public class BeanShellExpression extends Expression {
   /**
    * Create a BeanShellExpression.
    *
-   * The expression may or may not be surrounded by {}.
+   * <p>The expression may or may not be surrounded by {}.
    *
-   * Create null, integer and simple Expressions as their basic type to
-   * ensure efficient evaluation.
+   * <p>Create null, integer and simple Expressions as their basic type to ensure efficient
+   * evaluation.
    */
   public static Expression createExpression(String s) {
     return createExpression(s, false);
   }
 
   /**
-   *
    * @param s String to convert to a Beanshell expressions
-   * @param dontCreateStringExpressions If True, then convert quoted string to Beanshell Expressions, not String Expressions
+   * @param dontCreateStringExpressions If True, then convert quoted string to Beanshell
+   *     Expressions, not String Expressions
    * @return Expression
    */
   public static Expression createExpression(String s, boolean dontCreateStringExpressions) {
@@ -223,15 +227,16 @@ public class BeanShellExpression extends Expression {
 
     try {
       return IntExpression.instance(Integer.parseInt(expr));
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       // Not an error
     }
 
     // Return a single String as a string without quotes
     if (!dontCreateStringExpressions) {
-      if (expr.length() > 1 && expr.startsWith("\"") && expr.endsWith("\"")
-        && expr.indexOf('"', 1) == expr.length() - 1) {
+      if (expr.length() > 1
+          && expr.startsWith("\"")
+          && expr.endsWith("\"")
+          && expr.indexOf('"', 1) == expr.length() - 1) {
         return StringExpression.instance(expr.substring(1, expr.length() - 1));
       }
     }
@@ -246,6 +251,7 @@ public class BeanShellExpression extends Expression {
   }
 
   public static Expression instance(String s) {
-    return CACHE.computeIfAbsent(Pair.of(s, BeanShellExpression.class), k -> new BeanShellExpression(s));
+    return CACHE.computeIfAbsent(
+        Pair.of(s, BeanShellExpression.class), k -> new BeanShellExpression(s));
   }
 }

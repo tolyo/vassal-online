@@ -18,7 +18,14 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.build.AutoConfigurable;
+import VASSAL.configure.Configurer;
+import VASSAL.configure.ConfigurerFactory;
+import VASSAL.configure.FormattedStringConfigurer;
 import VASSAL.configure.TranslatableStringEnum;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -27,39 +34,31 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-
 import javax.swing.KeyStroke;
-
-import VASSAL.i18n.Resources;
 import org.apache.commons.lang3.ArrayUtils;
-
-import VASSAL.build.AutoConfigurable;
-import VASSAL.configure.Configurer;
-import VASSAL.configure.ConfigurerFactory;
-import VASSAL.configure.FormattedStringConfigurer;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.tools.SequenceEncoder;
 
 public class TextItem extends Item {
 
-  public static final String TYPE = "Text"; //$NON-NLS-1$
+  public static final String TYPE = "Text"; // $NON-NLS-1$
 
-  protected static final String FONT = "font"; //$NON-NLS-1$
-  protected static final String SOURCE = "source"; //$NON-NLS-1$
-  protected static final String TEXT = "text"; //$NON-NLS-1$
+  protected static final String FONT = "font"; // $NON-NLS-1$
+  protected static final String SOURCE = "source"; // $NON-NLS-1$
+  protected static final String TEXT = "text"; // $NON-NLS-1$
 
-  protected static final String LEFT = "left"; //$NON-NLS-1$
-  protected static final String CENTER = "center"; //$NON-NLS-1$
-  protected static final String RIGHT = "right"; //$NON-NLS-1$
-  protected static final String TOP = "top"; //$NON-NLS-1$
-  protected static final String BOTTOM = "bottom"; //$NON-NLS-1$
+  protected static final String LEFT = "left"; // $NON-NLS-1$
+  protected static final String CENTER = "center"; // $NON-NLS-1$
+  protected static final String RIGHT = "right"; // $NON-NLS-1$
+  protected static final String TOP = "top"; // $NON-NLS-1$
+  protected static final String BOTTOM = "bottom"; // $NON-NLS-1$
 
-  public static final String SRC_VARIABLE = "Specified in individual images"; // NON-NLS - No really!
-  public static final String SRC_FIXED = "Fixed for this layout";  // NON-NLS - No really!
+  public static final String SRC_VARIABLE =
+      "Specified in individual images"; // NON-NLS - No really!
+  public static final String SRC_FIXED = "Fixed for this layout"; // NON-NLS - No really!
 
-  protected static final String PIECE_NAME = "pieceName"; //$NON-NLS-1$
-  protected static final String LABEL = "label"; //$NON-NLS-1$
-  protected static final String DEFAULT_FORMAT = "$" + PIECE_NAME + "$"; //$NON-NLS-1$ //$NON-NLS-2$
+  protected static final String PIECE_NAME = "pieceName"; // $NON-NLS-1$
+  protected static final String LABEL = "label"; // $NON-NLS-1$
+  protected static final String DEFAULT_FORMAT =
+      "$" + PIECE_NAME + "$"; // $NON-NLS-1$ //$NON-NLS-2$
 
   public static final int AL_CENTER = 0;
   public static final int AL_RIGHT = 1;
@@ -67,14 +66,14 @@ public class TextItem extends Item {
   public static final int AL_TOP = 3;
   public static final int AL_BOTTOM = 4;
 
-  protected String fontStyleName = "Default"; //$NON-NLS-1$
+  protected String fontStyleName = "Default"; // $NON-NLS-1$
   protected String textSource = SRC_VARIABLE;
-  protected String text = ""; //$NON-NLS-1$
+  protected String text = ""; // $NON-NLS-1$
 
-  protected String changeCmd = ""; //$NON-NLS-1$
+  protected String changeCmd = ""; // $NON-NLS-1$
   protected KeyStroke changeKey;
   protected boolean lockable = false;
-  protected String lockCmd = ""; //$NON-NLS-1$
+  protected String lockCmd = ""; // $NON-NLS-1$
   protected KeyStroke lockKey;
 
   public TextItem() {
@@ -93,29 +92,22 @@ public class TextItem extends Item {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.insert(
-      2, super.getAttributeDescriptions(),
-      Resources.getString("Editor.TextItem.font_style"),
-      Resources.getString("Editor.TextItem.text_option"),
-      Resources.getString("Editor.TextItem.text")
-    );
+        2,
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.TextItem.font_style"),
+        Resources.getString("Editor.TextItem.text_option"),
+        Resources.getString("Editor.TextItem.text"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.insert(
-      2, super.getAttributeTypes(),
-      FontStyleConfig.class,
-      TextSource.class,
-      String.class);
+        2, super.getAttributeTypes(), FontStyleConfig.class, TextSource.class, String.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.insert(
-      2, super.getAttributeNames(),
-      FONT,
-      SOURCE,
-      TEXT);
+    return ArrayUtils.insert(2, super.getAttributeNames(), FONT, SOURCE, TEXT);
   }
 
   public static class FontStyleConfig implements ConfigurerFactory {
@@ -128,22 +120,18 @@ public class TextItem extends Item {
   @Override
   public void setAttribute(String key, Object o) {
     if (FONT.equals(key)) {
-      fontStyleName = (String)o;
-    }
-    else if (SOURCE.equals(key)) {
+      fontStyleName = (String) o;
+    } else if (SOURCE.equals(key)) {
       textSource = (String) o;
-    }
-    else if (TEXT.equals(key)) {
+    } else if (TEXT.equals(key)) {
       text = (String) o;
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
 
     if (layout != null) {
       layout.refresh();
     }
-
   }
 
   @Override
@@ -151,14 +139,11 @@ public class TextItem extends Item {
 
     if (FONT.equals(key)) {
       return fontStyleName;
-    }
-    else if (SOURCE.equals(key)) {
+    } else if (SOURCE.equals(key)) {
       return textSource;
-    }
-    else if (TEXT.equals(key)) {
+    } else if (TEXT.equals(key)) {
       return text;
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -167,8 +152,7 @@ public class TextItem extends Item {
   public VisibilityCondition getAttributeVisibility(String name) {
     if (TEXT.equals(name)) {
       return fixedCond;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -201,27 +185,26 @@ public class TextItem extends Item {
     final String compass = GamePieceLayout.getCompassPoint(getLocation());
     int hAlign = AL_CENTER;
     switch (compass.charAt(compass.length() - 1)) {
-    case 'W':
-      hAlign = AL_LEFT;
-      break;
-    case 'E':
-      hAlign = AL_RIGHT;
+      case 'W':
+        hAlign = AL_LEFT;
+        break;
+      case 'E':
+        hAlign = AL_RIGHT;
     }
     int vAlign = AL_CENTER;
     switch (compass.charAt(0)) {
-    case 'N':
-      vAlign = AL_TOP;
-      break;
-    case 'S':
-      vAlign = AL_BOTTOM;
+      case 'N':
+        vAlign = AL_TOP;
+        break;
+      case 'S':
+        vAlign = AL_BOTTOM;
     }
 
     final Point origin = layout.getPosition(this);
     String s = null;
     if (textSource.equals(SRC_FIXED)) {
       s = text;
-    }
-    else {
+    } else {
       // TODO condition is always "true"
       if (defn != null) {
         // TODO condition is always true
@@ -235,16 +218,16 @@ public class TextItem extends Item {
     final Object aa = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     g2d.setRenderingHint(
         RenderingHints.KEY_ANTIALIASING,
-        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON :
-                        RenderingHints.VALUE_ANTIALIAS_OFF
-    );
+        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
     AffineTransform saveXForm = null;
     if (getRotation() != 0) {
       saveXForm = g2d.getTransform();
       final AffineTransform newXForm =
-        AffineTransform.getRotateInstance(Math.toRadians(getRotation()), getLayout().getVisualizerWidth() / 2,
-          getLayout().getVisualizerHeight() / 2);
+          AffineTransform.getRotateInstance(
+              Math.toRadians(getRotation()),
+              getLayout().getVisualizerWidth() / 2,
+              getLayout().getVisualizerHeight() / 2);
       g2d.transform(newXForm);
     }
 
@@ -290,13 +273,12 @@ public class TextItem extends Item {
       item.fontStyleName = FontManager.DEFAULT;
     }
     item.textSource = sd.nextToken(SRC_VARIABLE);
-    item.text = sd.nextToken(""); //$NON-NLS-1$
-    item.changeCmd = sd.nextToken(""); //$NON-NLS-1$
+    item.text = sd.nextToken(""); // $NON-NLS-1$
+    item.changeCmd = sd.nextToken(""); // $NON-NLS-1$
     item.changeKey = sd.nextKeyStroke(null);
-    item.lockCmd = sd.nextToken(""); //$NON-NLS-1$
+    item.lockCmd = sd.nextToken(""); // $NON-NLS-1$
     item.lockKey = sd.nextKeyStroke(null);
     item.lockable = sd.nextBoolean(false);
-
   }
 
   @Override
@@ -304,7 +286,7 @@ public class TextItem extends Item {
 
     final SequenceEncoder se1 = new SequenceEncoder(TYPE, ';');
 
-    se1.append(fontStyleName == null ? "" : fontStyleName); //$NON-NLS-1$
+    se1.append(fontStyleName == null ? "" : fontStyleName); // $NON-NLS-1$
     se1.append(textSource);
     se1.append(text);
     se1.append(changeCmd);
@@ -330,14 +312,13 @@ public class TextItem extends Item {
   public static class TextSource extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
-      return new String[] { SRC_VARIABLE, SRC_FIXED };
+      return new String[] {SRC_VARIABLE, SRC_FIXED};
     }
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
       return new String[] {
-        "Editor.TextItem.specified_in_individual_images",
-        "Editor.TextItem.fixed_for_this_layout"
+        "Editor.TextItem.specified_in_individual_images", "Editor.TextItem.fixed_for_this_layout"
       };
     }
   }
@@ -345,11 +326,23 @@ public class TextItem extends Item {
   public static class NameFormatConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new FormattedStringConfigurer(key, name, new String[]{PIECE_NAME, LABEL});
+      return new FormattedStringConfigurer(key, name, new String[] {PIECE_NAME, LABEL});
     }
   }
 
-  public static void drawLabel(Graphics g, String text, int x, int y, Font f, int hAlign, int vAlign, Color fgColor, Color bgColor, Color borderColor, boolean outline, Color outlineColor) {
+  public static void drawLabel(
+      Graphics g,
+      String text,
+      int x,
+      int y,
+      Font f,
+      int hAlign,
+      int vAlign,
+      Color fgColor,
+      Color bgColor,
+      Color borderColor,
+      boolean outline,
+      Color outlineColor) {
     g.setFont(f);
     final int buffer = g.getFontMetrics().getLeading();
     final int width = g.getFontMetrics().stringWidth(text) + 2 * buffer;
@@ -357,20 +350,20 @@ public class TextItem extends Item {
     int x0 = x;
     int y0 = y;
     switch (hAlign) {
-    case AL_CENTER:
-      x0 = x - width / 2;
-      break;
-    case AL_RIGHT:
-      x0 = x - width;
-      break;
+      case AL_CENTER:
+        x0 = x - width / 2;
+        break;
+      case AL_RIGHT:
+        x0 = x - width;
+        break;
     }
     switch (vAlign) {
-    case AL_CENTER:
-      y0 = y - height / 2;
-      break;
-    case AL_BOTTOM:
-      y0 = y - height;
-      break;
+      case AL_CENTER:
+        y0 = y - height / 2;
+        break;
+      case AL_BOTTOM:
+        y0 = y - height;
+        break;
     }
 
     if (bgColor != null) {
@@ -394,6 +387,5 @@ public class TextItem extends Item {
 
     g.setColor(fgColor);
     g.drawString(text, x1, y1);
-
   }
 }

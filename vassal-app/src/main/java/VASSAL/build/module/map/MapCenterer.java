@@ -17,10 +17,6 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import VASSAL.build.AbstractBuildable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.Map;
@@ -30,10 +26,11 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.PieceFinder;
 import VASSAL.counters.Properties;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-/**
- * Centers the map when user right-clicks on an empty hex
- */
+/** Centers the map when user right-clicks on an empty hex */
 public class MapCenterer extends AbstractBuildable implements MouseListener {
   private Map map;
   private PieceFinder finder;
@@ -46,8 +43,9 @@ public class MapCenterer extends AbstractBuildable implements MouseListener {
   }
 
   /**
-   * When the user right-clicks on the Map, the view will center on the location
-   * of the click unless this {@link PieceFinder} locates a piece there.
+   * When the user right-clicks on the Map, the view will center on the location of the click unless
+   * this {@link PieceFinder} locates a piece there.
+   *
    * @return
    */
   protected PieceFinder createPieceFinder() {
@@ -72,10 +70,9 @@ public class MapCenterer extends AbstractBuildable implements MouseListener {
   }
 
   @Override
-  public void setAttribute(String attName, Object value) {
-  }
+  public void setAttribute(String attName, Object value) {}
 
-// FIXME: mouseClicked()?
+  // FIXME: mouseClicked()?
   @Override
   public void mouseReleased(MouseEvent e) {
     if (SwingUtils.isContextMouseButtonDown(e)) {
@@ -83,8 +80,7 @@ public class MapCenterer extends AbstractBuildable implements MouseListener {
 
       if (found != null) {
         final EventFilter filter = (EventFilter) found.getProperty(Properties.SELECT_EVENT_FILTER);
-        if (filter != null
-            && filter.rejectEvent(e)) {
+        if (filter != null && filter.rejectEvent(e)) {
           found = null;
         }
       }
@@ -97,20 +93,16 @@ public class MapCenterer extends AbstractBuildable implements MouseListener {
   }
 
   @Override
-  public void mousePressed(MouseEvent e) {
-  }
+  public void mousePressed(MouseEvent e) {}
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
-  public void mouseClicked(MouseEvent e) {
-  }
+  public void mouseClicked(MouseEvent e) {}
 
   @Override
   public boolean isMandatory() {

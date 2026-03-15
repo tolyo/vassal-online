@@ -1,0 +1,110 @@
+{
+    "version": "1.4.0",
+    "project": {
+        "name": "vassal-deprecation",
+        "directory": "/home/anatoly/Applications/vassal-online/vassal-deprecation",
+        "workspaceDir": "/home/anatoly/Applications/vassal-online",
+        "sources": [
+            "/home/anatoly/Applications/vassal-online/vassal-deprecation/src/main/java"
+        ],
+        "dependencies": [
+            "vassal-parent"
+        ],
+        "classpath": [
+            "/home/anatoly/Applications/vassal-online/target/classes",
+            "/home/anatoly/Applications/vassal-online/vassal-deprecation/target/classes"
+        ],
+        "out": "/home/anatoly/Applications/vassal-online/vassal-deprecation/target",
+        "classesDir": "/home/anatoly/Applications/vassal-online/vassal-deprecation/target/classes",
+        "resources": [
+            "/home/anatoly/Applications/vassal-online/vassal-deprecation/src/main/resources"
+        ],
+        "java": {
+            "options": [
+                "-g",
+                "-encoding",
+                "UTF-8"
+            ]
+        },
+        "test": {
+            "frameworks": [
+                {
+                    "names": [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs.runner.SpecsFramework",
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "utest.runner.Framework"
+                    ]
+                },
+                {
+                    "names": [
+                        "munit.Framework"
+                    ]
+                },
+                {
+                    "names": [
+                        "mill.testng.TestNGFramework"
+                    ]
+                }
+            ],
+            "options": {
+                "excludes": [
+                    
+                ],
+                "arguments": [
+                    {
+                        "args": [
+                            "-v",
+                            "-a"
+                        ],
+                        "framework": {
+                            "names": [
+                                "com.novocode.junit.JUnitFramework"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "platform": {
+            "name": "jvm",
+            "config": {
+                "home": "/home/anatoly/.sdkman/candidates/java/11.0.29-librca",
+                "options": [
+                    
+                ]
+            },
+            "mainClass": [
+                
+            ]
+        },
+        "resolution": {
+            "modules": [
+                
+            ]
+        },
+        "tags": [
+            "library"
+        ]
+    }
+}

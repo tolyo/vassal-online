@@ -19,6 +19,7 @@ package VASSAL.build.module.documentation;
 
 /**
  * Interface for specifying the owning Window of an online Help dialog
+ *
  * @deprecated To be replaced
  */
 @FunctionalInterface

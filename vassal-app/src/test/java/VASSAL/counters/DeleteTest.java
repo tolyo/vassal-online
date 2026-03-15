@@ -25,7 +25,11 @@ import org.junit.jupiter.api.Test;
 public class DeleteTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Delete trait = new Delete();
 
@@ -45,6 +49,5 @@ public class DeleteTest extends DecoratorTest {
     trait.key = NamedKeyStroke.of(KeyStroke.getKeyStroke(65, 0));
     trait.description = "plover";
     serializeTest("KeyStroke", trait); // NON-NLS
-
   }
 }

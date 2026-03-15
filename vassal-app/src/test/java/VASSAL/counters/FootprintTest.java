@@ -18,18 +18,20 @@
 package VASSAL.counters;
 
 import VASSAL.tools.NamedKeyStroke;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
 
 public class FootprintTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Footprint trait = new Footprint();
 
@@ -63,8 +65,5 @@ public class FootprintTest extends DecoratorTest {
     trait.pointList.add(new Point(210, 220));
 
     serializeTest("Complex test", trait); // NON-NLS
-
-
   }
-
 }

@@ -17,6 +17,10 @@
  */
 package VASSAL.build;
 
+import static VASSAL.preferences.Prefs.MAIN_WINDOW_HEIGHT;
+import static VASSAL.preferences.Prefs.MAIN_WINDOW_REMEMBER;
+import static VASSAL.preferences.Prefs.MAIN_WINDOW_WIDTH;
+
 import VASSAL.Info;
 import VASSAL.build.module.BasicCommandEncoder;
 import VASSAL.build.module.BasicLogger;
@@ -126,22 +130,6 @@ import VASSAL.tools.menu.MenuItemProxy;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SwingUtils;
 import VASSAL.tools.version.VersionUtils;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import java.awt.Container;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -167,86 +155,106 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
-
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_HEIGHT;
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_REMEMBER;
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_WIDTH;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- * The GameModule class is the base class for a VASSAL module.  It is
- * the root of the {@link Buildable} containment hierarchy, and thus also
- * the root of the Editor's {@link ConfigureTree}. GameModule's implementation
- * of {@link CommandEncoder} is slightly different, serving as a central dispatch
- * point for all other CommandEncoders, which register themselves with GameModule.
+ * The GameModule class is the base class for a VASSAL module. It is the root of the {@link
+ * Buildable} containment hierarchy, and thus also the root of the Editor's {@link ConfigureTree}.
+ * GameModule's implementation of {@link CommandEncoder} is slightly different, serving as a central
+ * dispatch point for all other CommandEncoders, which register themselves with GameModule.
  *
- * Components which are intended to be added directly to the GameModule are contained
- * in the <code>VASSAL.build.module</code> package.
+ * <p>Components which are intended to be added directly to the GameModule are contained in the
+ * <code>VASSAL.build.module</code> package.
  *
- * <p>GameModule is a <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>, and contains access points for many other classes,
- * such as {@link DataArchive}, {@link ServerConnection}, {@link Logger}, {@link Chatter}, and {@link Prefs}.</p>
+ * <p>GameModule is a <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>, and
+ * contains access points for many other classes, such as {@link DataArchive}, {@link
+ * ServerConnection}, {@link Logger}, {@link Chatter}, and {@link Prefs}.
  */
 public class GameModule extends AbstractConfigurable
-  implements CommandEncoder, ToolBarComponent, PropertySource, MutablePropertiesContainer, TranslatableStringContainer, GpIdSupport {
+    implements CommandEncoder,
+        ToolBarComponent,
+        PropertySource,
+        MutablePropertiesContainer,
+        TranslatableStringContainer,
+        GpIdSupport {
 
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(GameModule.class);
 
-  private static final String DEFAULT_NAME = "Unnamed module";  //$NON-NLS-1$
+  private static final String DEFAULT_NAME = "Unnamed module"; // $NON-NLS-1$
 
-  public static final String MODULE_NAME = "name";  //$NON-NLS-1$
-  public static final String MODULE_VERSION = "version";  //$NON-NLS-1$
-  public static final String DESCRIPTION = "description"; //NON-NLS
-  public static final String VASSAL_VERSION_CREATED = "VassalVersion";  //$NON-NLS-1$
+  public static final String MODULE_NAME = "name"; // $NON-NLS-1$
+  public static final String MODULE_VERSION = "version"; // $NON-NLS-1$
+  public static final String DESCRIPTION = "description"; // NON-NLS
+  public static final String VASSAL_VERSION_CREATED = "VassalVersion"; // $NON-NLS-1$
+
   /**
-   * The System property of this name will return a version identifier for the version of VASSAL being run
+   * The System property of this name will return a version identifier for the version of VASSAL
+   * being run
    */
-  public static final String VASSAL_VERSION_RUNNING = "runningVassalVersion";  //$NON-NLS-1$
-  public static final String NEXT_PIECESLOT_ID = "nextPieceSlotId"; //NON-NLS
-  public static final String BUILDFILE = "buildFile.xml"; //NON-NLS
-  public static final String BUILDFILE_OLD = "buildFile"; //NON-NLS
+  public static final String VASSAL_VERSION_RUNNING = "runningVassalVersion"; // $NON-NLS-1$
+
+  public static final String NEXT_PIECESLOT_ID = "nextPieceSlotId"; // NON-NLS
+  public static final String BUILDFILE = "buildFile.xml"; // NON-NLS
+  public static final String BUILDFILE_OLD = "buildFile"; // NON-NLS
 
   /** The {@link Prefs} key for the user's real name */
-  public static final String REAL_NAME = "RealName"; //$NON-NLS-1$
+  public static final String REAL_NAME = "RealName"; // $NON-NLS-1$
+
   /** The {@link Prefs} key for the user's secret name */
-  public static final String SECRET_NAME = "SecretName"; //$NON-NLS-1$
+  public static final String SECRET_NAME = "SecretName"; // $NON-NLS-1$
+
   /** The {@link Prefs} key for the user's personal info */
-  public static final String PERSONAL_INFO = "Profile"; //$NON-NLS-1$
+  public static final String PERSONAL_INFO = "Profile"; // $NON-NLS-1$
 
-  public static final String MODULE_NAME_PROPERTY = "ModuleName"; //NON-NLS
-  public static final String MODULE_VERSION_PROPERTY = "ModuleVersion"; //NON-NLS
-  public static final String MODULE_DESCRIPTION_PROPERTY = "ModuleDescription"; //NON-NLS
-  public static final String MODULE_OTHER1_PROPERTY = "ModuleOther1"; //NON-NLS
-  public static final String MODULE_OTHER2_PROPERTY = "ModuleOther2"; //NON-NLS
-  public static final String MODULE_VASSAL_VERSION_CREATED_PROPERTY = "VassalVersionCreated"; //NON-NLS
-  public static final String MODULE_VASSAL_VERSION_RUNNING_PROPERTY = "VassalVersionRunning"; //NON-NLS
-  public static final String MODULE_CURRENT_LOCALE = "CurrentLanguage"; //NON-NLS
-  public static final String MODULE_CURRENT_LOCALE_NAME = "CurrentLanguageName"; //NON-NLS
-  public static final String DRAWING_MOUSEOVER_PROPERTY = "DrawingMouseover"; //NON-NLS
-  public static final String DRAWING_MOUSEOVER_INDEX_PROPERTY = "DrawingMouseoverIndex"; //NON-NLS
+  public static final String MODULE_NAME_PROPERTY = "ModuleName"; // NON-NLS
+  public static final String MODULE_VERSION_PROPERTY = "ModuleVersion"; // NON-NLS
+  public static final String MODULE_DESCRIPTION_PROPERTY = "ModuleDescription"; // NON-NLS
+  public static final String MODULE_OTHER1_PROPERTY = "ModuleOther1"; // NON-NLS
+  public static final String MODULE_OTHER2_PROPERTY = "ModuleOther2"; // NON-NLS
+  public static final String MODULE_VASSAL_VERSION_CREATED_PROPERTY =
+      "VassalVersionCreated"; // NON-NLS
+  public static final String MODULE_VASSAL_VERSION_RUNNING_PROPERTY =
+      "VassalVersionRunning"; // NON-NLS
+  public static final String MODULE_CURRENT_LOCALE = "CurrentLanguage"; // NON-NLS
+  public static final String MODULE_CURRENT_LOCALE_NAME = "CurrentLanguageName"; // NON-NLS
+  public static final String DRAWING_MOUSEOVER_PROPERTY = "DrawingMouseover"; // NON-NLS
+  public static final String DRAWING_MOUSEOVER_INDEX_PROPERTY = "DrawingMouseoverIndex"; // NON-NLS
 
-  private static final String GAME_FILENAME_PROPERTY = "ModuleGameFileName"; //NON-NLS
+  private static final String GAME_FILENAME_PROPERTY = "ModuleGameFileName"; // NON-NLS
 
-  public static final String IS_VISIBLE = "_isVisible"; //NON-NLS
+  public static final String IS_VISIBLE = "_isVisible"; // NON-NLS
 
   public static final String UI_PIECE_COUNT = "UiPieceCount";
   public static final String UI_PIECE_INDEX = "UiPieceIndex";
 
   private static final char COMMAND_SEPARATOR = KeyEvent.VK_ESCAPE;
 
-  public static final String RECENT_GAMES = "RecentGames"; //NON-NLS
+  public static final String RECENT_GAMES = "RecentGames"; // NON-NLS
 
   private final List<MenuItemProxy> openRecentItems = new ArrayList<>();
 
-  /**
-   * Last type of game save/load for our current game
-   */
+  /** Last type of game save/load for our current game */
   public enum GameFileMode {
-    SAVED_GAME("saved"), //NON-NLS
-    LOADED_GAME("loaded"), //NON-NLS
-    REPLAYED_GAME("replayed"), //NON-NLS
-    REPLAYING_GAME("replaying"), //NON-NLS
-    LOGGING_GAME("logging"), //NON-NLS
-    LOGGED_GAME("logged"), //NON-NLS
-    NEW_GAME("new"); //NON-NLS
+    SAVED_GAME("saved"), // NON-NLS
+    LOADED_GAME("loaded"), // NON-NLS
+    REPLAYED_GAME("replayed"), // NON-NLS
+    REPLAYING_GAME("replaying"), // NON-NLS
+    LOGGING_GAME("logging"), // NON-NLS
+    LOGGED_GAME("logged"), // NON-NLS
+    NEW_GAME("new"); // NON-NLS
 
     private final String prettyName;
 
@@ -264,10 +272,10 @@ public class GameModule extends AbstractConfigurable
 
   private static GameModule theModule;
 
-  private static final String DEFAULT_MODULE_VERSION = "0.0"; //$NON-NLS-1$
+  private static final String DEFAULT_MODULE_VERSION = "0.0"; // $NON-NLS-1$
 
   private String moduleVersion = DEFAULT_MODULE_VERSION;
-  private String vassalVersionCreated = "0.0";  //$NON-NLS-1$
+  private String vassalVersionCreated = "0.0"; // $NON-NLS-1$
   private String moduleOther1 = "";
   private String moduleOther2 = "";
   private String gameName = DEFAULT_NAME;
@@ -280,11 +288,17 @@ public class GameModule extends AbstractConfigurable
   private final MutablePropertiesContainer propsContainer = new MutablePropertiesContainer.Impl();
   private final TranslatableStringContainer transContainer = new TranslatableStringContainer.Impl();
 
-  private boolean matSupport = false; // If no Mats exist in the module, we don't need to spend any time doing mat-related calculations during moves/selects
-  private boolean trueMovedSupport = false; // If not ignore-small-moves traits exist in the module, we don't need to spend any time doing related calculations
-  private boolean mutableButtonLabelSupport = false; // If no mutable buttons, we don't need to spend time checking for updates of them;
+  private boolean matSupport =
+      false; // If no Mats exist in the module, we don't need to spend any time doing mat-related
+  // calculations during moves/selects
+  private boolean trueMovedSupport =
+      false; // If not ignore-small-moves traits exist in the module, we don't need to spend any
+  // time doing related calculations
+  private boolean mutableButtonLabelSupport =
+      false; // If no mutable buttons, we don't need to spend time checking for updates of them;
 
-  private boolean suppressSounds = false; // Semaphore if currently suppressing sounds (eg during Global Key Command processing)
+  private boolean suppressSounds =
+      false; // Semaphore if currently suppressing sounds (eg during Global Key Command processing)
 
   private final DeckManager deckMgr = new DeckManager();
 
@@ -306,7 +320,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @param matSupport true if a Mat or MatCargo trait has been added to the module (thus meaning we'll want to do those calculations during moves/selects)
+   * @param matSupport true if a Mat or MatCargo trait has been added to the module (thus meaning
+   *     we'll want to do those calculations during moves/selects)
    */
   public void setMatSupport(boolean matSupport) {
     this.matSupport = matSupport;
@@ -326,22 +341,19 @@ public class GameModule extends AbstractConfigurable
     this.trueMovedSupport = trueMovedSupport;
   }
 
-
   /**
-   * @param support true if any toolbar buttons use $...$ or { } expressions
+   * @param support true if any toolbar buttons use $...$ or {} expressions
    */
   public void setMutableButtonSupport(boolean support) {
     mutableButtonLabelSupport = support;
   }
 
   /**
-   * @return True if there are toolbar buttons using $...$ or {   } expressions in the module
+   * @return True if there are toolbar buttons using $...$ or {} expressions in the module
    */
   public boolean isMutableButtonLabelSupport() {
     return mutableButtonLabelSupport;
   }
-
-
 
   /**
    * @return True if currently suppressing sounds (eg during a Global Key Command)
@@ -357,9 +369,7 @@ public class GameModule extends AbstractConfigurable
     this.suppressSounds = suppressSounds;
   }
 
-
   private final Timer zoomTimer = new Timer(1000, e -> suppressAutoCenterUpdate = false);
-
 
   private boolean suppressAutoCenterUpdate = false;
 
@@ -368,14 +378,16 @@ public class GameModule extends AbstractConfigurable
 
     zoomTimer.stop();
     if (suppressAutoCenterUpdate) {
-      zoomTimer.start(); // When we do a zoom change, we suppress auto-updating the map center for 1 second. This is only necessary because JScrollbar gives us no way to distinguish actual explicit user scrolling (via the UI) from Viewport changes via other sources (eg repaint after zoom)
+      zoomTimer.start(); // When we do a zoom change, we suppress auto-updating the map center for 1
+      // second. This is only necessary because JScrollbar gives us no way to
+      // distinguish actual explicit user scrolling (via the UI) from Viewport changes
+      // via other sources (eg repaint after zoom)
     }
   }
 
   public boolean isSuppressAutoCenterUpdate() {
     return suppressAutoCenterUpdate;
   }
-
 
   private KeyCommand locationKeyCommand = null;
 
@@ -387,89 +399,61 @@ public class GameModule extends AbstractConfigurable
     locationKeyCommand = kc;
   }
 
-
   private final PropertyChangeListener repaintOnPropertyChange =
-    evt -> {
-      for (final Map map : Map.getMapList()) {
-        map.repaint();
-      }
-    };
+      evt -> {
+        for (final Map map : Map.getMapList()) {
+          map.repaint();
+        }
+      };
 
   private final PlayerWindow frame = new PlayerWindow();
 
-  /**
-   * Reads/writes full game state; starts/stops gameplay.
-   */
+  /** Reads/writes full game state; starts/stops gameplay. */
   private GameState theState;
 
-  /**
-   * Our "zip" archive with a .vmod file extension
-   */
+  /** Our "zip" archive with a .vmod file extension */
   private final DataArchive archive;
 
-  /**
-   * Our finder of the resources, for translation of images.
-   */
+  /** Our finder of the resources, for translation of images. */
   private final ResourcePathFinder resourceFinder;
 
-  /**
-   * The user preferences
-   */
+  /** The user preferences */
   private Prefs preferences;
 
-  /**
-   * For creating .vlog log files (playbacks) of PBEM games
-   */
+  /** For creating .vlog log files (playbacks) of PBEM games */
   private Logger logger;
 
-  /**
-   * The Chat Log window
-   */
+  /** The Chat Log window */
   private Chatter chat;
 
-  /**
-   * The Chat Log Console
-   */
+  /** The Chat Log Console */
   private final Console console = new Console();
 
   /**
-   * Docked PieceWindow (we need to know which one to get our splitters all splatting in the right order)
+   * Docked PieceWindow (we need to know which one to get our splitters all splatting in the right
+   * order)
    */
   private PieceWindow pieceWindow = null;
 
-  /**
-   * Random number generator
-   */
+  /** Random number generator */
   private final Random RNG = new SecureRandom();
 
-  /**
-   * Server object for online games
-   */
+  /** Server object for online games */
   private ServerConnection server;
 
-  /**
-   * Chat server controls
-   */
+  /** Chat server controls */
   private ChatServerControls serverControls;
 
-  /**
-   * Debug window controls
-   */
+  /** Debug window controls */
   private DebugControls debugControls;
 
-  /**
-   * Manages the tiling of large map images
-   */
+  /** Manages the tiling of large map images */
   private ImageTileSource tcache;
 
-  /**
-   * For the startup Wizard
-   */
+  /** For the startup Wizard */
   private WizardSupport wizardSupport;
 
-  /**
-   * This manages the changing of player names in online connections
-   */
+  /** This manages the changing of player names in online connections */
   private PropertyChangeSupport idChangeSupport;
 
   private final List<KeyStrokeSource> keyStrokeSources = new ArrayList<>();
@@ -483,56 +467,58 @@ public class GameModule extends AbstractConfigurable
   private final Object loggingLock = new Object();
   private final Deque<Command> pausedCommands = new ArrayDeque<>();
 
-  private String gameFile = ""; //NON-NLS
+  private String gameFile = ""; // NON-NLS
   private GameFileMode gameFileMode = GameFileMode.NEW_GAME;
 
-  private boolean iFeelDirty = false; // Touched the module in ways not detectable by buildString compare
+  private boolean iFeelDirty =
+      false; // Touched the module in ways not detectable by buildString compare
 
   /**
-   * Store the currently building GpId source. Only meaningful while
-   * the GameModule or an Extension is actually in the process of being built
-   * during module/extension load.
+   * Store the currently building GpId source. Only meaningful while the GameModule or an Extension
+   * is actually in the process of being built during module/extension load.
    */
   private GpIdSupport gpidSupport = null;
 
-  /**
-   * Next GamePiece ID available.
-   */
+  /** Next GamePiece ID available. */
   private int nextGpId = 0;
+
   private Long crc = null;
   private Long combinedCrc = null;
 
-  /**
-   * Management of piece property and location cross-references
-   */
+  /** Management of piece property and location cross-references */
   private final IndexManager indexManager = new IndexManager();
 
   public IndexManager getIndexManager() {
     return indexManager;
   }
 
-  /**
-   * Error Logging to {@link Chatter}?
-   */
+  /** Error Logging to {@link Chatter}? */
   private static boolean errorLogToChat = false;
 
-  private boolean loadOverSemaphore = false; // if we're currently loading overtop of another game (so don't disturb UI if possible, it will get a setup(true) soon enough)
+  private boolean loadOverSemaphore =
+      false; // if we're currently loading overtop of another game (so don't disturb UI if possible,
+
+  // it will get a setup(true) soon enough)
+
   /**
-   * @param state - true if we're loading-over-top of an existing game (so don't disturb UI elements if possible, will receive a setup(true) soon enough)
+   * @param state - true if we're loading-over-top of an existing game (so don't disturb UI elements
+   *     if possible, will receive a setup(true) soon enough)
    */
   public void setLoadOverSemaphore(boolean state) {
     loadOverSemaphore = state;
   }
 
   /**
-   * @return true if we're loading-over-top of an existing game (so don't disturb UI elements if possible, will receive a setup(true) soon enough)
+   * @return true if we're loading-over-top of an existing game (so don't disturb UI elements if
+   *     possible, will receive a setup(true) soon enough)
    */
   public boolean isLoadOverSemaphore() {
     return loadOverSemaphore;
   }
 
+  private boolean refreshingSemaphore =
+      false; // if we're currently loading a game just to refresh its (not to play it)
 
-  private boolean refreshingSemaphore = false; // if we're currently loading a game just to refresh its (not to play it)
   /**
    * @param state - true if refreshing (suppresses GameState.setup method)
    */
@@ -547,8 +533,9 @@ public class GameModule extends AbstractConfigurable
     return refreshingSemaphore;
   }
 
+  private boolean loadingContinuationSemaphore =
+      false; // if we're currently loading a game as continuation
 
-  private boolean loadingContinuationSemaphore = false; // if we're currently loading a game as continuation
   /**
    * @param state - true if loading game as continuation (don't thrash listeners)
    */
@@ -577,15 +564,22 @@ public class GameModule extends AbstractConfigurable
    */
   @Override
   public String toString() {
-    return "BasicModule{" +                                       //NON-NLS
-      "name='" + name + '\'' +                                    //NON-NLS
-      ", moduleVersion='" + moduleVersion + '\'' +                //NON-NLS
-      '}';
+    return "BasicModule{"
+        + // NON-NLS
+        "name='"
+        + name
+        + '\''
+        + // NON-NLS
+        ", moduleVersion='"
+        + moduleVersion
+        + '\''
+        + // NON-NLS
+        '}';
   }
 
   /**
-   * "Player" in this context meaning the VASSAL Player, i.e. the main module window, as opposed to any
-   * individual player meaning participant-in-a-boardgame.
+   * "Player" in this context meaning the VASSAL Player, i.e. the main module window, as opposed to
+   * any individual player meaning participant-in-a-boardgame.
    *
    * @return The main window for the module
    */
@@ -593,9 +587,7 @@ public class GameModule extends AbstractConfigurable
     return frame;
   }
 
-  /**
-   * Sets the proper name for module window's title bar
-   */
+  /** Sets the proper name for module window's title bar */
   public void initFrameTitle() {
     frame.setTitle(getTitleString());
   }
@@ -650,9 +642,8 @@ public class GameModule extends AbstractConfigurable
    */
   @Override
   public String getI18nPrefix() {
-    return ""; //NON-NLS
+    return ""; // NON-NLS
   }
-
 
   public void setDirty(boolean touchThis) {
     iFeelDirty = touchThis;
@@ -660,28 +651,31 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Constructor for a GameModule.
+   *
    * @param archive The .vmod (or .tmp) archive to associate
    */
   public GameModule(DataArchive archive) {
     this.archive = archive;
     final boolean isEditing = (archive instanceof ArchiveWriter);
-    resourceFinder = new I18nResourcePathFinder(archive, isEditing ? "en" : Resources.getLocale().getLanguage());
+    resourceFinder =
+        new I18nResourcePathFinder(archive, isEditing ? "en" : Resources.getLocale().getLanguage());
 
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    frame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent e) {
-        quit();
-      }
-    });
+    frame.addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+            quit();
+          }
+        });
 
-    addKeyStrokeSource(
-      new KeyStrokeSource(frame.getRootPane(), JComponent.WHEN_IN_FOCUSED_WINDOW));
+    addKeyStrokeSource(new KeyStrokeSource(frame.getRootPane(), JComponent.WHEN_IN_FOCUSED_WINDOW));
 
-    validator = new CompoundValidityChecker(
-      new MandatoryComponent(this, Documentation.class),
-      new MandatoryComponent(this, GlobalOptions.class))
-      .append(new RecursiveSingleChildInstance());
+    validator =
+        new CompoundValidityChecker(
+                new MandatoryComponent(this, Documentation.class),
+                new MandatoryComponent(this, GlobalOptions.class))
+            .append(new RecursiveSingleChildInstance());
 
     addCommandEncoder(new ChangePropertyCommandEncoder(propsContainer));
   }
@@ -690,7 +684,7 @@ public class GameModule extends AbstractConfigurable
    * Builds the module's component hierarchy from the XML buildFile, or if the module file does not
    * yet exist, builds the default "new module" hierarchy.
    *
-   * Method is package-private for testing purposes.
+   * <p>Method is package-private for testing purposes.
    *
    * @throws IOException IOException
    */
@@ -701,33 +695,35 @@ public class GameModule extends AbstractConfigurable
     if (!f.isFile() || f.length() == 0) {
       // new module, no buildFile
       build(null);
-    }
-    else {
+    } else {
       final AbstractMetaData data = MetaDataFactory.buildMetaData(f);
 
       if (!(data instanceof ModuleMetaData)) {
         throw new IOException(
-          Resources.getString("BasicModule.not_a_module"), //$NON-NLS-1$
-          null);
+            Resources.getString("BasicModule.not_a_module"), // $NON-NLS-1$
+            null);
       }
 
-      final String properBuildFileName = (VersionUtils.compareVersions(VersionUtils.truncateToMinorVersion(data.getVassalVersion()), "3.5") < 0) ? BUILDFILE_OLD : BUILDFILE;
+      final String properBuildFileName =
+          (VersionUtils.compareVersions(
+                      VersionUtils.truncateToMinorVersion(data.getVassalVersion()), "3.5")
+                  < 0)
+              ? BUILDFILE_OLD
+              : BUILDFILE;
 
       // existing module
       try (InputStream inner = darch.getInputStream(properBuildFileName);
-           BufferedInputStream in = new BufferedInputStream(inner)) {
+          BufferedInputStream in = new BufferedInputStream(inner)) {
         final Document doc = Builder.createDocument(in);
         build(doc.getDocumentElement());
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         throw new IOException(
-          Resources.getString("BasicModule.no_buildfile"), //$NON-NLS-1$
-          e);
-      }
-      catch (IOException e) {
+            Resources.getString("BasicModule.no_buildfile"), // $NON-NLS-1$
+            e);
+      } catch (IOException e) {
         throw new IOException(
-          Resources.getString("BasicModule.io_error_reading_archive"), //$NON-NLS-1$
-          e);
+            Resources.getString("BasicModule.io_error_reading_archive"), // $NON-NLS-1$
+            e);
       }
     }
 
@@ -738,18 +734,18 @@ public class GameModule extends AbstractConfigurable
       pw.dockMe();
     }
 
-    MenuManager.getInstance().addAction(
-      "Prefs.edit_preferences", //NON-NLS
-      getPrefs().getEditor().getEditAction()
-    );
+    MenuManager.getInstance()
+        .addAction(
+            "Prefs.edit_preferences", // NON-NLS
+            getPrefs().getEditor().getEditAction());
 
     // Our counter refresher
     final GameRefresher gameRefresher = new GameRefresher(this);
     gameRefresher.addTo(this);
-    MenuManager.getInstance().addAction(
-      "GameRefresher.refresh_counters", //NON-NLS
-      gameRefresher.getRefreshAction()
-    );
+    MenuManager.getInstance()
+        .addAction(
+            "GameRefresher.refresh_counters", // NON-NLS
+            gameRefresher.getRefreshAction());
 
     // Run a Validator and record any issues in the errorLog
     final ValidationReport report = new ValidationReport();
@@ -760,8 +756,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Builds the module's component hierarchy from a given XML element, or a null one is given initializes
-   * a brand new default "new module" hierarchy.
+   * Builds the module's component hierarchy from a given XML element, or a null one is given
+   * initializes a brand new default "new module" hierarchy.
+   *
    * @param e XML element to build from, or null to build the default hierarchy
    */
   @Override
@@ -787,7 +784,7 @@ public class GameModule extends AbstractConfigurable
     new PluginsLoader().addTo(this);
     if (e != null) {
       super.build(e);
-      //ensureComponent(GamePieceImageDefinitions.class);
+      // ensureComponent(GamePieceImageDefinitions.class);
       ensureComponent(GlobalProperties.class);
       ensureComponent(GlobalTranslatableMessages.class);
       ensureComponent(Language.class);
@@ -798,27 +795,41 @@ public class GameModule extends AbstractConfigurable
       ensureComponent(PrototypesContainer.class);
       ensureComponent(Chatter.class);
       ensureComponent(KeyNamer.class);
-    }
-    else {
+    } else {
       buildDefaultComponents();
     }
     initFrame();
   }
 
-  /**
-   * Associates our user identity with the module's preferences.
-   */
+  /** Associates our user identity with the module's preferences. */
   private void initIdentityPreferences() {
     idChangeSupport = new PropertyChangeSupport(this);
-    final StringConfigurer fullName = new StringConfigurer(REAL_NAME, Resources.getString("Prefs.name_label"), Resources.getString("Prefs.newbie"));   //$NON-NLS-1$ //$NON-NLS-2$
+    final StringConfigurer fullName =
+        new StringConfigurer(
+            REAL_NAME,
+            Resources.getString("Prefs.name_label"),
+            Resources.getString("Prefs.newbie")); // $NON-NLS-1$ //$NON-NLS-2$
     fullName.addPropertyChangeListener(evt -> idChangeSupport.firePropertyChange(evt));
-    final TextConfigurer profile = new TextConfigurer(PERSONAL_INFO, Resources.getString("Prefs.personal_info"), "");   //$NON-NLS-1$ //$NON-NLS-2$
+    final TextConfigurer profile =
+        new TextConfigurer(
+            PERSONAL_INFO,
+            Resources.getString("Prefs.personal_info"),
+            ""); //$NON-NLS-1$ //$NON-NLS-2$
     profile.addPropertyChangeListener(evt -> idChangeSupport.firePropertyChange(evt));
-    passwordConfigurer = new ToggleablePasswordConfigurer(SECRET_NAME, Resources.getString("Prefs.password_label"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    passwordConfigurer =
+        new ToggleablePasswordConfigurer(
+            SECRET_NAME,
+            Resources.getString("Prefs.password_label"),
+            ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     passwordConfigurer.addPropertyChangeListener(evt -> setUserId((String) evt.getNewValue()));
-    getPrefs().addOption(Resources.getString("Prefs.personal_tab"), fullName);   //$NON-NLS-1$ //$NON-NLS-2$
-    getPrefs().addOption(Resources.getString("Prefs.personal_tab"), passwordConfigurer);   //$NON-NLS-1$ //$NON-NLS-2$
-    getPrefs().addOption(Resources.getString("Prefs.personal_tab"), profile);  //$NON-NLS-1$
+    getPrefs()
+        .addOption(
+            Resources.getString("Prefs.personal_tab"), fullName); // $NON-NLS-1$ //$NON-NLS-2$
+    getPrefs()
+        .addOption(
+            Resources.getString("Prefs.personal_tab"),
+            passwordConfigurer); //$NON-NLS-1$ //$NON-NLS-2$
+    getPrefs().addOption(Resources.getString("Prefs.personal_tab"), profile); // $NON-NLS-1$
     setUserId(passwordConfigurer.getValueString());
   }
 
@@ -840,64 +851,66 @@ public class GameModule extends AbstractConfigurable
     openRecentItems.clear();
 
     // recreate recent games
-    final List<String> rgs = new ArrayList<>(Arrays.asList((String[]) getPrefs().getValue(RECENT_GAMES)));
+    final List<String> rgs =
+        new ArrayList<>(Arrays.asList((String[]) getPrefs().getValue(RECENT_GAMES)));
     Collections.reverse(rgs);
 
     for (final String rg : rgs) {
-      final MenuItemProxy i = new MenuItemProxy(new AbstractAction(new File(rg).getName()) {
-        private static final long serialVersionUID = 1L;
+      final MenuItemProxy i =
+          new MenuItemProxy(
+              new AbstractAction(new File(rg).getName()) {
+                private static final long serialVersionUID = 1L;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          final GameState gs = getGameState();
-          if (gs.isNewGameAllowed()) {
-            gs.loadGame(new File(rg), false);
-          }
-        }
-      });
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  final GameState gs = getGameState();
+                  if (gs.isNewGameAllowed()) {
+                    gs.loadGame(new File(rg), false);
+                  }
+                }
+              });
 
       mm.addToSection("OpenRecent", i);
       openRecentItems.add(i);
     }
   }
 
-  /**
-   * Initialize and register our multiplayer server controls
-   */
+  /** Initialize and register our multiplayer server controls */
   private void initServer() {
     final OfficialNodeClientFactory oncf = new OfficialNodeClientFactory();
 
     ChatServerFactory.register(OfficialNodeClientFactory.OFFICIAL_TYPE, oncf);
-    ChatServerFactory.register(PrivateNodeClientFactory.PRIVATE_TYPE, new PrivateNodeClientFactory());
+    ChatServerFactory.register(
+        PrivateNodeClientFactory.PRIVATE_TYPE, new PrivateNodeClientFactory());
     ChatServerFactory.register(P2PClientFactory.P2P_TYPE, new P2PClientFactory());
 
     // legacy server used to be stored as node type
     ChatServerFactory.register(NodeClientFactory.NODE_TYPE, oncf);
     // redirect removed jabber type to official server
-    ChatServerFactory.register("jabber", oncf); //NON-NLS
+    ChatServerFactory.register("jabber", oncf); // NON-NLS
 
     server = new DynamicClient();
-    final AddressBookServerConfigurer config = new AddressBookServerConfigurer("ServerSelected", "", (HybridClient) server); //NON-NLS
-    Prefs.getGlobalPrefs().addOption(Resources.getString("Chat.server"), config); //$NON-NLS-1$
+    final AddressBookServerConfigurer config =
+        new AddressBookServerConfigurer("ServerSelected", "", (HybridClient) server); // NON-NLS
+    Prefs.getGlobalPrefs().addOption(Resources.getString("Chat.server"), config); // $NON-NLS-1$
     serverControls = new ChatServerControls();
     serverControls.addTo(this);
 
     server.addPropertyChangeListener(
-      DynamicClient.CONNECTION_LOST,
-      e -> WarningDialog.show("GameModule.disconnect_warning") //NON-NLS
-    );
+        DynamicClient.CONNECTION_LOST,
+        e -> WarningDialog.show("GameModule.disconnect_warning") // NON-NLS
+        );
   }
 
-  /**
-   * Initialize and register our debug controls
-   */
+  /** Initialize and register our debug controls */
   private void initDebug() {
     debugControls = new DebugControls();
     debugControls.addTo(this);
   }
 
   /**
-   * Initialize and register our "logger", which allows player commands to be recorded into a .vlog file for PBEM games.
+   * Initialize and register our "logger", which allows player commands to be recorded into a .vlog
+   * file for PBEM games.
    */
   private void initLogger() {
     logger = new BasicLogger();
@@ -906,8 +919,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Initialize and register a record of our GameState, which provides methods for saving/loading our entire enumerated game state,
-   * along with controls for "starting" and "ending" gameplay.
+   * Initialize and register a record of our GameState, which provides methods for saving/loading
+   * our entire enumerated game state, along with controls for "starting" and "ending" gameplay.
    */
   private void initGameState() {
     theState = new GameState();
@@ -915,9 +928,7 @@ public class GameModule extends AbstractConfigurable
     addCommandEncoder(theState);
   }
 
-  /**
-   * Adds the standard default components for a brand new module.
-   */
+  /** Adds the standard default components for a brand new module. */
   private void buildDefaultComponents() {
     addComponent(BasicCommandEncoder.class);
     addComponent(Documentation.class);
@@ -935,8 +946,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Initializes our actual window frame -- size, title bar. Send a message with our module name and version number
-   * to the chat log, to be displayed there once a Chatter is registered.
+   * Initializes our actual window frame -- size, title bar. Send a message with our module name and
+   * version number to the chat log, to be displayed there once a Chatter is registered.
    */
   private void initFrame() {
     final Rectangle screen = SwingUtils.getScreenBounds(frame);
@@ -962,25 +973,27 @@ public class GameModule extends AbstractConfigurable
 
       // Before we have a map, we use 1/3 of height
       frame.setSize(w, h / 3);
-    }
-    else {
-      final String key = "BoundsOfGameModule"; //$NON-NLS-1$
+    } else {
+      final String key = "BoundsOfGameModule"; // $NON-NLS-1$
       final Rectangle r = new Rectangle(0, 0, screen.width, screen.height / 4);
       getPrefs().addOption(new PositionOption(key, frame, r));
     }
 
-    final String mess = Resources.getString(
-      "BasicModule.version_message", getLocalizedGameName(), moduleVersion); //$NON-NLS-1$
+    final String mess =
+        Resources.getString(
+            "BasicModule.version_message", getLocalizedGameName(), moduleVersion); // $NON-NLS-1$
     warn(mess);
     log.info(mess);
     initFrameTitle();
   }
 
   /**
-   * Ensures that the module contains at least one component of the specified class.
-   * This is used to protect modules from accidental deletion of necessary (or potentially necessary)
-   * objects for which there is no easy interface provided to restore them (e.g. the PlayerRoster)
-   * @param componentClass a subcomponent class. If the module has no subcomponents of that class, a nice fresh new one is added.
+   * Ensures that the module contains at least one component of the specified class. This is used to
+   * protect modules from accidental deletion of necessary (or potentially necessary) objects for
+   * which there is no easy interface provided to restore them (e.g. the PlayerRoster)
+   *
+   * @param componentClass a subcomponent class. If the module has no subcomponents of that class, a
+   *     nice fresh new one is added.
    */
   private void ensureComponent(Class<? extends Buildable> componentClass) {
     if (getComponentsOf(componentClass).isEmpty()) {
@@ -989,16 +1002,16 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Adds a subcomponent of the specified class to the module hierarchy. "Build" the
-   * child in its default form, and register it with the module.
+   * Adds a subcomponent of the specified class to the module hierarchy. "Build" the child in its
+   * default form, and register it with the module.
+   *
    * @param componentClass a subcomponent class, to be added.
    */
   private void addComponent(Class<? extends Buildable> componentClass) {
     Buildable child = null;
     try {
       child = componentClass.getConstructor().newInstance();
-    }
-    catch (Throwable t) {
+    } catch (Throwable t) {
       ReflectionUtils.handleNewInstanceFailure(t, componentClass);
     }
 
@@ -1011,133 +1024,131 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Sets a buildFile (XML) attribute value for this component.
-   * @param name the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
-   * @param value If the <code>value</code> parameter is a String, it will be the value returned by {@link #getAttributeValueString} for the same
-   *              <code>key</code>. If the implementing class extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
+   *
+   * @param name the name of the attribute. Will be one of those listed in {@link
+   *     #getAttributeNames}
+   * @param value If the <code>value</code> parameter is a String, it will be the value returned by
+   *     {@link #getAttributeValueString} for the same <code>key</code>. If the implementing class
+   *     extends {@link AbstractConfigurable}, then <code>value</code> can also be an instance of
    */
   @Override
   public void setAttribute(String name, Object value) {
     if (MODULE_NAME.equals(name)) {
       if (Localization.getInstance().isTranslationInProgress()) {
         localizedGameName = (String) value;
-      }
-      else {
+      } else {
         gameName = (String) value;
         if (gameName != null) {
           gameName = gameName.strip();
         }
       }
       setConfigureName((String) value);
-    }
-    else if (MODULE_VERSION.equals(name)) {
+    } else if (MODULE_VERSION.equals(name)) {
       moduleVersion = (String) value;
       if (moduleVersion != null) {
         moduleVersion = moduleVersion.strip();
       }
-    }
-    else if (VASSAL_VERSION_CREATED.equals(name)) {
+    } else if (VASSAL_VERSION_CREATED.equals(name)) {
       vassalVersionCreated = (String) value;
       final String runningVersion = Info.getVersion();
       if (VersionUtils.compareVersions(vassalVersionCreated, runningVersion) > 0) {
-        WarningDialog.show("GameModule.version_warning", //NON-NLS
-                           vassalVersionCreated, runningVersion);
+        WarningDialog.show(
+            "GameModule.version_warning", // NON-NLS
+            vassalVersionCreated,
+            runningVersion);
       }
-    }
-    else if (NEXT_PIECESLOT_ID.equals(name)) {
+    } else if (NEXT_PIECESLOT_ID.equals(name)) {
       try {
         nextGpId = Integer.parseInt((String) value);
-      }
-      catch (NumberFormatException e) {
+      } catch (NumberFormatException e) {
         throw new IllegalBuildException(e);
       }
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       description = (String) value;
-    }
-    else if (MODULE_OTHER1_PROPERTY.equals(name)) {
+    } else if (MODULE_OTHER1_PROPERTY.equals(name)) {
       moduleOther1 = (String) value;
-    }
-    else if (MODULE_OTHER2_PROPERTY.equals(name)) {
+    } else if (MODULE_OTHER2_PROPERTY.equals(name)) {
       moduleOther2 = (String) value;
     }
   }
 
   /**
-   * @param name the name of the attribute. Will be one of those listed in {@link #getAttributeNames}
-   * @return a String representation of the attribute with the given name. When initializing a module, this String value will be passed to {@link #setAttribute}
+   * @param name the name of the attribute. Will be one of those listed in {@link
+   *     #getAttributeNames}
+   * @return a String representation of the attribute with the given name. When initializing a
+   *     module, this String value will be passed to {@link #setAttribute}
    */
   @Override
   public String getAttributeValueString(String name) {
     if (MODULE_NAME.equals(name)) {
       return gameName;
-    }
-    else if (MODULE_VERSION.equals(name)) {
+    } else if (MODULE_VERSION.equals(name)) {
       return moduleVersion;
-    }
-    else if (VASSAL_VERSION_CREATED.equals(name)) {
+    } else if (VASSAL_VERSION_CREATED.equals(name)) {
       return vassalVersionCreated;
-    }
-    else if (VASSAL_VERSION_RUNNING.equals(name)) {
+    } else if (VASSAL_VERSION_RUNNING.equals(name)) {
       return Info.getVersion();
-    }
-    else if (NEXT_PIECESLOT_ID.equals(name)) {
+    } else if (NEXT_PIECESLOT_ID.equals(name)) {
       return String.valueOf(nextGpId);
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
-    }
-    else if (MODULE_OTHER1_PROPERTY.equals(name)) {
+    } else if (MODULE_OTHER1_PROPERTY.equals(name)) {
       return moduleOther1;
-    }
-    else if (MODULE_OTHER2_PROPERTY.equals(name)) {
+    } else if (MODULE_OTHER2_PROPERTY.equals(name)) {
       return moduleOther2;
     }
     return null;
   }
 
   /**
-   * Game Module is normally at the root of the hierarchy, so it doesn't expect to get added to anything.
+   * Game Module is normally at the root of the hierarchy, so it doesn't expect to get added to
+   * anything.
+   *
    * @param b Notional "parent" of this GameModule
    */
   @Override
-  public void addTo(Buildable b) {
-  }
+  public void addTo(Buildable b) {}
 
   /**
-   * Gets the generic name for this type of class across all instances of it. Appears
-   * in the Editor window in [..] as e.g. [Map], [Prototype], etc.
-   * @return The generic name for this kind of component, i.e. the part appearing [In Brackets] in the Editor's {@link ConfigureTree}.
+   * Gets the generic name for this type of class across all instances of it. Appears in the Editor
+   * window in [..] as e.g. [Map], [Prototype], etc.
+   *
+   * @return The generic name for this kind of component, i.e. the part appearing [In Brackets] in
+   *     the Editor's {@link ConfigureTree}.
    */
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.GameModule.component_type");  //$NON-NLS-1$
+    return Resources.getString("Editor.GameModule.component_type"); // $NON-NLS-1$
   }
 
   /**
-   * Since we aren't expecting to be {@link #addTo}'ed to a parent, we likewise don't need to do much about being "removeFrom'ed" one.
+   * Since we aren't expecting to be {@link #addTo}'ed to a parent, we likewise don't need to do
+   * much about being "removeFrom'ed" one.
+   *
    * @param parent Notional "parent" of this GameModule
    */
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   /**
    * @return a HelpFile describing how to use and configure this component
    */
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GameModule.html");  //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("GameModule.html"); // $NON-NLS-1$
   }
 
   /**
-   * Lists all the buildFile (XML) attribute names for this component.
-   * If this component is ALSO an {@link AbstractConfigurable}, then this list of attributes determines the appropriate
-   * attribute order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link AbstractConfigurable#getAttributeTypes()}.
+   * Lists all the buildFile (XML) attribute names for this component. If this component is ALSO an
+   * {@link AbstractConfigurable}, then this list of attributes determines the appropriate attribute
+   * order for {@link AbstractConfigurable#getAttributeDescriptions()} and {@link
+   * AbstractConfigurable#getAttributeTypes()}.
+   *
    * @return an array of all buildFile (XML) attribute names for this component
    * @see AbstractBuildable
    */
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
+    return new String[] {
       MODULE_NAME,
       MODULE_VERSION,
       DESCRIPTION,
@@ -1149,54 +1160,49 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return an array of Strings describing the buildFile (XML) attributes of this component. These strings are used as prompts in the
-   * Properties window for this object, when the component is configured in the Editor. The order of descriptions should
-   * be the same as the order of names in {@link AbstractBuildable#getAttributeNames}
+   * @return an array of Strings describing the buildFile (XML) attributes of this component. These
+   *     strings are used as prompts in the Properties window for this object, when the component is
+   *     configured in the Editor. The order of descriptions should be the same as the order of
+   *     names in {@link AbstractBuildable#getAttributeNames}
    * @see AbstractConfigurable
    */
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-      Resources.getString("Editor.GameModule.name_label"),    //$NON-NLS-1$
-      Resources.getString("Editor.GameModule.version_label"), //$NON-NLS-1$
-      Resources.getString("Editor.GameModule.description_label"),    //NON-NLS
-      Resources.getString("Editor.GameModule.module_other_1_label"), //NON-NLS
-      Resources.getString("Editor.GameModule.module_other_2_label") //NON-NLS
+    return new String[] {
+      Resources.getString("Editor.GameModule.name_label"), // $NON-NLS-1$
+      Resources.getString("Editor.GameModule.version_label"), // $NON-NLS-1$
+      Resources.getString("Editor.GameModule.description_label"), // NON-NLS
+      Resources.getString("Editor.GameModule.module_other_1_label"), // NON-NLS
+      Resources.getString("Editor.GameModule.module_other_2_label") // NON-NLS
     };
   }
 
   /**
-   * @return the Class for the buildFile (XML) attributes of this component. Valid classes include: String, Integer, Double, Boolean, Image,
-   * Color, and KeyStroke, along with any class for which a Configurer exists in VASSAL.configure. The class determines, among other things,
-   * which type of {@link AutoConfigurer} will be used to configure the attribute when the object is configured in the Editor.
-   *
-   * The order of classes should be the same as the order of names in {@link AbstractBuildable#getAttributeNames}
+   * @return the Class for the buildFile (XML) attributes of this component. Valid classes include:
+   *     String, Integer, Double, Boolean, Image, Color, and KeyStroke, along with any class for
+   *     which a Configurer exists in VASSAL.configure. The class determines, among other things,
+   *     which type of {@link AutoConfigurer} will be used to configure the attribute when the
+   *     object is configured in the Editor.
+   *     <p>The order of classes should be the same as the order of names in {@link
+   *     AbstractBuildable#getAttributeNames}
    * @see AbstractConfigurable
    */
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
-      String.class,
-      String.class,
-      String.class
-    };
+    return new Class<?>[] {String.class, String.class, String.class, String.class, String.class};
   }
 
   /**
    * List of subcomponents which can be added to a GameModule.
    *
-   * @return an array of valid subcomponent Classes.  If a Class
-   * appears in this list, then instances of that class may be added
-   * to this component from the Editor's {@link ConfigureTree} window by
-   * right-clicking on the component and selecting the appropriate "Add"
-   * option.
+   * @return an array of valid subcomponent Classes. If a Class appears in this list, then instances
+   *     of that class may be added to this component from the Editor's {@link ConfigureTree} window
+   *     by right-clicking on the component and selecting the appropriate "Add" option.
    * @see Configurable
    */
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       ModuleSubFolder.class,
       Map.class,
       PieceWindow.class,
@@ -1207,7 +1213,8 @@ public class GameModule extends AbstractConfigurable
       GlobalKeyCommand.class,
       StartupGlobalKeyCommand.class,
       Inventory.class,
-//                  InternetDiceButton.class,   // Disable internet dice button until Bones server can prevent email spamming
+      //                  InternetDiceButton.class,   // Disable internet dice button until Bones
+      // server can prevent email spamming
       RandomTextButton.class,
       SpecialDiceButton.class,
       PredefinedSetup.class,
@@ -1223,9 +1230,10 @@ public class GameModule extends AbstractConfigurable
   /**
    * The GameModule acts as the mediator for hotkey events.
    *
-   * Components that wish to fire hotkey events when they have the
-   * focus should register themselves using this method.  These events will be
-   * forwarded to all listeners that have registered themselves with {@link #addKeyStrokeListener}
+   * <p>Components that wish to fire hotkey events when they have the focus should register
+   * themselves using this method. These events will be forwarded to all listeners that have
+   * registered themselves with {@link #addKeyStrokeListener}
+   *
    * @param src KeyStrokeSource Component that wants to register as a source for hotkey events
    */
   public void addKeyStrokeSource(KeyStrokeSource src) {
@@ -1239,7 +1247,6 @@ public class GameModule extends AbstractConfigurable
     }
   }
 
-
   public void removeKeyStrokeListener(KeyStrokeListener l) {
     for (final KeyStrokeSource s : keyStrokeSources) {
       l.removeKeyStrokeSource(s);
@@ -1251,9 +1258,9 @@ public class GameModule extends AbstractConfigurable
   /**
    * The GameModule acts as the mediator for hotkey events.
    *
-   * Objects that react to hotkey events should register themselves
-   * using this method.  Any component that has been registered with {@link #addKeyStrokeSource}
-   * will forward hotkey events to listeners registered with this method.
+   * <p>Objects that react to hotkey events should register themselves using this method. Any
+   * component that has been registered with {@link #addKeyStrokeSource} will forward hotkey events
+   * to listeners registered with this method.
    *
    * @param l KeystrokeListener to add
    */
@@ -1268,13 +1275,13 @@ public class GameModule extends AbstractConfigurable
     }
   }
 
-
   public void resetSourcesAndListeners() {
     Expression.resetCachedExpressions();
   }
 
   /**
-   * If our keyboard mapping paradigm changes (example: Mac Legacy preference checked/unchecked), we need to reregister all of our KeyStrokeListeners
+   * If our keyboard mapping paradigm changes (example: Mac Legacy preference checked/unchecked), we
+   * need to reregister all of our KeyStrokeListeners
    */
   public void refreshKeyStrokeListeners() {
     keyStrokeListeners.forEach(l -> l.setKeyStroke(l.getKeyStroke()));
@@ -1282,6 +1289,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Invokes a {@link NamedKeyStroke} to all of our listeners.
+   *
    * @param stroke NamedKeyStroke to invoke
    */
   public void fireKeyStroke(NamedKeyStroke stroke) {
@@ -1334,6 +1342,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Currently used to listen for changes to player names
+   *
    * @param l propertyChangeListener to add
    */
   public void addIdChangeListener(PropertyChangeListener l) {
@@ -1342,6 +1351,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Currently used to listen for changes to player names
+   *
    * @param l propertyChangeListener to remove
    */
   public void removeIdChangeListener(PropertyChangeListener l) {
@@ -1363,8 +1373,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * GameModule holds the master list of CommandEncoders, and invokes them as appropriate when commands are sent and
-   * received. This method adds a {@link CommandEncoder} to the list of objects that will attempt to decode/encode a command.
+   * GameModule holds the master list of CommandEncoders, and invokes them as appropriate when
+   * commands are sent and received. This method adds a {@link CommandEncoder} to the list of
+   * objects that will attempt to decode/encode a command.
    *
    * @see #decode
    * @see #encode
@@ -1374,8 +1385,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * This method removes a {@link CommandEncoder} from the list of objects
-   * that will attempt to decode/encode a command
+   * This method removes a {@link CommandEncoder} from the list of objects that will attempt to
+   * decode/encode a command
    *
    * @see #addCommandEncoder
    * @see #decode
@@ -1422,21 +1433,24 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Display the given text in the control window's status line.
-   * Save the messages for later if the Chatter has not been initialised yet
+   * Display the given text in the control window's status line. Save the messages for later if the
+   * Chatter has not been initialised yet
+   *
    * @param s message to display in Chat Log
    */
   public void warn(String s) {
     String s2 = s;
     if (s2.isEmpty() || (QuickColors.getQuickColor(s) == -1)) { // Quick Colors "opt in" HTML
-      s2 = s2.replaceAll("<", "&lt;")  // So < symbols in warning messages don't get misinterpreted as HTML //$NON-NLS
-             .replaceAll(">", "&gt;"); //$NON-NLS
+      s2 =
+          s2.replaceAll(
+                  "<", "&lt;") // So < symbols in warning messages don't get misinterpreted as HTML
+              // //$NON-NLS
+              .replaceAll(">", "&gt;"); // $NON-NLS
     }
     if (chat == null) {
       deferredChat.add(s2);
-    }
-    else {
-      chat.show(" - " + s2); //$NON-NLS-1$
+    } else {
+      chat.show(" - " + s2); // $NON-NLS-1$
     }
   }
 
@@ -1458,7 +1472,7 @@ public class GameModule extends AbstractConfigurable
    * @return BasicLogger, if we have one
    */
   public BasicLogger getBasicLogger() {
-    return (logger instanceof BasicLogger) ? (BasicLogger)logger : null;
+    return (logger instanceof BasicLogger) ? (BasicLogger) logger : null;
   }
 
   /**
@@ -1511,9 +1525,10 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Decodes our inbound {@link Command} traffic -- incoming player commands ready to be executed.
-   * Unlike everybody else's decode method, the GameModule's method first pulls apart strings of multiple
-   * commands into singles. It then invokes each of its registered {@link CommandEncoder}s in turn
-   * until one of them is able to deserialize the command from a String into a {@link Command} object ready to be executed.
+   * Unlike everybody else's decode method, the GameModule's method first pulls apart strings of
+   * multiple commands into singles. It then invokes each of its registered {@link CommandEncoder}s
+   * in turn until one of them is able to deserialize the command from a String into a {@link
+   * Command} object ready to be executed.
    */
   @Override
   public Command decode(String command) {
@@ -1521,52 +1536,49 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Encodes our outbound {@link Command} traffic -- outgoing player commands to be sent to other players' clients via
-   * either online (server) or logfile (PBEM). Unlike everybody else's encode method, the GameModule's method accepts Command
-   * trees containing multiple appended commands. It goes through them in order and for each command invokes each of its registered
-   * {@link CommandEncoder}s in turn until one of them is able to serialize the {@link Command} object into an ascii-compatible
-   * String ready to be sent to other players' clients. It does this for each of the subcommands in the list, and the results for
-   * all are returned as a single String.
+   * Encodes our outbound {@link Command} traffic -- outgoing player commands to be sent to other
+   * players' clients via either online (server) or logfile (PBEM). Unlike everybody else's encode
+   * method, the GameModule's method accepts Command trees containing multiple appended commands. It
+   * goes through them in order and for each command invokes each of its registered {@link
+   * CommandEncoder}s in turn until one of them is able to serialize the {@link Command} object into
+   * an ascii-compatible String ready to be sent to other players' clients. It does this for each of
+   * the subcommands in the list, and the results for all are returned as a single String.
    */
   @Override
   public String encode(Command c) {
     return commandCodec.encode(c);
   }
 
-  /**
-   * Schedules execution of a command received from the network or a replay stream.
-   */
+  /** Schedules execution of a command received from the network or a replay stream. */
   public void executeIncomingCommand(Command command) {
     if (command == null) {
       return;
     }
 
-    incomingCommandScheduler.accept(() -> {
-      command.execute();
-      if (logger != null) {
-        logger.log(command);
-      }
-      refreshVisibleMaps();
-    });
+    incomingCommandScheduler.accept(
+        () -> {
+          command.execute();
+          if (logger != null) {
+            logger.log(command);
+          }
+          refreshVisibleMaps();
+        });
   }
 
-  /**
-   * Allows incoming network commands to run on a non-Swing executor for headless environments.
-   */
+  /** Allows incoming network commands to run on a non-Swing executor for headless environments. */
   public void setIncomingCommandScheduler(Consumer<Runnable> incomingCommandScheduler) {
     this.incomingCommandScheduler = Objects.requireNonNull(incomingCommandScheduler);
   }
 
   /**
-   * @return a common FileChooser so that recent file locations
-   * can be remembered
+   * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getFileChooser() {
     if (fileChooser == null) {
-      fileChooser = FileChooser.createFileChooser(getPlayerWindow(),
-        getGameState().getSavedGameDirectoryPreference());
-    }
-    else {
+      fileChooser =
+          FileChooser.createFileChooser(
+              getPlayerWindow(), getGameState().getSavedGameDirectoryPreference());
+    } else {
       fileChooser.resetChoosableFileFilters();
       fileChooser.rescanCurrentDirectory();
     }
@@ -1575,15 +1587,14 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return a common FileChooser so that recent file locations
-   * can be remembered
+   * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getEditorImageChooser() {
     if (fileChooserEditorImage == null) {
-      fileChooserEditorImage = FileChooser.createFileChooser(getPlayerWindow(),
-        getGameState().getEditorImageDirectoryPreference());
-    }
-    else {
+      fileChooserEditorImage =
+          FileChooser.createFileChooser(
+              getPlayerWindow(), getGameState().getEditorImageDirectoryPreference());
+    } else {
       fileChooserEditorImage.resetChoosableFileFilters();
       fileChooserEditorImage.rescanCurrentDirectory();
     }
@@ -1592,15 +1603,14 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return a common FileChooser so that recent file locations
-   * can be remembered
+   * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getEditorSoundChooser() {
     if (fileChooserEditorSound == null) {
-      fileChooserEditorSound = FileChooser.createFileChooser(getPlayerWindow(),
-        getGameState().getEditorImageDirectoryPreference());
-    }
-    else {
+      fileChooserEditorSound =
+          FileChooser.createFileChooser(
+              getPlayerWindow(), getGameState().getEditorImageDirectoryPreference());
+    } else {
       fileChooserEditorSound.resetChoosableFileFilters();
       fileChooserEditorSound.rescanCurrentDirectory();
     }
@@ -1608,9 +1618,9 @@ public class GameModule extends AbstractConfigurable
     return fileChooserEditorSound;
   }
 
-
   /**
    * Provides access to the Game Module's toolbar.
+   *
    * @return the JToolBar of the command window
    */
   @Override
@@ -1619,8 +1629,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Returns an appropriate Title Bar string for a window, based on the module name,
-   * the last read/written game file, and the manner of interaction with it.
+   * Returns an appropriate Title Bar string for a window, based on the module name, the last
+   * read/written game file, and the manner of interaction with it.
+   *
    * @return appropriate title bar string for a window.
    * @param key Localization key to be used to generate string
    * @param name Name of the object whose title bar is to be generated
@@ -1632,16 +1643,15 @@ public class GameModule extends AbstractConfigurable
 
     if (moduleVersion && !DEFAULT_MODULE_VERSION.equals(version)) {
       nameString = name + " " + version;
-    }
-    else {
+    } else {
       nameString = name;
     }
 
     if (StringUtils.isEmpty(gameFile) || GameFileMode.NEW_GAME.equals(gameFileMode)) {
-      return Resources.getString(key + "_title", nameString, "", Info.getVersion());  //NON-NLS-1$
-    }
-    else {
-      return Resources.getString(key + "_title_" + gameFileMode, nameString, gameFile, Info.getVersion()); //NON-NLS-1$
+      return Resources.getString(key + "_title", nameString, "", Info.getVersion()); // NON-NLS-1$
+    } else {
+      return Resources.getString(
+          key + "_title_" + gameFileMode, nameString, gameFile, Info.getVersion()); // NON-NLS-1$
     }
   }
 
@@ -1649,19 +1659,17 @@ public class GameModule extends AbstractConfigurable
     return getWindowTitleString(key, name, true);
   }
 
-
   /**
    * Returns an appropriate Title Bar string for the main module window, based on the module name,
    * the last read/written game file, and the manner of interaction with it.
+   *
    * @return appropriate title bar string for main module window.
    */
   public String getTitleString() {
-    return getWindowTitleString("GameModule.frame", getLocalizedGameName()); //NON-NLS-1$
+    return getWindowTitleString("GameModule.frame", getLocalizedGameName()); // NON-NLS-1$
   }
 
-  /**
-   * Updates the title bar of the main module window, and all map windows
-   */
+  /** Updates the title bar of the main module window, and all map windows */
   public void updateTitleBar() {
     frame.setTitle(getTitleString());
 
@@ -1680,8 +1688,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Sets the most recent .VSAV / .VLOG file saved, loaded, or logged to, along with
-   * the type of action taken with that file.
+   * Sets the most recent .VSAV / .VLOG file saved, loaded, or logged to, along with the type of
+   * action taken with that file.
+   *
    * @param gameFile Most recent VSAV/VLOG if any
    * @param mode mode of access
    */
@@ -1699,19 +1708,20 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Sets the type of interaction we most recently had with saving/loading/replaying/logging, for managing title bars
-   * of windows.
+   * Sets the type of interaction we most recently had with saving/loading/replaying/logging, for
+   * managing title bars of windows.
+   *
    * @param mode mode of access
    */
   public void setGameFileMode(GameFileMode mode) {
     gameFileMode = Objects.requireNonNull(mode);
-    if (mode == GameFileMode.NEW_GAME) gameFile = "";  // reset title bar in event of a new game
+    if (mode == GameFileMode.NEW_GAME) gameFile = ""; // reset title bar in event of a new game
     updateTitleBar();
   }
 
   /**
-   * @return Returns the most recent type of interaction we've had for saving/loading/replaying/logging the game, for managing
-   * title bars of windows.
+   * @return Returns the most recent type of interaction we've had for
+   *     saving/loading/replaying/logging the game, for managing title bars of windows.
    */
   public GameFileMode getGameFileMode() {
     return gameFileMode;
@@ -1721,12 +1731,11 @@ public class GameModule extends AbstractConfigurable
    * @return true if we are currently logging or replaying a game.
    */
   public boolean isReplayingOrLogging() {
-    return (gameFileMode == GameFileMode.LOGGING_GAME) || (gameFileMode == GameFileMode.REPLAYING_GAME);
+    return (gameFileMode == GameFileMode.LOGGING_GAME)
+        || (gameFileMode == GameFileMode.REPLAYING_GAME);
   }
 
-  /**
-   * Exit the application, prompting user to save if necessary
-   */
+  /** Exit the application, prompting user to save if necessary */
   public void quit() {
     if (shutDown()) {
       System.exit(0);
@@ -1735,6 +1744,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Prompt user to save open game and modules/extensions being edited
+   *
    * @return true if shutDown should proceed, i.e. user did not cancel
    */
   @SuppressWarnings("PMD.UseTryWithResources")
@@ -1746,15 +1756,17 @@ public class GameModule extends AbstractConfigurable
     if (!cancelled) {
       if (getDataArchive() instanceof ArchiveWriter
           && (!buildString().equals(lastSavedConfiguration) || iFeelDirty)) {
-        switch (JOptionPane.showConfirmDialog(frame,
-          Resources.getString("GameModule.save_module"),  //$NON-NLS-1$
-             "", JOptionPane.YES_NO_CANCEL_OPTION)) {  //$NON-NLS-1$
-        case JOptionPane.YES_OPTION:
-          save();
-          break;
-        case JOptionPane.CANCEL_OPTION:
-        case JOptionPane.CLOSED_OPTION:
-          cancelled = true;
+        switch (JOptionPane.showConfirmDialog(
+            frame,
+            Resources.getString("GameModule.save_module"), // $NON-NLS-1$
+            "",
+            JOptionPane.YES_NO_CANCEL_OPTION)) { // $NON-NLS-1$
+          case JOptionPane.YES_OPTION:
+            save();
+            break;
+          case JOptionPane.CANCEL_OPTION:
+          case JOptionPane.CLOSED_OPTION:
+            cancelled = true;
         }
       }
       for (final ModuleExtension ext : getComponentsOf(ModuleExtension.class)) {
@@ -1769,17 +1781,14 @@ public class GameModule extends AbstractConfigurable
       try {
         p = getPrefs();
         p.save();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         WriteErrorDialog.error(e, p.getFile());
-      }
-      finally {
+      } finally {
         if (p != null) {
           try {
             p.close();
-          }
-          catch (IOException e) {
-            log.error("Error while closing module preferences", e); //NON-NLS
+          } catch (IOException e) {
+            log.error("Error while closing module preferences", e); // NON-NLS
           }
         }
       }
@@ -1787,33 +1796,33 @@ public class GameModule extends AbstractConfigurable
       // close the module
       try {
         archive.close();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, archive.getName());
       }
 
-      log.info("Exiting"); //NON-NLS
+      log.info("Exiting"); // NON-NLS
     }
 
     return !cancelled;
   }
 
-/*
-  private void dumpCommand(Command c, int indent) {
-    System.out.println(" ".repeat(indent) + c);
-    for (final Command s : c.getSubCommands()) {
-      dumpCommand(s, indent + 1);
+  /*
+    private void dumpCommand(Command c, int indent) {
+      System.out.println(" ".repeat(indent) + c);
+      for (final Command s : c.getSubCommands()) {
+        dumpCommand(s, indent + 1);
+      }
     }
-  }
-*/
+  */
 
   /**
-   * When the local player has taken any action that would change the game state (or otherwise needs to be sent to
-   * any other players' clients), the action should be encapsulated into a {@link Command} and sent here. This method
-   * encodes the {@link Command}, sends it to the server (if we're online) and write it to a .vlog PBEM logfile (if
-   * any is open). It thus drives both formats of multiplayer game through a common interface.
-   * @param c The {@link Command} to be sent and logged.
+   * When the local player has taken any action that would change the game state (or otherwise needs
+   * to be sent to any other players' clients), the action should be encapsulated into a {@link
+   * Command} and sent here. This method encodes the {@link Command}, sends it to the server (if
+   * we're online) and write it to a .vlog PBEM logfile (if any is open). It thus drives both
+   * formats of multiplayer game through a common interface.
    *
+   * @param c The {@link Command} to be sent and logged.
    * @see #encode
    */
   public void sendAndLog(Command c) {
@@ -1821,8 +1830,7 @@ public class GameModule extends AbstractConfigurable
       synchronized (loggingLock) {
         if (loggingPaused) {
           pausedCommands.getFirst().append(c);
-        }
-        else {
+        } else {
           getServer().sendToOthers(c);
           getLogger().log(c);
         }
@@ -1831,11 +1839,10 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Pause logging and return true if successful.
-   * Return false if logging already paused
+   * Pause logging and return true if successful. Return false if logging already paused
    *
-   * While Paused, commands are accumulated into pausedCommands so that they
-   * can all be logged at the same time, and generate a single UNDO command.
+   * <p>While Paused, commands are accumulated into pausedCommands so that they can all be logged at
+   * the same time, and generate a single UNDO command.
    *
    * @return Current logging pause status, false if logging currently paused
    */
@@ -1849,6 +1856,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Restart logging and return any outstanding commands
+   *
    * @return any outstanding {@link Command} (can contain multiple chained commands)
    */
   public Command resumeLogging() {
@@ -1863,18 +1871,18 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Clear outstanding Commands
-   * Use where the calling level handles the sending of outstanding commands
+   * Clear outstanding Commands Use where the calling level handles the sending of outstanding
+   * commands
    */
   public void clearPausedCommands() {
     pausedCommands.clear();
   }
 
-
   static String tempUserId = null;
 
   /**
-   * @return the userId/password we're currently using, in case we're using one of our alternate defaults. Or if none explicitly picked, the actual contents of our password field.
+   * @return the userId/password we're currently using, in case we're using one of our alternate
+   *     defaults. Or if none explicitly picked, the actual contents of our password field.
    */
   public static String getActiveUserId() {
     return (tempUserId == null) ? userId : tempUserId;
@@ -1899,9 +1907,7 @@ public class GameModule extends AbstractConfigurable
     return userId;
   }
 
-  /**
-   * Set the identifier for the user
-   */
+  /** Set the identifier for the user */
   public static void setUserId(String newId) {
     userId = newId;
   }
@@ -1936,24 +1942,22 @@ public class GameModule extends AbstractConfigurable
   /**
    * Loads a module object into the player window.
    *
-   * Registers a <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a> GameModule
-   * and invokes {@link Buildable#build} on it to build it from the XML buildFile. This will have the effect of
-   * invoking {@link Buildable#build} on all of the module's subcomponents as well, effectively building our whole
-   * component hierarchy from the XML.
+   * <p>Registers a <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>
+   * GameModule and invokes {@link Buildable#build} on it to build it from the XML buildFile. This
+   * will have the effect of invoking {@link Buildable#build} on all of the module's subcomponents
+   * as well, effectively building our whole component hierarchy from the XML.
    */
   public static void init(GameModule module) throws IOException {
     if (theModule != null) {
       throw new UnsupportedOperationException(
-        Resources.getString("GameModule.open_error",
-          theModule.getDataArchive().getName()));
+          Resources.getString("GameModule.open_error", theModule.getDataArchive().getName()));
     }
 
     theModule = module;
     theModule.setGpIdSupport(theModule);
     try {
       theModule.build();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       theModule = null;
       throw e;
     }
@@ -1975,15 +1979,14 @@ public class GameModule extends AbstractConfigurable
     }
   }
 
-  /**
-   * Save the current buildString for comparison when we try and quit.
-   */
+  /** Save the current buildString for comparison when we try and quit. */
   public void updateLastSave() {
     lastSavedConfiguration = buildString();
   }
 
   /**
    * Allocates the next available GamePiece ID and returns it.
+   *
    * @return an available GpID
    * @see GpIdSupport
    */
@@ -1993,7 +1996,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return the next available GpId (GamePiece ID) (but doesn't allocate it -- for that see {@link #generateGpId})
+   * @return the next available GpId (GamePiece ID) (but doesn't allocate it -- for that see {@link
+   *     #generateGpId})
    * @see GpIdSupport
    */
   @Override
@@ -2003,6 +2007,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Sets the next available GamePiece ID
+   *
    * @param id new value for nextGpId.
    * @see GpIdSupport
    */
@@ -2012,7 +2017,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Registers a GamePiece ID support object for us to manage a namespace for unique GamePiece objects.
+   * Registers a GamePiece ID support object for us to manage a namespace for unique GamePiece
+   * objects.
+   *
    * @param s GamePiece ID object
    */
   public void setGpIdSupport(GpIdSupport s) {
@@ -2027,8 +2034,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Check every PieceSlot and PlaceMarker trait for duplicate,
-   * illegal or Missing GamePiece id's and update them if necessary
+   * Check every PieceSlot and PlaceMarker trait for duplicate, illegal or Missing GamePiece id's
+   * and update them if necessary
+   *
    * @see GpIdSupport
    */
   private void checkGpIds() {
@@ -2046,8 +2054,9 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * VASSAL modules are stored in ".vmod" files, which are actually simple ".zip" files with
-   * a unique extension.
+   * VASSAL modules are stored in ".vmod" files, which are actually simple ".zip" files with a
+   * unique extension.
+   *
    * @return the object which stores data for the module -- our .vmod Zip file.
    */
   public DataArchive getDataArchive() {
@@ -2062,10 +2071,11 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * VASSAL modules are stored in ".vmod" files, which are actually simple ".zip" files with
-   * a unique extension.
+   * VASSAL modules are stored in ".vmod" files, which are actually simple ".zip" files with a
+   * unique extension.
    *
-   * If the module is being edited, return the writeable archive for the module
+   * <p>If the module is being edited, return the writeable archive for the module
+   *
    * @return the writer for our .vmod Zip file
    */
   public ArchiveWriter getArchiveWriter() {
@@ -2080,10 +2090,9 @@ public class GameModule extends AbstractConfigurable
       // FIXME: There's no guarantee that getGameName() and getGameVersion()
       // are properly set at this point.
 
-      final String hstr =
-        DigestUtils.sha1Hex(getGameName() + "_" + getGameVersion()); //NON-NLS
+      final String hstr = DigestUtils.sha1Hex(getGameName() + "_" + getGameVersion()); // NON-NLS
 
-      final File tc = new File(Info.getCacheDir(), "tiles/" + hstr); //NON-NLS
+      final File tc = new File(Info.getCacheDir(), "tiles/" + hstr); // NON-NLS
       tcache = new ImageTileDiskCache(tc.getAbsolutePath());
     }
 
@@ -2091,7 +2100,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Is the module being translated into the user's Locale?  Localization is disabled when editing a module
+   * Is the module being translated into the user's Locale? Localization is disabled when editing a
+   * module
    *
    * @return true if the module/extension has been localized
    */
@@ -2101,6 +2111,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Is an editor window currently open
+   *
    * @return true if we're running with an editor window
    */
   public boolean isEditorOpen() {
@@ -2108,36 +2119,34 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return the <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a> instance of GameModule
+   * @return the <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a> instance of
+   *     GameModule
    */
   public static GameModule getGameModule() {
     return theModule;
   }
 
   /**
-   * Return the object responsible for tracking the state of a game.
-   * Only one game in progress is allowed;
+   * Return the object responsible for tracking the state of a game. Only one game in progress is
+   * allowed;
    */
   public GameState getGameState() {
     return theState;
   }
 
-  /**
-   * If the module is being edited, write the module data after prompting for a new filename.
-   */
+  /** If the module is being edited, write the module data after prompting for a new filename. */
   public void saveAs() {
     save(true);
   }
 
-  /**
-   * If the module is being edited, write the module data to the current filename
-   */
+  /** If the module is being edited, write the module data to the current filename */
   public void save() {
     save(false);
   }
 
   /**
    * If the module is being edited, write the module data
+   *
    * @param saveAs true to force display of a {@link FileChooser} to offer a new choice of filenames
    */
   private void save(boolean saveAs) {
@@ -2149,8 +2158,7 @@ public class GameModule extends AbstractConfigurable
 
     try {
       (new ModuleMetaData(this)).save(writer);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, writer.getName());
     }
 
@@ -2158,52 +2166,54 @@ public class GameModule extends AbstractConfigurable
       final String save = buildString();
       writer.addFile(BUILDFILE, save.getBytes(StandardCharsets.UTF_8));
 
-      writer.removeFile(BUILDFILE_OLD); // Don't leave old non-extension buildfile around if we successfully write the new one.
+      writer.removeFile(
+          BUILDFILE_OLD); // Don't leave old non-extension buildfile around if we successfully write
+      // the new one.
 
-      final boolean actuallyDidStuff = saveAs ? writer.saveAsButVerify(true) : writer.saveButVerify(true);
+      final boolean actuallyDidStuff =
+          saveAs ? writer.saveAsButVerify(true) : writer.saveButVerify(true);
       if (actuallyDidStuff) {
         lastSavedConfiguration = save;
-        warn(Resources.getString("Editor.GameModule.saved", writer.getArchive().getFile().getName()));
+        warn(
+            Resources.getString(
+                "Editor.GameModule.saved", writer.getArchive().getFile().getName()));
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.showError(
-        getPlayerWindow(),
-        e,
-        writer.getArchive().getFile(),
-        "Error.file_write_error" //NON-NLS
-      );
+          getPlayerWindow(), e, writer.getArchive().getFile(), "Error.file_write_error" // NON-NLS
+          );
     }
   }
 
   /**
    * Returns true if user has supplied a real name
    *
-   * Test's whether GameModule.REAL_NAME is non-empty and not "newbie"
+   * <p>Test's whether GameModule.REAL_NAME is non-empty and not "newbie"
    *
    * @return <code>true</code> if user supplied a real name
    */
   public boolean isRealName() {
-    final String name = (String)getPrefs().getValue(REAL_NAME);
+    final String name = (String) getPrefs().getValue(REAL_NAME);
     return name != null && !name.isEmpty() && !name.equals(Resources.getString("Prefs.newbie"));
   }
 
   /**
    * Returns true if user has supplied a real password for current GameModule.
    *
-   * Test's whether GameModule.SECRET_NAME is non-empty
+   * <p>Test's whether GameModule.SECRET_NAME is non-empty
    *
    * @return <code>true</code> if user supplied a real password
    */
   public boolean isNonBlankPassword() {
-    final String pwd = (String)getPrefs().getValue(SECRET_NAME);
+    final String pwd = (String) getPrefs().getValue(SECRET_NAME);
     return (pwd != null) && !pwd.isEmpty();
   }
 
-
   /**
-   * Gets the value of a module level global property -- this includes identification information for the
-   * local player as well as the contents of any Global Property objects defined at module level in the Module.
+   * Gets the value of a module level global property -- this includes identification information
+   * for the local player as well as the contents of any Global Property objects defined at module
+   * level in the Module.
+   *
    * @param key identifies the global property to be returned
    * @return value of designated global property
    */
@@ -2211,65 +2221,52 @@ public class GameModule extends AbstractConfigurable
   public Object getProperty(Object key) {
     if (GlobalOptions.PLAYER_SIDE.equals(key) || GlobalOptions.PLAYER_SIDE_ALT.equals(key)) {
       final String mySide = PlayerRoster.getMySide();
-      return mySide == null ? "" : mySide;  //$NON-NLS-1$
-    }
-    else if (GlobalOptions.PLAYER_NAME.equals(key) || GlobalOptions.PLAYER_NAME_ALT.equals(key)) {
+      return mySide == null ? "" : mySide; // $NON-NLS-1$
+    } else if (GlobalOptions.PLAYER_NAME.equals(key) || GlobalOptions.PLAYER_NAME_ALT.equals(key)) {
       return getPrefs().getValue(REAL_NAME);
-    }
-    else if (GlobalOptions.PLAYER_ID.equals(key) || GlobalOptions.PLAYER_ID_ALT.equals(key)) {
+    } else if (GlobalOptions.PLAYER_ID.equals(key) || GlobalOptions.PLAYER_ID_ALT.equals(key)) {
       return GlobalOptions.getInstance().getPlayerId();
-    }
-    else if (MODULE_NAME_PROPERTY.equals(key)) {
+    } else if (MODULE_NAME_PROPERTY.equals(key)) {
       return gameName;
-    }
-    else if (MODULE_VERSION_PROPERTY.equals(key)) {
+    } else if (MODULE_VERSION_PROPERTY.equals(key)) {
       return moduleVersion;
-    }
-    else if (MODULE_DESCRIPTION_PROPERTY.equals(key)) {
+    } else if (MODULE_DESCRIPTION_PROPERTY.equals(key)) {
       return description;
-    }
-    else if (MODULE_VASSAL_VERSION_CREATED_PROPERTY.equals(key)) {
+    } else if (MODULE_VASSAL_VERSION_CREATED_PROPERTY.equals(key)) {
       return vassalVersionCreated;
-    }
-    else if (MODULE_VASSAL_VERSION_RUNNING_PROPERTY.equals(key)) {
+    } else if (MODULE_VASSAL_VERSION_RUNNING_PROPERTY.equals(key)) {
       return Info.getVersion();
-    }
-    else if (MODULE_OTHER1_PROPERTY.equals(key)) {
+    } else if (MODULE_OTHER1_PROPERTY.equals(key)) {
       return moduleOther1;
-    }
-    else if (MODULE_OTHER2_PROPERTY.equals(key)) {
+    } else if (MODULE_OTHER2_PROPERTY.equals(key)) {
       return moduleOther2;
-    }
-    else if (MODULE_CURRENT_LOCALE.equals(key)) {
+    } else if (MODULE_CURRENT_LOCALE.equals(key)) {
       return Resources.getLocale().getLanguage();
-    }
-    else if (MODULE_CURRENT_LOCALE_NAME.equals(key)) {
+    } else if (MODULE_CURRENT_LOCALE_NAME.equals(key)) {
       return Resources.getLocale().getDisplayName();
-    }
-    else if (GAME_FILENAME_PROPERTY.equals(key)) {
+    } else if (GAME_FILENAME_PROPERTY.equals(key)) {
       return gameFile;
-    }
-    else if (DRAWING_MOUSEOVER_PROPERTY.equals(key)) {
+    } else if (DRAWING_MOUSEOVER_PROPERTY.equals(key)) {
       return CounterDetailViewer.isDrawingMouseOver();
-    }
-    else if (DRAWING_MOUSEOVER_INDEX_PROPERTY.equals(key)) {
+    } else if (DRAWING_MOUSEOVER_INDEX_PROPERTY.equals(key)) {
       return CounterDetailViewer.isDrawingMouseOver() ? "2" : "1";
-    }
-    else if (GAME_FILENAME_PROPERTY.equals(key)) {
+    } else if (GAME_FILENAME_PROPERTY.equals(key)) {
       return gameFile;
-    }
-    else if (UI_PIECE_COUNT.equals(key)) {
+    } else if (UI_PIECE_COUNT.equals(key)) {
       return String.valueOf(getUiPieceCount());
-    }
-    else if (UI_PIECE_INDEX.equals(key)) {
+    } else if (UI_PIECE_INDEX.equals(key)) {
       return String.valueOf(getUiPieceIndex());
     }
 
-    //BR// MapName_isVisible property for each map window
-    if (((String)key).endsWith(IS_VISIBLE)) {
+    // BR// MapName_isVisible property for each map window
+    if (((String) key).endsWith(IS_VISIBLE)) {
       for (final Map map : Map.getMapList()) {
-        if ((map.getConfigureName() + IS_VISIBLE).equals(key) || (map.getConfigureName().replace(' ', '_') + IS_VISIBLE).equals(key)) {
-          final Container tla = (map.getComponent() != null) ? ((JPanel) map.getComponent()).getTopLevelAncestor() : null;
+        if ((map.getConfigureName() + IS_VISIBLE).equals(key)
+            || (map.getConfigureName().replace(' ', '_') + IS_VISIBLE).equals(key)) {
+          final Container tla =
+              (map.getComponent() != null)
+                  ? ((JPanel) map.getComponent()).getTopLevelAncestor()
+                  : null;
           return String.valueOf(tla != null && tla.isShowing());
         }
       }
@@ -2285,20 +2282,15 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Refresh the visible portions of all currently showing maps.
-   * This is called in when the following are completed:
-   *  - Any right-click menu option on a piece
-   *  - Any Toolbar button action
-   *  - Any Toolbar Menu item selection
-   *  - Each Step replay from a log file
-   *  - Each Undo
-   *  - Each time a counter or stack is drag'n'dropped
-   *  - Each message received during on-line play
-   *  - Any click on an Action Button
+   * Refresh the visible portions of all currently showing maps. This is called in when the
+   * following are completed: - Any right-click menu option on a piece - Any Toolbar button action -
+   * Any Toolbar Menu item selection - Each Step replay from a log file - Each Undo - Each time a
+   * counter or stack is drag'n'dropped - Each message received during on-line play - Any click on
+   * an Action Button
    *
-   *  These eight actions can cause changes that result in text displaying Calculated properties and Beanshell expressions
-   *  to change in places unrelated to where the action occurred, leaving these counters out of sync until a later click
-   *  in their general area.
+   * <p>These eight actions can cause changes that result in text displaying Calculated properties
+   * and Beanshell expressions to change in places unrelated to where the action occurred, leaving
+   * these counters out of sync until a later click in their general area.
    */
   public final void refreshVisibleMaps() {
     for (final Map map : Map.getMapList()) {
@@ -2307,16 +2299,16 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * The count of pieces that are currently being acted on as part of a UI gesture instigated by this client.
-   * Will be 0 if a multi-piece UI gesture is not underway
-   *   - Right-click menu option on a counter(s)
-   *   - Key-pressed while piece(s) are selected
-   *   - Apply after Move Key being applied after a Drag'n'Drop move
+   * The count of pieces that are currently being acted on as part of a UI gesture instigated by
+   * this client. Will be 0 if a multi-piece UI gesture is not underway - Right-click menu option on
+   * a counter(s) - Key-pressed while piece(s) are selected - Apply after Move Key being applied
+   * after a Drag'n'Drop move
    */
   private int uiPieceCount;
 
   /**
-   * The index (starting at 1) of the piece currently being processed as part of a multi-piece UI gesture
+   * The index (starting at 1) of the piece currently being processed as part of a multi-piece UI
+   * gesture
    */
   private int uiPieceIndex;
 
@@ -2331,8 +2323,10 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * A multi-piece UI gesture is starting. Record the number of pieces to be processed and reset the counter.
-   * @param pieceCount  Number of pieces to be processed
+   * A multi-piece UI gesture is starting. Record the number of pieces to be processed and reset the
+   * counter.
+   *
+   * @param pieceCount Number of pieces to be processed
    */
   public final void initializeUiPieceProcessing(int pieceCount) {
     uiPieceCount = pieceCount;
@@ -2375,29 +2369,31 @@ public class GameModule extends AbstractConfigurable
   private boolean buttonLabelUpdateScheduled = false;
 
   /**
-   * A property has changed somewhere, so we need to redraw all the toolbar buttons that use properties
+   * A property has changed somewhere, so we need to redraw all the toolbar buttons that use
+   * properties
    */
   public void updateMutableButtonLabels() {
     if (!isMutableButtonLabelSupport() || buttonLabelUpdateScheduled) return;
 
     buttonLabelUpdateScheduled = true;
 
-    SwingUtilities.invokeLater(() -> {
-        buttonLabelUpdateScheduled = false;
+    SwingUtilities.invokeLater(
+        () -> {
+          buttonLabelUpdateScheduled = false;
 
-        updateToolbarButtons();
+          updateToolbarButtons();
 
-        for (final Map map : Map.getMapList()) {
-          map.updateToolbarButtons();
-        }
-      }
-    );
+          for (final Map map : Map.getMapList()) {
+            map.updateToolbarButtons();
+          }
+        });
   }
 
-
   /**
-   * Gets the value of a mutable (changeable) "Global Property". Module level Global Properties serve as the
-   * "global variables" of a VASSAL Module, as they are accessible by any component at any time.
+   * Gets the value of a mutable (changeable) "Global Property". Module level Global Properties
+   * serve as the "global variables" of a VASSAL Module, as they are accessible by any component at
+   * any time.
+   *
    * @param name identifies the Global Property whose value should be returned
    * @return value of designated global property
    */
@@ -2412,8 +2408,10 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * Adds a new mutable (changeable) "Global Property" to the Module. Module level Global Properties serve as the
-   * "global variables" of a VASSAL Module, as they are accessible by any component at any time.
+   * Adds a new mutable (changeable) "Global Property" to the Module. Module level Global Properties
+   * serve as the "global variables" of a VASSAL Module, as they are accessible by any component at
+   * any time.
+   *
    * @param key Name for the new Global Property
    * @param p Starting property value
    */
@@ -2430,6 +2428,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Removes a mutable property from the Global Properties list.
+   *
    * @param key Name of the Global Property
    * @return the removed property, for some reason.
    */
@@ -2452,25 +2451,25 @@ public class GameModule extends AbstractConfigurable
    */
   @Override
   public String getMutablePropertiesContainerId() {
-    return "Module"; //NON-NLS-$1
+    return "Module"; // NON-NLS-$1
   }
 
   @Override
   public String getTranslatableStringContainerId() {
-    return "Module"; //NON-NLS
+    return "Module"; // NON-NLS
   }
 
   /**
    * @param key Name of the property to get the value of
-   * @return Localized/translated name of the named property, if one is available, otherwise returns the non-localized name
+   * @return Localized/translated name of the named property, if one is available, otherwise returns
+   *     the non-localized name
    */
   @Override
   public Object getLocalizedProperty(Object key) {
     if (GlobalOptions.PLAYER_SIDE.equals(key) || GlobalOptions.PLAYER_SIDE_ALT.equals(key)) {
       final String mySide = PlayerRoster.getMyLocalizedSide();
-      return mySide == null ? "" : mySide;  //$NON-NLS-1$
-    }
-    else {
+      return mySide == null ? "" : mySide; // $NON-NLS-1$
+    } else {
       return getProperty(key);
     }
   }
@@ -2500,9 +2499,7 @@ public class GameModule extends AbstractConfigurable
     return combinedCrc;
   }
 
-  /**
-   * A cumulative CRC from all of our files
-   */
+  /** A cumulative CRC from all of our files */
   private void buildCrc() {
     final List<File> files = new ArrayList<>();
     if (getDataArchive().getArchive() != null) {
@@ -2521,7 +2518,8 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return the object containing the internationalization/localization information for this component
+   * @return the object containing the internationalization/localization information for this
+   *     component
    */
   @Override
   public ComponentI18nData getI18nData() {
@@ -2531,17 +2529,16 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
-   * @return the {@link PlayerRoster} instance, or <code>null</code> if no {@link PlayerRoster} exists
-   * within this {@link GameModule}
+   * @return the {@link PlayerRoster} instance, or <code>null</code> if no {@link PlayerRoster}
+   *     exists within this {@link GameModule}
    */
   public PlayerRoster getPlayerRoster() {
-    return getComponentsOf(PlayerRoster.class).stream()
-                                              .findFirst()
-                                              .orElse(null);
+    return getComponentsOf(PlayerRoster.class).stream().findFirst().orElse(null);
   }
 
   /**
    * Adds listener for players changing sides
+   *
    * @param l new SideChangeListener
    */
   public void addSideChangeListenerToPlayerRoster(PlayerRoster.SideChangeListener l) {
@@ -2555,6 +2552,7 @@ public class GameModule extends AbstractConfigurable
 
   /**
    * Removes listener for players changing sides
+   *
    * @param l old SideChangeListener
    */
   public void removeSideChangeListenerFromPlayerRoster(PlayerRoster.SideChangeListener l) {

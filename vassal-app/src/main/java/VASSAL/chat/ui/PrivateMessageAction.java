@@ -17,22 +17,18 @@
  */
 package VASSAL.chat.ui;
 
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JTree;
-
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.Player;
 import VASSAL.chat.PrivateChatManager;
 import VASSAL.chat.PrivateChatter;
 import VASSAL.chat.SimplePlayer;
 import VASSAL.i18n.Resources;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JTree;
 
-/**
- * When invoked, will open a private message window to another player
- */
+/** When invoked, will open a private message window to another player */
 public class PrivateMessageAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -40,13 +36,10 @@ public class PrivateMessageAction extends AbstractAction {
   private final PrivateChatManager mgr;
 
   public PrivateMessageAction(Player p, ChatServerConnection client, PrivateChatManager mgr) {
-    super(Resources.getString("Chat.private_msg")); //$NON-NLS-1$
+    super(Resources.getString("Chat.private_msg")); // $NON-NLS-1$
     this.p = p;
     this.mgr = mgr;
-    setEnabled(p != null
-      && client != null
-      && mgr != null
-      && !p.equals(client.getUserInfo()));
+    setEnabled(p != null && client != null && mgr != null && !p.equals(client.getUserInfo()));
   }
 
   @Override
@@ -54,15 +47,18 @@ public class PrivateMessageAction extends AbstractAction {
     final PrivateChatter chat = mgr.getChatterFor(p);
     // Chat is null of other player is ignoring us.
     if (chat != null) {
-      final Window f = (Window)chat.getTopLevelAncestor();
-      f.setAutoRequestFocus(false); //BR// Don't force focus whenever we receive a message.
+      final Window f = (Window) chat.getTopLevelAncestor();
+      f.setAutoRequestFocus(false); // BR// Don't force focus whenever we receive a message.
       f.setVisible(true);
       f.toFront();
-      chat.getInputField().requestFocus(); //BR// But *do* request focus right now, when we are open the thing ourselves.
+      chat.getInputField()
+          .requestFocus(); // BR// But *do* request focus right now, when we are open the thing
+      // ourselves.
     }
   }
 
-  public static PlayerActionFactory factory(final ChatServerConnection client, final PrivateChatManager chatMgr) {
+  public static PlayerActionFactory factory(
+      final ChatServerConnection client, final PrivateChatManager chatMgr) {
     return (SimplePlayer p, JTree tree) -> new PrivateMessageAction(p, client, chatMgr);
   }
 }

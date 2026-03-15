@@ -20,9 +20,8 @@ package VASSAL.property;
 import java.util.List;
 
 /**
- * An interface for handling {@link PropertyListener}s.
- * {@link PropertyContainer}s may delegate listener handling to instances
- * of this class.
+ * An interface for handling {@link PropertyListener}s. {@link PropertyContainer}s may delegate
+ * listener handling to instances of this class.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -62,8 +61,7 @@ public interface PropertySupport {
    * @param prop the {@link Property} to listen on
    * @param listener the listener to add
    */
-  <T> void addPropertyListener(Property<T> prop,
-                               PropertyListener<? super T> listener);
+  <T> void addPropertyListener(Property<T> prop, PropertyListener<? super T> listener);
 
   /**
    * Removes a listener for a specific {@link Property}.
@@ -71,12 +69,10 @@ public interface PropertySupport {
    * @param prop the {@link Property} listened on
    * @param listener the listener to remove
    */
-  <T> void removePropertyListener(Property<T> prop,
-                                  PropertyListener<? super T> listener);
+  <T> void removePropertyListener(Property<T> prop, PropertyListener<? super T> listener);
 
   /**
-   * Returns a list of {@link PropertyListener}s listening to a given
-   * {@link Property}.
+   * Returns a list of {@link PropertyListener}s listening to a given {@link Property}.
    *
    * @param prop the {@link Property} listened on
    * @return a list of listeners
@@ -84,8 +80,7 @@ public interface PropertySupport {
   <T> List<PropertyListener<? super T>> getPropertyListeners(Property<T> prop);
 
   /**
-   * Checks whether there are {@link PropertyListener}s for a given
-   * {@link Property}.
+   * Checks whether there are {@link PropertyListener}s for a given {@link Property}.
    *
    * @return {@code true} if there are listeners for the given property
    */

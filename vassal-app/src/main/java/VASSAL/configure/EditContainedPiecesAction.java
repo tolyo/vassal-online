@@ -17,19 +17,15 @@
  */
 package VASSAL.configure;
 
+import VASSAL.build.Configurable;
 import VASSAL.build.widget.PieceSlot;
+import VASSAL.counters.MassPieceDefiner;
+import VASSAL.i18n.Resources;
 import java.awt.event.ActionEvent;
-
 import java.util.Arrays;
 import javax.swing.AbstractAction;
 
-import VASSAL.build.Configurable;
-import VASSAL.counters.MassPieceDefiner;
-import VASSAL.i18n.Resources;
-
-/**
- * Action to edit all {@link VASSAL.counters.GamePiece}'s within a given component
- */
+/** Action to edit all {@link VASSAL.counters.GamePiece}'s within a given component */
 public class EditContainedPiecesAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -39,7 +35,8 @@ public class EditContainedPiecesAction extends AbstractAction {
   public EditContainedPiecesAction(Configurable target) {
     super(Resources.getString("Editor.EditContainedPiecesAction.what_it_does"));
     this.target = target;
-    setEnabled(Arrays.stream(target.getConfigureComponents()).anyMatch(c -> c instanceof PieceSlot));
+    setEnabled(
+        Arrays.stream(target.getConfigureComponents()).anyMatch(c -> c instanceof PieceSlot));
   }
 
   public EditContainedPiecesAction(Configurable target, ConfigureTree tree) {
@@ -50,26 +47,25 @@ public class EditContainedPiecesAction extends AbstractAction {
   @Override
   public void actionPerformed(ActionEvent evt) {
     final MassPieceDefiner mass = new MassPieceDefiner(target, tree);
-    final Configurer c = new Configurer("", "") {
-      @Override
-      public void setValue(String s) {
-      }
+    final Configurer c =
+        new Configurer("", "") {
+          @Override
+          public void setValue(String s) {}
 
-      @Override
-      public java.awt.Component getControls() {
-        return mass;
-      }
+          @Override
+          public java.awt.Component getControls() {
+            return mass;
+          }
 
-      @Override
-      public String getValueString() {
-        return "";
-      }
-    };
-    final ConfigurerWindow w =  new ConfigurerWindow(c);
+          @Override
+          public String getValueString() {
+            return "";
+          }
+        };
+    final ConfigurerWindow w = new ConfigurerWindow(c);
     w.setVisible(true);
-    if (! w.isCancelled() && mass.isChanged()) {
+    if (!w.isCancelled() && mass.isChanged()) {
       mass.save();
     }
   }
-
 }

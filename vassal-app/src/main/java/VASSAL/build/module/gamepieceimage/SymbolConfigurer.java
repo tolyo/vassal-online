@@ -19,13 +19,13 @@
 package VASSAL.build.module.gamepieceimage;
 
 import VASSAL.i18n.Resources;
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
@@ -33,8 +33,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-
-import VASSAL.tools.image.ImageUtils;
 
 public class SymbolConfigurer extends StringEnumConfigurer {
 
@@ -96,28 +94,33 @@ public class SymbolConfigurer extends StringEnumConfigurer {
        * value and returns the label, set up to display the text and image.
        */
       @Override
-      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-          boolean cellHasFocus) {
+      public Component getListCellRendererComponent(
+          JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (isSelected) {
           setBackground(list.getSelectionBackground());
           setForeground(list.getSelectionForeground());
-        }
-        else {
+        } else {
           setBackground(list.getBackground());
           setForeground(list.getForeground());
         }
 
-        final BufferedImage img =
-          ImageUtils.createCompatibleTranslucentImage(sample_w, sample_h);
+        final BufferedImage img = ImageUtils.createCompatibleTranslucentImage(sample_w, sample_h);
         final Graphics2D g = img.createGraphics();
 
         final String symbol1 = (String) value;
         final String symbol2 = Symbol.NatoUnitSymbolSet.NONE;
         final Rectangle bounds = new Rectangle(0, 0, sample_w - 1, sample_h - 1);
         Symbol.NatoUnitSymbolSet.draw(
-          symbol1, symbol2, g, bounds,
-          Color.BLACK, Color.WHITE, Color.BLACK, 1.0f, ""); //$NON-NLS-1$
+            symbol1,
+            symbol2,
+            g,
+            bounds,
+            Color.BLACK,
+            Color.WHITE,
+            Color.BLACK,
+            1.0f,
+            ""); //$NON-NLS-1$
         g.dispose();
 
         setIcon(new ImageIcon(img));

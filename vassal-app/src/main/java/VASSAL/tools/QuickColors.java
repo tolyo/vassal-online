@@ -27,10 +27,13 @@ public class QuickColors {
   public static final String QUICK_COLOR_CODES = "|!?~`"; // Our quick color code characters
   public static final int QUICK_COLOR_NONE = -1; // If no code
 
-  public static final String[] QUICK_COLOR_REGEX = { "\\|", "!", "\\?", "~", "`" }; // Regex searchers for each of our codes
+  public static final String[] QUICK_COLOR_REGEX = {
+    "\\|", "!", "\\?", "~", "`"
+  }; // Regex searchers for each of our codes
 
   /**
    * Checks if a character is a Quick Color code
+   *
    * @param c Character to check if it's a Quick Color code
    * @return Index of Quick Color code, or -1 if none
    */
@@ -40,6 +43,7 @@ public class QuickColors {
 
   /**
    * Checks if the string begins with a Quick Color code
+   *
    * @param s String to check first non-space character of
    * @return Index of Quick Color code, or -1 if none
    */
@@ -52,6 +56,7 @@ public class QuickColors {
 
   /**
    * Checks if the string begins with a Quick Color code (possibly after a prefix)
+   *
    * @param s String to check first non-space-character-after-the-prefix
    * @param prefix Prefix to ignore (e.g. "*" at the beginning of Game Messages sent to the Chatter)
    * @return Index of Quick Color code, or -1 if none
@@ -69,6 +74,7 @@ public class QuickColors {
 
   /**
    * Strips the Quick Color tag from a string if any, readying it for display
+   *
    * @param s String to strip Quick Color tag from
    * @return the string minus the Quick Color tag, if one was present
    */
@@ -78,6 +84,7 @@ public class QuickColors {
 
   /**
    * Strips the Quick Color tag from a string if any, readying it for display
+   *
    * @param s String to strip Quick Color tag from
    * @param prefix Prefix to ignore (e.g. "*" at the beginning of Game Messages sent to the Chatter)
    * @return the string minus the Quick Color tag, if one was present
@@ -89,7 +96,9 @@ public class QuickColors {
   }
 
   /**
-   * Returns the proper CSS class name to be used to display the string, based on Quick Color (or lack thereof)
+   * Returns the proper CSS class name to be used to display the string, based on Quick Color (or
+   * lack thereof)
+   *
    * @param s String to be checked
    * @return CSS class name to be used to display it
    */
@@ -98,13 +107,15 @@ public class QuickColors {
   }
 
   /**
-   * Returns the proper CSS class name to be used to display the string, based on Quick Color (or lack thereof)
+   * Returns the proper CSS class name to be used to display the string, based on Quick Color (or
+   * lack thereof)
+   *
    * @param s String to be checked
    * @param prefix Prefix to ignore (e.g. "*" at the beginning of Game Messages sent to the Chatter)
    * @return CSS class name to be used to display it
    */
   public static String getQuickColorHTMLStyle(String s, String prefix) {
     final int quickIndex = getQuickColor(s, prefix);
-    return "msg" + ((quickIndex <= 0) ? "" : quickIndex + 1); //NON-NLS
+    return "msg" + ((quickIndex <= 0) ? "" : quickIndex + 1); // NON-NLS
   }
 }

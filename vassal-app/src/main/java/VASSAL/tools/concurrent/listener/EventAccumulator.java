@@ -18,14 +18,12 @@
 
 package VASSAL.tools.concurrent.listener;
 
+import VASSAL.tools.lang.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import VASSAL.tools.lang.Pair;
-
 /**
- * An {@link EventListener} which accumulates the events it receives into
- * a {@link java.util.List}.
+ * An {@link EventListener} which accumulates the events it receives into a {@link java.util.List}.
  *
  * @since 3.2.0
  * @author Joel Uckelman

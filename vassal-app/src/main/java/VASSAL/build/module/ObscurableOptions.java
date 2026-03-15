@@ -17,48 +17,48 @@
  */
 package VASSAL.build.module;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.configure.BooleanConfigurer;
 import VASSAL.configure.Configurer;
 import VASSAL.tools.SequenceEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Determines whether players are allowed to unmask other players pieces.  The module designer may
- * set the option to always on, always off, or let the players determine it with a Preferences setting.
+ * Determines whether players are allowed to unmask other players pieces. The module designer may
+ * set the option to always on, always off, or let the players determine it with a Preferences
+ * setting.
  */
 public class ObscurableOptions implements CommandEncoder, GameComponent {
   private static final ObscurableOptions instance = new ObscurableOptions();
 
-  public static final String COMMAND_ID = "UNMASK\t"; //$NON-NLS-1$
-  public static final String PREFS_KEY = "OpponentUnmaskable"; //$NON-NLS-1$
+  public static final String COMMAND_ID = "UNMASK\t"; // $NON-NLS-1$
+  public static final String PREFS_KEY = "OpponentUnmaskable"; // $NON-NLS-1$
   private List<String> allowed = new ArrayList<>();
   private Boolean override;
 
-  private ObscurableOptions() {
-  }
+  private ObscurableOptions() {}
 
   /**
-   * Create a private set of ObscurableOptions. If no setting are passed,
-   * use the current global settings.
+   * Create a private set of ObscurableOptions. If no setting are passed, use the current global
+   * settings.
+   *
    * @param settings encoded settings
    */
   public ObscurableOptions(String settings) {
     this();
     if (settings != null && settings.length() > 0) {
       decodeOptions(settings);
-    }
-    else {
+    } else {
       decodeOptions(getInstance().encodeOptions());
     }
   }
 
   /**
    * Return the current global ObscurableOptions
+   *
    * @return global Options
    */
   public static ObscurableOptions getInstance() {
@@ -68,40 +68,38 @@ public class ObscurableOptions implements CommandEncoder, GameComponent {
   public void allowSome(String preferencesPrompt) {
     final Configurer c = new BooleanConfigurer(PREFS_KEY, preferencesPrompt);
     GameModule.getGameModule().getPrefs().addOption(c);
-    c.addPropertyChangeListener(evt -> {
-      if (Boolean.TRUE.equals(evt.getNewValue())) {
-        getInstance().allow(GameModule.getActiveUserId());
-        final String side = PlayerRoster.getMySide();
-        if (side != null) {
-          getInstance().allow(side);
-        }
-      }
-      else {
-        getInstance().disallow(GameModule.getActiveUserId());
-        final String side = PlayerRoster.getMySide();
-        if (side != null) {
-          getInstance().disallow(side);
-        }
-      }
-      GameModule.getGameModule()
-                .getServer().sendToOthers(new SetAllowed(instance.allowed));
-    });
+    c.addPropertyChangeListener(
+        evt -> {
+          if (Boolean.TRUE.equals(evt.getNewValue())) {
+            getInstance().allow(GameModule.getActiveUserId());
+            final String side = PlayerRoster.getMySide();
+            if (side != null) {
+              getInstance().allow(side);
+            }
+          } else {
+            getInstance().disallow(GameModule.getActiveUserId());
+            final String side = PlayerRoster.getMySide();
+            if (side != null) {
+              getInstance().disallow(side);
+            }
+          }
+          GameModule.getGameModule().getServer().sendToOthers(new SetAllowed(instance.allowed));
+        });
     if (Boolean.TRUE.equals(c.getValue())) {
       allow(GameModule.getActiveUserId());
-    }
-    else {
+    } else {
       disallow(GameModule.getActiveUserId());
     }
   }
 
   /**
-   * Set the text accompanying the "Allow opponent to unmask" control in the Preferences
-   * No longer required with new Configurers. Caused double-up label in config display.
+   * Set the text accompanying the "Allow opponent to unmask" control in the Preferences No longer
+   * required with new Configurers. Caused double-up label in config display.
+   *
    * @deprecated No replacement
    */
   @Deprecated(since = "2020-10-27", forRemoval = true)
-  public void setPrompt(String preferencesPrompt) {
-  }
+  public void setPrompt(String preferencesPrompt) {}
 
   public void allowAll() {
     override = Boolean.TRUE;
@@ -152,14 +150,14 @@ public class ObscurableOptions implements CommandEncoder, GameComponent {
 
   /**
    * Encode the current ObscurableOptions as a String
+   *
    * @return encoded options
    */
   public String encodeOptions() {
     final SequenceEncoder se = new SequenceEncoder('|');
     if (override == null) {
       se.append("");
-    }
-    else {
+    } else {
       se.append(override);
     }
     se.append(allowed.size());
@@ -172,21 +170,21 @@ public class ObscurableOptions implements CommandEncoder, GameComponent {
 
   /**
    * Set the current options from an encoded string
+   *
    * @param s encoded string
    */
   public void decodeOptions(String s) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s, '|');
-    String setting = sd.nextToken(""); //NON-NLS
+    String setting = sd.nextToken(""); // NON-NLS
     if (setting.length() == 0) {
       override = null;
-    }
-    else {
-      override = setting.equals("true"); //NON-NLS
+    } else {
+      override = setting.equals("true"); // NON-NLS
     }
     final int count = sd.nextInt(0);
     allowed.clear();
     for (int i = 0; i < count; i++) {
-      setting = sd.nextToken(""); //NON-NLS
+      setting = sd.nextToken(""); // NON-NLS
       if (setting.length() > 0) {
         allowed.add(setting);
       }
@@ -202,16 +200,13 @@ public class ObscurableOptions implements CommandEncoder, GameComponent {
   public void setup(boolean gameStarting) {
     if (!gameStarting) {
       allowed.clear();
-    }
-    else if (Boolean.TRUE.equals(
-               GameModule.getGameModule().getPrefs().getValue(PREFS_KEY))) {
+    } else if (Boolean.TRUE.equals(GameModule.getGameModule().getPrefs().getValue(PREFS_KEY))) {
       allow(GameModule.getActiveUserId());
     }
   }
 
   /**
-   * @return true if pieces belonging to the given id are unmaskable by
-   * other players
+   * @return true if pieces belonging to the given id are unmaskable by other players
    */
   public boolean isUnmaskable(String id) {
     return override != null ? override : allowed.contains(id);

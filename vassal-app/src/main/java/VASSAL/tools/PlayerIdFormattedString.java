@@ -20,11 +20,13 @@ package VASSAL.tools;
 import VASSAL.build.GameModule;
 
 /**
- * Utility subclass of {@link FormattedString} which automatically includes
- * variables for Player name, side, and id
+ * Utility subclass of {@link FormattedString} which automatically includes variables for Player
+ * name, side, and id
+ *
  * @deprecated use FormattedString constructor with defaultProperties
  */
-@Deprecated public class PlayerIdFormattedString extends FormattedString {
+@Deprecated
+public class PlayerIdFormattedString extends FormattedString {
   public PlayerIdFormattedString() {
     this("");
   }

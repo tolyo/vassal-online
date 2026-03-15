@@ -21,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,8 +45,7 @@ public class KeySpecifier extends JPanel implements KeyListener {
 
   @Override
   public void addFocusListener(FocusListener l) {
-    if (tf != null)
-      tf.addFocusListener(l);
+    if (tf != null) tf.addFocusListener(l);
   }
 
   public void addActionListener(ActionListener l) {
@@ -55,20 +53,16 @@ public class KeySpecifier extends JPanel implements KeyListener {
   }
 
   @Override
-  public void keyPressed(KeyEvent e) {
-  }
+  public void keyPressed(KeyEvent e) {}
 
   @Override
-  public void keyTyped(KeyEvent e) {
-  }
+  public void keyTyped(KeyEvent e) {}
 
   @Override
   public void keyReleased(KeyEvent e) {
-    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE
-      || e.getKeyCode() == KeyEvent.VK_DELETE) {
+    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
       key = key.length() < 1 ? "" : key.substring(0, key.length() - 1);
-    }
-    else if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
+    } else if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
       //    key = tf.getText().trim().length() == 0 ?
       //        " " : key+(char)e.getKeyCode();
       key += (char) e.getKeyCode();
@@ -84,8 +78,7 @@ public class KeySpecifier extends JPanel implements KeyListener {
   public void setKey(char c) {
     if (Character.isDefined(c)) {
       setKey(String.valueOf(c));
-    }
-    else {
+    } else {
       setKey("");
     }
   }
@@ -100,5 +93,3 @@ public class KeySpecifier extends JPanel implements KeyListener {
     super.setEnabled(enable);
   }
 }
-
-

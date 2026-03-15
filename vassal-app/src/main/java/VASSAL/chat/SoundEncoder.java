@@ -25,21 +25,18 @@ import VASSAL.configure.SoundConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
 import VASSAL.tools.SequenceEncoder;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JOptionPane;
 
 /**
- * Encodes commands that play sounds
- * This class is used exclusively by the 'Send wake-up' server feature.
- * Limit the number of wake-ups we will respond to in a row from the same player
- * before querying if we want to ignore them in future.
- * Wait at least 5 seconds before responding to a new wake-up.
+ * Encodes commands that play sounds This class is used exclusively by the 'Send wake-up' server
+ * feature. Limit the number of wake-ups we will respond to in a row from the same player before
+ * querying if we want to ignore them in future. Wait at least 5 seconds before responding to a new
+ * wake-up.
  */
 public class SoundEncoder implements CommandEncoder {
-  public static final String COMMAND_PREFIX = "PLAY\t"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "PLAY\t"; // $NON-NLS-1$
   private final PlayerEncoder playerEncoder;
 
   public SoundEncoder(PlayerEncoder p) {
@@ -54,7 +51,7 @@ public class SoundEncoder implements CommandEncoder {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(command, '\t');
     sd.nextToken();
     final String soundKey = sd.nextToken();
-    final Player sender = playerEncoder.stringToPlayer(sd.nextToken("")); //$NON-NLS-1$
+    final Player sender = playerEncoder.stringToPlayer(sd.nextToken("")); // $NON-NLS-1$
     return new Cmd(soundKey, sender);
   }
 
@@ -108,20 +105,18 @@ public class SoundEncoder implements CommandEncoder {
         }
         if (sender.equals(lastSender)) {
           if (sendCount++ >= TOO_MANY) {
-            if (JOptionPane.YES_OPTION ==
-              JOptionPane.showConfirmDialog(
-                GameModule.getGameModule().getPlayerWindow(),
-                Resources.getString("Chat.ignore_wakeups", sender.getName()), //$NON-NLS-1$
-                null,
-                JOptionPane.YES_NO_OPTION)) {
+            if (JOptionPane.YES_OPTION
+                == JOptionPane.showConfirmDialog(
+                    GameModule.getGameModule().getPlayerWindow(),
+                    Resources.getString("Chat.ignore_wakeups", sender.getName()), // $NON-NLS-1$
+                    null,
+                    JOptionPane.YES_NO_OPTION)) {
               banned.add(sender);
-            }
-            else {
+            } else {
               sendCount = 1;
             }
           }
-        }
-        else {
+        } else {
           lastSender = sender;
           sendCount = 1;
         }

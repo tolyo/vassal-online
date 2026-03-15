@@ -20,14 +20,14 @@ package VASSAL.tools.imports.adc2;
 import VASSAL.tools.filechooser.ExtensionFileFilter;
 
 /**
- * A {@link VASSAL.tools.filechooser.FileFilter} for ADC2 map boards. Used by file choosers to filter
- * out files which are not Aide de Camp 2 map boards.
+ * A {@link VASSAL.tools.filechooser.FileFilter} for ADC2 map boards. Used by file choosers to
+ * filter out files which are not Aide de Camp 2 map boards.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public class MapBoardFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".map" };
+  public static final String[] types = {".map"};
 
   public MapBoardFileFilter() {
     super("ADC2 Map Boards", types);

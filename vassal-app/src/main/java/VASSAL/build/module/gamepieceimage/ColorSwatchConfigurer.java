@@ -17,21 +17,19 @@
  */
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.ColorConfigurer;
+import VASSAL.configure.Configurer;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ItemListener;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import VASSAL.configure.ColorConfigurer;
-import VASSAL.configure.Configurer;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.SequenceEncoder;
 
 public class ColorSwatchConfigurer extends Configurer {
 
@@ -61,7 +59,7 @@ public class ColorSwatchConfigurer extends Configurer {
   @Override
   public String getValueString() {
     return "";
-  } //NON-NLS
+  } // NON-NLS
 
   public Color getValueColor() {
     return ((ColorSwatch) value).getColor();
@@ -87,19 +85,21 @@ public class ColorSwatchConfigurer extends Configurer {
       p.add(box);
 
       colorBox = Box.createHorizontalBox();
-      config = new ColorConfigurer("", Resources.getString("Editor.ColorSwatchConfigurer.select_color")); //$NON-NLS-1$
-      config.addPropertyChangeListener(e -> {
-        final Color c = (Color) config.getValue();
-        final ColorSwatch cs = ColorManager.getColorManager().getColorSwatch(c);
-        setValue(cs);
-        buildSwatches();
-        updateValue();
-      });
+      config =
+          new ColorConfigurer(
+              "", Resources.getString("Editor.ColorSwatchConfigurer.select_color")); // $NON-NLS-1$
+      config.addPropertyChangeListener(
+          e -> {
+            final Color c = (Color) config.getValue();
+            final ColorSwatch cs = ColorManager.getColorManager().getColorSwatch(c);
+            setValue(cs);
+            buildSwatches();
+            updateValue();
+          });
       colorBox.add(config.getControls());
       p.add(colorBox);
 
       repack();
-
     }
     return p;
   }
@@ -117,15 +117,13 @@ public class ColorSwatchConfigurer extends Configurer {
 
     swatches = new SwatchComboBox(l, ((ColorSwatch) value).getConfigureName());
     swatchPanel.add(swatches);
-
   }
 
   protected void updateValue() {
     final String s = (String) swatches.getSelectedItem();
     if (ColorManager.SELECT_COLOR.equals(s)) {
       setValue(ColorManager.getColorManager().getColorSwatch((Color) config.getValue()));
-    }
-    else {
+    } else {
       setValue(ColorManager.getColorManager().getColorSwatch(s));
     }
     repack();
@@ -133,7 +131,8 @@ public class ColorSwatchConfigurer extends Configurer {
 
   @Override
   protected void repack() {
-    colorBox.setVisible(((ColorSwatch) getValue()).getConfigureName().equals(ColorManager.SELECT_COLOR));
+    colorBox.setVisible(
+        ((ColorSwatch) getValue()).getConfigureName().equals(ColorManager.SELECT_COLOR));
     final Window w = SwingUtilities.getWindowAncestor(colorBox);
     if (w != null) {
       w.pack();

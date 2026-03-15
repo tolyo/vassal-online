@@ -22,27 +22,25 @@ import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 
-/**
- * Grabs errorlog output and displays it in the Chatter.
- */
+/** Grabs errorlog output and displays it in the Chatter. */
 public class ConsoleAppender extends AppenderBase<ILoggingEvent> {
   PatternLayout patternLayout;
 
-  /**
-   * Formatter for our errorlog entries
-   */
+  /** Formatter for our errorlog entries */
   @Override
   public void start() {
     patternLayout = new PatternLayout();
     patternLayout.setContext(getContext());
-    patternLayout.setPattern("%date [%contextName-%thread] %-5level %logger - %msg%n"); //NON-NLS
+    patternLayout.setPattern("%date [%contextName-%thread] %-5level %logger - %msg%n"); // NON-NLS
     patternLayout.start();
 
     super.start();
   }
 
   /**
-   * This method siphons off tasty errorlog messages (via logback.xml's "CHATTER" entry) and processes them
+   * This method siphons off tasty errorlog messages (via logback.xml's "CHATTER" entry) and
+   * processes them
+   *
    * @param event Event to process
    */
   @Override

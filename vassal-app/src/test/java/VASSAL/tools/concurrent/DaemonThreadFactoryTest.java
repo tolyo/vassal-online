@@ -18,11 +18,10 @@
 
 package VASSAL.tools.concurrent;
 
-import java.util.concurrent.ThreadFactory;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.concurrent.ThreadFactory;
+import org.junit.jupiter.api.Test;
 
 public class DaemonThreadFactoryTest {
   @Test
@@ -30,9 +29,10 @@ public class DaemonThreadFactoryTest {
     final String basename = "foo";
     final ThreadFactory tf = new DaemonThreadFactory(basename);
 
-    final Runnable r = new Runnable() {
-      public void run() {}
-    };
+    final Runnable r =
+        new Runnable() {
+          public void run() {}
+        };
 
     final Thread t0 = tf.newThread(r);
     assertEquals(basename + "-0", t0.getName());

@@ -31,7 +31,11 @@ import org.junit.jupiter.api.Test;
 public class SetGlobalPropertyTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     SetGlobalProperty trait = new SetGlobalProperty();
 
@@ -48,57 +52,61 @@ public class SetGlobalPropertyTest extends DecoratorTest {
     trait.maxValue = 84;
     trait.wrap = true;
 
-    BasicPiece piece = createBasicPiece ();
-    trait.setInner (piece);
-    PropertyChanger changer = new PropertySetter("3", new PropertyChangerConfigurer.Constraints () {
-      @Override
-      public boolean isWrap () {
-        return false;
-      }
+    BasicPiece piece = createBasicPiece();
+    trait.setInner(piece);
+    PropertyChanger changer =
+        new PropertySetter(
+            "3",
+            new PropertyChangerConfigurer.Constraints() {
+              @Override
+              public boolean isWrap() {
+                return false;
+              }
 
-      @Override
-      public boolean isNumeric () {
-        return false;
-      }
+              @Override
+              public boolean isNumeric() {
+                return false;
+              }
 
-      @Override
-      public int getMaximumValue () {
-        return 0;
-      }
+              @Override
+              public int getMaximumValue() {
+                return 0;
+              }
 
-      @Override
-      public int getMinimumValue () {
-        return 0;
-      }
+              @Override
+              public int getMinimumValue() {
+                return 0;
+              }
 
-      @Override
-      public PropertySource getPropertySource () {
-        return null;
-      }
+              @Override
+              public PropertySource getPropertySource() {
+                return null;
+              }
 
-      @Override
-      public Component getComponent () {
-        return null;
-      }
+              @Override
+              public Component getComponent() {
+                return null;
+              }
 
-      @Override
-      public Object getProperty (Object key) {
-        return null;
-      }
+              @Override
+              public Object getProperty(Object key) {
+                return null;
+              }
 
-      @Override
-      public Object getLocalizedProperty (Object key) {
-        return null;
-      }
-    });
+              @Override
+              public Object getLocalizedProperty(Object key) {
+                return null;
+              }
+            });
 
-    DynamicProperty.DynamicKeyCommand command = new DynamicProperty.DynamicKeyCommand("test", NamedKeyStroke.of("plover"), piece, piece, changer);
+    DynamicProperty.DynamicKeyCommand command =
+        new DynamicProperty.DynamicKeyCommand(
+            "test", NamedKeyStroke.of("plover"), piece, piece, changer);
     List<DynamicProperty.DynamicKeyCommand> commands = new ArrayList<>();
     commands.add(command);
-    trait.keyCommandListConfig.setValue (commands);
+    trait.keyCommandListConfig.setValue(commands);
     trait.keyCommands = commands.toArray(new DynamicProperty.DynamicKeyCommand[0]);
 
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 }

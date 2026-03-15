@@ -23,9 +23,7 @@ import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
 import VASSAL.script.expression.FormattedStringExpression;
 
-/**
- * A PropertySetter that runs agains a remote DP, replaces $$ values from a local piece
- */
+/** A PropertySetter that runs agains a remote DP, replaces $$ values from a local piece */
 public class RemotePropertySetter extends PropertySetter implements RemotePropertyChanger {
 
   public RemotePropertySetter(PropertySetter setter) {
@@ -33,13 +31,12 @@ public class RemotePropertySetter extends PropertySetter implements RemoteProper
   }
 
   /**
-   * Evaluate any expression using the remote piece as the source of properties
-   * Pre-evaluate any $$ variables in the local piece.
+   * Evaluate any expression using the remote piece as the source of properties Pre-evaluate any $$
+   * variables in the local piece.
    *
-   * @param remoteDP  Remote DP being set
-   * @return          New value to set
+   * @param remoteDP Remote DP being set
+   * @return New value to set
    */
-
   @Override
   public String getNewValue(DynamicProperty remoteDP, Auditable owner, PropertySource ps) {
 

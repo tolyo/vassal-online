@@ -17,26 +17,21 @@
  */
 package VASSAL.configure;
 
+import VASSAL.build.Buildable;
+import VASSAL.build.Configurable;
 import java.awt.Frame;
 import java.util.Arrays;
-
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import VASSAL.build.Buildable;
-import VASSAL.build.Configurable;
-
-/**
- * Widget for selecting the full path of a Component in the Buildable hierarchy
- */
+/** Widget for selecting the full path of a Component in the Buildable hierarchy */
 public class ChooseComponentPathDialog extends ChooseComponentDialog {
   private static final long serialVersionUID = 1L;
 
   private Configurable[] path;
 
-  public ChooseComponentPathDialog(Frame owner,
-                                   Class<? extends Buildable> targetClass) {
+  public ChooseComponentPathDialog(Frame owner, Class<? extends Buildable> targetClass) {
     super(owner, targetClass);
   }
 
@@ -46,8 +41,7 @@ public class ChooseComponentPathDialog extends ChooseComponentDialog {
 
     final TreePath p = e.getPath();
     if (p != null) {
-      final DefaultMutableTreeNode node =
-        (DefaultMutableTreeNode) p.getLastPathComponent();
+      final DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
 
       final Object[] x = node.getUserObjectPath();
       final Configurable[] userObjectPath = new Configurable[x.length];
@@ -57,8 +51,7 @@ public class ChooseComponentPathDialog extends ChooseComponentDialog {
       }
 
       path = Arrays.copyOfRange(userObjectPath, 1, userObjectPath.length);
-    }
-    else {
+    } else {
       path = null;
     }
   }
@@ -66,5 +59,4 @@ public class ChooseComponentPathDialog extends ChooseComponentDialog {
   public Configurable[] getPath() {
     return path;
   }
-
 }

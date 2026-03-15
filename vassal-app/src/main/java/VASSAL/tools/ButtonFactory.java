@@ -17,15 +17,11 @@
  */
 package VASSAL.tools;
 
+import VASSAL.i18n.Resources;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-import VASSAL.i18n.Resources;
-
-/**
- * Produce standard Vassal buttons.
- *
- */
+/** Produce standard Vassal buttons. */
 public class ButtonFactory {
 
   public static JButton getOkButton() {
@@ -35,13 +31,13 @@ public class ButtonFactory {
   }
 
   public static JButton getCancelButton() {
-    final JButton button =  new JButton(Resources.getString(Resources.CANCEL));
+    final JButton button = new JButton(Resources.getString(Resources.CANCEL));
     button.setToolTipText(Resources.getString(Resources.CANCEL));
     return button;
   }
 
   public static JButton getHelpButton() {
-    final JButton button =  new JButton(Resources.getString(Resources.HELP));
+    final JButton button = new JButton(Resources.getString(Resources.HELP));
     button.setToolTipText(Resources.getString(Resources.HELP));
     return button;
   }
@@ -51,5 +47,4 @@ public class ButtonFactory {
     button.setAction(a);
     return button;
   }
-
 }

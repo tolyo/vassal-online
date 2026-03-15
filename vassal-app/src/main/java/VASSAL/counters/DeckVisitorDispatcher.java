@@ -17,9 +17,7 @@
  */
 package VASSAL.counters;
 
-/**
- * For handling Visitors that are aware of {@link Deck} types
- */
+/** For handling Visitors that are aware of {@link Deck} types */
 public class DeckVisitorDispatcher extends PieceVisitorDispatcher {
   private final DeckVisitor visitor;
 
@@ -31,9 +29,8 @@ public class DeckVisitorDispatcher extends PieceVisitorDispatcher {
   @Override
   public Object accept(GamePiece piece) {
     if (piece instanceof Deck) {
-      return visitor.visitDeck((Deck)piece);
-    }
-    else {
+      return visitor.visitDeck((Deck) piece);
+    } else {
       return super.accept(piece);
     }
   }

@@ -18,6 +18,8 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -25,12 +27,8 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.swing.SwingUtils;
 
 /**
  * An implementation of {@link Icon} using an {@link ImageOp} as a source.
@@ -42,14 +40,11 @@ public class OpIcon extends ImageIcon implements Icon {
   private static final long serialVersionUID = 1L;
   protected ImageOp sop;
 
-  /**
-   * Creates an uninitialized icon.
-   */
-  public OpIcon() { }
+  /** Creates an uninitialized icon. */
+  public OpIcon() {}
 
   /**
-   * Creates an <code>OpIcon</code> using a given <code>ImageOp</code> as
-   * its image source.
+   * Creates an <code>OpIcon</code> using a given <code>ImageOp</code> as its image source.
    *
    * @param op the <code>ImageOp</code> to be used by this <code>OpIcon</code>
    */
@@ -60,8 +55,8 @@ public class OpIcon extends ImageIcon implements Icon {
   /**
    * {@inheritDoc}
    *
-   * <p>The given <code>ImageOp</code> is called asynchronously when painting,
-   * so as not to block the Event Dispatch Thread.</p>
+   * <p>The given <code>ImageOp</code> is called asynchronously when painting, so as not to block
+   * the Event Dispatch Thread.
    *
    * @param c {@inheritDoc}
    * @param g {@inheritDoc}
@@ -84,11 +79,9 @@ public class OpIcon extends ImageIcon implements Icon {
 
     try {
       g.drawImage(Op.scale(sop, os_scale).getImage(r), x, y, c);
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       ErrorDialog.bug(e);
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       if (!Op.handleException(e)) ErrorDialog.bug(e);
     }
 
@@ -101,10 +94,7 @@ public class OpIcon extends ImageIcon implements Icon {
     return sop == null ? null : sop.getImage();
   }
 
-  /**
-   * This method does nothing. It is overridden to prevent the
-   * image from being set this way.
-   */
+  /** This method does nothing. It is overridden to prevent the image from being set this way. */
   @Override
   public void setImage(Image img) {}
 
@@ -121,8 +111,7 @@ public class OpIcon extends ImageIcon implements Icon {
   }
 
   /**
-   * Returns the <code>ImageOp</code> which produces this icon's
-   * <code>Image</code>.
+   * Returns the <code>ImageOp</code> which produces this icon's <code>Image</code>.
    *
    * @return the <code>ImageOp</code> for this <code>OpIcon</code>
    */
@@ -131,8 +120,7 @@ public class OpIcon extends ImageIcon implements Icon {
   }
 
   /**
-   * Sets the <code>ImageOp</code> which produces this icon's
-   * <code>Image</code>.
+   * Sets the <code>ImageOp</code> which produces this icon's <code>Image</code>.
    *
    * @param op the <code>ImageOp</code>
    */

@@ -36,8 +36,6 @@ import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.image.LabelUtils;
-
-import javax.swing.KeyStroke;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -58,41 +56,42 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
-/**
- * Displays a movement trail indicating where a piece has been moved
- */
+/** Displays a movement trail indicating where a piece has been moved */
 public class Footprint extends MovementMarkable {
 
-  public static final String ID = "footprint;"; //$NON-NLS-1$//
+  public static final String ID = "footprint;"; // $NON-NLS-1$//
   private KeyCommand[] commands;
 
   // State Variables (Saved in logfile/sent to opponent)
-  protected boolean globalVisibility = false;  // Shared trail visibility (if globallyVisible == true)
-  protected String startMapId = "";            // Map Id trail started on
-                                               // List of points
+  protected boolean globalVisibility =
+      false; // Shared trail visibility (if globallyVisible == true)
+  protected String startMapId = ""; // Map Id trail started on
+  // List of points
   protected List<Point> pointList = new ArrayList<>();
 
   // Type Variables (Configured in Ed)
-  protected NamedKeyStroke trailKey;           // Control Key to invoke
-  protected NamedKeyStroke trailKeyOn;         // Control Key to force trails on
-  protected NamedKeyStroke trailKeyOff;        // Control Key to force trails off
-  protected NamedKeyStroke trailKeyClear;      // Control Key to force trails clear
-  protected String menuCommand;                // Menu Command
-  protected boolean initiallyVisible = false;  // Are Trails initially visible?
-  protected boolean globallyVisible = false;   // Are Trails shared between players?
-  protected int circleRadius;                  // Radius of trail point circle
-  protected int selectedTransparency;          // Transparency of trail when unit is selected
-  protected int unSelectedTransparency;        // Transparency of trail when unit is selected/unselected
-  protected Color lineColor;                   // Color of Trail lines
-  protected Color fillColor;                   // Color of Trail circle fill
-  protected int edgePointBuffer;               // How far Off-map to draw trail points (pixels)?
-  protected int edgeDisplayBuffer;             // How far Off-map to draw trail lines (pixels)?
-  protected String description;                // Description for this movement trail
+  protected NamedKeyStroke trailKey; // Control Key to invoke
+  protected NamedKeyStroke trailKeyOn; // Control Key to force trails on
+  protected NamedKeyStroke trailKeyOff; // Control Key to force trails off
+  protected NamedKeyStroke trailKeyClear; // Control Key to force trails clear
+  protected String menuCommand; // Menu Command
+  protected boolean initiallyVisible = false; // Are Trails initially visible?
+  protected boolean globallyVisible = false; // Are Trails shared between players?
+  protected int circleRadius; // Radius of trail point circle
+  protected int selectedTransparency; // Transparency of trail when unit is selected
+  protected int unSelectedTransparency; // Transparency of trail when unit is selected/unselected
+  protected Color lineColor; // Color of Trail lines
+  protected Color fillColor; // Color of Trail circle fill
+  protected int edgePointBuffer; // How far Off-map to draw trail points (pixels)?
+  protected int edgeDisplayBuffer; // How far Off-map to draw trail lines (pixels)?
+  protected String description; // Description for this movement trail
 
   // Defaults for Type variables
   protected static final char DEFAULT_TRAIL_KEY = 'T';
-  protected static final String DEFAULT_MENU_COMMAND = Resources.getString("Editor.Footprint.movement_trail");
+  protected static final String DEFAULT_MENU_COMMAND =
+      Resources.getString("Editor.Footprint.movement_trail");
   protected static final Boolean DEFAULT_INITIALLY_VISIBLE = Boolean.FALSE;
   protected static final Boolean DEFAULT_GLOBALLY_VISIBLE = Boolean.FALSE;
   protected static final int DEFAULT_CIRCLE_RADIUS = 10;
@@ -109,17 +108,18 @@ public class Footprint extends MovementMarkable {
   protected Font font;
   protected double lastZoom;
   protected boolean localVisibility;
-  protected boolean initialized = false; // Protect against multiple re-initializations (this one resets to false in a new session)
+  protected boolean initialized =
+      false; // Protect against multiple re-initializations (this one resets to false in a new
+  // session)
   protected boolean everInitialized = false; // Across save/load
 
   protected double lineWidth;
   private KeyCommand showTrailCommand;
-  private KeyCommand showTrailCommandOn;      // Commands to force specific trail states
+  private KeyCommand showTrailCommandOn; // Commands to force specific trail states
   private KeyCommand showTrailCommandOff;
   private KeyCommand showTrailCommandClear;
 
   private boolean rotateCheckedOnMove;
-
 
   public Footprint() {
     super(ID, null);
@@ -133,8 +133,7 @@ public class Footprint extends MovementMarkable {
   @Override
   public void mySetState(String newState) {
     pointList.clear();
-    final SequenceEncoder.Decoder ss =
-      new SequenceEncoder.Decoder(newState, ';');
+    final SequenceEncoder.Decoder ss = new SequenceEncoder.Decoder(newState, ';');
     globalVisibility = ss.nextBoolean(initiallyVisible);
     localVisibility = globalVisibility;
     startMapId = ss.nextToken("");
@@ -142,8 +141,7 @@ public class Footprint extends MovementMarkable {
     for (int i = 0; i < items; i++) {
       final String point = ss.nextToken("");
       if (point.length() != 0) {
-        final SequenceEncoder.Decoder sp =
-          new SequenceEncoder.Decoder(point, ',');
+        final SequenceEncoder.Decoder sp = new SequenceEncoder.Decoder(point, ',');
         final int x = sp.nextInt(0);
         final int y = sp.nextInt(0);
         pointList.add(new Point(x, y));
@@ -156,9 +154,7 @@ public class Footprint extends MovementMarkable {
   @Override
   public String myGetState() {
     final SequenceEncoder se = new SequenceEncoder(';');
-    se.append(globalVisibility)
-      .append(startMapId)
-      .append(pointList.size());
+    se.append(globalVisibility).append(startMapId).append(pointList.size());
 
     for (final Point p : pointList) {
       se.append(p.x + "," + p.y);
@@ -169,9 +165,7 @@ public class Footprint extends MovementMarkable {
     return se.getValue();
   }
 
-  /**
-   * Type is the character command that toggles footprint visibility
-   */
+  /** Type is the character command that toggles footprint visibility */
   @Override
   public void mySetType(String type) {
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type, ';');
@@ -200,28 +194,28 @@ public class Footprint extends MovementMarkable {
     showTrailCommandClear = null;
 
     globalVisibility = false;
-    localVisibility  = initiallyVisible;
+    localVisibility = initiallyVisible;
   }
 
   @Override
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(trailKey)
-      .append(menuCommand)
-      .append(initiallyVisible)
-      .append(globallyVisible)
-      .append(circleRadius)
-      .append(fillColor)
-      .append(lineColor)
-      .append(selectedTransparency)
-      .append(unSelectedTransparency)
-      .append(edgePointBuffer)
-      .append(edgeDisplayBuffer)
-      .append(lineWidth)
-      .append(trailKeyOn)
-      .append(trailKeyOff)
-      .append(trailKeyClear)
-      .append(description);
+        .append(menuCommand)
+        .append(initiallyVisible)
+        .append(globallyVisible)
+        .append(circleRadius)
+        .append(fillColor)
+        .append(lineColor)
+        .append(selectedTransparency)
+        .append(unSelectedTransparency)
+        .append(edgePointBuffer)
+        .append(edgeDisplayBuffer)
+        .append(lineWidth)
+        .append(trailKeyOn)
+        .append(trailKeyOff)
+        .append(trailKeyClear)
+        .append(description);
     return ID + se.getValue();
   }
 
@@ -247,8 +241,7 @@ public class Footprint extends MovementMarkable {
       setMoved(Boolean.TRUE.equals(val));
       piece.setProperty(key, val); // Pass on to MovementMarkable
       myBoundingBox = null;
-    }
-    else {
+    } else {
       super.setProperty(key, val);
     }
   }
@@ -274,8 +267,8 @@ public class Footprint extends MovementMarkable {
   }
 
   /**
-   * setMoved is called with an argument of true each time the piece is moved.
-   * The argument is false when the unit is marked as not moved.
+   * setMoved is called with an argument of true each time the piece is moved. The argument is false
+   * when the unit is marked as not moved.
    */
   @Override
   public void setMoved(boolean justMoved) {
@@ -285,7 +278,7 @@ public class Footprint extends MovementMarkable {
     }
     if (justMoved) {
       if (!initialized) {
-        localVisibility  = initiallyVisible;
+        localVisibility = initiallyVisible;
         initialized = true;
         if (!everInitialized) {
           globalVisibility = initiallyVisible;
@@ -295,8 +288,7 @@ public class Footprint extends MovementMarkable {
       recordCurrentPosition();
       final Map map = getMap();
       startMapId = map != null ? map.getId() : null;
-    }
-    else {
+    } else {
       clearTrail();
     }
     redraw();
@@ -304,11 +296,9 @@ public class Footprint extends MovementMarkable {
 
   protected void recordCurrentPosition() {
     final Point here = this.getPosition();
-    if (pointList.isEmpty() ||
-        !pointList.get(pointList.size() - 1).equals(here)) {
+    if (pointList.isEmpty() || !pointList.get(pointList.size() - 1).equals(here)) {
       addPoint(here);
-    }
-    else {
+    } else {
       myBoundingBox = null;
     }
   }
@@ -317,7 +307,7 @@ public class Footprint extends MovementMarkable {
     myBoundingBox = null;
     pointList.clear();
     addPoint(getPosition());
-    if (!initialized) {       //BR// Bug 12980 - prevent multiple re-initializations
+    if (!initialized) { // BR// Bug 12980 - prevent multiple re-initializations
       localVisibility = initiallyVisible;
       initialized = true;
       if (!everInitialized) {
@@ -329,13 +319,10 @@ public class Footprint extends MovementMarkable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("MovementTrail.html"); //$NON-NLS-1$//
+    return HelpFile.getReferenceManualPage("MovementTrail.html"); // $NON-NLS-1$//
   }
 
-  /**
-   * Add Point to list and adjust the overall boundingBox to encompass the
-   * trail.
-   */
+  /** Add Point to list and adjust the overall boundingBox to encompass the trail. */
   protected void addPoint(Point p) {
     pointList.add(p);
     myBoundingBox = null;
@@ -405,10 +392,10 @@ public class Footprint extends MovementMarkable {
       return;
     }
 
-    final boolean selected = Boolean.TRUE.equals(
-      getOutermost(this).getProperty(Properties.SELECTED));
-    final int transparencyPercent = Math.max(0, Math.min(100,
-      selected ? selectedTransparency : unSelectedTransparency));
+    final boolean selected =
+        Boolean.TRUE.equals(getOutermost(this).getProperty(Properties.SELECTED));
+    final int transparencyPercent =
+        Math.max(0, Math.min(100, selected ? selectedTransparency : unSelectedTransparency));
     final float transparency = transparencyPercent / 100.0f;
     final Composite oldComposite = g2d.getComposite();
     final Stroke oldStroke = g2d.getStroke();
@@ -424,10 +411,8 @@ public class Footprint extends MovementMarkable {
     final int mapHeight = mapsize.height;
     final int mapWidth = mapsize.width;
 
-    final int edgeHeight =
-      Integer.parseInt(map.getAttributeValueString(Map.EDGE_HEIGHT));
-    final int edgeWidth =
-      Integer.parseInt(map.getAttributeValueString(Map.EDGE_WIDTH));
+    final int edgeHeight = Integer.parseInt(map.getAttributeValueString(Map.EDGE_HEIGHT));
+    final int edgeWidth = Integer.parseInt(map.getAttributeValueString(Map.EDGE_WIDTH));
 
     final int edgeClipHeight = Math.min(edgeHeight, edgeDisplayBuffer);
     final int edgeClipWidth = Math.min(edgeWidth, edgeDisplayBuffer);
@@ -437,15 +422,14 @@ public class Footprint extends MovementMarkable {
     final int width = mapWidth - 2 * (edgeWidth + edgeClipWidth);
     final int height = mapHeight - 2 * (edgeHeight + edgeClipHeight);
 
-    Rectangle newClip = new Rectangle(
-      (int) (clipX * zoom),
-      (int) (clipY * zoom),
-      (int) (width * zoom),
-      (int) (height * zoom)
-    );
+    Rectangle newClip =
+        new Rectangle(
+            (int) (clipX * zoom),
+            (int) (clipY * zoom),
+            (int) (width * zoom),
+            (int) (height * zoom));
 
-    final Rectangle visibleRect =
-      map.componentToDrawing(map.getView().getVisibleRect(), os_scale);
+    final Rectangle visibleRect = map.componentToDrawing(map.getView().getVisibleRect(), os_scale);
 
     final Shape oldClip = g2d.getClip();
 
@@ -455,19 +439,18 @@ public class Footprint extends MovementMarkable {
     }
     g2d.setClip(newClip);
 
-    g2d.setComposite(
-      AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
 
-    final float thickness = Math.max(1.0f, (float)(zoom * lineWidth));
+    final float thickness = Math.max(1.0f, (float) (zoom * lineWidth));
     g2d.setStroke(new BasicStroke(thickness));
     g2d.setColor(lineColor);
 
-    final Rectangle circleRect = new Rectangle(
-      edgeWidth - edgePointBuffer,
-      edgeHeight - edgePointBuffer,
-      mapWidth + 2 * edgePointBuffer,
-      mapHeight + 2 * edgePointBuffer
-    );
+    final Rectangle circleRect =
+        new Rectangle(
+            edgeWidth - edgePointBuffer,
+            edgeHeight - edgePointBuffer,
+            mapWidth + 2 * edgePointBuffer,
+            mapHeight + 2 * edgePointBuffer);
 
     /*
      * Draw the tracks between trail points
@@ -478,10 +461,10 @@ public class Footprint extends MovementMarkable {
     while (i.hasNext()) {
       next = i.next();
 
-      x1 = (int)(cur.x * zoom);
-      y1 = (int)(cur.y * zoom);
-      x2 = (int)(next.x * zoom);
-      y2 = (int)(next.y * zoom);
+      x1 = (int) (cur.x * zoom);
+      y1 = (int) (cur.y * zoom);
+      x2 = (int) (next.x * zoom);
+      y2 = (int) (next.y * zoom);
 
       drawTrack(g, x1, y1, x2, y2, zoom);
 
@@ -490,10 +473,10 @@ public class Footprint extends MovementMarkable {
 
     final Point here = getPosition();
     if (!here.equals(cur)) {
-      x1 = (int)(cur.x * zoom);
-      y1 = (int)(cur.y * zoom);
-      x2 = (int)(here.x * zoom);
-      y2 = (int)(here.y * zoom);
+      x1 = (int) (cur.x * zoom);
+      y1 = (int) (cur.y * zoom);
+      x2 = (int) (here.x * zoom);
+      y2 = (int) (here.y * zoom);
 
       drawTrack(g, x1, y1, x2, y2, zoom);
     }
@@ -510,15 +493,13 @@ public class Footprint extends MovementMarkable {
 
         // Is there an Icon to draw in the circle?
         final Image image = getTrailImage(elementCount);
-        x1 = (int)((p.x - circleRadius) * zoom);
-        y1 = (int)((p.y - circleRadius) * zoom);
+        x1 = (int) ((p.x - circleRadius) * zoom);
+        y1 = (int) ((p.y - circleRadius) * zoom);
         if (selected && image != null) {
           if (zoom == 1.0) {
             g.drawImage(image, x1, y1, obs);
-          }
-          else {
-            final Image scaled =
-              ImageUtils.transform((BufferedImage) image, zoom, 0.0);
+          } else {
+            final Image scaled = ImageUtils.transform((BufferedImage) image, zoom, 0.0);
             g.drawImage(scaled, x1, y1, obs);
           }
         }
@@ -527,16 +508,11 @@ public class Footprint extends MovementMarkable {
         final String text = getTrailText(elementCount);
         if (selected && text != null) {
           if (font == null || lastZoom != zoom) {
-            x1 = (int)(p.x * zoom);
-            y1 = (int)(p.y * zoom);
-            final Font font =
-              new Font(Font.DIALOG, Font.PLAIN, (int)(circleRadius * 1.4 * zoom));
+            x1 = (int) (p.x * zoom);
+            y1 = (int) (p.y * zoom);
+            final Font font = new Font(Font.DIALOG, Font.PLAIN, (int) (circleRadius * 1.4 * zoom));
             LabelUtils.drawLabel(
-              g, text, x1, y1,
-              font, LabelUtils.CENTER, LabelUtils.CENTER,
-              lineColor, null, null
-            );
-
+                g, text, x1, y1, font, LabelUtils.CENTER, LabelUtils.CENTER, lineColor, null, null);
           }
           lastZoom = zoom;
         }
@@ -550,13 +526,14 @@ public class Footprint extends MovementMarkable {
   }
 
   /**
-   * Draw a Circle at the given point.
-   * Override this method to do something different (eg. display an Icon)
+   * Draw a Circle at the given point. Override this method to do something different (eg. display
+   * an Icon)
    */
-  protected void drawPoint(Graphics g, Point p, double zoom, @SuppressWarnings("unused") int elementCount) {
-    final int x = (int)((p.x - circleRadius) * zoom);
-    final int y = (int)((p.y - circleRadius) * zoom);
-    final int radius = (int)(2 * circleRadius * zoom);
+  protected void drawPoint(
+      Graphics g, Point p, double zoom, @SuppressWarnings("unused") int elementCount) {
+    final int x = (int) ((p.x - circleRadius) * zoom);
+    final int y = (int) ((p.y - circleRadius) * zoom);
+    final int radius = (int) (2 * circleRadius * zoom);
     g.setColor(fillColor);
     g.fillOval(x, y, radius, radius);
     g.setColor(lineColor);
@@ -564,9 +541,8 @@ public class Footprint extends MovementMarkable {
   }
 
   /**
-   * Draw a track from one Point to another.
-   * Don't draw under the circle as it shows
-   * through with transparency turned on.
+   * Draw a track from one Point to another. Don't draw under the circle as it shows through with
+   * transparency turned on.
    */
   protected void drawTrack(Graphics g, int x1, int y1, int x2, int y2, double zoom) {
     double lastSqrt = -1;
@@ -584,47 +560,43 @@ public class Footprint extends MovementMarkable {
     g.drawLine(x1 + xDiff, y1 + yDiff, x2 - xDiff, y2 - yDiff);
   }
 
-  /**
-   * Override this method to return an Image to display within each trail circle
-   */
-  protected Image getTrailImage(@SuppressWarnings("unused")int elementCount) {
+  /** Override this method to return an Image to display within each trail circle */
+  protected Image getTrailImage(@SuppressWarnings("unused") int elementCount) {
     return null;
   }
 
   /**
-   * Override this method to return text to display within each trail circle.
-   * Note, there will normally be only room for 1 character.
+   * Override this method to return text to display within each trail circle. Note, there will
+   * normally be only room for 1 character.
    */
-  protected String getTrailText(@SuppressWarnings("unused")int elementCount) {
+  protected String getTrailText(@SuppressWarnings("unused") int elementCount) {
     return null;
   }
 
   /**
-   * Global Visibility means all players see the same trail
-   * Local Visibility means each player controls their own trail visibility
+   * Global Visibility means all players see the same trail Local Visibility means each player
+   * controls their own trail visibility
    */
   protected boolean isTrailVisible() {
     if (globallyVisible) {
       return globalVisibility || trailKey == null;
-    }
-    else {
+    } else {
       return localVisibility || trailKey == null;
     }
   }
 
   /**
-   * Return a bounding box covering the whole trail if it is visible, otherwise
-   * just return the standard piece bounding box
+   * Return a bounding box covering the whole trail if it is visible, otherwise just return the
+   * standard piece bounding box
    */
   @Override
   public Rectangle boundingBox() {
-    return isTrailVisible() && getMap() != null ?
-      new Rectangle(getMyBoundingBox()) : piece.boundingBox();
+    return isTrailVisible() && getMap() != null
+        ? new Rectangle(getMyBoundingBox())
+        : piece.boundingBox();
   }
 
-  /**
-   * Return the boundingBox including the trail
-   */
+  /** Return the boundingBox including the trail */
   public Rectangle getMyBoundingBox() {
     if (myBoundingBox == null) {
       final Rectangle bb = piece.boundingBox();
@@ -636,10 +608,8 @@ public class Footprint extends MovementMarkable {
       final int circleDiameter = 2 * circleRadius;
       final Rectangle pr = new Rectangle();
 
-      for (final Point p: pointList) {
-        pr.setBounds(
-          p.x - circleRadius, p.y - circleRadius, circleDiameter, circleDiameter
-        );
+      for (final Point p : pointList) {
+        pr.setBounds(p.x - circleRadius, p.y - circleRadius, circleDiameter, circleDiameter);
         bb.add(pr);
       }
 
@@ -664,7 +634,7 @@ public class Footprint extends MovementMarkable {
   @Override
   public KeyCommand[] myGetKeyCommands() {
     if (commands == null) {
-      if (trailKey != null && ! trailKey.isNull()) {
+      if (trailKey != null && !trailKey.isNull()) {
         showTrailCommand = new KeyCommand(menuCommand, trailKey, getOutermost(this), this);
       }
 
@@ -679,11 +649,9 @@ public class Footprint extends MovementMarkable {
         showTrailCommandClear = new KeyCommand("", trailKeyClear, getOutermost(this), this);
       }
 
-      if (showTrailCommand != null
-          && menuCommand.length() > 0) {
-        commands = new KeyCommand[]{showTrailCommand};
-      }
-      else {
+      if (showTrailCommand != null && menuCommand.length() > 0) {
+        commands = new KeyCommand[] {showTrailCommand};
+      } else {
         commands = KeyCommand.NONE;
       }
     }
@@ -696,31 +664,29 @@ public class Footprint extends MovementMarkable {
   @Override
   public Command myKeyEvent(KeyStroke stroke) {
     myGetKeyCommands();
-    if (showTrailCommand != null
-        && showTrailCommand.matches(stroke)) {
+    if (showTrailCommand != null && showTrailCommand.matches(stroke)) {
       final ChangeTracker tracker = new ChangeTracker(this);
       initialized = true;
       everInitialized = true;
       if (globallyVisible) {
         globalVisibility = !globalVisibility;
-        localVisibility  = globalVisibility;
-      }
-      else {
+        localVisibility = globalVisibility;
+      } else {
         localVisibility = !localVisibility;
       }
       redraw();
       return tracker.getChangeCommand();
     }
 
-    // These two if blocks allow forcing the trails to a specified on or off state - much easier for a "global trails" function to keep track of.
+    // These two if blocks allow forcing the trails to a specified on or off state - much easier for
+    // a "global trails" function to keep track of.
     if (showTrailCommandOn != null && showTrailCommandOn.matches(stroke)) {
       final ChangeTracker tracker = new ChangeTracker(this);
       initialized = true;
       everInitialized = true;
       if (globallyVisible) {
         globalVisibility = true;
-      }
-      else {
+      } else {
         localVisibility = true;
       }
       redraw();
@@ -733,9 +699,8 @@ public class Footprint extends MovementMarkable {
       everInitialized = true;
       if (globallyVisible) {
         globalVisibility = false;
-        localVisibility  = false;
-      }
-      else {
+        localVisibility = false;
+      } else {
         localVisibility = false;
       }
       redraw();
@@ -753,18 +718,27 @@ public class Footprint extends MovementMarkable {
   }
 
   /**
-   * Displays a Bad Module Data warning if a movement trails trait is found inside of a rotation trait
+   * Displays a Bad Module Data warning if a movement trails trait is found inside of a rotation
+   * trait
    */
   public void requireNoOuterRotate() {
     if (GameModule.getGameModule().isEditorOpen()) {
       Decorator piece = getOuter();
       while (piece != null) {
-        if ((piece instanceof FreeRotator) || (piece instanceof Pivot) || ((piece instanceof MatCargo) && (((MatCargo) piece).maintainRelativeFacing))) {
+        if ((piece instanceof FreeRotator)
+            || (piece instanceof Pivot)
+            || ((piece instanceof MatCargo) && (((MatCargo) piece).maintainRelativeFacing))) {
           String name = getName();
           if ((name == null) || name.isEmpty()) {
             name = Resources.getString("Decorator.prototype");
           }
-          ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Decorator.trails_inside_rotate", getBaseDescription(), piece.getBaseDescription()), name));
+          ErrorDialog.dataWarning(
+              new BadDataReport(
+                  Resources.getString(
+                      "Decorator.trails_inside_rotate",
+                      getBaseDescription(),
+                      piece.getBaseDescription()),
+                  name));
         }
         piece = piece.getOuter();
       }
@@ -786,35 +760,34 @@ public class Footprint extends MovementMarkable {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Footprint)) return false;
+    if (!(o instanceof Footprint)) return false;
     final Footprint c = (Footprint) o;
 
-    if (! Objects.equals(trailKey, c.trailKey)) return false;
-    if (! Objects.equals(menuCommand, c.menuCommand)) return false;
-    if (! Objects.equals(initiallyVisible, c.initiallyVisible)) return false;
-    if (! Objects.equals(globallyVisible, c.globallyVisible)) return false;
-    if (! Objects.equals(circleRadius, c.circleRadius)) return false;
-    if (! Objects.equals(fillColor, c.fillColor)) return false;
-    if (! Objects.equals(lineColor, c.lineColor)) return false;
-    if (! Objects.equals(selectedTransparency, c.selectedTransparency)) return false;
-    if (! Objects.equals(unSelectedTransparency, c.unSelectedTransparency)) return false;
-    if (! Objects.equals(edgePointBuffer, c.edgePointBuffer)) return false;
-    if (! Objects.equals(edgeDisplayBuffer, c.edgeDisplayBuffer)) return false;
-    if (! Objects.equals(lineWidth, c.lineWidth)) return false;
-    if (! Objects.equals(trailKeyOn, c.trailKeyOn)) return false;
-    if (! Objects.equals(trailKeyOff, c.trailKeyOff)) return false;
-    if (! Objects.equals(trailKeyClear, c.trailKeyClear)) return false;
-    if (! Objects.equals(description, c.description)) return false;
+    if (!Objects.equals(trailKey, c.trailKey)) return false;
+    if (!Objects.equals(menuCommand, c.menuCommand)) return false;
+    if (!Objects.equals(initiallyVisible, c.initiallyVisible)) return false;
+    if (!Objects.equals(globallyVisible, c.globallyVisible)) return false;
+    if (!Objects.equals(circleRadius, c.circleRadius)) return false;
+    if (!Objects.equals(fillColor, c.fillColor)) return false;
+    if (!Objects.equals(lineColor, c.lineColor)) return false;
+    if (!Objects.equals(selectedTransparency, c.selectedTransparency)) return false;
+    if (!Objects.equals(unSelectedTransparency, c.unSelectedTransparency)) return false;
+    if (!Objects.equals(edgePointBuffer, c.edgePointBuffer)) return false;
+    if (!Objects.equals(edgeDisplayBuffer, c.edgeDisplayBuffer)) return false;
+    if (!Objects.equals(lineWidth, c.lineWidth)) return false;
+    if (!Objects.equals(trailKeyOn, c.trailKeyOn)) return false;
+    if (!Objects.equals(trailKeyOff, c.trailKeyOff)) return false;
+    if (!Objects.equals(trailKeyClear, c.trailKeyClear)) return false;
+    if (!Objects.equals(description, c.description)) return false;
 
-    if (! Objects.equals(globalVisibility, c.globalVisibility)) return false;
-    if (! Objects.equals(startMapId, c.startMapId)) return false;
+    if (!Objects.equals(globalVisibility, c.globalVisibility)) return false;
+    if (!Objects.equals(startMapId, c.startMapId)) return false;
     return Objects.equals(pointList, c.pointList);
   }
 
   /**
-   * Key Command Global Visibility Circle Radius Fill Color Line Color Selected
-   * Transparency Unselected Transparency Edge Buffer Display Limit Edge Buffer
-   * Point Limit
+   * Key Command Global Visibility Circle Radius Fill Color Line Color Selected Transparency
+   * Unselected Transparency Edge Buffer Display Limit Edge Buffer Point Limit
    */
   protected static class Ed implements PieceEditor {
     private final StringConfigurer desc;
@@ -890,28 +863,29 @@ public class Footprint extends MovementMarkable {
 
     @Override
     public String getState() {
-      return initiallyVisibleConfig.booleanValue() + ";;0"; //BR// iv == Initial Visibility! NOT gv!!!
+      return initiallyVisibleConfig.booleanValue()
+          + ";;0"; // BR// iv == Initial Visibility! NOT gv!!!
     }
 
     @Override
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(trailKeyInput.getValueString())
-        .append(menuCommandConfig.getValueString())
-        .append(initiallyVisibleConfig.getValueString())
-        .append(globallyVisibleConfig.getValueString())
-        .append(circleRadiusConfig.getValueString())
-        .append(fillColorConfig.getValueString())
-        .append(lineColorConfig.getValueString())
-        .append(selectedTransparencyConfig.getValueString())
-        .append(unselectedTransparencyConfig.getValueString())
-        .append(edgePointBufferConfig.getValueString())
-        .append(edgeDisplayBufferConfig.getValueString())
-        .append(lineWidthConfig.getValueString())
-        .append(trailKeyOn.getValueString())
-        .append(trailKeyOff.getValueString())
-        .append(trailKeyClear.getValueString())
-        .append(desc.getValueString());
+          .append(menuCommandConfig.getValueString())
+          .append(initiallyVisibleConfig.getValueString())
+          .append(globallyVisibleConfig.getValueString())
+          .append(circleRadiusConfig.getValueString())
+          .append(fillColorConfig.getValueString())
+          .append(lineColorConfig.getValueString())
+          .append(selectedTransparencyConfig.getValueString())
+          .append(unselectedTransparencyConfig.getValueString())
+          .append(edgePointBufferConfig.getValueString())
+          .append(edgeDisplayBufferConfig.getValueString())
+          .append(lineWidthConfig.getValueString())
+          .append(trailKeyOn.getValueString())
+          .append(trailKeyOff.getValueString())
+          .append(trailKeyClear.getValueString())
+          .append(desc.getValueString());
       return ID + se.getValue();
     }
 

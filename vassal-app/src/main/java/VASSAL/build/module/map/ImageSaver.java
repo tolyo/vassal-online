@@ -19,10 +19,21 @@ package VASSAL.build.module.map;
 
 import VASSAL.build.AbstractToolbarItem;
 import VASSAL.build.AutoConfigurable;
+import VASSAL.build.Buildable;
+import VASSAL.build.GameModule;
+import VASSAL.build.module.Map;
+import VASSAL.build.module.documentation.HelpFile;
+import VASSAL.configure.ColorConfigurer;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
 import VASSAL.configure.IconConfigurer;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.LaunchButton;
+import VASSAL.tools.WriteErrorDialog;
+import VASSAL.tools.filechooser.FileChooser;
+import VASSAL.tools.filechooser.PNGFileFilter;
+import VASSAL.tools.swing.ProgressDialog;
 import VASSAL.tools.swing.SwingUtils;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.event.IIOWriteProgressListener;
@@ -44,54 +54,41 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import VASSAL.build.Buildable;
-import VASSAL.build.GameModule;
-import VASSAL.build.module.Map;
-import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.configure.ColorConfigurer;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.WriteErrorDialog;
-import VASSAL.tools.filechooser.FileChooser;
-import VASSAL.tools.filechooser.PNGFileFilter;
-import VASSAL.tools.swing.ProgressDialog;
-
 // FIXME: Replace this in 3.2 with tiling code.
 
-/**
- * This allows the user to capture a snapshot of the entire map into
- * a PNG file.
- */
+/** This allows the user to capture a snapshot of the entire map into a PNG file. */
 public class ImageSaver extends AbstractToolbarItem {
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
   protected Map map;
   protected boolean promptToSplit = false;
-  protected static final String DEFAULT_ICON = "/images/camera.gif"; //NON-NLS
+  protected static final String DEFAULT_ICON = "/images/camera.gif"; // NON-NLS
 
-  protected static final String BUTTON_TEXT = "buttonText"; //NON-NLS
+  protected static final String BUTTON_TEXT = "buttonText"; // NON-NLS
 
   protected static ProgressDialog dialog;
 
   // Clirr purposes
-  protected static final String HOTKEY = "hotkey"; //NON-NLS
-  protected static final String TOOLTIP = "tooltip"; //NON-NLS
-  protected static final String ICON_NAME = "icon"; //NON-NLS
+  protected static final String HOTKEY = "hotkey"; // NON-NLS
+  protected static final String TOOLTIP = "tooltip"; // NON-NLS
+  protected static final String ICON_NAME = "icon"; // NON-NLS
 
   public ImageSaver() {
     setNameKey("");
-    setButtonTextKey(BUTTON_TEXT); //NON-NLS
+    setButtonTextKey(BUTTON_TEXT); // NON-NLS
 
-    setShowDisabledOptions(false); //AbstractToolbarItem
+    setShowDisabledOptions(false); // AbstractToolbarItem
 
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("Editor.ImageSaver.save_map_as_png_image"),
-      "",
-      DEFAULT_ICON,
-      e -> writeMapAsImage()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("Editor.ImageSaver.save_map_as_png_image"),
+            "",
+            DEFAULT_ICON,
+            e -> writeMapAsImage()));
     launch = getLaunchButton(); // for compatibility
   }
 
@@ -101,8 +98,8 @@ public class ImageSaver extends AbstractToolbarItem {
   }
 
   /**
-   * Expects to be added to a {@link Map}. Adds a button to the map window
-   * toolbar that initiates the capture
+   * Expects to be added to a {@link Map}. Adds a button to the map window toolbar that initiates
+   * the capture
    */
   @Override
   public void addTo(Buildable b) {
@@ -119,7 +116,9 @@ public class ImageSaver extends AbstractToolbarItem {
     GameModule.getGameModule().getGameState().removeGameComponent(this);
   }
 
-  /** @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead. */
+  /**
+   * @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead.
+   */
   @Deprecated(since = "2020-10-01", forRemoval = true)
   public static class IconConfig implements ConfigurerFactory {
     @Override
@@ -128,33 +127,36 @@ public class ImageSaver extends AbstractToolbarItem {
     }
   }
 
-  /**
-   * Write a PNG-encoded snapshot of the map.
-   */
+  /** Write a PNG-encoded snapshot of the map. */
   public void writeMapAsImage() {
     // prompt user for image filename
     final FileChooser fc = GameModule.getGameModule().getFileChooser();
     fc.setSelectedFile(
-      new File(fc.getCurrentDirectory(),
-      GameModule.getGameModule().getLocalizedGameName() + "Map.png")
-    );
+        new File(
+            fc.getCurrentDirectory(),
+            GameModule.getGameModule().getLocalizedGameName() + "Map.png"));
     fc.addChoosableFileFilter(new PNGFileFilter());
 
-    final Frame frame =
-      (Frame) SwingUtilities.getAncestorOfClass(Frame.class, map.getView());
+    final Frame frame = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, map.getView());
 
     if (fc.showSaveDialog(frame) != FileChooser.APPROVE_OPTION) return;
 
     final File file = fc.getSelectedFile();
 
-    dialog = new ProgressDialog(frame, Resources.getString("Editor.ImageSaver.saving_map_image_title"),
-                                       Resources.getString("Editor.ImageSaver.saving_map_image_text"));
+    dialog =
+        new ProgressDialog(
+            frame,
+            Resources.getString("Editor.ImageSaver.saving_map_image_title"),
+            Resources.getString("Editor.ImageSaver.saving_map_image_text"));
 
     // force the dialog to be a reasonable width
     // FIXME: this is not really a good way to do this---should do
     // something with the minimum size or font metrics
-    final int l = Resources.getString("Editor.ImageSaver.saving_map_image_as").length() + file.getName().length() + 7;
-    dialog.setLabel("N".repeat(Math.max(0, l))); //NON-NLS
+    final int l =
+        Resources.getString("Editor.ImageSaver.saving_map_image_as").length()
+            + file.getName().length()
+            + 7;
+    dialog.setLabel("N".repeat(Math.max(0, l))); // NON-NLS
 
     SwingUtils.repack(dialog);
     dialog.setLabel(Resources.getString("Editor.ImageSaver.saving_map_image_as") + " ");
@@ -177,8 +179,7 @@ public class ImageSaver extends AbstractToolbarItem {
       if (s.width < s.height) {
         w = 1;
         h = s.height / s.width;
-      }
-      else {
+      } else {
         h = 1;
         w = s.width / s.height;
       }
@@ -201,19 +202,18 @@ public class ImageSaver extends AbstractToolbarItem {
   protected void writeMapRectAsImage(File file, int x, int y, int w, int h) {
     final SnapshotTask task = new SnapshotTask(file, x, y, w, h);
 
-    task.addPropertyChangeListener(e -> {
-      if ("progress".equals(e.getPropertyName())) { //NON-NLS
-        dialog.setProgress((Integer) e.getNewValue());
-      }
-      else if ("state".equals(e.getPropertyName())) { //NON-NLS
-        if (e.getNewValue() ==
-            SwingWorker.StateValue.DONE) {
-          // close the dialog on cancellation or completion
-          dialog.setVisible(false);
-          dialog.dispose();
-        }
-      }
-    });
+    task.addPropertyChangeListener(
+        e -> {
+          if ("progress".equals(e.getPropertyName())) { // NON-NLS
+            dialog.setProgress((Integer) e.getNewValue());
+          } else if ("state".equals(e.getPropertyName())) { // NON-NLS
+            if (e.getNewValue() == SwingWorker.StateValue.DONE) {
+              // close the dialog on cancellation or completion
+              dialog.setVisible(false);
+              dialog.dispose();
+            }
+          }
+        });
 
     dialog.addActionListener(e -> task.cancel(true));
 
@@ -225,19 +225,22 @@ public class ImageSaver extends AbstractToolbarItem {
     private int tilesDone = 0;
 
     private final File file;
+
     @SuppressWarnings("unused")
     private final int x;
+
     @SuppressWarnings("unused")
     private final int y;
+
     private final int w;
     private final int h;
 
-    private final Color bg = ColorConfigurer.stringToColor(
-      map.getAttributeValueString(Map.BACKGROUND_COLOR));
+    private final Color bg =
+        ColorConfigurer.stringToColor(map.getAttributeValueString(Map.BACKGROUND_COLOR));
 
     private final List<File> files = new ArrayList<>();
 
-// FIXME: SnapshotTask ignores x,y!
+    // FIXME: SnapshotTask ignores x,y!
     public SnapshotTask(File file, int x, int y, int w, int h) {
       this.file = file;
       this.x = x;
@@ -246,30 +249,30 @@ public class ImageSaver extends AbstractToolbarItem {
       this.h = h;
     }
 
-    private void writeImage(final File f, BufferedImage img, Rectangle r)
-                                                          throws IOException {
+    private void writeImage(final File f, BufferedImage img, Rectangle r) throws IOException {
 
       files.add(f);
 
       // make sure that we can write the file before proceeding
       if (f.exists() && (f.getPath().isEmpty() || !f.canWrite())) {
-        throw new IOException(
-          "Cannot write to the file \"" + f.getAbsolutePath() + "\"");
-      }
-      else {
+        throw new IOException("Cannot write to the file \"" + f.getAbsolutePath() + "\"");
+      } else {
         final File p = f.getParentFile();
         if (p.isDirectory() && !p.canWrite()) {
-          throw new IOException(
-            "Cannot write to the directory \"" + p.getAbsolutePath() + "\""
-          );
+          throw new IOException("Cannot write to the directory \"" + p.getAbsolutePath() + "\"");
         }
       }
 
       // update the dialog on the EDT
-      SwingUtilities.invokeLater(() -> {
-        dialog.setLabel(Resources.getString("Editor.ImageSaver.saving_map_image_as") + " " + f.getName() + ":");
-        dialog.setIndeterminate(true);
-      });
+      SwingUtilities.invokeLater(
+          () -> {
+            dialog.setLabel(
+                Resources.getString("Editor.ImageSaver.saving_map_image_as")
+                    + " "
+                    + f.getName()
+                    + ":");
+            dialog.setIndeterminate(true);
+          });
 
       // FIXME: do something to estimate how long painting will take
       final Graphics2D g = img.createGraphics();
@@ -286,33 +289,32 @@ public class ImageSaver extends AbstractToolbarItem {
       // update the dialog on the EDT
       SwingUtilities.invokeLater(() -> dialog.setIndeterminate(false));
 
-      final ImageWriter iw = ImageIO.getImageWritersByFormatName("png").next(); //NON-NLS
-      iw.addIIOWriteProgressListener(new IIOWriteProgressListener() {
-        @Override
-        public void imageComplete(ImageWriter source) { }
+      final ImageWriter iw = ImageIO.getImageWritersByFormatName("png").next(); // NON-NLS
+      iw.addIIOWriteProgressListener(
+          new IIOWriteProgressListener() {
+            @Override
+            public void imageComplete(ImageWriter source) {}
 
-        @Override
-        public void imageProgress(ImageWriter source, float percentageDone) {
-          setProgress(Math.round((100 * tilesDone + percentageDone) / tiles));
-        }
+            @Override
+            public void imageProgress(ImageWriter source, float percentageDone) {
+              setProgress(Math.round((100 * tilesDone + percentageDone) / tiles));
+            }
 
-        @Override
-        public void imageStarted(ImageWriter source, int imageIndex) { }
+            @Override
+            public void imageStarted(ImageWriter source, int imageIndex) {}
 
-        @Override
-        public void thumbnailComplete(ImageWriter source) { }
+            @Override
+            public void thumbnailComplete(ImageWriter source) {}
 
-        @Override
-        public void thumbnailProgress(ImageWriter source,
-                                      float percentageDone) { }
+            @Override
+            public void thumbnailProgress(ImageWriter source, float percentageDone) {}
 
-        @Override
-        public void thumbnailStarted(ImageWriter source,
-                                     int imageIndex, int thumbnailIndex) { }
+            @Override
+            public void thumbnailStarted(ImageWriter source, int imageIndex, int thumbnailIndex) {}
 
-        @Override
-        public void writeAborted(ImageWriter source) { }
-      });
+            @Override
+            public void writeAborted(ImageWriter source) {}
+          });
 
       try (ImageOutputStream os = ImageIO.createImageOutputStream(f)) {
         if (os == null) {
@@ -321,8 +323,7 @@ public class ImageSaver extends AbstractToolbarItem {
 
         iw.setOutput(os);
         iw.write(img);
-      }
-      finally {
+      } finally {
         iw.dispose();
       }
     }
@@ -338,11 +339,10 @@ public class ImageSaver extends AbstractToolbarItem {
       // ensure that the size of the image data array (4 bytes per pixel)
       // does not exceed the maximum array size, 2^31-1 elements;
       // otherwise we'll overflow an int and have a negative array size
-      while ((long)tw * th > Integer.MAX_VALUE / 4) {
+      while ((long) tw * th > Integer.MAX_VALUE / 4) {
         if (tw > th) {
           tw = (int) Math.ceil(tw / 2.0);
-        }
-        else {
+        } else {
           th = (int) Math.ceil(th / 2.0);
         }
       }
@@ -351,12 +351,10 @@ public class ImageSaver extends AbstractToolbarItem {
       while (img == null) {
         try {
           img = new BufferedImage(tw, th, BufferedImage.TYPE_INT_ARGB);
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
           if (tw > th) {
             tw = (int) Math.ceil(tw / 2.0);
-          }
-          else {
+          } else {
             th = (int) Math.ceil(th / 2.0);
           }
         }
@@ -366,17 +364,15 @@ public class ImageSaver extends AbstractToolbarItem {
         // write the whole map as one image
         tiles = 1;
         writeImage(file, img, new Rectangle(0, 0, w, h));
-      }
-      else {
+      } else {
         // get the base name of the files to write
         final String base;
         final String suffix;
         final String s = file.getName();
-        if (s.endsWith(".png")) { //NON-NLS
+        if (s.endsWith(".png")) { // NON-NLS
           base = s.substring(0, s.lastIndexOf('.'));
-          suffix = ".png"; //NON-NLS
-        }
-        else {
+          suffix = ".png"; // NON-NLS
+        } else {
           base = s;
           suffix = "";
         }
@@ -390,15 +386,11 @@ public class ImageSaver extends AbstractToolbarItem {
         // tile across the map with images of size tw by th.
         for (int tx = 0; tx < tcols; ++tx) {
           for (int ty = 0; ty < trows; ++ty) {
-            final File f = new File(file.getParent(),
-              base + "." + tx + "." + ty + suffix);
+            final File f = new File(file.getParent(), base + "." + tx + "." + ty + suffix);
 
-            final Rectangle r = new Rectangle(
-              tw * tx,
-              th * ty,
-              Math.min(tw, w - tw * tx),
-              Math.min(th, h - th * ty)
-            );
+            final Rectangle r =
+                new Rectangle(
+                    tw * tx, th * ty, Math.min(tw, w - tw * tx), Math.min(th, h - th * ty));
 
             writeImage(f, img, r);
             ++tilesDone;
@@ -413,29 +405,25 @@ public class ImageSaver extends AbstractToolbarItem {
     protected void done() {
       try {
         get();
-      }
-      catch (CancellationException e) {
+      } catch (CancellationException e) {
         // on cancellation, remove all files we created
         for (final File f : files) f.delete();
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         ErrorDialog.bug(e);
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         Throwable c = e;
 
         // Unwrap until we hit a cause which is not an ExecutionException
-        while ((c = c.getCause()) instanceof ExecutionException); // NOPMD
+        while ((c = c.getCause()) instanceof ExecutionException)
+          ; // NOPMD
 
         if (c instanceof IOException) {
           WriteErrorDialog.error(e, (IOException) c, files.get(files.size() - 1));
-        }
-        else if (c instanceof InterruptedException) {
+        } else if (c instanceof InterruptedException) {
           // This is thrown by the inner imageop when the task is cancelled.
           // on cancellation, remove all files we created
           for (final File f : files) f.delete();
-        }
-        else {
+        } else {
           ErrorDialog.bug(e);
         }
       }
@@ -444,11 +432,11 @@ public class ImageSaver extends AbstractToolbarItem {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "ImageCapture"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "ImageCapture"); // NON-NLS
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.ImageSaver.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.ImageSaver.component_type"); // $NON-NLS-1$
   }
 
   @Override

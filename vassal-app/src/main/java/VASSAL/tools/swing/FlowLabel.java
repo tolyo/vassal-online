@@ -20,7 +20,6 @@ package VASSAL.tools.swing;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
 import javax.swing.JDialog;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
@@ -30,8 +29,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 /**
- * A label which word-wraps and fully justifies its text, and which
- * reflows the text when resized.
+ * A label which word-wraps and fully justifies its text, and which reflows the text when resized.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -42,8 +40,7 @@ public class FlowLabel extends JTextPane {
   private static final int DEFAULT_WIDTH = 40;
 
   /**
-   * Creates a <code>FlowLabel</code> with the desired text and
-   * an initial width of 40em.
+   * Creates a <code>FlowLabel</code> with the desired text and an initial width of 40em.
    *
    * @param text the text for the label
    */
@@ -52,8 +49,7 @@ public class FlowLabel extends JTextPane {
   }
 
   /**
-   * Creates a <code>FlowLabel</code> with the desired text
-   * and width.
+   * Creates a <code>FlowLabel</code> with the desired text and width.
    *
    * @param text the text for the label
    * @param width the initial width of the label in em
@@ -96,13 +92,14 @@ public class FlowLabel extends JTextPane {
     setPreferredSize(d);
 
     // unset the preferred size once we are laid out the first time
-    addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentResized(ComponentEvent e) {
-        setPreferredSize(null);
-        removeComponentListener(this);
-      }
-    });
+    addComponentListener(
+        new ComponentAdapter() {
+          @Override
+          public void componentResized(ComponentEvent e) {
+            setPreferredSize(null);
+            removeComponentListener(this);
+          }
+        });
 
     //
     // end of preferred size kludge
@@ -118,10 +115,11 @@ public class FlowLabel extends JTextPane {
   }
 
   public static void main(String[] args) {
-    final String loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."; //NON-NLS
+    final String loremIpsum =
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."; // NON-NLS
 
     final JDialog d = new JDialog();
-    d.setTitle("Flow Label Test"); //NON-NLS
+    d.setTitle("Flow Label Test"); // NON-NLS
     d.setModal(true);
     d.setResizable(true);
     d.setLocationRelativeTo(null);

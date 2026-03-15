@@ -20,21 +20,21 @@ package VASSAL.build.module;
 import VASSAL.command.Command;
 
 /**
- * A GameComponent is any object which reacts to the start/end of a
- * game, or whose state can be saved as part of a game.  */
-
+ * A GameComponent is any object which reacts to the start/end of a game, or whose state can be
+ * saved as part of a game.
+ */
 public interface GameComponent {
   /**
    * Notify the GameComponent that a game has started/ended
-   * @param gameStarting if true, a game is starting.  If false, then a game is ending
+   *
+   * @param gameStarting if true, a game is starting. If false, then a game is ending
    */
   void setup(boolean gameStarting);
 
   /**
-   * When saving a game, each GameComponent should return a {@link
-   * Command} that, when executed, restores the GameComponent to its
-   * state when the game was saved
-   * If this component has no persistent state, return null
+   * When saving a game, each GameComponent should return a {@link Command} that, when executed,
+   * restores the GameComponent to its state when the game was saved If this component has no
+   * persistent state, return null
    */
   Command getRestoreCommand();
 }

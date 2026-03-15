@@ -30,7 +30,8 @@ public class NamedHotKeyConfigurerTest {
 
     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
 
-      // Create a static mock for IconFactory and return a dummy image when asked. Allows Editors with Beanshell configurers to initialise.
+      // Create a static mock for IconFactory and return a dummy image when asked. Allows Editors
+      // with Beanshell configurers to initialise.
       try (MockedStatic<IconFactory> staticIf = Mockito.mockStatic(IconFactory.class)) {
 
         // Mock DataArchive to return a list of image names
@@ -44,7 +45,9 @@ public class NamedHotKeyConfigurerTest {
         staticGm.when(GameModule::getGameModule).thenReturn(gm);
 
         // Return Dummy icons from IconFactory
-        staticIf.when(() -> IconFactory.getIcon(any(String.class), anyInt())).thenReturn(new ImageIcon(dummyImage));
+        staticIf
+            .when(() -> IconFactory.getIcon(any(String.class), anyInt()))
+            .thenReturn(new ImageIcon(dummyImage));
 
         NamedKeyManager nkm = new NamedKeyManager();
         final String key = "key"; // NON-NLS
@@ -57,7 +60,7 @@ public class NamedHotKeyConfigurerTest {
         // check gui builds
         config.getControls();
 
-        //Check basic functionality
+        // Check basic functionality
         assertThat(config.getKey(), is(equalTo(key)));
         assertThat(config.getName(), is(equalTo(name)));
         assertThat(config.getValue(), is(equalTo(namedStroke)));
@@ -79,7 +82,7 @@ public class NamedHotKeyConfigurerTest {
 
         // Repeat with an old-style KeyStroke
 
-        //Check basic functionality
+        // Check basic functionality
         assertThat(config.getKey(), is(equalTo(key)));
         assertThat(config.getName(), is(equalTo(name)));
         assertThat(config.getValue(), is(equalTo(keyStroke)));

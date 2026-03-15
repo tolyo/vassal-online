@@ -23,9 +23,14 @@ import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang3.SystemUtils;
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -39,31 +44,26 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
- * A configurer for Configuring Key Strokes. It allows the entry of either
- * a standard keystroke, or a Named command.
+ * A configurer for Configuring Key Strokes. It allows the entry of either a standard keystroke, or
+ * a Named command.
  *
- * It contains two separate Text fields, one for the Name and one for the keystroke.
- * A user can fill in one or the other. Filling in one, clears the other.
+ * <p>It contains two separate Text fields, one for the Name and one for the keystroke. A user can
+ * fill in one or the other. Filling in one, clears the other.
  *
- * This Configurer has a limited undo function. Whenever one of the two fields gains focus,
- * the current state of the Configurer is saved and the Undo button enabled.
- * The undo button will return to the state when that field gained focus.
- * This provides a one-step undo if a user accidentally types in one of the fields and
- * wipes out data in the other field.
+ * <p>This Configurer has a limited undo function. Whenever one of the two fields gains focus, the
+ * current state of the Configurer is saved and the Undo button enabled. The undo button will return
+ * to the state when that field gained focus. This provides a one-step undo if a user accidentally
+ * types in one of the fields and wipes out data in the other field.
  */
 public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
-  private static final String STROKE_HINT = Resources.getString("Editor.NamedHotKeyConfigurer.keystroke");
-  private static final String NAME_HINT = Resources.getString("Editor.NamedHotKeyConfigurer.command");
+  private static final String STROKE_HINT =
+      Resources.getString("Editor.NamedHotKeyConfigurer.keystroke");
+  private static final String NAME_HINT =
+      Resources.getString("Editor.NamedHotKeyConfigurer.command");
   private HintTextField keyStroke;
   private HintTextField keyName;
   private JPanel controls;
@@ -95,6 +95,7 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
 
   /**
    * Return a String representation of a NamedKeyStroke
+   *
    * @param k NamedKeyStroke
    * @return String representation
    */
@@ -104,6 +105,7 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
 
   /**
    * Return a string representation of a KeyStroke
+   *
    * @param k KeyStroke
    * @return String representation
    */
@@ -111,7 +113,8 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     return NamedKeyManager.isNamed(k) ? "" : HotKeyConfigurer.getString(k);
   }
 
-  public NamedHotKeyConfigurer(String key, String name, NamedKeyStroke val, int defaultFieldLength) {
+  public NamedHotKeyConfigurer(
+      String key, String name, NamedKeyStroke val, int defaultFieldLength) {
     super(key, name, val);
     this.defaultFieldLength = defaultFieldLength;
   }
@@ -164,8 +167,7 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
       if (stroke != null && stroke.isNamed()) {
         keyName.setText(stroke.getName());
         keyStroke.setText("");
-      }
-      else {
+      } else {
         keyName.setText("");
         keyStroke.setText(getString(stroke));
       }
@@ -190,12 +192,11 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
   }
 
   private void updateValueFromKeyName() {
-    if (! isFrozen()) {
+    if (!isFrozen()) {
       final String key = keyName.getText();
       if (key.isEmpty()) {
         setValue(NamedKeyStroke.NULL_KEYSTROKE);
-      }
-      else {
+      } else {
         setValue(NamedKeyStroke.of(key));
       }
     }
@@ -206,7 +207,8 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     if (controls == null) {
       controls = new ConfigurerPanel(getName(), "[fill,grow]", "[][fill,grow]"); // NON-NLS
       keyStroke = getKeyStroke();
-      keyStroke.setMaximumSize(new Dimension(keyStroke.getMaximumSize().width, keyStroke.getPreferredSize().height));
+      keyStroke.setMaximumSize(
+          new Dimension(keyStroke.getMaximumSize().width, keyStroke.getPreferredSize().height));
       keyStroke.setText(keyToString());
       keyStroke.addKeyListener(new KeyStrokeAdapter());
       ((AbstractDocument) keyStroke.getDocument()).setDocumentFilter(new KeyStrokeFilter());
@@ -215,25 +217,29 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
       keyStroke.setTransferHandler(null);
 
       keyName = getKeyName();
-      keyName.setMaximumSize(new Dimension(keyName.getMaximumSize().width, keyName.getPreferredSize().height));
+      keyName.setMaximumSize(
+          new Dimension(keyName.getMaximumSize().width, keyName.getPreferredSize().height));
       keyName.setText(getValueNamedKeyStroke() == null ? null : getValueNamedKeyStroke().getName());
       ((AbstractDocument) keyName.getDocument()).setDocumentFilter(new KeyNameFilter());
       keyName.addFocusListener(this);
 
       // Edit box selects all text when first focused
-      keyName.addFocusListener(new java.awt.event.FocusAdapter() {
-        @Override
-        public void focusGained(FocusEvent evt) {
-          SwingUtilities.invokeLater(new Runnable() {
+      keyName.addFocusListener(
+          new java.awt.event.FocusAdapter() {
             @Override
-            public void run() {
-              keyName.selectAll();
+            public void focusGained(FocusEvent evt) {
+              SwingUtilities.invokeLater(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      keyName.selectAll();
+                    }
+                  });
             }
           });
-        }
-      });
 
-      final JPanel panel = new JPanel(new MigLayout("ins 0", "[fill,grow]0[]0[fill,grow]0[]")); // NON-NLS
+      final JPanel panel =
+          new JPanel(new MigLayout("ins 0", "[fill,grow]0[]0[fill,grow]0[]")); // NON-NLS
 
       final LayerUI<JTextField> layerUI = new ConfigLayerUI(this);
       final JLayer<JTextField> nameLayer = new JLayer<>(keyName, layerUI);
@@ -275,9 +281,7 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
   }
 
   @Override
-  public void focusLost(FocusEvent e) {
-
-  }
+  public void focusLost(FocusEvent e) {}
 
   public String keyToString() {
     return getString((NamedKeyStroke) getValue());
@@ -291,9 +295,7 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     return i >= ' ' && i <= '~';
   }
 
-  /**
-   * Decode a String into a NamedKeyStroke
-   */
+  /** Decode a String into a NamedKeyStroke */
   public static NamedKeyStroke decode(String s) {
     if (s == null) {
       return NamedKeyStroke.NULL_KEYSTROKE;
@@ -304,24 +306,19 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     }
 
     try {
-      final KeyStroke stroke = KeyStroke.getKeyStroke(
-        Integer.parseInt(parts[0]),
-        Integer.parseInt(parts[1])
-      );
+      final KeyStroke stroke =
+          KeyStroke.getKeyStroke(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
       String name = null;
       if (parts.length > 2) {
         name = parts[2];
       }
       return NamedKeyStroke.of(stroke, name);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       return NamedKeyStroke.NULL_KEYSTROKE;
     }
   }
 
-  /**
-   * Encode a NamedKeyStroke into a String
-   */
+  /** Encode a NamedKeyStroke into a String */
   public static String encode(NamedKeyStroke stroke) {
     if (stroke == null) {
       return "";
@@ -387,33 +384,37 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     public void keyPressed(KeyEvent e) {
       // reportKeyEvent("KEY_PRESSED", e); // NON-NLS
       switch (e.getKeyCode()) {
-      case KeyEvent.VK_DELETE:
-      case KeyEvent.VK_BACK_SPACE:
-        // Allow mapping of Delete
-        if (getValue().equals(NamedKeyStroke.NULL_KEYSTROKE) || e.isShiftDown() || e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
+        case KeyEvent.VK_DELETE:
+        case KeyEvent.VK_BACK_SPACE:
+          // Allow mapping of Delete
+          if (getValue().equals(NamedKeyStroke.NULL_KEYSTROKE)
+              || e.isShiftDown()
+              || e.isControlDown()
+              || e.isMetaDown()
+              || e.isAltDown()) {
+            setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
+          } else {
+            setValue(NamedKeyStroke.NULL_KEYSTROKE);
+          }
+          break;
+        case KeyEvent.VK_SHIFT:
+        case KeyEvent.VK_CONTROL:
+        case KeyEvent.VK_META:
+        case KeyEvent.VK_ALT:
+        case KeyEvent.VK_ALT_GRAPH:
+        case KeyEvent.VK_UNDEFINED:
+          break;
+
+        // BR// Consume ESC & Enter events so that we don't close a piece editor dialog while
+        // editing a keystroke
+        case KeyEvent.VK_ESCAPE:
+        case KeyEvent.VK_ENTER:
+          e.consume();
           setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
-        }
-        else {
-          setValue(NamedKeyStroke.NULL_KEYSTROKE);
-        }
-        break;
-      case KeyEvent.VK_SHIFT:
-      case KeyEvent.VK_CONTROL:
-      case KeyEvent.VK_META:
-      case KeyEvent.VK_ALT:
-      case KeyEvent.VK_ALT_GRAPH:
-      case KeyEvent.VK_UNDEFINED:
-        break;
+          break;
 
-      //BR// Consume ESC & Enter events so that we don't close a piece editor dialog while editing a keystroke
-      case KeyEvent.VK_ESCAPE:
-      case KeyEvent.VK_ENTER:
-        e.consume();
-        setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
-        break;
-
-      default:
-        setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
+        default:
+          setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
       }
     }
 
@@ -424,27 +425,30 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     public void keyReleased(KeyEvent e) {
       // reportKeyEvent("KEY_RELEASED", e); // NON-NLS
       switch (e.getKeyCode()) {
-      case KeyEvent.VK_DELETE:
-      case KeyEvent.VK_BACK_SPACE:
-        if (SystemUtils.IS_OS_MAC) {
-          // Allow mapping of Delete
-          if (getValue().equals(NamedKeyStroke.NULL_KEYSTROKE) || e.isShiftDown() || e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
-            setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
+        case KeyEvent.VK_DELETE:
+        case KeyEvent.VK_BACK_SPACE:
+          if (SystemUtils.IS_OS_MAC) {
+            // Allow mapping of Delete
+            if (getValue().equals(NamedKeyStroke.NULL_KEYSTROKE)
+                || e.isShiftDown()
+                || e.isControlDown()
+                || e.isMetaDown()
+                || e.isAltDown()) {
+              setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
+            } else {
+              setValue(NamedKeyStroke.NULL_KEYSTROKE);
+            }
           }
-          else {
-            setValue(NamedKeyStroke.NULL_KEYSTROKE);
-          }
-        }
-        break;
-      case KeyEvent.VK_SHIFT:
-      case KeyEvent.VK_CONTROL:
-      case KeyEvent.VK_META:
-      case KeyEvent.VK_ALT:
-      case KeyEvent.VK_ALT_GRAPH:
-      case KeyEvent.VK_UNDEFINED:
-        break;
-      default:
-        setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
+          break;
+        case KeyEvent.VK_SHIFT:
+        case KeyEvent.VK_CONTROL:
+        case KeyEvent.VK_META:
+        case KeyEvent.VK_ALT:
+        case KeyEvent.VK_ALT_GRAPH:
+        case KeyEvent.VK_UNDEFINED:
+          break;
+        default:
+          setValue(NamedKeyStroke.of(SwingUtils.convertKeyEvent(e)));
       }
     }
   }
@@ -458,14 +462,16 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
     }
 
     @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+        throws BadLocationException {
       super.insertString(fb, offset, string, attr);
       updateValueFromKeyName();
       keyName.setCaretPosition(offset + (string == null ? 0 : string.length()));
     }
 
     @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+        throws BadLocationException {
       super.replace(fb, offset, length, text, attrs);
       updateValueFromKeyName();
       keyName.setCaretPosition(offset + (text == null ? 0 : text.length()));
@@ -474,7 +480,8 @@ public class NamedHotKeyConfigurer extends Configurer implements FocusListener {
 
   private class KeyStrokeFilter extends DocumentFilter {
     @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+        throws BadLocationException {
       super.replace(fb, 0, keyStroke.getText().length(), text, attrs);
     }
   }

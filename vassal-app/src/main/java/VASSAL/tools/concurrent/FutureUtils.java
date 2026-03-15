@@ -18,11 +18,10 @@
 
 package VASSAL.tools.concurrent;
 
+import VASSAL.tools.ErrorDialog;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import VASSAL.tools.ErrorDialog;
 
 /**
  * @author Joel Uckelman
@@ -39,11 +38,9 @@ public class FutureUtils {
   public static void wait(Future<?> future) {
     try {
       future.get();
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       e.printStackTrace();
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       ErrorDialog.bug(e);
     }
   }

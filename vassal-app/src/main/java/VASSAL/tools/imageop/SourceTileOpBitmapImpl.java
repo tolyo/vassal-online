@@ -18,19 +18,17 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import VASSAL.tools.image.ImageUtils;
-
 /**
- * An {@link ImageOp} for producing tiles directly from a source,
- * without cobbling tiles from the source.
+ * An {@link ImageOp} for producing tiles directly from a source, without cobbling tiles from the
+ * source.
  *
  * @since 3.1.0
  * @author Joel Uckelman
@@ -43,8 +41,7 @@ public class SourceTileOpBitmapImpl extends AbstractTileOpImpl {
   public SourceTileOpBitmapImpl(ImageOp sop, int tileX, int tileY) {
     if (sop == null) throw new IllegalArgumentException();
 
-    if (tileX < 0 || tileX >= sop.getNumXTiles() ||
-        tileY < 0 || tileY >= sop.getNumYTiles())
+    if (tileX < 0 || tileX >= sop.getNumXTiles() || tileY < 0 || tileY >= sop.getNumYTiles())
       throw new IndexOutOfBoundsException();
 
     this.sop = sop;
@@ -61,12 +58,8 @@ public class SourceTileOpBitmapImpl extends AbstractTileOpImpl {
 
     size = new Dimension(x1 - x0, y1 - y0);
 
-    hash = new HashCodeBuilder().append(sop)
-                                .append(x0)
-                                .append(y0)
-                                .append(x1)
-                                .append(y1)
-                                .toHashCode();
+    hash =
+        new HashCodeBuilder().append(sop).append(x0).append(y0).append(x1).append(y1).toHashCode();
   }
 
   @Override
@@ -77,9 +70,9 @@ public class SourceTileOpBitmapImpl extends AbstractTileOpImpl {
   @Override
   public BufferedImage eval() throws Exception {
     final BufferedImage src = sop.getImage(null);
-    final BufferedImage dst = ImageUtils.createCompatibleImage(
-      size.width, size.height, src.getTransparency() != BufferedImage.OPAQUE
-    );
+    final BufferedImage dst =
+        ImageUtils.createCompatibleImage(
+            size.width, size.height, src.getTransparency() != BufferedImage.OPAQUE);
 
     final Graphics2D g = dst.createGraphics();
     g.drawImage(src, 0, 0, size.width, size.height, x0, y0, x1, y1, null);
@@ -89,7 +82,7 @@ public class SourceTileOpBitmapImpl extends AbstractTileOpImpl {
   }
 
   @Override
-  protected void fixSize() { }
+  protected void fixSize() {}
 
   @Override
   public boolean equals(Object o) {
@@ -97,11 +90,7 @@ public class SourceTileOpBitmapImpl extends AbstractTileOpImpl {
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final SourceTileOpBitmapImpl op = (SourceTileOpBitmapImpl) o;
-    return x0 == op.x0 &&
-           y0 == op.y0 &&
-           x1 == op.x1 &&
-           y1 == op.y1 &&
-           sop.equals(op.sop);
+    return x0 == op.x0 && y0 == op.y0 && x1 == op.x1 && y1 == op.y1 && sop.equals(op.sop);
   }
 
   @Override

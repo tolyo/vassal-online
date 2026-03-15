@@ -5,9 +5,9 @@ import VASSAL.counters.GamePiece;
 import VASSAL.property.PersistentPropertyContainer;
 
 /**
- * This Command sets a Persistent Property in a PersistentPropertyContainer.
- * Currently only BasicPiece and Decorator implement PersistentPropertyContainer.
- * The Undo Command is a SetPropertyCommand to set the value back to the original value.
+ * This Command sets a Persistent Property in a PersistentPropertyContainer. Currently only
+ * BasicPiece and Decorator implement PersistentPropertyContainer. The Undo Command is a
+ * SetPropertyCommand to set the value back to the original value.
  */
 public class SetPersistentPropertyCommand extends Command {
   public static final String COMMAND_PREFIX = "SPP\t"; // NON-NLS
@@ -15,7 +15,6 @@ public class SetPersistentPropertyCommand extends Command {
   protected Object oldValue;
   protected Object newValue;
   protected String id;
-
 
   public SetPersistentPropertyCommand(String id, Object key, Object oldValue, Object newValue) {
     setKey(key);
@@ -76,5 +75,4 @@ public class SetPersistentPropertyCommand extends Command {
   public void setId(String id) {
     this.id = id;
   }
-
 }

@@ -30,7 +30,7 @@ public class ScriptInterpreter extends AbstractInterpreter {
     super();
     setClassLoader(loader);
 
-    myNameSpace = new NameSpace(getClassManager(), "script"); //NON-NLS
+    myNameSpace = new NameSpace(getClassManager(), "script"); // NON-NLS
 
     setNameSpace(myNameSpace);
     getNameSpace().importClass("VASSAL.build.module.properties.PropertySource");
@@ -38,7 +38,6 @@ public class ScriptInterpreter extends AbstractInterpreter {
     getNameSpace().importClass("VASSAL.script.ScriptInterpreter");
 
     setVar(THIS, this);
-
   }
 
   public Object evaluate(String statement) throws EvalError {

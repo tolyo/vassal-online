@@ -18,10 +18,23 @@ import VASSAL.build.module.ToolbarMenu;
 public class ModuleSubFolder extends AbstractFolder {
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { this.getClass(), Map.class, PieceWindow.class,
-                            ToolbarMenu.class, MultiActionButton.class, DoActionButton.class, DiceButton.class, GlobalKeyCommand.class,
-                            StartupGlobalKeyCommand.class, Inventory.class, RandomTextButton.class, SpecialDiceButton.class,
-                            // ChartWindow.class,  //BR// These little hierarchies weren't wanting to behave (visually) in a folder, for no reason I could discern, so presently I have deemed them "not worth it".
-                            PrivateMap.class, PlayerHand.class};
+    return new Class<?>[] {
+      this.getClass(),
+      Map.class,
+      PieceWindow.class,
+      ToolbarMenu.class,
+      MultiActionButton.class,
+      DoActionButton.class,
+      DiceButton.class,
+      GlobalKeyCommand.class,
+      StartupGlobalKeyCommand.class,
+      Inventory.class,
+      RandomTextButton.class,
+      SpecialDiceButton.class,
+      // ChartWindow.class,  //BR// These little hierarchies weren't wanting to behave (visually) in
+      // a folder, for no reason I could discern, so presently I have deemed them "not worth it".
+      PrivateMap.class,
+      PlayerHand.class
+    };
   }
 }

@@ -17,26 +17,22 @@
  */
 package VASSAL.tools.filechooser;
 
+import VASSAL.configure.DirectoryConfigurer;
+import VASSAL.i18n.Resources;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import VASSAL.i18n.Resources;
 import org.apache.commons.lang3.SystemUtils;
 
-import VASSAL.configure.DirectoryConfigurer;
-
 /**
- * FileChooser provides a wrapper for {@link javax.swing.JFileChooser} and
- * {@link java.awt.FileDialog}, selecting whichever is preferred on the
- * user's OS. <code>FileChooser</code>'s methods mirror those of
- * <code>JFileChooser</code>.
+ * FileChooser provides a wrapper for {@link javax.swing.JFileChooser} and {@link
+ * java.awt.FileDialog}, selecting whichever is preferred on the user's OS. <code>FileChooser</code>
+ * 's methods mirror those of <code>JFileChooser</code>.
  *
  * @author Joel Uckelman
  */
@@ -65,23 +61,22 @@ public abstract class FileChooser {
   /**
    * Creates a FileChooser appropriate for the user's OS.
    *
-   * @param parent
-   *          The Component over which the FileChooser should appear.
-   * @param prefs
-   *          A FileConfigure that stores the preferred starting directory of the FileChooser in preferences
+   * @param parent The Component over which the FileChooser should appear.
+   * @param prefs A FileConfigure that stores the preferred starting directory of the FileChooser in
+   *     preferences
    */
-  public static FileChooser createFileChooser(Component parent, DirectoryConfigurer prefs, int mode) {
+  public static FileChooser createFileChooser(
+      Component parent, DirectoryConfigurer prefs, int mode) {
     final FileChooser fc;
     if (SystemUtils.IS_OS_MAC) {
       // Mac has a good native file dialog
-      System.setProperty("apple.awt.fileDialogForDirectories", String.valueOf(mode == DIRECTORIES_ONLY));
+      System.setProperty(
+          "apple.awt.fileDialogForDirectories", String.valueOf(mode == DIRECTORIES_ONLY));
       fc = new NativeFileChooser(parent, prefs, mode);
-    }
-    else if (mode == FILES_ONLY) {
+    } else if (mode == FILES_ONLY) {
       // Windows/Linux have a good native file dialog, but it doesn't support selecting directories
       fc = new NativeFileChooser(parent, prefs, mode);
-    }
-    else {
+    } else {
       // Use Swing's dialog for selecting directories on non-Macs
       fc = new SwingFileChooser(parent, prefs, mode);
     }
@@ -116,9 +111,7 @@ public abstract class FileChooser {
 
   public abstract void resetChoosableFileFilters();
 
-  /**
-   * Selects <tt>filename.vsav</tt> if <tt>filename.foo</tt> is selected.
-   */
+  /** Selects <tt>filename.vsav</tt> if <tt>filename.foo</tt> is selected. */
   public void selectDotSavFile() {
     final File file = getSelectedFile();
     if (file != null) {
@@ -132,23 +125,25 @@ public abstract class FileChooser {
   }
 
   /**
-   * Same as {@link #showOpenDialog(Component)}, but uses the <tt>parent</tt> set on creation of this FileDialog.
+   * Same as {@link #showOpenDialog(Component)}, but uses the <tt>parent</tt> set on creation of
+   * this FileDialog.
    */
   public int showOpenDialog() {
     return showOpenDialog(parent);
   }
 
   /**
-   * Same as {@link #showSaveDialog(Component)}, but uses the <tt>parent</tt> set on creation of this FileDialog.
+   * Same as {@link #showSaveDialog(Component)}, but uses the <tt>parent</tt> set on creation of
+   * this FileDialog.
    */
   public int showSaveDialog() {
     return showSaveDialog(parent);
   }
 
   protected void updateDirectoryPreference() {
-    if (prefs != null &&
-        getCurrentDirectory() != null &&
-        !getCurrentDirectory().equals(prefs.getFileValue())) {
+    if (prefs != null
+        && getCurrentDirectory() != null
+        && !getCurrentDirectory().equals(prefs.getFileValue())) {
       prefs.setValue(getCurrentDirectory());
     }
   }
@@ -215,9 +210,9 @@ public abstract class FileChooser {
       int value = fc.showOpenDialog(parent);
       final int mode = fc.getFileSelectionMode();
       final File selected = getSelectedFile();
-      if (value == APPROVE_OPTION &&
-          ((mode == DIRECTORIES_ONLY && !selected.isDirectory()) ||
-           (mode == FILES_ONLY       && !selected.isFile()))) {
+      if (value == APPROVE_OPTION
+          && ((mode == DIRECTORIES_ONLY && !selected.isDirectory())
+              || (mode == FILES_ONLY && !selected.isFile()))) {
         value = ERROR_OPTION;
         fc.setSelectedFile(null);
       }
@@ -230,10 +225,12 @@ public abstract class FileChooser {
       int value = fc.showSaveDialog(parent);
       if (value == APPROVE_OPTION
           && getSelectedFile().exists()
-          && JOptionPane.NO_OPTION == JOptionPane.showConfirmDialog(parent,
-                                                                    Resources.getString("Editor.FileChooser.overwrite", getSelectedFile().getName()),
-                                                                    Resources.getString("Editor.FileChooser.exists"),
-                                                                    JOptionPane.YES_NO_OPTION)) {
+          && JOptionPane.NO_OPTION
+              == JOptionPane.showConfirmDialog(
+                  parent,
+                  Resources.getString("Editor.FileChooser.overwrite", getSelectedFile().getName()),
+                  Resources.getString("Editor.FileChooser.exists"),
+                  JOptionPane.YES_NO_OPTION)) {
         value = CANCEL_OPTION;
       }
       updateDirectoryPreference();
@@ -273,8 +270,7 @@ public abstract class FileChooser {
     private FileFilter filter;
     private int mode;
 
-    public NativeFileChooser(Component parent,
-                             DirectoryConfigurer prefs, int mode) {
+    public NativeFileChooser(Component parent, DirectoryConfigurer prefs, int mode) {
       super(parent, prefs);
 
       if (prefs != null && prefs.getFileValue() != null) {
@@ -299,8 +295,7 @@ public abstract class FileChooser {
     }
 
     @Override
-    public void rescanCurrentDirectory() {
-    }
+    public void rescanCurrentDirectory() {}
 
     @Override
     public File getSelectedFile() {
@@ -335,29 +330,22 @@ public abstract class FileChooser {
 
       if (parent == null) {
         fd = new FileDialog((Frame) null, title);
-      }
-      else if (parent instanceof Dialog) {
+      } else if (parent instanceof Dialog) {
         fd = new FileDialog((Dialog) parent, title);
-      }
-      else if (parent instanceof Frame) {
+      } else if (parent instanceof Frame) {
         fd = new FileDialog((Frame) parent, title);
-      }
-      else {
-        final Dialog d =
-          (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, parent);
+      } else {
+        final Dialog d = (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, parent);
         if (d != null) {
           fd = new FileDialog(d, title);
-        }
-        else {
-          final Frame f =
-            (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
+        } else {
+          final Frame f = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
           if (f != null) {
             fd = new FileDialog(f, title);
-          }
-          else {
+          } else {
             // should be impossible, parent is not in a dialog or frame!
             throw new IllegalArgumentException(
-              "parent is contained in neither a Dialog nor a Frame");
+                "parent is contained in neither a Dialog nor a Frame");
           }
         }
       }
@@ -365,8 +353,7 @@ public abstract class FileChooser {
       fd.setModal(true);
       fd.setFilenameFilter(filter);
       if (cur != null && !cur.getPath().isEmpty()) {
-        if (cur.isDirectory())
-          fd.setDirectory(cur.getPath());
+        if (cur.isDirectory()) fd.setDirectory(cur.getPath());
         else {
           fd.setDirectory(cur.getParent());
           fd.setFile(cur.getName());
@@ -386,16 +373,13 @@ public abstract class FileChooser {
         cur = new File(fd.getDirectory(), fd.getFile());
         if (cur.isFile() && mode == FILES_ONLY) {
           value = APPROVE_OPTION;
-        }
-        else if (cur.isDirectory() && mode == DIRECTORIES_ONLY) {
+        } else if (cur.isDirectory() && mode == DIRECTORIES_ONLY) {
           value = APPROVE_OPTION;
-        }
-        else {
+        } else {
           value = ERROR_OPTION;
           cur = null;
         }
-      }
-      else {
+      } else {
         value = CANCEL_OPTION;
         cur = null;
       }
@@ -413,8 +397,7 @@ public abstract class FileChooser {
       if (fd.getFile() != null) {
         cur = new File(fd.getDirectory(), fd.getFile());
         value = APPROVE_OPTION;
-      }
-      else {
+      } else {
         value = CANCEL_OPTION;
       }
       updateDirectoryPreference();
@@ -432,8 +415,7 @@ public abstract class FileChooser {
     }
 
     @Override
-    public void addChoosableFileFilter(FileFilter filter) {
-    }
+    public void addChoosableFileFilter(FileFilter filter) {}
 
     @Override
     public boolean removeChoosableFileFilter(FileFilter filter) {
@@ -441,7 +423,6 @@ public abstract class FileChooser {
     }
 
     @Override
-    public void resetChoosableFileFilters() {
-    }
+    public void resetChoosableFileFilters() {}
   }
 }

@@ -29,13 +29,11 @@ import VASSAL.i18n.ComponentI18nData;
 import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatableConfigurerFactory;
 import VASSAL.tools.FormattedString;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -45,10 +43,10 @@ import javax.swing.JPanel;
 
 public abstract class TurnLevel extends TurnComponent {
 
-  protected static final String NAME = "name"; //$NON-NLS-1$
-  protected static final String PROP = "property"; //$NON-NLS-1$
-  protected static final String TURN_FORMAT = "turnFormat"; //$NON-NLS-1$
-  protected static final String LEVEL_VALUE = "value"; //$NON-NLS-1$
+  protected static final String NAME = "name"; // $NON-NLS-1$
+  protected static final String PROP = "property"; // $NON-NLS-1$
+  protected static final String TURN_FORMAT = "turnFormat"; // $NON-NLS-1$
+  protected static final String LEVEL_VALUE = "value"; // $NON-NLS-1$
 
   protected TurnTracker turn;
   protected JDialog setDialog;
@@ -65,7 +63,7 @@ public abstract class TurnLevel extends TurnComponent {
 
   protected boolean subLevelRolledOver = false;
   protected boolean rolledOver = false;
-  protected MutableProperty.Impl myValue = new MutableProperty.Impl("", this); //$NON-NLS-1$
+  protected MutableProperty.Impl myValue = new MutableProperty.Impl("", this); // $NON-NLS-1$
 
   protected FormattedString turnFormat;
 
@@ -81,12 +79,14 @@ public abstract class TurnLevel extends TurnComponent {
 
   public TurnLevel() {
     super();
-    turnFormat = new FormattedString("$" + LEVEL_VALUE + "$"); //$NON-NLS-1$ //$NON-NLS-2$
+    turnFormat = new FormattedString("$" + LEVEL_VALUE + "$"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   public void findMaximumStrings(List<String> levels, int currentLevel) {
     final String s = getLongestFormattedValue();
-    if (levels.size() < (currentLevel + 1) || levels.get(currentLevel) == null || levels.get(currentLevel).length() < s.length()) {
+    if (levels.size() < (currentLevel + 1)
+        || levels.get(currentLevel) == null
+        || levels.get(currentLevel).length() < s.length()) {
       levels.add(currentLevel, s);
     }
     for (final Buildable b : getBuildables()) {
@@ -132,8 +132,7 @@ public abstract class TurnLevel extends TurnComponent {
         subLevel = getTurnLevel(currentSubLevel);
         if (initialLevel != currentSubLevel) {
           subLevel.setLow();
-        }
-        else {
+        } else {
           // Prevent an infinite loop if all are inactive.
           break;
         }
@@ -157,8 +156,7 @@ public abstract class TurnLevel extends TurnComponent {
         subLevel = getTurnLevel(currentSubLevel);
         if (initialLevel != currentSubLevel) {
           subLevel.setHigh();
-        }
-        else {
+        } else {
           // Prevent an infinite loop if all are inactive.
           break;
         }
@@ -198,7 +196,6 @@ public abstract class TurnLevel extends TurnComponent {
     }
 
     return menu.getItemCount() == 0 ? null : menu;
-
   }
 
   public boolean isConfigurable() {
@@ -233,17 +230,19 @@ public abstract class TurnLevel extends TurnComponent {
       for (int i = 0; i < s.length; i++) {
         s[i] = getTurnLevel(i).getConfigureName();
       }
-      final StringEnumConfigurer e = new StringEnumConfigurer(null, Resources.getString("Editor.TurnLevel.select"), s);
+      final StringEnumConfigurer e =
+          new StringEnumConfigurer(null, Resources.getString("Editor.TurnLevel.select"), s);
       e.setValue(getTurnLevel(currentSubLevel).getConfigureName());
-      e.addPropertyChangeListener(e1 -> {
-        final String option = ((StringEnumConfigurer) e1.getSource()).getValueString();
-        for (int i = 0; i < getTurnLevelCount(); i++) {
-          if (option.equals(getTurnLevel(i).getConfigureName())) {
-            currentSubLevel = i;
-            addChildControls();
-          }
-        }
-      });
+      e.addPropertyChangeListener(
+          e1 -> {
+            final String option = ((StringEnumConfigurer) e1.getSource()).getValueString();
+            for (int i = 0; i < getTurnLevelCount(); i++) {
+              if (option.equals(getTurnLevel(i).getConfigureName())) {
+                currentSubLevel = i;
+                addChildControls();
+              }
+            }
+          });
       p.add(e.getControls());
       p.add(Box.createRigidArea(FILLER));
     }
@@ -306,20 +305,12 @@ public abstract class TurnLevel extends TurnComponent {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] {
-      String.class,
-      String.class,
-      TurnFormatConfig.class
-    };
+    return new Class<?>[] {String.class, String.class, TurnFormatConfig.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      NAME,
-      PROP,
-      TURN_FORMAT
-    };
+    return new String[] {NAME, PROP, TURN_FORMAT};
   }
 
   @Override
@@ -327,12 +318,10 @@ public abstract class TurnLevel extends TurnComponent {
     if (NAME.equals(key)) {
       setConfigureName((String) value);
       myValue.setPropertyName(getConfigureName());
-    }
-    else if (PROP.equals(key)) {
+    } else if (PROP.equals(key)) {
       propertyName = (String) value;
       myValue.setPropertyName(propertyName);
-    }
-    else if (TURN_FORMAT.equals(key)) {
+    } else if (TURN_FORMAT.equals(key)) {
       turnFormat.setFormat((String) value);
     }
   }
@@ -341,14 +330,11 @@ public abstract class TurnLevel extends TurnComponent {
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (TURN_FORMAT.equals(key)) {
+    } else if (TURN_FORMAT.equals(key)) {
       return turnFormat.getFormat();
-    }
-    else if (PROP.equals(key)) {
+    } else if (PROP.equals(key)) {
       return propertyName;
-    }
-    else {
+    } else {
       return ""; //$NON-NLS-1$
     }
   }
@@ -361,11 +347,11 @@ public abstract class TurnLevel extends TurnComponent {
   public void addTo(Buildable parent) {
     this.parent = (TurnComponent) parent;
     ((TurnComponent) parent).addLevel(this);
-    final MutableProperty.Impl existingValue = (MutableProperty.Impl) GameModule.getGameModule().getMutableProperty(propertyName);
+    final MutableProperty.Impl existingValue =
+        (MutableProperty.Impl) GameModule.getGameModule().getMutableProperty(propertyName);
     if (existingValue == null) {
       myValue.addTo(GameModule.getGameModule());
-    }
-    else {
+    } else {
       myValue = existingValue;
     }
   }
@@ -378,13 +364,13 @@ public abstract class TurnLevel extends TurnComponent {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { CounterTurnLevel.class, ListTurnLevel.class };
+    return new Class<?>[] {CounterTurnLevel.class, ListTurnLevel.class};
   }
 
   public static class TurnFormatConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new FormattedStringConfigurer(key, name, new String[] { LEVEL_VALUE });
+      return new FormattedStringConfigurer(key, name, new String[] {LEVEL_VALUE});
     }
   }
 
@@ -395,9 +381,7 @@ public abstract class TurnLevel extends TurnComponent {
     return myI18nData;
   }
 
-  /**
-   * Implement PropertyNameSource - Expose the name of this level property
-   */
+  /** Implement PropertyNameSource - Expose the name of this level property */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -409,7 +393,9 @@ public abstract class TurnLevel extends TurnComponent {
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -418,6 +404,7 @@ public abstract class TurnLevel extends TurnComponent {
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override

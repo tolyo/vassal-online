@@ -26,10 +26,7 @@ import VASSAL.counters.PieceIterator;
 import VASSAL.counters.Properties;
 import VASSAL.counters.Stack;
 
-/**
- * This Command adds a {@link GamePiece} to a game.  Its undo
- * Command is {@link RemovePiece}.
- */
+/** This Command adds a {@link GamePiece} to a game. Its undo Command is {@link RemovePiece}. */
 public class AddPiece extends Command {
   private Command undo;
   private final GamePiece target;
@@ -44,10 +41,7 @@ public class AddPiece extends Command {
     this.state = state;
   }
 
-  /**
-   * Adds a piece by invoking {@link GameState#addPiece}, followed by
-   * {@link GamePiece#setState}
-   */
+  /** Adds a piece by invoking {@link GameState#addPiece}, followed by {@link GamePiece#setState} */
   @Override
   protected void executeCommand() {
     if (target != null) {
@@ -59,7 +53,8 @@ public class AddPiece extends Command {
             && !Boolean.TRUE.equals(target.getProperty(Properties.INVISIBLE_TO_ME))) {
 
           // Do not centre on a Stack unless it has at least one visible piece
-          if (target instanceof Stack && !((Stack) target).asList().stream().anyMatch(PieceIterator.VISIBLE)) {
+          if (target instanceof Stack
+              && !((Stack) target).asList().stream().anyMatch(PieceIterator.VISIBLE)) {
             return;
           }
 

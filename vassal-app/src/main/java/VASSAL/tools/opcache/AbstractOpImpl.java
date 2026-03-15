@@ -26,19 +26,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * An abstract representation of an operation. <code>AbstractOpImpl</code>
- * is the base class for all such operations. The results of all operations
- * are memoized (using a memory-sensitive cache), so retrieving results is
- * both fast and memory-efficient.
+ * An abstract representation of an operation. <code>AbstractOpImpl</code> is the base class for all
+ * such operations. The results of all operations are memoized (using a memory-sensitive cache), so
+ * retrieving results is both fast and memory-efficient.
  *
- * <p><b>Warning:</b> For efficiency reasons, the methods {@link #get()} and
- * {@link #get(OpObserver)} do <em>not</em> return defensively, nor do the
- * {@code Future}s returned by {@link #getFuture(OpObserver)}. That is, the
- * object returned is possibly the one retained internally by the
- * <code>AbstractOpImpl</code>. Therefore, objects obtained from an
- * <code>AbstractOpImpl</code> <em>must not</em> be altered, as this might
- * interfere with caching. If an object obtained this way needs to be
- * modified, copy the object first and alter the copy.</p>
+ * <p><b>Warning:</b> For efficiency reasons, the methods {@link #get()} and {@link
+ * #get(OpObserver)} do <em>not</em> return defensively, nor do the {@code Future}s returned by
+ * {@link #getFuture(OpObserver)}. That is, the object returned is possibly the one retained
+ * internally by the <code>AbstractOpImpl</code>. Therefore, objects obtained from an <code>
+ * AbstractOpImpl</code> <em>must not</em> be altered, as this might interfere with caching. If an
+ * object obtained this way needs to be modified, copy the object first and alter the copy.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -71,9 +68,8 @@ public abstract class AbstractOpImpl<V> implements Op<V> {
    * @throws InterruptedException if the operation was interrupted
    * @throws ExecutionException if the operation failed
    */
-  public V get(OpObserver<V> obs) throws CancellationException,
-                                         InterruptedException,
-                                         ExecutionException {
+  public V get(OpObserver<V> obs)
+      throws CancellationException, InterruptedException, ExecutionException {
     return cache.get(newKey(), obs);
   }
 
@@ -86,8 +82,7 @@ public abstract class AbstractOpImpl<V> implements Op<V> {
     return cache.getFuture(newKey(), obs);
   }
 
-  private static final ConcurrentMap<Op<?>, OpCache.Key<?>> kcache =
-    new ConcurrentHashMap<>();
+  private static final ConcurrentMap<Op<?>, OpCache.Key<?>> kcache = new ConcurrentHashMap<>();
 
   @Override
   @SuppressWarnings("unchecked")

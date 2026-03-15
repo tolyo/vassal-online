@@ -17,22 +17,17 @@
  */
 package VASSAL.chat.ui;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JTree;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.LockableChatServerConnection;
 import VASSAL.chat.LockableRoom;
 import VASSAL.chat.Room;
 import VASSAL.chat.SimplePlayer;
 import VASSAL.i18n.Resources;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JTree;
 
-/**
- * When invoked, will Kick another player out of his current room back to the
- * Main Room.
- */
+/** When invoked, will Kick another player out of his current room back to the Main Room. */
 public class InviteAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -40,7 +35,7 @@ public class InviteAction extends AbstractAction {
   private final LockableChatServerConnection client;
 
   public InviteAction(LockableChatServerConnection client, SimplePlayer target) {
-    super(Resources.getString("Chat.invite")); //$NON-NLS-1$
+    super(Resources.getString("Chat.invite")); // $NON-NLS-1$
     this.invitee = target;
     this.client = client;
     setEnabled(client.isInvitable(target));
@@ -50,7 +45,8 @@ public class InviteAction extends AbstractAction {
   public void actionPerformed(ActionEvent evt) {
     if (isEnabled()) {
       client.sendInvite(invitee);
-      GameModule.getGameModule().warn(Resources.getString("Chat.invite_sent", invitee.getName())); //$NON-NLS-1$
+      GameModule.getGameModule()
+          .warn(Resources.getString("Chat.invite_sent", invitee.getName())); // $NON-NLS-1$
     }
   }
 

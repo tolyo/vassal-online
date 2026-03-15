@@ -25,7 +25,11 @@ import org.junit.jupiter.api.Test;
 public class RestrictCommandsTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     RestrictCommands trait = new RestrictCommands();
 
@@ -37,8 +41,7 @@ public class RestrictCommandsTest extends DecoratorTest {
     trait.name = "testCommand"; // NON-NLS
     trait.action = RestrictCommands.HIDE;
     trait.propertyMatch = new PropertyExpression("{x==2}");
-    trait.watchKeys = new NamedKeyStroke[] { NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2") };
+    trait.watchKeys = new NamedKeyStroke[] {NamedKeyStroke.of("key1"), NamedKeyStroke.of("key2")};
     serializeTest("Complex trait", trait); // NON-NLS
-
   }
 }

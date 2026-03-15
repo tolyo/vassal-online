@@ -17,25 +17,20 @@
  */
 package VASSAL.configure;
 
+import VASSAL.build.Configurable;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import VASSAL.build.Configurable;
-
 /**
- * A {@link Configurer} for configuring {@link Configurable} components
- * (Is that as redundant as it sounds?)
- * The invoking class must provide an array of Configurers,
- * one for each attribute of the target Configurable object.
- * It is usually easier for the target to implement AutoConfigurable
- * and use the AutoConfigurer class.
+ * A {@link Configurer} for configuring {@link Configurable} components (Is that as redundant as it
+ * sounds?) The invoking class must provide an array of Configurers, one for each attribute of the
+ * target Configurable object. It is usually easier for the target to implement AutoConfigurable and
+ * use the AutoConfigurer class.
  */
-public class SimpleConfigurer extends Configurer
-                              implements PropertyChangeListener {
+public class SimpleConfigurer extends Configurer implements PropertyChangeListener {
   private JPanel p;
   private final Configurer[] attConfig;
   private final Configurable target;
@@ -46,11 +41,12 @@ public class SimpleConfigurer extends Configurer
     attConfig = attConfigurers;
     target = c;
     setValue(target);
-    target.addPropertyChangeListener(evt -> {
-      if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
-        setName((String) evt.getNewValue());
-      }
-    });
+    target.addPropertyChangeListener(
+        evt -> {
+          if (Configurable.NAME_PROPERTY.equals(evt.getPropertyName())) {
+            setName((String) evt.getNewValue());
+          }
+        });
   }
 
   @Override
@@ -60,8 +56,7 @@ public class SimpleConfigurer extends Configurer
 
   @Override
   public void setValue(String s) {
-    throw new UnsupportedOperationException(
-      "Can't set Configurable from String");
+    throw new UnsupportedOperationException("Can't set Configurable from String");
   }
 
   @Override

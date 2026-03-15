@@ -19,7 +19,6 @@ package VASSAL.i18n;
 import java.util.IllegalFormatException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author rodneykinney
  */
 public class BundleHelper {
-  private static final Logger logger =
-    LoggerFactory.getLogger(BundleHelper.class);
+  private static final Logger logger = LoggerFactory.getLogger(BundleHelper.class);
 
   private final ResourceBundle bundle;
 
@@ -41,9 +39,8 @@ public class BundleHelper {
   public String getString(String id) {
     try {
       return bundle.getString(id);
-    }
-    catch (ClassCastException | MissingResourceException e) {
-      logger.warn("No Translation: " + id); //NON-NLS
+    } catch (ClassCastException | MissingResourceException e) {
+      logger.warn("No Translation: " + id); // NON-NLS
     }
 
     // fallback: return the key
@@ -53,9 +50,8 @@ public class BundleHelper {
   public String getString(String id, Object... args) {
     try {
       return String.format(getString(id), args);
-    }
-    catch (IllegalFormatException e) {
-      logger.error("Illegal Message Format: " + id); //NON-NLS
+    } catch (IllegalFormatException e) {
+      logger.error("Illegal Message Format: " + id); // NON-NLS
     }
 
     // fallback: return the key

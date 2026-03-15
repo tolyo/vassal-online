@@ -17,13 +17,6 @@
  */
 package VASSAL.build.module.noteswindow;
 
-import java.awt.Component;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.Box;
-import javax.swing.JLabel;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameComponent;
 import VASSAL.command.Command;
@@ -31,12 +24,16 @@ import VASSAL.command.CommandEncoder;
 import VASSAL.configure.TextConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Component;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.Box;
+import javax.swing.JLabel;
 
-/**
- * Holds {@link PrivateText} objects, only displaying the one owned by the current user
- */
-public class PrivateNotesController implements GameComponent, CommandEncoder, SetPrivateTextCommand.Interface {
-  public static final String COMMAND_PREFIX = "PNOTE\t"; //$NON-NLS-1$
+/** Holds {@link PrivateText} objects, only displaying the one owned by the current user */
+public class PrivateNotesController
+    implements GameComponent, CommandEncoder, SetPrivateTextCommand.Interface {
+  public static final String COMMAND_PREFIX = "PNOTE\t"; // $NON-NLS-1$
 
   private final Set<PrivateText> notes;
   private String myLastSavedNotes;
@@ -50,7 +47,7 @@ public class PrivateNotesController implements GameComponent, CommandEncoder, Se
   public Component getControls() {
     if (controls == null) {
       final Box b = Box.createVerticalBox();
-      b.add(new JLabel(Resources.getString("Notes.invisible"))); //$NON-NLS-1$
+      b.add(new JLabel(Resources.getString("Notes.invisible"))); // $NON-NLS-1$
       text = new TextConfigurer(null, null);
       b.add(text.getControls());
       controls = b;
@@ -72,9 +69,11 @@ public class PrivateNotesController implements GameComponent, CommandEncoder, Se
     if (!command.startsWith(COMMAND_PREFIX)) {
       return null;
     }
-    final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
+    final SequenceEncoder.Decoder st =
+        new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
     final String owner = st.nextToken();
-    final String text = st.hasMoreTokens() ? TextConfigurer.restoreNewlines(st.nextToken()) : ""; //$NON-NLS-1$
+    final String text =
+        st.hasMoreTokens() ? TextConfigurer.restoreNewlines(st.nextToken()) : ""; // $NON-NLS-1$
     return new SetPrivateTextCommand(this, new PrivateText(owner, text));
   }
 
@@ -85,11 +84,8 @@ public class PrivateNotesController implements GameComponent, CommandEncoder, Se
     }
     final PrivateText t = ((SetPrivateTextCommand) c).getPrivateText();
     final SequenceEncoder se = new SequenceEncoder('\t');
-    return COMMAND_PREFIX +
-      se
-        .append(t.getOwner())
-        .append(TextConfigurer.escapeNewlines(t.getText()))
-        .getValue();
+    return COMMAND_PREFIX
+        + se.append(t.getOwner()).append(TextConfigurer.escapeNewlines(t.getText())).getValue();
   }
 
   @Override
@@ -99,8 +95,7 @@ public class PrivateNotesController implements GameComponent, CommandEncoder, Se
       final SetPrivateTextCommand c = new SetPrivateTextCommand(this, privateText);
       if (comm == null) {
         comm = c;
-      }
-      else {
+      } else {
         comm.append(c);
       }
     }
@@ -111,14 +106,16 @@ public class PrivateNotesController implements GameComponent, CommandEncoder, Se
   public void setup(boolean gameStarting) {
     if (!gameStarting) {
       notes.clear();
-      text.setValue(""); //$NON-NLS-1$
+      text.setValue(""); // $NON-NLS-1$
     }
   }
 
   public Command save() {
     Command comm = null;
     if (!myLastSavedNotes.equals(text.getValue())) {
-      comm = new SetPrivateTextCommand(this, new PrivateText(GameModule.getActiveUserId(), (String) text.getValue()));
+      comm =
+          new SetPrivateTextCommand(
+              this, new PrivateText(GameModule.getActiveUserId(), (String) text.getValue()));
       comm.execute();
     }
     return comm;

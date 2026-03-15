@@ -20,14 +20,14 @@ package VASSAL.tools.imports.adc2;
 import VASSAL.tools.filechooser.ExtensionFileFilter;
 
 /**
- * A {@link VASSAL.tools.filechooser.FileFilter} for ADC2 symbol sets. Used by file choosers to filter
- * out files which are not Aide de Camp 2 symbol sets.
+ * A {@link VASSAL.tools.filechooser.FileFilter} for ADC2 symbol sets. Used by file choosers to
+ * filter out files which are not Aide de Camp 2 symbol sets.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public class SymbolSetFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".set" };
+  public static final String[] types = {".set"};
 
   public SymbolSetFileFilter() {
     super("ADC2 Symbol Sets", types);

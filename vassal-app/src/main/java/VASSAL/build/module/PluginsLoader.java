@@ -17,26 +17,25 @@
  */
 package VASSAL.build.module;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.zip.ZipException;
-
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.SequenceEncoder;
+import java.io.File;
+import java.io.IOException;
+import java.util.zip.ZipException;
 
 /**
  * Load Plugins.
- * @author Brent Easton
  *
+ * @author Brent Easton
  */
 public class PluginsLoader extends ExtensionsLoader {
 
-  public static final String COMMAND_PREFIX = "PLUGIN\t"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "PLUGIN\t"; // $NON-NLS-1$
 
-  private final ExtensionsManager extMgr = new ExtensionsManager("plugins"); //NON-NLS
+  private final ExtensionsManager extMgr = new ExtensionsManager("plugins"); // NON-NLS
 
   @Override
   public void addTo(GameModule mod) {
@@ -47,15 +46,15 @@ public class PluginsLoader extends ExtensionsLoader {
   }
 
   @Override
-  protected ModuleExtension createExtension(String extname)
-                                            throws ZipException, IOException {
+  protected ModuleExtension createExtension(String extname) throws ZipException, IOException {
     return new ModulePlugin(new DataArchive(extname));
   }
 
   @Override
   public Command decode(String command) {
     if (command.startsWith(COMMAND_PREFIX)) {
-      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
+      final SequenceEncoder.Decoder st =
+          new SequenceEncoder.Decoder(command.substring(COMMAND_PREFIX.length()), '\t');
       return new ModulePlugin.RegCmd(st.nextToken(), st.nextToken());
     }
 
@@ -67,9 +66,7 @@ public class PluginsLoader extends ExtensionsLoader {
     if (c instanceof ModulePlugin.RegCmd) {
       final ModulePlugin.RegCmd cmd = (ModulePlugin.RegCmd) c;
       final SequenceEncoder se = new SequenceEncoder('\t');
-      se
-        .append(cmd.getName())
-        .append(cmd.getVersion());
+      se.append(cmd.getName()).append(cmd.getVersion());
       return COMMAND_PREFIX + se.getValue();
     }
 
@@ -77,25 +74,23 @@ public class PluginsLoader extends ExtensionsLoader {
   }
 
   public static String getPluginDirectory() {
-    return new ExtensionsManager("plugins").getExtensionsDirectory(false).getPath();  //$NON-NLS-1$
+    return new ExtensionsManager("plugins").getExtensionsDirectory(false).getPath(); // $NON-NLS-1$
   }
 
   @Override
   protected String getLoadedMessage(String name, String version) {
-    return Resources.getString("PluginsLoader.plugin_loaded", name, version); //$NON-NLS-1$
+    return Resources.getString("PluginsLoader.plugin_loaded", name, version); // $NON-NLS-1$
   }
 
   @Override
   protected String getErrorMessage(String name, String msg) {
-    return Resources.getString("PluginsLoader.unable_to_load", name, msg);  //$NON-NLS-1$
+    return Resources.getString("PluginsLoader.unable_to_load", name, msg); // $NON-NLS-1$
   }
 
   /**
-   * Any components that are added to the module by a Plugin MUST
-   * implement PluginElement to prevent them being written to the
-   * buildFile when saving the module. Implemented by Plugin and
+   * Any components that are added to the module by a Plugin MUST implement PluginElement to prevent
+   * them being written to the buildFile when saving the module. Implemented by Plugin and
    * ModuleExtension.
    */
-  public interface PluginElement {
-  }
+  public interface PluginElement {}
 }

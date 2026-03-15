@@ -22,9 +22,7 @@ import VASSAL.configure.BooleanConfigurer;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
 
-/**
- * A Checkbox Module Preference.
- */
+/** A Checkbox Module Preference. */
 public class BooleanPreference extends BasicPreference {
 
   protected boolean defaultValue = false;

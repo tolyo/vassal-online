@@ -20,18 +20,14 @@ package VASSAL.i18n;
 import VASSAL.counters.EditablePiece;
 
 /**
- * Decorators that contain localizable elements must implement
- * this interface
+ * Decorators that contain localizable elements must implement this interface
  *
  * @author Brent Easton
- *
  */
 public interface TranslatablePiece extends EditablePiece {
 
-  String PREFIX = "Piece."; //NON-NLS
+  String PREFIX = "Piece."; // NON-NLS
 
-  /**
-   * Return a PieceI18nData object returning the I18n data about this GamePiece.
-   */
+  /** Return a PieceI18nData object returning the I18n data about this GamePiece. */
   PieceI18nData getI18nData();
 }

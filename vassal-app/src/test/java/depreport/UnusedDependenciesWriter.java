@@ -16,7 +16,8 @@ public class UnusedDependenciesWriter {
   private final List<String> flatDepreport;
   private List<String> unusedDependencies;
 
-  public UnusedDependenciesWriter(String deprecatedFile, List<String> flatDepreport) throws IOException {
+  public UnusedDependenciesWriter(String deprecatedFile, List<String> flatDepreport)
+      throws IOException {
     this.deprecated = Files.readAllLines(Path.of(deprecatedFile));
     this.flatDepreport = flatDepreport;
     determineUnusedDependencies();
@@ -32,10 +33,10 @@ public class UnusedDependenciesWriter {
   public void writeTo(String outputFile) throws IOException {
     unusedDependencies.add(0, HEADER);
     Files.write(
-      Path.of(outputFile),
-      unusedDependencies,
-      StandardOpenOption.CREATE,
-      StandardOpenOption.WRITE,
-      StandardOpenOption.TRUNCATE_EXISTING);
+        Path.of(outputFile),
+        unusedDependencies,
+        StandardOpenOption.CREATE,
+        StandardOpenOption.WRITE,
+        StandardOpenOption.TRUNCATE_EXISTING);
   }
 }

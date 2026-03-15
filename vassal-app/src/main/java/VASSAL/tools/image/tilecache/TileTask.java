@@ -50,8 +50,7 @@ class TileTask implements Callable<Void> {
    * @param dw the width of the whole destination image
    * @param dh the height of the whole destination image
    */
-  public TileTask(BufferedImage src, File dst,
-                  int tx, int ty, int tw, int th, int dw, int dh) {
+  public TileTask(BufferedImage src, File dst, int tx, int ty, int tw, int th, int dw, int dh) {
     this.src = src;
     this.dst = dst;
     this.tx = tx;
@@ -81,8 +80,7 @@ class TileTask implements Callable<Void> {
     final BufferedImage tile = new BufferedImage(atw, ath, type);
 
     final Graphics2D g = tile.createGraphics();
-    g.drawImage(src, 0, 0, atw, ath,
-                     tx * tw, ty * th, tx * tw + atw, ty * th + ath, null);
+    g.drawImage(src, 0, 0, atw, ath, tx * tw, ty * th, tx * tw + atw, ty * th + ath, null);
     g.dispose();
 
     return tile;

@@ -18,49 +18,46 @@
 
 package VASSAL.tools.imageop;
 
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.NoSuchFileException;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import VASSAL.build.GameModule;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.image.ImageIOException;
 import VASSAL.tools.image.ImageNotFoundException;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.image.svg.SVGRenderer;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * An {@link ImageOp} which rotates and scales its source. Rotation
- * is about the center of the source image, and scaling ranges from
- * <code>(0,Double.MAX_VALUE)</code>. If a source is to be both rotated
- * and scaled, using one <code>RotateScaleOp</code> will produce better
- * results than doing the rotation and scaling separately with
- * one {@link RotateOp} and one {@link ScaleOp}.
+ * An {@link ImageOp} which rotates and scales its source. Rotation is about the center of the
+ * source image, and scaling ranges from <code>(0,Double.MAX_VALUE)</code>. If a source is to be
+ * both rotated and scaled, using one <code>RotateScaleOp</code> will produce better results than
+ * doing the rotation and scaling separately with one {@link RotateOp} and one {@link ScaleOp}.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
-                                  implements RotateScaleOp, SVGOp {
+public class RotateScaleOpSVGImpl extends AbstractTileOpImpl implements RotateScaleOp, SVGOp {
   private final SVGOp sop;
   private final double scale;
   private final double angle;
+
   @SuppressWarnings("PMD.LooseCoupling")
   private final RenderingHints hints;
+
   private final int hash;
 
   /**
-   * Constructs an <code>ImageOp</code> which will rotate and scale
-   * the image produced by its source <code>ImageOp</code>.
+   * Constructs an <code>ImageOp</code> which will rotate and scale the image produced by its source
+   * <code>ImageOp</code>.
    *
    * @param sop the source operation
    * @param angle the angle of rotation, in degrees
@@ -71,8 +68,8 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
   }
 
   /**
-   * Constructs an <code>ImageOp</code> which will rotate and scale
-   * the image produced by its source <code>ImageOp</code>.
+   * Constructs an <code>ImageOp</code> which will rotate and scale the image produced by its source
+   * <code>ImageOp</code>.
    *
    * @param sop the source operation
    * @param angle the angle of rotation, in degrees
@@ -81,8 +78,7 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
    * @throws IllegalArgumentException if <code>sop == null</code>.
    */
   @SuppressWarnings("PMD.LooseCoupling")
-  public RotateScaleOpSVGImpl(SVGOp sop, double angle, double scale,
-                                 RenderingHints hints) {
+  public RotateScaleOpSVGImpl(SVGOp sop, double angle, double scale, RenderingHints hints) {
     if (sop == null) throw new IllegalArgumentException();
     if (scale <= 0) throw new IllegalArgumentException("scale = " + scale);
 
@@ -91,11 +87,7 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
     this.scale = scale;
     this.hints = hints;
 
-    hash = new HashCodeBuilder().append(sop)
-                                .append(scale)
-                                .append(angle)
-                                .append(hints)
-                                .toHashCode();
+    hash = new HashCodeBuilder().append(sop).append(scale).append(angle).append(hints).toHashCode();
   }
 
   @Override
@@ -114,17 +106,15 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
     final String name = getName();
 
     try (InputStream in = archive.getInputStream(name);
-         BufferedInputStream bin = new BufferedInputStream(in)) {
+        BufferedInputStream bin = new BufferedInputStream(in)) {
       final SVGRenderer renderer = new SVGRenderer(archive.getURL(name), bin);
 
       if (size == null) fixSize();
 
       return renderer.render(angle, scale);
-    }
-    catch (FileNotFoundException | NoSuchFileException e) {
+    } catch (FileNotFoundException | NoSuchFileException e) {
       throw new ImageNotFoundException(name, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(name, e);
     }
   }
@@ -133,8 +123,7 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
   @Override
   protected void fixSize() {
     if ((size = getSizeFromCache()) == null) {
-      size = ImageUtils.transform(
-        new Rectangle(sop.getSize()), scale, angle).getSize();
+      size = ImageUtils.transform(new Rectangle(sop.getSize()), scale, angle).getSize();
     }
   }
 
@@ -175,10 +164,10 @@ public class RotateScaleOpSVGImpl extends AbstractTileOpImpl
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final RotateScaleOpSVGImpl op = (RotateScaleOpSVGImpl) o;
-    return scale == op.getScale() &&
-           angle == op.getAngle() &&
-           hints.equals(op.getHints()) &&
-           sop.equals(op.sop);
+    return scale == op.getScale()
+        && angle == op.getAngle()
+        && hints.equals(op.getHints())
+        && sop.equals(op.sop);
   }
 
   /** {@inheritDoc} */

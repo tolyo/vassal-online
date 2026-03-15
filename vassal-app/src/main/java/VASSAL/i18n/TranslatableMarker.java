@@ -17,20 +17,17 @@
  */
 package VASSAL.i18n;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.PlaceMarker;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- *
  * @author Brent Easton
- *
- * A dummy AbstractConfigurable to hold a PlaceMarker or Replace definition while translating
+ *     <p>A dummy AbstractConfigurable to hold a PlaceMarker or Replace definition while translating
  */
 public class TranslatableMarker extends AbstractConfigurable {
 
@@ -39,7 +36,6 @@ public class TranslatableMarker extends AbstractConfigurable {
   public TranslatableMarker(PlaceMarker p) {
     markerDefinition = p.createBaseMarker();
     setConfigureName(p.getDescription());
-
   }
 
   public static String getConfigureTypeName() {
@@ -56,25 +52,17 @@ public class TranslatableMarker extends AbstractConfigurable {
     return getI18nData().getLocalUntranslatedValue(attr);
   }
 
+  @Override
+  public void setAttribute(String attr, Object value) {}
 
   @Override
-  public void setAttribute(String attr, Object value) {
-
-  }
+  public void add(Buildable child) {}
 
   @Override
-  public void add(Buildable child) {
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
-  public void addTo(Buildable parent) {
-
-  }
-
-  @Override
-  public void build(Element e) {
-
-  }
+  public void build(Element e) {}
 
   @Override
   public Element getBuildElement(Document doc) {
@@ -107,8 +95,5 @@ public class TranslatableMarker extends AbstractConfigurable {
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
-
+  public void removeFrom(Buildable parent) {}
 }

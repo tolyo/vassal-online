@@ -25,15 +25,6 @@ import VASSAL.tools.filechooser.ImageFileFilter;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.OpIcon;
 import VASSAL.tools.swing.SwingUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -41,11 +32,19 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import org.apache.commons.lang3.ArrayUtils;
 
-public class ImagePicker extends JPanel
-                         implements MouseListener, ItemListener {
+public class ImagePicker extends JPanel implements MouseListener, ItemListener {
   private static final long serialVersionUID = 1L;
-  private static final String NO_IMAGE = "(" + Resources.getString("Editor.ImagePicker.no_image") + ")";
+  private static final String NO_IMAGE =
+      "(" + Resources.getString("Editor.ImagePicker.no_image") + ")";
   private String imageName = null;
   protected static final Font FONT = new Font(Font.DIALOG, Font.PLAIN, 11);
   private final JTextArea noImage;
@@ -68,13 +67,17 @@ public class ImagePicker extends JPanel
     imageView.addMouseListener(this);
 
     imageViewer = new JPanel(new BorderLayout());
-    imageScroller = new ScrollPane(
-      imageView,
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    imageScroller =
+        new ScrollPane(
+            imageView,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     imageViewer.add(imageScroller, BorderLayout.CENTER);
 
-    select = new JComboBox<>(ArrayUtils.addFirst(GameModule.getGameModule().getDataArchive().getImageNames(), NO_IMAGE));
+    select =
+        new JComboBox<>(
+            ArrayUtils.addFirst(
+                GameModule.getGameModule().getDataArchive().getImageNames(), NO_IMAGE));
     select.addItemListener(this);
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     add(noImage);
@@ -85,8 +88,7 @@ public class ImagePicker extends JPanel
     return imageName;
   }
 
-  protected void setViewSize() {
-  }
+  protected void setViewSize() {}
 
   public void setImageName(String name) {
     remove(0);
@@ -94,14 +96,12 @@ public class ImagePicker extends JPanel
     if (name == null || name.isEmpty()) {
       imageName = null;
       add(noImage, 0);
-    }
-    else {
+    } else {
       if (name.equals(imageName)) {
         // We have to do this because we have no way of calling update on
         // any ImageOps which depend on this image.
         Op.clearCache();
-      }
-      else {
+      } else {
         imageName = name;
       }
 
@@ -112,8 +112,7 @@ public class ImagePicker extends JPanel
 
       if (d.height > 200) {
         d.height = 200;
-      }
-      else {
+      } else {
         d.height += 4;
       }
 
@@ -135,12 +134,10 @@ public class ImagePicker extends JPanel
   }
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
   public void mouseClicked(MouseEvent e) {
@@ -150,12 +147,10 @@ public class ImagePicker extends JPanel
   }
 
   @Override
-  public void mousePressed(MouseEvent e) {
-  }
+  public void mousePressed(MouseEvent e) {}
 
   @Override
-  public void mouseReleased(MouseEvent e) {
-  }
+  public void mouseReleased(MouseEvent e) {}
 
   @Override
   public void itemStateChanged(ItemEvent e) {
@@ -170,12 +165,11 @@ public class ImagePicker extends JPanel
     if (fc.showOpenDialog(this) == FileChooser.APPROVE_OPTION) {
       final String name = fc.getSelectedFile().getName();
       gm.getArchiveWriter().addImage(fc.getSelectedFile().getPath(), name);
-      select.setModel(new DefaultComboBoxModel<>(
-        ArrayUtils.addFirst(gm.getDataArchive().getImageNames(), NO_IMAGE)
-      ));
+      select.setModel(
+          new DefaultComboBoxModel<>(
+              ArrayUtils.addFirst(gm.getDataArchive().getImageNames(), NO_IMAGE)));
       setImageName(name);
-    }
-    else {
+    } else {
       setImageName(null);
     }
     repaint();

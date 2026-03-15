@@ -17,14 +17,13 @@
  */
 package VASSAL.counters;
 
+import VASSAL.i18n.TranslatablePiece;
+import VASSAL.tools.NamedKeyStroke;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import VASSAL.i18n.TranslatablePiece;
-import VASSAL.tools.NamedKeyStroke;
 
 /** Represents a sub-menu in a GamePiece's right-click drop-down menu */
 public class KeyCommandSubMenu extends KeyCommand {
@@ -32,14 +31,12 @@ public class KeyCommandSubMenu extends KeyCommand {
 
   private final List<String> commands = new ArrayList<>();
 
-  public KeyCommandSubMenu(String name, GamePiece target,
-                           TranslatablePiece i18nPiece) {
+  public KeyCommandSubMenu(String name, GamePiece target, TranslatablePiece i18nPiece) {
     super(name, NamedKeyStroke.NULL_KEYSTROKE, target, i18nPiece);
   }
 
   @Override
-  public void actionPerformed(ActionEvent evt) {
-  }
+  public void actionPerformed(ActionEvent evt) {}
 
   public void addCommand(String s) {
     commands.add(s);

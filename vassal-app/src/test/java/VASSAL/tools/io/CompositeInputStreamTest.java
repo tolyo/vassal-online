@@ -18,17 +18,16 @@
 
 package VASSAL.tools.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 
 public class CompositeInputStreamTest {
   protected InputStream[] prepareStreams() {
@@ -58,7 +57,7 @@ public class CompositeInputStreamTest {
     final InputStream in = new CompositeInputStream(ch);
 
     for (int i = 0; i < 100; ++i) {
-      assertEquals(i/10, in.read());
+      assertEquals(i / 10, in.read());
     }
 
     assertEquals(-1, in.read());
@@ -68,7 +67,7 @@ public class CompositeInputStreamTest {
   public void testReadBytes() throws IOException {
     final byte[] expected = new byte[100];
     for (int i = 0; i < 10; ++i) {
-      Arrays.fill(expected, 10*i, 10*(i+1), (byte) i);
+      Arrays.fill(expected, 10 * i, 10 * (i + 1), (byte) i);
     }
 
     final InputStream[] ch = prepareStreams();

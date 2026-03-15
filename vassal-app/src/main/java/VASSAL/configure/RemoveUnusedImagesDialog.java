@@ -14,7 +14,6 @@ import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.io.FileUtils;
 import VASSAL.tools.swing.FlowLabel;
 import VASSAL.tools.swing.SwingUtils;
-
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -34,7 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import net.miginfocom.swing.MigLayout;
 
 public class RemoveUnusedImagesDialog extends JDialog {
@@ -60,15 +57,13 @@ public class RemoveUnusedImagesDialog extends JDialog {
   public RemoveUnusedImagesDialog(Frame owner) {
     super(owner, Resources.getString("Editor.UnusedImages.remove_unused_images"), true);
 
-    final FlowLabel text =
-      new FlowLabel(Resources.getString("Editor.UnusedImages.unused_1"));
+    final FlowLabel text = new FlowLabel(Resources.getString("Editor.UnusedImages.unused_1"));
 
     final AbstractBuildable parent;
     if (owner instanceof ExtensionEditorWindow) {
       parent = ((ExtensionEditorWindow) owner).getExtension();
       archive = ((ExtensionEditorWindow) owner).getExtension().getDataArchive().getWriter();
-    }
-    else {
+    } else {
       parent = GameModule.getGameModule();
       archive = GameModule.getGameModule().getArchiveWriter();
     }
@@ -96,34 +91,41 @@ public class RemoveUnusedImagesDialog extends JDialog {
 
     final JList<String> keepList = new JList<>(keepModel);
     final JScrollPane keepScroll = new JScrollPane(keepList);
-    keepScroll.setBorder(BorderFactory.createTitledBorder(Resources.getString("Editor.UnusedImages.files_to_keep")));
+    keepScroll.setBorder(
+        BorderFactory.createTitledBorder(Resources.getString("Editor.UnusedImages.files_to_keep")));
 
     final JList<String> dropList = new JList<>(dumpModel);
     final JScrollPane dropScroll = new JScrollPane(dropList);
-    dropScroll.setBorder(BorderFactory.createTitledBorder(Resources.getString("Editor.UnusedImages.files_to_remove")));
+    dropScroll.setBorder(
+        BorderFactory.createTitledBorder(
+            Resources.getString("Editor.UnusedImages.files_to_remove")));
 
-    final JButton dropButton = new JButton(IconFactory.getIcon("go-next", IconFamily.SMALL)); //NON-NLS
-    final JButton keepButton = new JButton(IconFactory.getIcon("go-previous", IconFamily.SMALL)); //NON-NLS
+    final JButton dropButton =
+        new JButton(IconFactory.getIcon("go-next", IconFamily.SMALL)); // NON-NLS
+    final JButton keepButton =
+        new JButton(IconFactory.getIcon("go-previous", IconFamily.SMALL)); // NON-NLS
 
-    dropAllButton = new JButton(IconFactory.getIcon("go-last", IconFamily.SMALL)); //NON-NLS
-    keepAllButton = new JButton(IconFactory.getIcon("go-first", IconFamily.SMALL)); //NON-NLS
+    dropAllButton = new JButton(IconFactory.getIcon("go-last", IconFamily.SMALL)); // NON-NLS
+    keepAllButton = new JButton(IconFactory.getIcon("go-first", IconFamily.SMALL)); // NON-NLS
 
     dropAllButton.setEnabled(!keepModel.isEmpty());
     keepAllButton.setEnabled(!dumpModel.isEmpty());
 
-    dropAllButton.addActionListener(e -> {
-      if (keepList.getModel().getSize() > 0) {
-        keepList.setSelectionInterval(0, keepList.getModel().getSize() - 1);
-      }
-      updateSelection(keepList, keepModel, keep, dump);
-    });
+    dropAllButton.addActionListener(
+        e -> {
+          if (keepList.getModel().getSize() > 0) {
+            keepList.setSelectionInterval(0, keepList.getModel().getSize() - 1);
+          }
+          updateSelection(keepList, keepModel, keep, dump);
+        });
 
-    keepAllButton.addActionListener(e -> {
-      if (dropList.getModel().getSize() > 0) {
-        dropList.setSelectionInterval(0, dropList.getModel().getSize() - 1);
-      }
-      updateSelection(dropList, dumpModel, dump, keep);
-    });
+    keepAllButton.addActionListener(
+        e -> {
+          if (dropList.getModel().getSize() > 0) {
+            dropList.setSelectionInterval(0, dropList.getModel().getSize() - 1);
+          }
+          updateSelection(dropList, dumpModel, dump, keep);
+        });
 
     ok = new JButton(Resources.getString("Editor.UnusedImages.remove_files"));
     final JButton cancel = new JButton(Resources.getString("General.cancel"));
@@ -147,25 +149,25 @@ public class RemoveUnusedImagesDialog extends JDialog {
     cancel.addActionListener(e -> dispose());
     help.addActionListener(e -> help());
 
-    final JPanel panel = new JPanel(new MigLayout("ins 4, fill", "[]rel[]rel[]", "[]unrel[]unrel[]"));  //NON-NLS
+    final JPanel panel =
+        new JPanel(new MigLayout("ins 4, fill", "[]rel[]rel[]", "[]unrel[]unrel[]")); // NON-NLS
     panel.setBorder(BorderFactory.createEtchedBorder());
 
-    panel.add(text, "span, wrap"); //NON-NLS
+    panel.add(text, "span, wrap"); // NON-NLS
 
-    panel.add(keepScroll, "grow, push, sizegroup list"); //NON-NLS
+    panel.add(keepScroll, "grow, push, sizegroup list"); // NON-NLS
     panel.add(dropAllButton, "align center, flowy, split 4"); // NON-NLS
-    panel.add(dropButton, "align center"); //NON-NLS
-    panel.add(keepButton, "align center"); //NON-NLS
-    panel.add(keepAllButton, "align center"); //NON-NLS
-    panel.add(dropScroll, "grow, push, sizegroup list, wrap"); //NON-NLS
+    panel.add(dropButton, "align center"); // NON-NLS
+    panel.add(keepButton, "align center"); // NON-NLS
+    panel.add(keepAllButton, "align center"); // NON-NLS
+    panel.add(dropScroll, "grow, push, sizegroup list, wrap"); // NON-NLS
 
     panel.add(keepTotalLabel, "center"); // NON-NLS
     panel.add(dropTotalLabel, "skip 1,center,wrap"); // NON-NLS
 
-
     final JPanel buttonPanel = new JPanel(new MigLayout("fill", "push[]rel[]rel[]push")); // NON-NLS
-    buttonPanel.add(ok, "tag ok,sg 1"); //$NON-NLS-1$//
-    buttonPanel.add(cancel, "tag cancel,sg 1"); //$NON-NLS-1$//
+    buttonPanel.add(ok, "tag ok,sg 1"); // $NON-NLS-1$//
+    buttonPanel.add(cancel, "tag cancel,sg 1"); // $NON-NLS-1$//
     buttonPanel.add(help, "tag help,sg 1");
     panel.add(buttonPanel, "span 3,grow"); // NON-NLS
 
@@ -180,27 +182,34 @@ public class RemoveUnusedImagesDialog extends JDialog {
   private void help() {
     HelpFile hf = null;
     try {
-      hf = new HelpFile(null, new File(
-        new File(Documentation.getDocumentationBaseDir(), "ReferenceManual"),
-        "RemoveUnusedImages.html"));
-    }
-    catch (MalformedURLException ex) {
+      hf =
+          new HelpFile(
+              null,
+              new File(
+                  new File(Documentation.getDocumentationBaseDir(), "ReferenceManual"),
+                  "RemoveUnusedImages.html"));
+    } catch (MalformedURLException ex) {
       ErrorDialog.bug(ex);
     }
 
     (new ShowHelpAction(hf.getContents(), null)).actionPerformed(null);
-
   }
 
-  private void updateSelection(JList<String> srclist, DefaultListModel<String> srcmodel, SortedSet<String> src, SortedSet<String> dst) {
+  private void updateSelection(
+      JList<String> srclist,
+      DefaultListModel<String> srcmodel,
+      SortedSet<String> src,
+      SortedSet<String> dst) {
     final int[] indices = srclist.getSelectedIndices();
     final int lastSelect = indices[indices.length - 1];
 
-    Arrays.stream(indices).forEach(i -> {
-      final String item = srcmodel.getElementAt(i);
-      src.remove(item);
-      dst.add(item);
-    });
+    Arrays.stream(indices)
+        .forEach(
+            i -> {
+              final String item = srcmodel.getElementAt(i);
+              src.remove(item);
+              dst.add(item);
+            });
 
     keepModel.removeAllElements();
     dumpModel.removeAllElements();
@@ -235,7 +244,8 @@ public class RemoveUnusedImagesDialog extends JDialog {
   private void removeImages() {
     for (final String uName : dump) {
       final String u = displayIndex.get(uName).getFileName();
-      GameModule.getGameModule().warn("- " + Resources.getString("Editor.UnusedImages.removing", uName));
+      GameModule.getGameModule()
+          .warn("- " + Resources.getString("Editor.UnusedImages.removing", uName));
       archive.getWriter().removeImage(u);
     }
 
@@ -254,8 +264,7 @@ public class RemoveUnusedImagesDialog extends JDialog {
     private static long extractSize(String fileName, DataArchive archive) {
       try {
         return archive.getArchive().getCompressedSize(DataArchive.IMAGE_DIR + fileName);
-      }
-      catch (IOException ignored) {
+      } catch (IOException ignored) {
         return -1;
       }
     }

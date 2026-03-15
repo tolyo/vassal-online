@@ -277,27 +277,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <configLocation>src/test/resources/checkstyle-checks.xml</configLocation>
-                    <suppressionsLocation>src/test/resources/checkstyle-suppressions.xml</suppressionsLocation>
-                    <logViolationsToConsole>true</logViolationsToConsole>
-                    <!-- consoleOutput=true prints warnings in addition to errors -->
-                    <consoleOutput>true</consoleOutput>
-                    <failOnViolation>true</failOnViolation>
-                    <linkXRef>true</linkXRef>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-pmd-plugin</artifactId>
               <configuration>
@@ -382,7 +361,6 @@
                 </executions>
             </plugin>
             <plugin>
-              <!-- This does not work with Java 25 -->
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <configuration>

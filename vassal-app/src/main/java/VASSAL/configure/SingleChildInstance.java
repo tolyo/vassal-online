@@ -21,16 +21,12 @@ import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.i18n.Resources;
 
-/**
- * Ensures that at most a single instance of a given type
- * belongs to a given parent
- */
+/** Ensures that at most a single instance of a given type belongs to a given parent */
 public class SingleChildInstance implements ValidityChecker {
   private final AbstractConfigurable target;
   private final Class<?> childClass;
 
-  public SingleChildInstance(AbstractConfigurable target,
-                             Class<?> childClass) {
+  public SingleChildInstance(AbstractConfigurable target, Class<?> childClass) {
     this.childClass = childClass;
     this.target = target;
   }
@@ -39,11 +35,11 @@ public class SingleChildInstance implements ValidityChecker {
   public void validate(Buildable b, ValidationReport report) {
     if (b == target && target.getComponentsOf(childClass).size() > 1) {
       report.addWarning(
-        Resources.getString("Editor.ValidityChecker.single_warning",
-          ConfigureTree.getConfigureName(childClass),
-          ConfigureTree.getConfigureName(target),
-          ConfigureTree.getConfigureName(target.getClass())
-        ));
+          Resources.getString(
+              "Editor.ValidityChecker.single_warning",
+              ConfigureTree.getConfigureName(childClass),
+              ConfigureTree.getConfigureName(target),
+              ConfigureTree.getConfigureName(target.getClass())));
     }
   }
 }

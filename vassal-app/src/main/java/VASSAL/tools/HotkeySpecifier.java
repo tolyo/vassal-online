@@ -17,17 +17,13 @@
  */
 package VASSAL.tools;
 
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import VASSAL.tools.swing.SwingUtils;
-
-/**
- * Text component for specifying a hot key
- */
+/** Text component for specifying a hot key */
 public class HotkeySpecifier extends JTextField implements KeyListener {
   private static final long serialVersionUID = 1L;
 
@@ -54,8 +50,7 @@ public class HotkeySpecifier extends JTextField implements KeyListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent e) {
-  }
+  public void keyTyped(KeyEvent e) {}
 
   @Override
   public void keyPressed(KeyEvent e) {
@@ -87,9 +82,7 @@ public class HotkeySpecifier extends JTextField implements KeyListener {
   public static KeyStroke getStrokeForString(String s) {
     final int index = s.indexOf(',');
     return KeyStroke.getKeyStroke(
-      Integer.parseInt(s.substring(0, index)),
-      Integer.parseInt(s.substring(index + 1))
-    );
+        Integer.parseInt(s.substring(0, index)), Integer.parseInt(s.substring(index + 1)));
   }
 
   public static String getStringForStroke(KeyStroke stroke) {

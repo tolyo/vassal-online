@@ -33,11 +33,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Joel Uckelman
  * @since 3.2.0
  */
-public class DefaultMultiEventListenerSupport
-         implements MultiEventListenerSupport {
+public class DefaultMultiEventListenerSupport implements MultiEventListenerSupport {
 
   protected final ConcurrentMap<Class<?>, List<EventListener<?>>> listeners =
-    new ConcurrentHashMap<>();
+      new ConcurrentHashMap<>();
 
   protected final Object src;
 

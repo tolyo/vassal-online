@@ -17,12 +17,11 @@
  */
 package VASSAL.script.expression;
 
-import javax.swing.JDialog;
-
 import VASSAL.configure.BeanShellExpressionConfigurer;
 import VASSAL.configure.Configurer;
 import VASSAL.counters.EditablePiece;
 import VASSAL.counters.PropertiesPieceFilter;
+import javax.swing.JDialog;
 
 public class PropertyExpressionBuilder extends ExpressionBuilder {
   private static final long serialVersionUID = 1L;
@@ -37,6 +36,7 @@ public class PropertyExpressionBuilder extends ExpressionBuilder {
 
   /**
    * Convert an old-style Property Match Expression to a BeanShell Expression
+   *
    * @param s Old-style string
    * @return expression
    */

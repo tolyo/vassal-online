@@ -22,7 +22,11 @@ import VASSAL.chat.ServerStatus;
 import VASSAL.chat.SimpleRoom;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
-
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -44,19 +48,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-/**
- * Shows the current status of connections to the server
- */
+/** Shows the current status of connections to the server */
 public class ServerStatusView extends JTabbedPane implements ChangeListener, TreeSelectionListener {
   private static final long serialVersionUID = 1L;
 
-  public static final String SELECTION_PROPERTY = "ServerStatusView.selection"; //$NON-NLS-1$
+  public static final String SELECTION_PROPERTY = "ServerStatusView.selection"; // $NON-NLS-1$
   private ServerStatus status;
   private DefaultTreeModel model;
   private DefaultTreeModel[] historicalModels;
@@ -74,16 +71,16 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
     final JToolBar toolbar = new JToolBar();
 
     toolbar.setFloatable(false);
-    final JButton b = new JButton(Resources.getString("Chat.refresh")); //$NON-NLS-1$
+    final JButton b = new JButton(Resources.getString("Chat.refresh")); // $NON-NLS-1$
     b.addActionListener(e -> refresh());
     toolbar.add(b);
     current.add(toolbar, BorderLayout.NORTH);
     treeCurrent = createTree();
     current.add(new JScrollPane(treeCurrent), BorderLayout.CENTER);
     model = (DefaultTreeModel) treeCurrent.getModel();
-    addTab(Resources.getString("Chat.current"), current); //$NON-NLS-1$
+    addTab(Resources.getString("Chat.current"), current); // $NON-NLS-1$
     addChangeListener(this);
-    setBorder(new TitledBorder(Resources.getString("Chat.server_connections"))); //$NON-NLS-1$
+    setBorder(new TitledBorder(Resources.getString("Chat.server_connections"))); // $NON-NLS-1$
     setStatusServer(status);
   }
 
@@ -104,27 +101,28 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
   }
 
   private JTree createTree() {
-    final DefaultMutableTreeNode root = new DefaultMutableTreeNode(Resources.getString(Resources.VASSAL));
+    final DefaultMutableTreeNode root =
+        new DefaultMutableTreeNode(Resources.getString(Resources.VASSAL));
     final DefaultTreeModel m = new DefaultTreeModel(root, true);
     final JTree tree = new JTree(m);
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.setCellRenderer(new Render());
     tree.expandRow(0);
     tree.setLargeModel(true);
-    tree.setRowHeight(18);  // FIXME: check whether this is necessary
+    tree.setRowHeight(18); // FIXME: check whether this is necessary
     tree.addTreeSelectionListener(this);
-    tree.addTreeExpansionListener(new TreeExpansionListener() {
-      @Override
-      public void treeExpanded(TreeExpansionEvent event) {
-        final JComponent c = (JComponent) event.getSource();
-        c.setSize(c.getPreferredSize());
-        c.revalidate();
-      }
+    tree.addTreeExpansionListener(
+        new TreeExpansionListener() {
+          @Override
+          public void treeExpanded(TreeExpansionEvent event) {
+            final JComponent c = (JComponent) event.getSource();
+            c.setSize(c.getPreferredSize());
+            c.revalidate();
+          }
 
-      @Override
-      public void treeCollapsed(TreeExpansionEvent event) {
-      }
-    });
+          @Override
+          public void treeCollapsed(TreeExpansionEvent event) {}
+        });
     return tree;
   }
 
@@ -145,12 +143,12 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
     final TreePath path;
     final int sel = getSelectedIndex();
     switch (sel) {
-    case 0:
-      path = treeCurrent.getSelectionPath();
-      break;
-    default:
-      path = historicalTrees[sel - 1].getSelectionPath();
-      break;
+      case 0:
+        path = treeCurrent.getSelectionPath();
+        break;
+      default:
+        path = historicalTrees[sel - 1].getSelectionPath();
+        break;
     }
     if (path != null) {
       selection = path.getLastPathComponent();
@@ -174,80 +172,78 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
 
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-      cur_request = new SwingWorker<>() {
-        @Override
-        public ServerStatus.ModuleSummary[] doInBackground() {
-          return status.getStatus();
-        }
-
-        @Override
-        protected void done() {
-          try {
-            if (getSelectedIndex() == 0) {
-              refresh(model, get());
-              fireSelectionChanged();
+      cur_request =
+          new SwingWorker<>() {
+            @Override
+            public ServerStatus.ModuleSummary[] doInBackground() {
+              return status.getStatus();
             }
-          }
-          catch (InterruptedException ex) {
-            ErrorDialog.bug(ex);
-          }
-          // FIXME: review error message
-          catch (ExecutionException ex) {
-            ex.printStackTrace();
-          }
 
-          if (hist_request == null || hist_request.isDone())
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            @Override
+            protected void done() {
+              try {
+                if (getSelectedIndex() == 0) {
+                  refresh(model, get());
+                  fireSelectionChanged();
+                }
+              } catch (InterruptedException ex) {
+                ErrorDialog.bug(ex);
+              }
+              // FIXME: review error message
+              catch (ExecutionException ex) {
+                ex.printStackTrace();
+              }
 
-          cur_request = null;
-        }
-      };
+              if (hist_request == null || hist_request.isDone())
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+              cur_request = null;
+            }
+          };
 
       cur_request.execute();
-    }
-    else {
+    } else {
       if (hist_request != null && !hist_request.isDone()) return;
 
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-      hist_request = new SwingWorker<>() {
-        @Override
-        public ServerStatus.ModuleSummary[] doInBackground() {
-          return status.getHistory(getTitleAt(page));
-        }
-
-        @Override
-        protected void done() {
-          final int sel = getSelectedIndex();
-          if (sel == page) {
-            // page didn't change, refresh with what we computed
-            try {
-              refresh(historicalModels[sel - 1], get());
-            }
-            // FIXME: review error message
-            catch (InterruptedException | ExecutionException ex) {
-              ex.printStackTrace();
+      hist_request =
+          new SwingWorker<>() {
+            @Override
+            public ServerStatus.ModuleSummary[] doInBackground() {
+              return status.getHistory(getTitleAt(page));
             }
 
-            fireSelectionChanged();
-          }
-          else if (sel != 0) {
-            // page changed, refresh that page instead
-            hist_request = null;
-            refresh(sel);
-          }
+            @Override
+            protected void done() {
+              final int sel = getSelectedIndex();
+              if (sel == page) {
+                // page didn't change, refresh with what we computed
+                try {
+                  refresh(historicalModels[sel - 1], get());
+                }
+                // FIXME: review error message
+                catch (InterruptedException | ExecutionException ex) {
+                  ex.printStackTrace();
+                }
 
-          if (cur_request == null || cur_request.isDone())
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-      };
+                fireSelectionChanged();
+              } else if (sel != 0) {
+                // page changed, refresh that page instead
+                hist_request = null;
+                refresh(sel);
+              }
+
+              if (cur_request == null || cur_request.isDone())
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+          };
 
       hist_request.execute();
     }
   }
 
-  private void refresh(DefaultTreeModel m,
-                       ServerStatus.ModuleSummary[] modules) {
+  private void refresh(DefaultTreeModel m, ServerStatus.ModuleSummary[] modules) {
     final MutableTreeNode root = (MutableTreeNode) m.getRoot();
     totalPlayers = 0;
 
@@ -256,19 +252,17 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
     }
 
     if (modules.length == 0) {
-      final DefaultMutableTreeNode n = new DefaultMutableTreeNode(
-        Resources.getString("Chat.no_connections")); //$NON-NLS-1$
+      final DefaultMutableTreeNode n =
+          new DefaultMutableTreeNode(Resources.getString("Chat.no_connections")); // $NON-NLS-1$
       n.setAllowsChildren(false);
-    }
-    else {
+    } else {
       for (final ServerStatus.ModuleSummary s : modules) {
         m.insertNodeInto(createNode(s), root, root.getChildCount());
       }
     }
 
     // append total number of players on server to root node
-    root.setUserObject(
-      Resources.getString(Resources.VASSAL) + " (" + totalPlayers + ")");
+    root.setUserObject(Resources.getString(Resources.VASSAL) + " (" + totalPlayers + ")");
   }
 
   private DefaultMutableTreeNode createNode(Object o) {
@@ -281,8 +275,7 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
       final int players = ms.numPlayers();
       ms.setModuleName(ms.getModuleName() + " (" + players + ")");
       totalPlayers += players;
-    }
-    else if (o instanceof SimpleRoom) {
+    } else if (o instanceof SimpleRoom) {
       final SimpleRoom r = (SimpleRoom) o;
 
       final List<Player> l = r.getPlayerList();
@@ -308,12 +301,19 @@ public class ServerStatusView extends JTabbedPane implements ChangeListener, Tre
     private static final long serialVersionUID = 1L;
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public Component getTreeCellRendererComponent(
+        JTree tree,
+        Object value,
+        boolean sel,
+        boolean expanded,
+        boolean leaf,
+        int row,
+        boolean hasFocus) {
       super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
       if (leaf) {
         setIcon(null);
       }
-      putClientProperty(Resources.getString("ServerStatusView.4"), Boolean.TRUE); //$NON-NLS-1$
+      putClientProperty(Resources.getString("ServerStatusView.4"), Boolean.TRUE); // $NON-NLS-1$
       return this;
     }
   }

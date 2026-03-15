@@ -22,8 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * A cover for the {@link ExecutorService} which submits to the Event
- * Dispatch Thread.
+ * A cover for the {@link ExecutorService} which submits to the Event Dispatch Thread.
  *
  * @author Joel Uckelman
  * @since 3.2.0

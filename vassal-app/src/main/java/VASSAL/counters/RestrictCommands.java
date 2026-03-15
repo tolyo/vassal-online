@@ -28,7 +28,6 @@ import VASSAL.configure.TranslatingStringEnumConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -38,22 +37,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.KeyStroke;
 
 /**
- * RestrictCommands
- * Restrict the availability of Key Commands, depending on a
- * Property Match String.
- *  - Variable list of Key Commands to restrict
- *  - Disable or Invisible
- * */
+ * RestrictCommands Restrict the availability of Key Commands, depending on a Property Match String.
+ * - Variable list of Key Commands to restrict - Disable or Invisible
+ */
 public class RestrictCommands extends Decorator implements EditablePiece {
 
   public static final String ID = "hideCmd;"; // NON-NLS
   protected static final String HIDE = "Hide"; // NON-NLS
   protected static final String DISABLE = "Disable"; // NON-NLS
-  protected static final String[] restrictionKeys = { "Editor.RestrictCommands.hide", "Editor.RestrictCommands.disable" };
+  protected static final String[] restrictionKeys = {
+    "Editor.RestrictCommands.hide", "Editor.RestrictCommands.disable"
+  };
 
   protected String name = "";
   protected PropertyExpression propertyMatch = new PropertyExpression();
@@ -98,9 +95,9 @@ public class RestrictCommands extends Decorator implements EditablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(name)
-      .append(action)
-      .append(propertyMatch.getExpression())
-      .append(NamedKeyStrokeArrayConfigurer.encode(watchKeys));
+        .append(action)
+        .append(propertyMatch.getExpression())
+        .append(NamedKeyStrokeArrayConfigurer.encode(watchKeys));
 
     return ID + se.getValue();
   }
@@ -109,7 +106,6 @@ public class RestrictCommands extends Decorator implements EditablePiece {
   public Command myKeyEvent(KeyStroke stroke) {
     return null;
   }
-
 
   /*
    * Cancel execution of watched KeyStrokes
@@ -144,28 +140,23 @@ public class RestrictCommands extends Decorator implements EditablePiece {
             newCommand.setEnabled(false);
             newCommands.add(newCommand);
           }
-        }
-        else {
+        } else {
           newCommands.add(command);
         }
       }
-      commands  = newCommands.toArray(new KeyCommand[0]);
+      commands = newCommands.toArray(new KeyCommand[0]);
     }
     return commands;
   }
 
   protected boolean matchesFilter() {
-    return propertyMatch.isNull() ||
-      propertyMatch.accept(
-        getOutermost(this),
-        this,
-        "Editor.RestrictCommands.restrict_when_properties_match"
-      );
+    return propertyMatch.isNull()
+        || propertyMatch.accept(
+            getOutermost(this), this, "Editor.RestrictCommands.restrict_when_properties_match");
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Shape getShape() {
@@ -202,8 +193,7 @@ public class RestrictCommands extends Decorator implements EditablePiece {
     final String keys = st.nextToken("");
     if (keys.indexOf(',') > 0) {
       watchKeys = NamedKeyStrokeArrayConfigurer.decode(keys);
-    }
-    else {
+    } else {
       watchKeys = new NamedKeyStroke[keys.length()];
       for (int i = 0; i < watchKeys.length; i++) {
         watchKeys[i] = NamedKeyStroke.of(keys.charAt(i), InputEvent.CTRL_DOWN_MASK);
@@ -219,12 +209,14 @@ public class RestrictCommands extends Decorator implements EditablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof RestrictCommands)) return false;
+    if (!(o instanceof RestrictCommands)) return false;
     final RestrictCommands c = (RestrictCommands) o;
-    if (! Objects.equals(name, c.name)) return false;
-    if (! Objects.equals(action, c.action)) return false;
-    if (! Objects.equals(propertyMatch, c.propertyMatch)) return false;
-    return Objects.equals(NamedKeyStrokeArrayConfigurer.encode(watchKeys), NamedKeyStrokeArrayConfigurer.encode(c.watchKeys));
+    if (!Objects.equals(name, c.name)) return false;
+    if (!Objects.equals(action, c.action)) return false;
+    if (!Objects.equals(propertyMatch, c.propertyMatch)) return false;
+    return Objects.equals(
+        NamedKeyStrokeArrayConfigurer.encode(watchKeys),
+        NamedKeyStrokeArrayConfigurer.encode(c.watchKeys));
   }
 
   public static class Ed implements PieceEditor {
@@ -243,7 +235,9 @@ public class RestrictCommands extends Decorator implements EditablePiece {
       name.setHintKey("Editor.description_hint");
       box.add("Editor.description_label", name);
 
-      actionOption = new TranslatingStringEnumConfigurer(new String[] { HIDE, DISABLE }, restrictionKeys, piece.action);
+      actionOption =
+          new TranslatingStringEnumConfigurer(
+              new String[] {HIDE, DISABLE}, restrictionKeys, piece.action);
       box.add("Editor.RestrictCommands.restriction", actionOption);
 
       propertyMatch = new PropertyExpressionConfigurer(piece.propertyMatch, piece);
@@ -251,7 +245,6 @@ public class RestrictCommands extends Decorator implements EditablePiece {
 
       watchKeys = new NamedKeyStrokeArrayConfigurer(piece.watchKeys);
       box.add("Editor.RestrictCommands.restrict_these_key_commands", watchKeys);
-
     }
 
     @Override
@@ -268,9 +261,9 @@ public class RestrictCommands extends Decorator implements EditablePiece {
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(name.getValueString())
-        .append(actionOption.getValueString())
-        .append(propertyMatch.getValueString())
-        .append(watchKeys.getValueString());
+          .append(actionOption.getValueString())
+          .append(propertyMatch.getValueString())
+          .append(watchKeys.getValueString());
       return ID + se.getValue();
     }
   }

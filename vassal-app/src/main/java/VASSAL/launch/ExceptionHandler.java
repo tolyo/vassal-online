@@ -20,9 +20,9 @@ package VASSAL.launch;
 import VASSAL.tools.ErrorDialog;
 
 /**
- * Handles uncaught exceptions. None of the methods in this class are
- * intended to be called in our code, but must be public in order to be
- * accessible to {@link Thread} and {link EventDispatchThread}.
+ * Handles uncaught exceptions. None of the methods in this class are intended to be called in our
+ * code, but must be public in order to be accessible to {@link Thread} and {link
+ * EventDispatchThread}.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -34,8 +34,10 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
   // zero-argument constructor and {@link handle()} is called with the
   // Throwable from the EDT.
   static {
-    System.getProperties().put("sun.awt.exception.handler", //$NON-NLS-1$
-                               ExceptionHandler.class.getName());
+    System.getProperties()
+        .put(
+            "sun.awt.exception.handler", //$NON-NLS-1$
+            ExceptionHandler.class.getName());
   }
 
   /**
@@ -50,8 +52,8 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
   /**
    * {@inheritDoc}
    *
-   * This method is part of the {@link Thread.UncaughtExceptionHandler}
-   * interface. Do not call this method directly.
+   * <p>This method is part of the {@link Thread.UncaughtExceptionHandler} interface. Do not call
+   * this method directly.
    *
    * @param thread the thread where the exception occurred
    * @param thrown the exception

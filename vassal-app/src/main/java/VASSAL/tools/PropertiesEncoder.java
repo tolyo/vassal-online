@@ -24,9 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-/**
- * Encodes a set of properties into a String, without using an '\n' character.
- */
+/** Encodes a set of properties into a String, without using an '\n' character. */
 public class PropertiesEncoder {
   private final Properties prop;
   private final String stringValue;
@@ -47,8 +45,7 @@ public class PropertiesEncoder {
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
       p.store(out, null);
       s = new String(out.toByteArray(), StandardCharsets.UTF_8);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ErrorDialog.bug(e);
       return "";
     }
@@ -78,7 +75,6 @@ public class PropertiesEncoder {
     p.load(new ByteArrayInputStream(buffer.toString().getBytes(StandardCharsets.UTF_8)));
     return p;
   }
-
 
   public Properties getProperties() {
     return prop;

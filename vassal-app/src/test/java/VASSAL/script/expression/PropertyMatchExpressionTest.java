@@ -37,7 +37,6 @@ public class PropertyMatchExpressionTest implements Auditable {
     bp.setProperty(PROP1, VALUE1 + "xxx");
     assertThat(filter.accept(bp, this, audit), is(false));
 
-
     // Test 2 - $$ variables
     e = new PropertyMatchExpression(TEST2_EXPR);
     audit = new AuditTrail(this, e.getExpression());
@@ -77,25 +76,33 @@ public class PropertyMatchExpressionTest implements Auditable {
     bp.setProperty("intProp", "42");
     bp.setProperty("floatProp", ".75");
 
-
     // Check boolean conversion
     Expression e = Expression.createExpression("{boolProp}");
     AuditTrail audit = new AuditTrail(this, e.getExpression());
-    assertThat("Auto convert boolean string to boolean type", e.evaluate(bp, this, audit), is(equalTo("true")));
+    assertThat(
+        "Auto convert boolean string to boolean type",
+        e.evaluate(bp, this, audit),
+        is(equalTo("true")));
 
     e = Expression.createExpression("{boolProp==true}");
     audit = new AuditTrail(this, e.getExpression());
-    assertThat("Auto convert boolean string to boolean type", e.evaluate(bp, this, audit), is(equalTo("true")));
+    assertThat(
+        "Auto convert boolean string to boolean type",
+        e.evaluate(bp, this, audit),
+        is(equalTo("true")));
 
     // Check Int conversion
     e = Expression.createExpression("{intProp==42}");
     audit = new AuditTrail(this, e.getExpression());
-    assertThat("Auto convert int string to int type", e.evaluate(bp, this, audit), is(equalTo("true")));
+    assertThat(
+        "Auto convert int string to int type", e.evaluate(bp, this, audit), is(equalTo("true")));
 
     // Check Float conversion
     e = Expression.createExpression("{floatProp==.75}");
     audit = new AuditTrail(this, e.getExpression());
-    assertThat("Auto convert float string to float type", e.evaluate(bp, this, audit), is(equalTo("true")));
-
+    assertThat(
+        "Auto convert float string to float type",
+        e.evaluate(bp, this, audit),
+        is(equalTo("true")));
   }
 }

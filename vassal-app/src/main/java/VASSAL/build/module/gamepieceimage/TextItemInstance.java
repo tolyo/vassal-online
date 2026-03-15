@@ -27,15 +27,15 @@ import VASSAL.tools.SequenceEncoder;
 
 public class TextItemInstance extends ItemInstance {
 
-  protected static final String VALUE = "value"; //$NON-NLS-1$
-  protected static final String OUTLINE_COLOR = "outlineColor"; //$NON-NLS-1$
+  protected static final String VALUE = "value"; // $NON-NLS-1$
+  protected static final String OUTLINE_COLOR = "outlineColor"; // $NON-NLS-1$
 
-  protected String val = ""; //$NON-NLS-1$
+  protected String val = ""; // $NON-NLS-1$
   protected ColorSwatch outlineColor = ColorSwatch.getRed();
 
   public TextItemInstance() {
     super();
-    val = "Xx"; //$NON-NLS-1$
+    val = "Xx"; // $NON-NLS-1$
     outlineColor = ColorSwatch.getRed();
   }
 
@@ -43,18 +43,17 @@ public class TextItemInstance extends ItemInstance {
     super(nam, typ, loc);
     if (val == null) {
       switch (nam.length()) {
-      case 0:
-        setValue("Xx"); //$NON-NLS-1$
-        break;
-      case 1:
-        setValue(nam);
-        break;
-      default:
-        setValue(nam.substring(0, 2));
-        break;
+        case 0:
+          setValue("Xx"); // $NON-NLS-1$
+          break;
+        case 1:
+          setValue(nam);
+          break;
+        default:
+          setValue(nam.substring(0, 2));
+          break;
       }
-    }
-    else {
+    } else {
       setValue(val);
     }
   }
@@ -100,13 +99,13 @@ public class TextItemInstance extends ItemInstance {
 
   public void decode(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
-    setType(sd.nextToken("")); //$NON-NLS-1$
-    setName(sd.nextToken("")); //$NON-NLS-1$
-    setLocation(sd.nextToken("")); //$NON-NLS-1$
-    setFgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setBgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setValue(sd.nextToken("")); //$NON-NLS-1$
-    setOutlineColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
+    setType(sd.nextToken("")); // $NON-NLS-1$
+    setName(sd.nextToken("")); // $NON-NLS-1$
+    setLocation(sd.nextToken("")); // $NON-NLS-1$
+    setFgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setBgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setValue(sd.nextToken("")); // $NON-NLS-1$
+    setOutlineColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
   }
 
   @Override
@@ -131,12 +130,7 @@ public class TextItemInstance extends ItemInstance {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      VALUE,
-      FG_COLOR,
-      BG_COLOR,
-      OUTLINE_COLOR
-    };
+    return new String[] {VALUE, FG_COLOR, BG_COLOR, OUTLINE_COLOR};
   }
 
   @Override
@@ -144,20 +138,17 @@ public class TextItemInstance extends ItemInstance {
 
     if (VALUE.equals(key)) {
       this.val = (String) o;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
       fgColor = (ColorSwatch) o;
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
       bgColor = (ColorSwatch) o;
-    }
-    else if (OUTLINE_COLOR.equals(key)) {
+    } else if (OUTLINE_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
@@ -166,36 +157,28 @@ public class TextItemInstance extends ItemInstance {
     if (myConfig != null) {
       myConfig.rebuildViz();
     }
-
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (VALUE.equals(key)) {
       return val;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       return fgColor.encode();
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       return bgColor.encode();
-    }
-    else if (OUTLINE_COLOR.equals(key)) {
+    } else if (OUTLINE_COLOR.equals(key)) {
       return outlineColor.encode();
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
     if (VALUE.equals(name)) {
       return valueCond;
-    }
-    else if (OUTLINE_COLOR.equals(name)) {
+    } else if (OUTLINE_COLOR.equals(name)) {
       return this::isOutline;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }

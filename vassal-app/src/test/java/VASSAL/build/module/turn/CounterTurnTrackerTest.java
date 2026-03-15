@@ -1,14 +1,14 @@
 package VASSAL.build.module.turn;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
 import VASSAL.build.GameModule;
 import VASSAL.preferences.Prefs;
 import VASSAL.preferences.PrefsEditor;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 public class CounterTurnTrackerTest {
 
@@ -40,7 +40,7 @@ public class CounterTurnTrackerTest {
   // Test the wrapping of two CounterTurnTrackers with a parent-child relationship.
   @Test
   public void nestedCounterTurnTracker() {
-     try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
+    try (MockedStatic<GameModule> staticGm = Mockito.mockStatic(GameModule.class)) {
       final GameModule gm = mock(GameModule.class);
       staticGm.when(GameModule::getGameModule).thenReturn(gm);
       when(gm.getPrefs()).thenReturn(prefs);
@@ -66,7 +66,7 @@ public class CounterTurnTrackerTest {
       // Check initial conditions and advance to next.
       for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
-          String expected = String.format("%d-%d", (i*20)+10, j+1);
+          String expected = String.format("%d-%d", (i * 20) + 10, j + 1);
           assertEquals(expected, tracker.getTurnString());
           tracker.next();
         }
@@ -79,7 +79,7 @@ public class CounterTurnTrackerTest {
       // Check previous command.
       for (int i = 2; i >= 0; --i) {
         for (int j = 2; j >= 0; --j) {
-          String expected = String.format("%d-%d", (i*20)+10, j+1);
+          String expected = String.format("%d-%d", (i * 20) + 10, j + 1);
           assertEquals(expected, tracker.getTurnString());
           tracker.prev();
         }

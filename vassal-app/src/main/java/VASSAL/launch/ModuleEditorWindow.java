@@ -16,20 +16,17 @@
  */
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import VASSAL.Info;
-import org.apache.commons.lang3.StringUtils;
-
 import VASSAL.build.GameModule;
 import VASSAL.configure.ConfigureTree;
 import VASSAL.configure.SavedGameUpdaterDialog;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.menu.MenuManager;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import org.apache.commons.lang3.StringUtils;
 
 public class ModuleEditorWindow extends EditorWindow {
   private static final long serialVersionUID = 1L;
@@ -51,15 +48,15 @@ public class ModuleEditorWindow extends EditorWindow {
 
     mm.addAction("Editor.ModuleEditor.reference_manual", tree.getHelpAction());
 
-    updateSavedGame = new AbstractAction(Resources.getString(
-      "Editor.ModuleEditor.update_saved")) { //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
+    updateSavedGame =
+        new AbstractAction(Resources.getString("Editor.ModuleEditor.update_saved")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        new SavedGameUpdaterDialog(ModuleEditorWindow.this).setVisible(true);
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            new SavedGameUpdaterDialog(ModuleEditorWindow.this).setVisible(true);
+          }
+        };
     mm.addAction("Editor.ModuleEditor.update_saved", updateSavedGame);
 
     saveAction.setEnabled(true);
@@ -68,7 +65,8 @@ public class ModuleEditorWindow extends EditorWindow {
 
     pack();
 
-    tree.requestFocus(); //BR// Focus starts on the root node, not on the little icons on the toolbar
+    tree.requestFocus(); // BR// Focus starts on the root node, not on the little icons on the
+    // toolbar
   }
 
   @Override
@@ -89,23 +87,25 @@ public class ModuleEditorWindow extends EditorWindow {
 
   @Override
   protected void save() {
-    saver(() -> {
-      final GameModule g = GameModule.getGameModule();
-      g.save();
-      final File f = g.getArchiveWriter().getArchive().getFile();
-      setModuleName(f.getName());
-      ModuleManagerUpdateHelper.sendModuleUpdate(f);
-    });
+    saver(
+        () -> {
+          final GameModule g = GameModule.getGameModule();
+          g.save();
+          final File f = g.getArchiveWriter().getArchive().getFile();
+          setModuleName(f.getName());
+          ModuleManagerUpdateHelper.sendModuleUpdate(f);
+        });
   }
 
   @Override
   protected void saveAs() {
-    saver(() -> {
-      final GameModule g = GameModule.getGameModule();
-      g.saveAs();
-      final File f = g.getArchiveWriter().getArchive().getFile();
-      setModuleName(f.getName());
-      ModuleManagerUpdateHelper.sendModuleUpdate(f);
-    });
+    saver(
+        () -> {
+          final GameModule g = GameModule.getGameModule();
+          g.saveAs();
+          final File f = g.getArchiveWriter().getArchive().getFile();
+          setModuleName(f.getName());
+          ModuleManagerUpdateHelper.sendModuleUpdate(f);
+        });
   }
 }

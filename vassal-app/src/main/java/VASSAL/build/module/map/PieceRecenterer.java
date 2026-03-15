@@ -17,8 +17,6 @@
  */
 package VASSAL.build.module.map;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import VASSAL.build.AbstractToolbarItem;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
@@ -38,18 +36,30 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.Stack;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.LaunchButton;
+import java.awt.Point;
+import java.awt.Rectangle;
 
-/** Adds a button to a Maps toolbar that adjusts the positions of all pieces
- * so that their centroid is at the center of the map
+/**
+ * Adds a button to a Maps toolbar that adjusts the positions of all pieces so that their centroid
+ * is at the center of the map
  */
 public class PieceRecenterer extends AbstractToolbarItem implements DeckVisitor {
   // These 4 identical to AbstractToolbarItem and exist for "clirr purposes"
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String BUTTON_TEXT = "text"; //NON-NLS
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String ICON = "icon"; //NON-NLS
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String HOTKEY = "hotkey"; //NON-NLS
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String TOOLTIP = "tooltip"; //NON-NLS
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String BUTTON_TEXT = "text"; // NON-NLS
 
-  /** @deprecated use launch from the superclass */
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String ICON = "icon"; // NON-NLS
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String HOTKEY = "hotkey"; // NON-NLS
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String TOOLTIP = "tooltip"; // NON-NLS
+
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
@@ -59,21 +69,18 @@ public class PieceRecenterer extends AbstractToolbarItem implements DeckVisitor 
   public PieceRecenterer() {
     setNameKey("");
 
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("Editor.PieceRecenterer.recenter"),
-      Resources.getString("Editor.PieceRecenterer.recenter"),
-      "/images/recenter.gif", //NON-NLS
-      e -> GameModule.getGameModule().sendAndLog(recenter(map))
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("Editor.PieceRecenterer.recenter"),
+            Resources.getString("Editor.PieceRecenterer.recenter"),
+            "/images/recenter.gif", // NON-NLS
+            e -> GameModule.getGameModule().sendAndLog(recenter(map))));
     launch = getLaunchButton(); // for compatibility
 
     dispatcher = new DeckVisitorDispatcher(this);
   }
 
-  /**
-   * Returns a Command that moves all pieces so that their centroid is
-   * centered on the map.
-   */
+  /** Returns a Command that moves all pieces so that their centroid is centered on the map. */
   public Command recenter(Map map) {
     final Command c = new NullCommand();
     final GamePiece[] pieces = map.getPieces();
@@ -106,31 +113,31 @@ public class PieceRecenterer extends AbstractToolbarItem implements DeckVisitor 
     return c;
   }
 
-  /** Implements {@link DeckVisitor}.  Returns Boolean.TRUE if the piece should be moved */
+  /** Implements {@link DeckVisitor}. Returns Boolean.TRUE if the piece should be moved */
   @Override
   public Object visitDeck(Deck d) {
     return Boolean.TRUE;
   }
 
-  /** Implements {@link DeckVisitor}.  Returns Boolean.TRUE if the piece should be moved */
+  /** Implements {@link DeckVisitor}. Returns Boolean.TRUE if the piece should be moved */
   @Override
   public Object visitDefault(GamePiece p) {
     return Boolean.TRUE;
   }
 
-  /** Implements {@link DeckVisitor}.  Returns Boolean.TRUE if the piece should be moved */
+  /** Implements {@link DeckVisitor}. Returns Boolean.TRUE if the piece should be moved */
   @Override
   public Object visitStack(Stack s) {
     return s.getPieceCount() > 0 ? Boolean.TRUE : Boolean.FALSE;
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PieceRecenterer.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PieceRecenterer.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public void addTo(Buildable parent) {
-    map = (Map)parent;
+    map = (Map) parent;
     map.getToolBar().add(getLaunchButton());
     GameModule.getGameModule().getGameState().addGameComponent(this);
   }
@@ -140,18 +147,20 @@ public class PieceRecenterer extends AbstractToolbarItem implements DeckVisitor 
     return new Class<?>[0];
   }
 
-  /** @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead. */
+  /**
+   * @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead.
+   */
   @Deprecated(since = "2020-10-01", forRemoval = true)
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new IconConfigurer(key, name, "/images/recenter.gif"); //NON-NLS
+      return new IconConfigurer(key, name, "/images/recenter.gif"); // NON-NLS
     }
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "PieceRecenterer"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "PieceRecenterer"); // NON-NLS
   }
 
   @Override

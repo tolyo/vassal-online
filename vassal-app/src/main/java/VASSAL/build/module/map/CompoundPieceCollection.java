@@ -21,26 +21,26 @@ import VASSAL.counters.Deck;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.Properties;
 import VASSAL.counters.Stack;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Base class for PieceCollection implementation that organizes {@link GamePiece}s -- a category which in this case
- * also includes Decks and Stacks, in addition to ordinary pieces -- into distinct visual layers. The layers are drawn
- * in order of their index, i.e. layer 0 is drawn first and thus appears "on the bottom", as higher layers are drawn
- * over top of it.
- * <br><br>
- * Maintains, usually on behalf of a Map, lists of all the pieces in each of several layers, along with a set of "enabled"
- * flags marking which layers are disabled/hidden and which are enabled/visible. When a piece is added to the overall collection,
- * its appropriate layer is determined and it is added to the list of pieces on that layer.
+ * Base class for PieceCollection implementation that organizes {@link GamePiece}s -- a category
+ * which in this case also includes Decks and Stacks, in addition to ordinary pieces -- into
+ * distinct visual layers. The layers are drawn in order of their index, i.e. layer 0 is drawn first
+ * and thus appears "on the bottom", as higher layers are drawn over top of it. <br>
+ * <br>
+ * Maintains, usually on behalf of a Map, lists of all the pieces in each of several layers, along
+ * with a set of "enabled" flags marking which layers are disabled/hidden and which are
+ * enabled/visible. When a piece is added to the overall collection, its appropriate layer is
+ * determined and it is added to the list of pieces on that layer.
  */
 public abstract class CompoundPieceCollection implements PieceCollection {
   protected SimplePieceCollection[] layers; // List of pieces in each layer
-  protected int bottomLayer = 0;            // Current bottom layer (provides option to rotate layer depth)
-  protected boolean[] enabled;              // Flags indicating which layers are presently enabled/visible
+  protected int bottomLayer = 0; // Current bottom layer (provides option to rotate layer depth)
+  protected boolean[] enabled; // Flags indicating which layers are presently enabled/visible
 
   protected CompoundPieceCollection(int layerCount) {
     initLayers(layerCount);
@@ -56,8 +56,10 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   }
 
   /**
-   * Default implementation is "degenerate", having only a single layer -- when extending this class, this method
-   * takes a piece and determines which of several layers it belongs in, returning an index.
+   * Default implementation is "degenerate", having only a single layer -- when extending this
+   * class, this method takes a piece and determines which of several layers it belongs in,
+   * returning an index.
+   *
    * @param p A game piece
    * @return Index for the visual layer the piece should be drawn with.
    */
@@ -66,18 +68,22 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   }
 
   /**
-   * Default implementation is "degenerate", having only a single layer -- when extending this class, this method
-   * takes a piece and determines which of several layers it belongs in, returning the layer name.
+   * Default implementation is "degenerate", having only a single layer -- when extending this
+   * class, this method takes a piece and determines which of several layers it belongs in,
+   * returning the layer name.
+   *
    * @param p A game piece
    * @return the layer name it belongs in.
    */
   public String getLayerNameForPiece(GamePiece p) {
-    return ""; //NON-NLS
+    return ""; // NON-NLS
   }
 
   /**
-   * Default implementation is "degenerate", having only a single layer -- when extending this class, this method
-   * takes layer name and returns the index for that layer, or -1 if the string does not name a valid layer.
+   * Default implementation is "degenerate", having only a single layer -- when extending this
+   * class, this method takes layer name and returns the index for that layer, or -1 if the string
+   * does not name a valid layer.
+   *
    * @param layerName the name of a layer
    * @return the index for the layer
    */
@@ -87,6 +93,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * Given a game piece, returns the simple piece collection for the layer that it belongs in
+   *
    * @param p A game piece
    * @return the piece collection for the layer that it belongs in
    */
@@ -95,7 +102,9 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   }
 
   /**
-   * Adds a piece to the overall collection, by adding it to the simple collection for the layer it belongs in.
+   * Adds a piece to the overall collection, by adding it to the simple collection for the layer it
+   * belongs in.
+   *
    * @param p Game piece to add
    */
   @Override
@@ -103,9 +112,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
     getCollectionForPiece(p).add(p);
   }
 
-  /**
-   * Clears the whole collection.
-   */
+  /** Clears the whole collection. */
   @Override
   public void clear() {
     for (final SimplePieceCollection layer : layers) {
@@ -124,7 +131,8 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * @param includeDisabled true if pieces in disabled layers should be included
-   * @return A list of all pieces in this overall collection, or all that are in "enabled" layers, depending on the parameter
+   * @return A list of all pieces in this overall collection, or all that are in "enabled" layers,
+   *     depending on the parameter
    */
   protected GamePiece[] getPieces(boolean includeDisabled) {
     final List<GamePiece> l = new ArrayList<>();
@@ -190,13 +198,14 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   }
 
   /**
-   * Used when moving a piece on top of another piece to determine whether they can be merged together
-   * (e.g. can this Piece be added to that Stack, can this Stack be added to that Deck, can these two
-   * Stacks be combined together into one). Default preconditions for merging into a Stack include not
-   * being Invisible due to a {@link VASSAL.counters.Hideable} trait, and not having a "Does Not Stack"
-   * trait ({@link VASSAL.counters.Immobilized}). When extending the class additional requirements can
-   * be added (e.g. {@link LayeredPieceCollection} requires pieces to be in the same visual layer in
-   * order to form a stack).
+   * Used when moving a piece on top of another piece to determine whether they can be merged
+   * together (e.g. can this Piece be added to that Stack, can this Stack be added to that Deck, can
+   * these two Stacks be combined together into one). Default preconditions for merging into a Stack
+   * include not being Invisible due to a {@link VASSAL.counters.Hideable} trait, and not having a
+   * "Does Not Stack" trait ({@link VASSAL.counters.Immobilized}). When extending the class
+   * additional requirements can be added (e.g. {@link LayeredPieceCollection} requires pieces to be
+   * in the same visual layer in order to form a stack).
+   *
    * @param p1 one piece/stack/deck
    * @param p2 another piece/stack/deck
    * @return Whether the two pieces are legal to merge
@@ -204,22 +213,17 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   @Override
   public boolean canMerge(GamePiece p1, GamePiece p2) {
     final boolean canMerge;
-    if (p1 instanceof Deck
-        || p2 instanceof Deck) {
+    if (p1 instanceof Deck || p2 instanceof Deck) {
       canMerge = true;
-    }
-    else if (p1 instanceof Stack) {
+    } else if (p1 instanceof Stack) {
       if (p2 instanceof Stack) {
         canMerge = canStacksMerge((Stack) p1, (Stack) p2);
-      }
-      else {
+      } else {
         canMerge = canStackAndPieceMerge((Stack) p1, p2);
       }
-    }
-    else if (p2 instanceof Stack) {
+    } else if (p2 instanceof Stack) {
       canMerge = canStackAndPieceMerge((Stack) p2, p1);
-    }
-    else {
+    } else {
       canMerge = canPiecesMerge(p1, p2);
     }
     return canMerge;
@@ -227,23 +231,30 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * Stacks can merge if their component pieces can merge
+   *
    * @param s1 stack
    * @param s2 another stack
    * @return can they make one stack?
    */
   protected boolean canStacksMerge(Stack s1, Stack s2) {
-    return canPiecesMerge(s1.topPiece(), s2.topPiece()); //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
+    return canPiecesMerge(
+        s1.topPiece(),
+        s2.topPiece()); // NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible
+    // trait)
   }
 
   /**
    * A piece can be merged into a stack if it is merge-compatible with the first piece in the stack.
+   *
    * @param s stack
    * @param p piece
    * @return can they make one stack?
    */
   protected boolean canStackAndPieceMerge(Stack s, GamePiece p) {
     boolean canMerge = false;
-    final GamePiece top = s.topPiece();  //NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible trait)
+    final GamePiece top =
+        s.topPiece(); // NOTE: topPiece() returns the top VISIBLE piece (not hidden by Invisible
+    // trait)
     if (top != null) {
       canMerge = canPiecesMerge(top, p);
     }
@@ -251,20 +262,23 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   }
 
   /**
-   * Two pieces can merge in the default case as long as neither is presently invisible and neither has a
-   * Does Not Stack ({@link VASSAL.counters.Hideable}) trait.
+   * Two pieces can merge in the default case as long as neither is presently invisible and neither
+   * has a Does Not Stack ({@link VASSAL.counters.Hideable}) trait.
+   *
    * @param p1 a piece
    * @param p2 another piece
    * @return WonderTwin powers activate?
    */
   protected boolean canPiecesMerge(GamePiece p1, GamePiece p2) {
     boolean canMerge = false;
-    if (p1 != null
-        && p2 != null) {
-      canMerge = !Boolean.TRUE.equals(p1.getProperty(Properties.NO_STACK))
-          && !Boolean.TRUE.equals(p2.getProperty(Properties.NO_STACK))
-          && ((!Boolean.TRUE.equals(p1.getProperty(Properties.INVISIBLE_TO_ME)) && !Boolean.TRUE.equals(p2.getProperty(Properties.INVISIBLE_TO_ME))
-              || Objects.equals(p1.getProperty(Properties.HIDDEN_BY), p2.getProperty(Properties.HIDDEN_BY))));
+    if (p1 != null && p2 != null) {
+      canMerge =
+          !Boolean.TRUE.equals(p1.getProperty(Properties.NO_STACK))
+              && !Boolean.TRUE.equals(p2.getProperty(Properties.NO_STACK))
+              && ((!Boolean.TRUE.equals(p1.getProperty(Properties.INVISIBLE_TO_ME))
+                      && !Boolean.TRUE.equals(p2.getProperty(Properties.INVISIBLE_TO_ME))
+                  || Objects.equals(
+                      p1.getProperty(Properties.HIDDEN_BY), p2.getProperty(Properties.HIDDEN_BY))));
     }
     return canMerge;
   }
@@ -315,8 +329,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
           return;
         }
       }
-    }
-    else {
+    } else {
       rotate(rotateUp);
     }
   }
@@ -327,14 +340,14 @@ public abstract class CompoundPieceCollection implements PieceCollection {
   public void rotate(boolean rotateUp) {
     if (rotateUp) {
       setBottomLayer(bottomLayer - 1);
-    }
-    else {
+    } else {
       setBottomLayer(bottomLayer + 1);
     }
   }
 
   /**
    * Enable/Disable layers
+   *
    * @param layer layer index
    * @param b true to enable the layer, false to disable
    */
@@ -346,6 +359,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * Toggle for Enable/Disable of layers
+   *
    * @param layer layer index
    */
   public void toggleLayerEnabled(int layer) {
@@ -356,6 +370,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * Enable/Disable layers
+   *
    * @param layer layer name
    * @param b true to enable the layer, false to disable
    */
@@ -365,6 +380,7 @@ public abstract class CompoundPieceCollection implements PieceCollection {
 
   /**
    * Toggle for Enable/Disable of layers
+   *
    * @param layer layer name
    */
   public void toggleLayerEnabled(String layer) {

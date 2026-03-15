@@ -17,15 +17,6 @@
  */
 package VASSAL.i18n;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.NoSuchFileException;
-import java.util.Locale;
-import java.util.Properties;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
@@ -36,10 +27,17 @@ import VASSAL.configure.ConfigurerFactory;
 import VASSAL.tools.ArchiveWriter;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.ReadErrorDialog;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
+import java.util.Locale;
+import java.util.Properties;
 
-public class Translation extends AbstractConfigurable
-                         implements Comparable<Translation> {
-  public static final String LOCALE = "locale"; //$NON-NLS-1$
+public class Translation extends AbstractConfigurable implements Comparable<Translation> {
+  public static final String LOCALE = "locale"; // $NON-NLS-1$
   protected Locale locale;
   protected boolean dirty = false;
   protected Properties localProperties;
@@ -50,14 +48,12 @@ public class Translation extends AbstractConfigurable
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{Resources.getString("Editor.Translation.locale")};
+    return new String[] {Resources.getString("Editor.Translation.locale")};
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      LocalePrompt.class
-    };
+    return new Class<?>[] {LocalePrompt.class};
   }
 
   public static class LocalePrompt implements ConfigurerFactory {
@@ -69,16 +65,14 @@ public class Translation extends AbstractConfigurable
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{LOCALE};
+    return new String[] {LOCALE};
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (LOCALE.equals(key)) {
       return LocaleConfigurer.localeToString(locale);
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
@@ -124,8 +118,8 @@ public class Translation extends AbstractConfigurable
       try {
         loadProperties();
       }
-// FIXME: review error message
-// FIXME: should we catch a FileNotFoundException here instead?
+      // FIXME: review error message
+      // FIXME: should we catch a FileNotFoundException here instead?
       catch (IOException e) {
         // Fail quietly: This error will occur when adding a new translation.
       }
@@ -135,16 +129,13 @@ public class Translation extends AbstractConfigurable
   /**
    * Set a property into our property map. i.e. an attribute has been translated
    *
-   * @param key
-   *          property key
-   * @param value
-   *          property value
+   * @param key property key
+   * @param value property value
    */
   public void setProperty(String key, String value) {
     if (value == null || value.length() == 0) {
       getProperties().remove(key);
-    }
-    else {
+    } else {
       getProperties().setProperty(key, value);
     }
     dirty = true;
@@ -171,6 +162,7 @@ public class Translation extends AbstractConfigurable
 
   /**
    * Load properties from the bundle file in the module/extension
+   *
    * @throws IOException oops
    */
   protected void loadProperties() throws IOException {
@@ -182,10 +174,9 @@ public class Translation extends AbstractConfigurable
     if (g != null) {
       final DataArchive mda = g.getDataArchive();
       try (InputStream inner = mda.getInputStream(getBundleFileName());
-           BufferedInputStream in = new BufferedInputStream(inner)) {
+          BufferedInputStream in = new BufferedInputStream(inner)) {
         localProperties.load(in);
-      }
-      catch (FileNotFoundException | NoSuchFileException e) {
+      } catch (FileNotFoundException | NoSuchFileException e) {
         // ignore, properties have not been saved yet
         dirty = false;
         return;
@@ -198,13 +189,14 @@ public class Translation extends AbstractConfigurable
   protected VassalResourceBundle getBundle() throws IOException {
     final DataArchive mda = GameModule.getGameModule().getDataArchive();
     try (InputStream inner = mda.getInputStream(getBundleFileName());
-         BufferedInputStream in = new BufferedInputStream(inner)) {
+        BufferedInputStream in = new BufferedInputStream(inner)) {
       return new VassalResourceBundle(in);
     }
   }
 
   /**
    * Reload the properties from the module/extension
+   *
    * @throws IOException oops
    */
   public void reloadProperties() throws IOException {
@@ -214,6 +206,7 @@ public class Translation extends AbstractConfigurable
 
   /**
    * Save the properties back to the module/extension
+   *
    * @throws IOException oops
    */
   protected void saveProperties() throws IOException {
@@ -228,8 +221,7 @@ public class Translation extends AbstractConfigurable
   }
 
   /**
-   * Return the properties map for this translation. Create and load from
-   * the module if necessary.
+   * Return the properties map for this translation. Create and load from the module if necessary.
    *
    * @return properties
    */
@@ -237,8 +229,7 @@ public class Translation extends AbstractConfigurable
     if (localProperties == null) {
       try {
         loadProperties();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         ReadErrorDialog.error(e, getBundleFileName());
         localProperties = new Properties();
       }
@@ -252,8 +243,12 @@ public class Translation extends AbstractConfigurable
    * @return bundle name
    */
   public String getBundleName() {
-    return Resources.MODULE_BUNDLE + "_" + locale.getLanguage() //$NON-NLS-1$
-        + (locale.getCountry().length() > 0 ? ("_" + locale.getCountry()) : ""); //$NON-NLS-1$ //$NON-NLS-2$
+    return Resources.MODULE_BUNDLE
+        + "_"
+        + locale.getLanguage() // $NON-NLS-1$
+        + (locale.getCountry().length() > 0
+            ? ("_" + locale.getCountry())
+            : ""); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   /**
@@ -262,7 +257,7 @@ public class Translation extends AbstractConfigurable
    * @return bundle file name
    */
   public String getBundleFileName() {
-    return getBundleName() + ".properties"; //$NON-NLS-1$
+    return getBundleName() + ".properties"; // $NON-NLS-1$
   }
 
   @Override

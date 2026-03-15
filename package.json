@@ -1,0 +1,11 @@
+{
+  "name": "vassal-online",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "precommit": "make precommit"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

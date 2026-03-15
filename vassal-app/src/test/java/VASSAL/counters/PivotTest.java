@@ -19,13 +19,16 @@ package VASSAL.counters;
 
 import VASSAL.tools.NamedKeyStroke;
 import java.lang.reflect.InvocationTargetException;
-
 import org.junit.jupiter.api.Test;
 
 public class PivotTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Pivot trait = new Pivot();
 
@@ -41,7 +44,5 @@ public class PivotTest extends DecoratorTest {
     trait.angle = 42.1;
     trait.description = "plover";
     serializeTest("Complex Test", trait); // NON-NLS
-
-
   }
 }

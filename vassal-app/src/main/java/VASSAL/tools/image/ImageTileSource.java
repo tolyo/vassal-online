@@ -36,14 +36,9 @@ public interface ImageTileSource {
    * @param tileY the Y coordinate of the tile
    * @param scale the scale of the tile
    * @return the tile
-   *
    * @throws ImageIOException if the tile can't be read
    */
-  BufferedImage getTile(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException;
+  BufferedImage getTile(String name, int tileX, int tileY, double scale) throws ImageIOException;
 
   /**
    * Gets the size of an image tile.
@@ -53,14 +48,9 @@ public interface ImageTileSource {
    * @param tileY the Y coordinate of the tile
    * @param scale the scale of the tile
    * @return the size of the tile
-   *
    * @throws ImageIOException if the tile can't be read
    */
-  Dimension getTileSize(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException;
+  Dimension getTileSize(String name, int tileX, int tileY, double scale) throws ImageIOException;
 
   /**
    * Checks whether an image tile exists.
@@ -69,12 +59,7 @@ public interface ImageTileSource {
    * @param tileX the X coordinate of the tile
    * @param tileY the Y coordinate of the tile
    * @param scale the scale of the tile
-   *
    * @throws ImageIOException if the image can't be read
    */
-  boolean tileExists(
-    String name,
-    int tileX,
-    int tileY,
-    double scale) throws ImageIOException;
+  boolean tileExists(String name, int tileX, int tileY, double scale) throws ImageIOException;
 }

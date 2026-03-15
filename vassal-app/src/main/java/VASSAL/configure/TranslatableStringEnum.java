@@ -18,15 +18,17 @@ package VASSAL.configure;
 import VASSAL.build.AutoConfigurable;
 
 /**
- * Wrapper class for an enumerated type.  If an AutoConfigurable object lists an attribute of type TranslatableStringEnum.class,
- * the AutoConfigurer class will build a TranslatingStringEnumConfigurer as that attribute's editor.
- * The AutoConfigurable object should return a sub-class of StringEnum with a no-arg constructor
+ * Wrapper class for an enumerated type. If an AutoConfigurable object lists an attribute of type
+ * TranslatableStringEnum.class, the AutoConfigurer class will build a
+ * TranslatingStringEnumConfigurer as that attribute's editor. The AutoConfigurable object should
+ * return a sub-class of StringEnum with a no-arg constructor
  */
 public abstract class TranslatableStringEnum extends StringEnum {
   public abstract String[] getI18nKeys(AutoConfigurable target);
 
   /**
-   * @return true if names have already been translated; false means keys will be passed to Resources.getString()
+   * @return true if names have already been translated; false means keys will be passed to
+   *     Resources.getString()
    */
   public boolean isDisplayNames() {
     return false;

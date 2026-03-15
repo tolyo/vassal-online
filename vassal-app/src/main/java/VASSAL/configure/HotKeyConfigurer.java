@@ -17,22 +17,18 @@
  */
 package VASSAL.configure;
 
+import VASSAL.build.module.KeyNamer;
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import VASSAL.build.module.KeyNamer;
-import VASSAL.tools.swing.SwingUtils;
-
-/**
- * A Configurer for {@link KeyStroke} values
- */
+/** A Configurer for {@link KeyStroke} values */
 public class HotKeyConfigurer extends Configurer implements KeyListener {
   private JTextField tf;
   private JPanel p;
@@ -48,8 +44,7 @@ public class HotKeyConfigurer extends Configurer implements KeyListener {
   @Override
   public void setValue(Object o) {
     super.setValue(o);
-    if (tf != null
-        && !tf.getText().equals(keyToString())) {
+    if (tf != null && !tf.getText().equals(keyToString())) {
       tf.setText(keyToString());
     }
   }
@@ -84,23 +79,22 @@ public class HotKeyConfigurer extends Configurer implements KeyListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent e) {
-  }
+  public void keyTyped(KeyEvent e) {}
 
   @Override
   public void keyPressed(KeyEvent e) {
     switch (e.getKeyCode()) {
-    case KeyEvent.VK_DELETE:
-    case KeyEvent.VK_BACK_SPACE:
-      setValue(null);
-      break;
-    case KeyEvent.VK_SHIFT:
-    case KeyEvent.VK_CONTROL:
-    case KeyEvent.VK_META:
-    case KeyEvent.VK_ALT:
-      break;
-    default:
-      setValue(SwingUtils.systemToGeneric(SwingUtils.getKeyStrokeForEvent(e)));
+      case KeyEvent.VK_DELETE:
+      case KeyEvent.VK_BACK_SPACE:
+        setValue(null);
+        break;
+      case KeyEvent.VK_SHIFT:
+      case KeyEvent.VK_CONTROL:
+      case KeyEvent.VK_META:
+      case KeyEvent.VK_ALT:
+        break;
+      default:
+        setValue(SwingUtils.systemToGeneric(SwingUtils.getKeyStrokeForEvent(e)));
     }
   }
 
@@ -110,25 +104,21 @@ public class HotKeyConfigurer extends Configurer implements KeyListener {
   }
 
   /**
-   * A plain text representation of a KeyStroke.  Doesn't differ much
-   * from {@link KeyEvent#getKeyText}
+   * A plain text representation of a KeyStroke. Doesn't differ much from {@link
+   * KeyEvent#getKeyText}
    */
   public static String getString(KeyStroke k) {
     return KeyNamer.getKeyString(k);
   }
 
-  /**
-   * Decode a String into a KeyStroke
-   */
+  /** Decode a String into a KeyStroke */
   public static KeyStroke decode(String s) {
-    final int index = s.indexOf(','); //$NON-NLS-1$
+    final int index = s.indexOf(','); // $NON-NLS-1$
     if (index < 0) return null;
 
     try {
       return KeyStroke.getKeyStroke(
-        Integer.parseInt(s.substring(0, index)),
-        Integer.parseInt(s.substring(index + 1))
-      );
+          Integer.parseInt(s.substring(0, index)), Integer.parseInt(s.substring(index + 1)));
     }
     // FIXME: review error message
     catch (IllegalArgumentException e) {
@@ -136,10 +126,10 @@ public class HotKeyConfigurer extends Configurer implements KeyListener {
     }
   }
 
-  /**
-   * Encode a KeyStroke into a String
-   */
+  /** Encode a KeyStroke into a String */
   public static String encode(KeyStroke stroke) {
-    return stroke == null ? "" : stroke.getKeyCode() + "," + stroke.getModifiers(); //$NON-NLS-1$ //$NON-NLS-2$
+    return stroke == null
+        ? ""
+        : stroke.getKeyCode() + "," + stroke.getModifiers(); // $NON-NLS-1$ //$NON-NLS-2$
   }
 }

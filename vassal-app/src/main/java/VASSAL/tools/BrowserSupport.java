@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
 import org.apache.commons.lang3.SystemUtils;
 
 /**
@@ -47,8 +45,7 @@ public class BrowserSupport {
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
           try {
             desktop.browse(uri);
-          }
-          catch (IOException e) {
+          } catch (IOException e) {
             ReadErrorDialog.error(e, uri.toString());
           }
           return;
@@ -61,21 +58,18 @@ public class BrowserSupport {
 
     final String launcher;
     if (SystemUtils.IS_OS_WINDOWS) {
-      launcher = "start";  //NON-NLS
-    }
-    else if (SystemUtils.IS_OS_MAC) {
-      launcher = "open";  //NON-NLS
-    }
-    else {
-      launcher = "xdg-open";  //NON-NLS
+      launcher = "start"; // NON-NLS
+    } else if (SystemUtils.IS_OS_MAC) {
+      launcher = "open"; // NON-NLS
+    } else {
+      launcher = "xdg-open"; // NON-NLS
     }
 
     final ProcessBuilder pb = new ProcessBuilder(launcher, uristr);
     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
     try {
       pb.start();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, uristr);
     }
   }
@@ -85,12 +79,10 @@ public class BrowserSupport {
     try {
       try {
         uri = url.toURI();
-      }
-      catch (URISyntaxException e) {
+      } catch (URISyntaxException e) {
         throw new IOException(e);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, url.toString());
       return;
     }
@@ -103,12 +95,10 @@ public class BrowserSupport {
     try {
       try {
         uri = new URI(url);
-      }
-      catch (URISyntaxException e) {
+      } catch (URISyntaxException e) {
         throw new IOException(e);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, url);
       return;
     }
@@ -116,11 +106,12 @@ public class BrowserSupport {
     openURI(uri);
   }
 
-  private static final HyperlinkListener listener = e -> {
-    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-      openURL(e.getURL());
-    }
-  };
+  private static final HyperlinkListener listener =
+      e -> {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+          openURL(e.getURL());
+        }
+      };
 
   public static HyperlinkListener getListener() {
     return listener;

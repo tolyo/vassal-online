@@ -4,12 +4,13 @@
 
 package VASSAL.test;
 
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectDirectory;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-
 import java.net.URLDecoder;
 import java.util.logging.Level;
-
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
@@ -18,24 +19,15 @@ import org.junit.platform.launcher.listeners.LoggingListener;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectDirectory;
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
-
-/**
- * Discovers all JUnit tests and runs them.
- */
+/** Discovers all JUnit tests and runs them. */
 public final class AllTests {
 
-  /**
-   * Runs all tests
-   */
+  /** Runs all tests */
   public static void main(String[] args) {
-    LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-        .selectors(
-            selectDirectory(findClassesDir()),
-            selectPackage("")
-        )
-        .build();
+    LauncherDiscoveryRequest request =
+        LauncherDiscoveryRequestBuilder.request()
+            .selectors(selectDirectory(findClassesDir()), selectPackage(""))
+            .build();
 
     Launcher launcher = LauncherFactory.create();
 
@@ -50,12 +42,10 @@ public final class AllTests {
 
   private static File findClassesDir() {
     try {
-      String path = AllTests.class.getProtectionDomain()
-          .getCodeSource().getLocation().getFile();
+      String path = AllTests.class.getProtectionDomain().getCodeSource().getLocation().getFile();
       return new File(URLDecoder.decode(path, "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       throw new AssertionError(e);
     }
   }
-
 }

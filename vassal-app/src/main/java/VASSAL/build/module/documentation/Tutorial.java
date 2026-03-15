@@ -17,20 +17,6 @@
  */
 package VASSAL.build.module.documentation;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingWorker;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -41,39 +27,49 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.menu.MenuItemProxy;
 import VASSAL.tools.menu.MenuManager;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
-/**
- * Provides tutorial functionality by reading in a logfile
- */
+/** Provides tutorial functionality by reading in a logfile */
 public class Tutorial extends AbstractConfigurable {
   private static final Logger logger = LoggerFactory.getLogger(Tutorial.class);
 
-  public static final String FILE_NAME = "logfile"; //$NON-NLS-1$
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String LAUNCH_ON_STARTUP = "launchOnStartup"; //$NON-NLS-1$
-  public static final String PROMPT_MESSAGE = "promptMessage"; //$NON-NLS-1$
-  public static final String WELCOME_MESSAGE = "welcomeMessage"; //$NON-NLS-1$
+  public static final String FILE_NAME = "logfile"; // $NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String LAUNCH_ON_STARTUP = "launchOnStartup"; // $NON-NLS-1$
+  public static final String PROMPT_MESSAGE = "promptMessage"; // $NON-NLS-1$
+  public static final String WELCOME_MESSAGE = "welcomeMessage"; // $NON-NLS-1$
   private String fileName;
   private final Action launch;
   private boolean launchOnFirstStartup;
-  private String welcomeMessage = Resources.getString("Tutorial.instructions"); //$NON-NLS-1$
-  private String promptMessage = Resources.getString("Tutorial.load_tutorial"); //$NON-NLS-1$
+  private String welcomeMessage = Resources.getString("Tutorial.instructions"); // $NON-NLS-1$
+  private String promptMessage = Resources.getString("Tutorial.load_tutorial"); // $NON-NLS-1$
   protected BooleanConfigurer hasViewedTutorial;
 
   public Tutorial() {
-    launch = new AbstractAction(Resources.getString("Tutorial.tutorial")) { //$NON-NLS-1$
-      private static final long serialVersionUID = 1L;
+    launch =
+        new AbstractAction(Resources.getString("Tutorial.tutorial")) { // $NON-NLS-1$
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        launch();
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            launch();
+          }
+        };
   }
 
   public void launch() {
-    GameModule.getGameModule().warn(Resources.getString("Tutorial.loading_tutorial")); //$NON-NLS-1$
+    GameModule.getGameModule()
+        .warn(Resources.getString("Tutorial.loading_tutorial")); // $NON-NLS-1$
 
     new SwingWorker<Command, Void>() {
       @Override
@@ -88,16 +84,15 @@ public class Tutorial extends AbstractConfigurable {
 
         try {
           saveCommand = get();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
           ErrorDialog.bug(e);
         }
         // FIXME: review error message
         catch (ExecutionException e) {
           logger.error("", e);
-          String msg = Resources.getString("Tutorial.unable_to_launch", name); //$NON-NLS-1$
+          String msg = Resources.getString("Tutorial.unable_to_launch", name); // $NON-NLS-1$
           if (e.getMessage() != null) {
-            msg += ":  " + e.getMessage(); //$NON-NLS-1$
+            msg += ":  " + e.getMessage(); // $NON-NLS-1$
           }
           error = msg;
         }
@@ -107,8 +102,7 @@ public class Tutorial extends AbstractConfigurable {
           if (welcomeMessage != null && welcomeMessage.length() > 0) {
             GameModule.getGameModule().warn(welcomeMessage);
           }
-        }
-        else {
+        } else {
           GameModule.getGameModule().warn(error);
         }
       }
@@ -128,24 +122,12 @@ public class Tutorial extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      File.class,
-      Boolean.class,
-      String.class,
-      String.class
-    };
+    return new Class<?>[] {String.class, File.class, Boolean.class, String.class, String.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      FILE_NAME,
-      LAUNCH_ON_STARTUP,
-      PROMPT_MESSAGE,
-      WELCOME_MESSAGE
-    };
+    return new String[] {NAME, FILE_NAME, LAUNCH_ON_STARTUP, PROMPT_MESSAGE, WELCOME_MESSAGE};
   }
 
   @Override
@@ -160,20 +142,15 @@ public class Tutorial extends AbstractConfigurable {
   public String getAttributeValueString(String key) {
     if (FILE_NAME.equals(key)) {
       return fileName;
-    }
-    else if (NAME.equals(key)) {
+    } else if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (LAUNCH_ON_STARTUP.equals(key)) {
+    } else if (LAUNCH_ON_STARTUP.equals(key)) {
       return String.valueOf(launchOnFirstStartup);
-    }
-    else if (PROMPT_MESSAGE.equals(key)) {
+    } else if (PROMPT_MESSAGE.equals(key)) {
       return promptMessage;
-    }
-    else if (WELCOME_MESSAGE.equals(key)) {
+    } else if (WELCOME_MESSAGE.equals(key)) {
       return welcomeMessage;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -185,21 +162,17 @@ public class Tutorial extends AbstractConfigurable {
         value = ((File) value).getName();
       }
       fileName = (String) value;
-    }
-    else if (NAME.equals(key)) {
+    } else if (NAME.equals(key)) {
       launch.putValue(Action.NAME, value);
       setConfigureName((String) value);
-    }
-    else if (LAUNCH_ON_STARTUP.equals(key)) {
+    } else if (LAUNCH_ON_STARTUP.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       launchOnFirstStartup = (Boolean) value;
-    }
-    else if (PROMPT_MESSAGE.equals(key)) {
+    } else if (PROMPT_MESSAGE.equals(key)) {
       promptMessage = (String) value;
-    }
-    else if (WELCOME_MESSAGE.equals(key)) {
+    } else if (WELCOME_MESSAGE.equals(key)) {
       welcomeMessage = (String) value;
     }
   }
@@ -209,9 +182,9 @@ public class Tutorial extends AbstractConfigurable {
   @Override
   public void addTo(Buildable parent) {
     launchItem = new MenuItemProxy(launch);
-    MenuManager.getInstance().addToSection("Documentation.Module", launchItem); //NON-NLS
+    MenuManager.getInstance().addToSection("Documentation.Module", launchItem); // NON-NLS
 
-    final String key = "viewedTutorial" + getConfigureName(); //$NON-NLS-1$
+    final String key = "viewedTutorial" + getConfigureName(); // $NON-NLS-1$
     hasViewedTutorial = new BooleanConfigurer(key, null, Boolean.FALSE);
     GameModule.getGameModule().getPrefs().addOption(null, hasViewedTutorial);
     GameModule.getGameModule().getWizardSupport().setTutorial(this);
@@ -219,8 +192,7 @@ public class Tutorial extends AbstractConfigurable {
 
   @Override
   public void removeFrom(Buildable parent) {
-    MenuManager.getInstance()
-               .removeFromSection("Documentation.Module", launchItem); //NON-NLS
+    MenuManager.getInstance().removeFromSection("Documentation.Module", launchItem); // NON-NLS
   }
 
   @Override
@@ -230,11 +202,13 @@ public class Tutorial extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("HelpMenu.html", "Tutorial"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "HelpMenu.html", "Tutorial"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   /**
-   * @return the Command representing this tutorial logfile.  Executing the command loads the tutorial
+   * @return the Command representing this tutorial logfile. Executing the command loads the
+   *     tutorial
    * @throws IOException oops
    */
   public Command getTutorialCommand() throws IOException {
@@ -243,7 +217,7 @@ public class Tutorial extends AbstractConfigurable {
 
   public InputStream getTutorialContents() throws IOException {
     if (fileName == null) {
-      throw new FileNotFoundException("Tutorial has null filename"); //NON-NLS
+      throw new FileNotFoundException("Tutorial has null filename"); // NON-NLS
     }
     return GameModule.getGameModule().getDataArchive().getInputStream(fileName);
   }
@@ -252,9 +226,7 @@ public class Tutorial extends AbstractConfigurable {
     return launchOnFirstStartup && !hasViewedTutorial.booleanValue();
   }
 
-  /**
-   * Mark this tutorial as having been viewed
-   */
+  /** Mark this tutorial as having been viewed */
   public void markAsViewed() {
     hasViewedTutorial.setValue(Boolean.TRUE);
   }

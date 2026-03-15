@@ -18,24 +18,21 @@
 
 package VASSAL.tools.image;
 
+import static VASSAL.tools.image.AssertImage.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import VASSAL.tools.io.TemporaryFileFactory;
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
-
-import VASSAL.tools.io.TemporaryFileFactory;
-import VASSAL.tools.lang.Reference;
-
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static VASSAL.tools.image.AssertImage.*;
 
 public class FileImageTypeConverterTest {
 
@@ -44,9 +41,7 @@ public class FileImageTypeConverterTest {
 
   private static final TemporaryFileFactory tf = () -> new File(tmp);
 
-  /**
-   * This class exposes read() and write() for testing.
-   */
+  /** This class exposes read() and write() for testing. */
   private static class FITC extends FileImageTypeConverter {
     public FITC() {
       super(tf);
@@ -76,12 +71,10 @@ public class FileImageTypeConverterTest {
 
     c.write(src, out);
 
-    final BufferedImage dst = new BufferedImage(
-      src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB
-    );
+    final BufferedImage dst =
+        new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-    final ByteArrayInputStream in =
-      new ByteArrayInputStream(out.toByteArray());
+    final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
 
     c.read(in, dst);
 
@@ -101,8 +94,7 @@ public class FileImageTypeConverterTest {
       assertEquals(BufferedImage.TYPE_INT_ARGB, dst.getType());
       assertImageContentEquals(src, dst);
       assertFalse(tmpFile.exists());
-    }
-    finally {
+    } finally {
       // cleanup
       tmpFile.delete();
     }

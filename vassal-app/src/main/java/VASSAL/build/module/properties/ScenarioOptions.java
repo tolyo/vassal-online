@@ -27,8 +27,12 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.NamedKeyStrokeListener;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -37,16 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import net.miginfocom.swing.MigLayout;
 
-/**
- * A free-standing class to display the combined Scenario options
- */
+/** A free-standing class to display the combined Scenario options */
 public class ScenarioOptions implements GameComponent {
 
   private static ScenarioOptions instance;
@@ -56,9 +53,8 @@ public class ScenarioOptions implements GameComponent {
   protected Action openAction;
   protected JButton launch;
 
-  /** Parent Global Properties component **/
+  /** Parent Global Properties component * */
   protected GlobalProperties globalProperties;
-
 
   public static void setInstance(ScenarioOptions options) {
     instance = options;
@@ -89,23 +85,34 @@ public class ScenarioOptions implements GameComponent {
     launch.setEnabled(getOpenAction().isEnabled());
 
     // Icon Configurer the button, added to Global Options
-    final IconConfigurer iconConfig = new IconConfigurer("scenarioPropertiesIcon", Resources.getString("Editor.ScenarioProperties.icon"), "");
-    iconConfig.setValue("");  //$NON-NLS-1$
+    final IconConfigurer iconConfig =
+        new IconConfigurer(
+            "scenarioPropertiesIcon", Resources.getString("Editor.ScenarioProperties.icon"), "");
+    iconConfig.setValue(""); // $NON-NLS-1$
     go.addOption(iconConfig);
-    iconConfig.addPropertyChangeListener(evt -> {
-      launch.setIcon(iconConfig.getIconValue());
-      launch.setText((launch.getText() == null) ? " " : null);
-      launch.setVisible(launch.getIcon() != null);
-    });
+    iconConfig.addPropertyChangeListener(
+        evt -> {
+          launch.setIcon(iconConfig.getIconValue());
+          launch.setText((launch.getText() == null) ? " " : null);
+          launch.setVisible(launch.getIcon() != null);
+        });
     iconConfig.fireUpdate();
 
     // Hotkey Configurer to open window, added to Global Options
-    final NamedHotKeyConfigurer keyConfig = new NamedHotKeyConfigurer("scenarioPropertiesHotKey", Resources.getString("Editor.ScenarioProperties.hotkey"), l.getNamedKeyStroke());
+    final NamedHotKeyConfigurer keyConfig =
+        new NamedHotKeyConfigurer(
+            "scenarioPropertiesHotKey",
+            Resources.getString("Editor.ScenarioProperties.hotkey"),
+            l.getNamedKeyStroke());
     go.addOption(keyConfig);
-    keyConfig.addPropertyChangeListener(evt -> {
-      l.setKeyStroke(keyConfig.getValueNamedKeyStroke());
-      launch.setToolTipText(Resources.getString("Editor.ScenarioProperties.hotkey_tooltip", NamedHotKeyConfigurer.getString(l.getKeyStroke())));  //$NON-NLS-1$
-    });
+    keyConfig.addPropertyChangeListener(
+        evt -> {
+          l.setKeyStroke(keyConfig.getValueNamedKeyStroke());
+          launch.setToolTipText(
+              Resources.getString(
+                  "Editor.ScenarioProperties.hotkey_tooltip",
+                  NamedHotKeyConfigurer.getString(l.getKeyStroke()))); // $NON-NLS-1$
+        });
     keyConfig.fireUpdate();
 
     gm.addKeyStrokeListener(l);
@@ -114,35 +121,35 @@ public class ScenarioOptions implements GameComponent {
     // Launch Button is Icon only and only shown if an Icon is specified.
     launch.setText((launch.getIcon() == null) ? " " : null);
     launch.setVisible(launch.getIcon() != null);
-
   }
 
   protected void toggleVisible() {
     if (getDialog().isVisible()) {
       cancel();
-    }
-    else if (getOpenAction().isEnabled()) {
+    } else if (getOpenAction().isEnabled()) {
       open();
     }
   }
 
   /**
-   * Create the top-level dialog, but don't populate any tabs or options yet, this is done just before
-   * display in case we are Editing and making changes, and to allow for roll-back management if user clicks cancel
-   * 
+   * Create the top-level dialog, but don't populate any tabs or options yet, this is done just
+   * before display in case we are Editing and making changes, and to allow for roll-back management
+   * if user clicks cancel
+   *
    * @return generated dialog
    */
   public JDialog getDialog() {
     if (dialog == null) {
       dialog = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
-      dialog.setTitle(Resources.getString("ScenarioOptions.window_title")); //$NON-NLS-1$
+      dialog.setTitle(Resources.getString("ScenarioOptions.window_title")); // $NON-NLS-1$
       dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-      dialog.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent we) {
-          cancel();
-        }
-      });
+      dialog.addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+              cancel();
+            }
+          });
 
       final JButton ok = new JButton(Resources.getString(Resources.OK));
       ok.addActionListener(e -> processChanges());
@@ -153,28 +160,33 @@ public class ScenarioOptions implements GameComponent {
       dialog.setLayout(new MigLayout("insets dialog", "[push,fill]"));
 
       final JPanel contentPanel = new JPanel(new MigLayout("insets dialog", "[push,fill]"));
-      contentPanel.add(optionTabs, "push, grow, wrap unrelated"); //NON-NLS
-      final JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      contentPanel.add(optionTabs, "push, grow, wrap unrelated"); // NON-NLS
+      final JScrollPane scrollPane =
+          new JScrollPane(
+              contentPanel,
+              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
       final JPanel scrollPanel = new JPanel(new BorderLayout());
       scrollPanel.add(scrollPane, BorderLayout.CENTER);
       dialog.add(scrollPanel, "grow, push, wrap");
 
-      final JPanel buttonPanel = new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
-      buttonPanel.add(ok, "tag ok, sg 1"); //NON-NLS
-      buttonPanel.add(cancel, "tag cancel, sg 1"); //NON-NLS
+      final JPanel buttonPanel =
+          new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
+      buttonPanel.add(ok, "tag ok, sg 1"); // NON-NLS
+      buttonPanel.add(cancel, "tag cancel, sg 1"); // NON-NLS
       dialog.add(buttonPanel, "grow");
 
       // Default actions for Enter/ESC
       SwingUtils.setDefaultButtons(dialog.getRootPane(), ok, cancel);
 
-      openAction = new AbstractAction(Resources.getString("ScenarioOptions.menu_text")) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          open();
-        }
-      };
+      openAction =
+          new AbstractAction(Resources.getString("ScenarioOptions.menu_text")) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              open();
+            }
+          };
 
       MenuManager.getInstance().addAction("ScenarioOptions.menu_text", getOpenAction());
       getOpenAction().setEnabled(false);
@@ -182,7 +194,6 @@ public class ScenarioOptions implements GameComponent {
       rebuild();
       final Dimension d = SwingUtils.getScreenSize();
       dialog.setLocation(d.width / 2 - dialog.getWidth() / 2, 0);
-
     }
     return dialog;
   }
@@ -196,8 +207,9 @@ public class ScenarioOptions implements GameComponent {
   }
 
   /**
-    * OK Button has been clicked, loop tabs and generate and combine actions for any that have changed.
-    */
+   * OK Button has been clicked, loop tabs and generate and combine actions for any that have
+   * changed.
+   */
   protected void processChanges() {
     getDialog().setVisible(false);
 
@@ -207,12 +219,13 @@ public class ScenarioOptions implements GameComponent {
     final boolean loggingPaused = gm.pauseLogging();
 
     try {
-      for (final ScenarioPropertiesOptionTab sptab : globalProperties.getAllDescendantComponentsOf(ScenarioPropertiesOptionTab.class)) {
+      for (final ScenarioPropertiesOptionTab sptab :
+          globalProperties.getAllDescendantComponentsOf(ScenarioPropertiesOptionTab.class)) {
         sptab.processChanges();
       }
-    }
-    finally {
-      // In the unlikely event that logging was already paused, we do nothing, something higher up will
+    } finally {
+      // In the unlikely event that logging was already paused, we do nothing, something higher up
+      // will
       // take care of it.
       if (loggingPaused) {
         c = c.append(gm.resumeLogging());
@@ -221,13 +234,12 @@ public class ScenarioOptions implements GameComponent {
 
     // Send the accumulated logged commands.
     gm.sendAndLog(c);
-
   }
 
-  /** 
-   * Close button clicked. No change to underlying properties yet, so just close the dialog,
-   * it will be rebuilt showing the old values when next opened.
-   */ 
+  /**
+   * Close button clicked. No change to underlying properties yet, so just close the dialog, it will
+   * be rebuilt showing the old values when next opened.
+   */
   protected void cancel() {
     getDialog().setVisible(false);
   }
@@ -244,7 +256,6 @@ public class ScenarioOptions implements GameComponent {
   public void setup(boolean gameStarting) {
     getOpenAction().setEnabled(gameStarting && hasScenarioOptions());
     getLaunchButton().setEnabled(gameStarting && hasScenarioOptions());
-
   }
 
   // The option values are stored in their Global Properties, no restore command needed here.
@@ -253,18 +264,17 @@ public class ScenarioOptions implements GameComponent {
     return null;
   }
 
-  /**
-   * Return true if there is at least one ScenarioOption defined 
-   */  
+  /** Return true if there is at least one ScenarioOption defined */
   protected boolean hasScenarioOptions() {
-    return ! globalProperties.getAllDescendantComponentsOf(AbstractScenarioProperty.class).isEmpty();
+    return !globalProperties.getAllDescendantComponentsOf(AbstractScenarioProperty.class).isEmpty();
   }
 
   protected void rebuild() {
     optionTabs.removeAll();
 
     // Loop through each defined tab in order
-    for (final ScenarioPropertiesOptionTab sptab : globalProperties.getAllDescendantComponentsOf(ScenarioPropertiesOptionTab.class)) {
+    for (final ScenarioPropertiesOptionTab sptab :
+        globalProperties.getAllDescendantComponentsOf(ScenarioPropertiesOptionTab.class)) {
 
       String tabName = sptab.getConfigureName();
       // Force null tab name to 'General' so we get some sort of sense if designer leaves it out

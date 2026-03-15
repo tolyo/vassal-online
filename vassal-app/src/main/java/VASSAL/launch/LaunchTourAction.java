@@ -18,25 +18,23 @@
 
 package VASSAL.launch;
 
-import java.awt.Window;
-import java.io.File;
-
 import VASSAL.build.module.Documentation;
 import VASSAL.i18n.Resources;
+import java.awt.Window;
+import java.io.File;
 
 public class LaunchTourAction extends AbstractLaunchAction {
   private static final long serialVersionUID = 1L;
 
   public LaunchTourAction(Window window) {
     super(
-      Resources.getString("Main.tour"),
-      window,
-      Player.class.getName(),
-      new LaunchRequest(LaunchRequest.Mode.LOAD,
-        new File(Documentation.getDocumentationBaseDir(), "tour.mod"),
-        new File(Documentation.getDocumentationBaseDir(), "tour.log")
-      )
-    );
+        Resources.getString("Main.tour"),
+        window,
+        Player.class.getName(),
+        new LaunchRequest(
+            LaunchRequest.Mode.LOAD,
+            new File(Documentation.getDocumentationBaseDir(), "tour.mod"),
+            new File(Documentation.getDocumentationBaseDir(), "tour.log")));
   }
 
   @Override

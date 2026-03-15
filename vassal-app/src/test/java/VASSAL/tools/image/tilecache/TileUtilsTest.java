@@ -18,21 +18,20 @@
 
 package VASSAL.tools.image.tilecache;
 
+import static VASSAL.tools.image.AssertImage.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static VASSAL.tools.image.AssertImage.*;
 
 public class TileUtilsTest {
 
@@ -52,8 +51,7 @@ public class TileUtilsTest {
     hout.close();
 
     // write the compressed data
-    final DataOutputStream zout =
-      new DataOutputStream(new GZIPOutputStream(baos));
+    final DataOutputStream zout = new DataOutputStream(new GZIPOutputStream(baos));
     zout.writeInt(0xDEADBEEF);
     zout.close();
 
@@ -77,18 +75,18 @@ public class TileUtilsTest {
     assertThrows(IOException.class, () -> TileUtils.read(in));
   }
 
-/*
-  @Test(expected=IOException.class)
-  public void testReadInputStreamOverflow() throws IOException {
-    // a 1x1 test image with trailing garbage
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    baos.write(bytes);
-    baos.write("garbage".getBytes());
+  /*
+    @Test(expected=IOException.class)
+    public void testReadInputStreamOverflow() throws IOException {
+      // a 1x1 test image with trailing garbage
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      baos.write(bytes);
+      baos.write("garbage".getBytes());
 
-    final InputStream in = new ByteArrayInputStream(baos.toByteArray());
-    TileUtils.read(in);
-  }
-*/
+      final InputStream in = new ByteArrayInputStream(baos.toByteArray());
+      TileUtils.read(in);
+    }
+  */
 
   @Test
   public void testReadInputStreamBadSignature() {
@@ -115,7 +113,7 @@ public class TileUtilsTest {
   }
 
   @Test
-  public void testCheckSignatureBad()  {
+  public void testCheckSignatureBad() {
     assertThrows(IOException.class, () -> TileUtils.checkSignature("xyzzy".getBytes()));
   }
 
@@ -128,8 +126,7 @@ public class TileUtilsTest {
 
   @Test
   public void testSizeUnderflow() {
-    final InputStream in =
-      new ByteArrayInputStream(Arrays.copyOfRange(bytes, 0, 12));
+    final InputStream in = new ByteArrayInputStream(Arrays.copyOfRange(bytes, 0, 12));
     assertThrows(IOException.class, () -> TileUtils.size(in));
   }
 
@@ -164,40 +161,34 @@ public class TileUtilsTest {
 
   @Test
   public void testTileCountInt() {
-    final int tests[][] = {
-    // tiles  iw    ih   tw   th
-      {  1,    1,    2,  10,  20 },
-      {  1,    2,    1,  10,  20 },
-      { 39, 1500, 1000, 256, 256 }
+    final int[][] tests = {
+      // tiles  iw    ih   tw   th
+      {1, 1, 2, 10, 20},
+      {1, 2, 1, 10, 20},
+      {39, 1500, 1000, 256, 256}
     };
 
     for (int[] t : tests) {
-      assertEquals(
-        t[0],
-        TileUtils.tileCount(t[1], t[2], t[3], t[4])
-      );
+      assertEquals(t[0], TileUtils.tileCount(t[1], t[2], t[3], t[4]));
     }
   }
 
   @Test
   public void testTileCountAtScaleInt() {
-    final int tests[][] = {
-    // tiles  iw    ih   tw   th  scale
-      {  1,    1,    2,  10,  20,  1 },
-      {  0,    1,    2,  10,  20,  2 },
-      { 24, 1500, 1000, 256, 256,  1 },
-      { 24, 1000, 1500, 256, 256,  1 },
-      {  6, 1500, 1000, 256, 256,  2 },
-      {  2, 1500, 1000, 256, 256,  4 },
-      {  1, 1500, 1000, 256, 256,  8 },
-      {  1, 1500, 1000, 256, 256, 16 }
+    final int[][] tests = {
+      // tiles  iw    ih   tw   th  scale
+      {1, 1, 2, 10, 20, 1},
+      {0, 1, 2, 10, 20, 2},
+      {24, 1500, 1000, 256, 256, 1},
+      {24, 1000, 1500, 256, 256, 1},
+      {6, 1500, 1000, 256, 256, 2},
+      {2, 1500, 1000, 256, 256, 4},
+      {1, 1500, 1000, 256, 256, 8},
+      {1, 1500, 1000, 256, 256, 16}
     };
 
     for (int[] t : tests) {
-      assertEquals(
-        t[0],
-        TileUtils.tileCountAtScale(t[1], t[2], t[3], t[4], t[5])
-      );
+      assertEquals(t[0], TileUtils.tileCountAtScale(t[1], t[2], t[3], t[4], t[5]));
     }
   }
 
@@ -211,8 +202,7 @@ public class TileUtilsTest {
       try {
         TileUtils.tileCountAtScale(t[0], t[1], t[2], t[3], t[4]);
         fail(Arrays.toString(t));
-      }
-      catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
       }
     }
   }

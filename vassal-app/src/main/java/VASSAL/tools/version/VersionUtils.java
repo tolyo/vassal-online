@@ -19,10 +19,9 @@ package VASSAL.tools.version;
 import static java.lang.Integer.signum;
 
 import java.io.IOException;
-
 import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 public class VersionUtils {
   protected VersionUtils() {}
@@ -36,23 +35,25 @@ public class VersionUtils {
   public static int compareReportable(String version) throws IOException {
     // a version is reportable if it is the current release or beta
     switch (signum(compareVersions(version, vinfo.getRelease()))) {
-    case -1: // version is older than the current release
-      return -1;
-    case 0: // version is the current release
-      return 0;
-    case 1:
-      // version is newer than the current release
-      return signum(compareVersions(version, vinfo.getBeta()));
+      case -1: // version is older than the current release
+        return -1;
+      case 0: // version is the current release
+        return 0;
+      case 1:
+        // version is newer than the current release
+        return signum(compareVersions(version, vinfo.getBeta()));
     }
 
-    throw new IllegalStateException();  // impossible
+    throw new IllegalStateException(); // impossible
   }
 
   public static boolean isCurrent(String version) throws IOException {
     return compareReportable(version) >= 0;
   }
 
-  /** @deprecated Use !{@link isCurrent(String)} instead */
+  /**
+   * @deprecated Use !{@link isCurrent(String)} instead
+   */
   @Deprecated(since = "2021-04-15", forRemoval = true)
   public static Boolean isUpdateable(String runningVersion) throws IOException {
     return !isCurrent(runningVersion);
@@ -61,9 +62,9 @@ public class VersionUtils {
   /**
    * Compares version strings.
    *
-   * @return negative if {@code v0 < v1}, positive if {@code v0 > v1}, and
-   * zero if {@code v0 == v1} or if the ordering cannot be determined from
-   * the parsable parts of the two <code>String</code>s.
+   * @return negative if {@code v0 < v1}, positive if {@code v0 > v1}, and zero if {@code v0 == v1}
+   *     or if the ordering cannot be determined from the parsable parts of the two <code>String
+   *     </code>s.
    */
   public static int compareVersions(String v0, String v1) {
     final ComparableVersion comparableVersion0 = new ComparableVersion(v0);
@@ -73,19 +74,20 @@ public class VersionUtils {
 
   public static String nextMinorVersion(String v) {
     final ArtifactVersion av = new DefaultArtifactVersion(v);
-    return String.valueOf(av.getMajorVersion()) + '.' +
-      (av.getMinorVersion() + 1);
+    return String.valueOf(av.getMajorVersion()) + '.' + (av.getMinorVersion() + 1);
   }
 
   public static String truncateToMinorVersion(String v) {
     final ArtifactVersion av = new DefaultArtifactVersion(v);
-    return String.valueOf(av.getMajorVersion()) + '.' +
-      av.getMinorVersion();
+    return String.valueOf(av.getMajorVersion()) + '.' + av.getMinorVersion();
   }
 
   public static String truncateToIncrementalVersion(String v) {
     final ArtifactVersion av = new DefaultArtifactVersion(v);
-    return String.valueOf(av.getMajorVersion()) + '.' +
-      av.getMinorVersion() + '.' + av.getIncrementalVersion();
+    return String.valueOf(av.getMajorVersion())
+        + '.'
+        + av.getMinorVersion()
+        + '.'
+        + av.getIncrementalVersion();
   }
 }

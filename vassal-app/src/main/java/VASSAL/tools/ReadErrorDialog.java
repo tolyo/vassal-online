@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
 /**
- * Utility class for reporting an IOException reading from the local system or a resource bundled with the VASSAL engine
+ * Utility class for reporting an IOException reading from the local system or a resource bundled
+ * with the VASSAL engine
+ *
  * @author Joel Uckelman
  * @since 3.1.0
  */
@@ -37,24 +39,20 @@ public class ReadErrorDialog {
    * @param filename the file which was being read
    */
   public static void error(Throwable t, IOException e, String filename) {
-    if (e instanceof FileNotFoundException ||
-        e instanceof NoSuchFileException) {
+    if (e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
       // file is missing
       WarningDialog.showDisableable(
-        t,
-        (Object) (e.getClass().getName() + "@" + filename),
-        "Error.file_not_found", //NON-NLS
-        filename
-      );
-    }
-    else {
+          t,
+          (Object) (e.getClass().getName() + "@" + filename),
+          "Error.file_not_found", // NON-NLS
+          filename);
+    } else {
       // something more serious happened during I/O
       ErrorDialog.showDisableable(
-        t,
-        (Object) (e.getClass().getName() + "@" + filename),
-        "Error.file_read_error", //NON-NLSf
-        filename
-      );
+          t,
+          (Object) (e.getClass().getName() + "@" + filename),
+          "Error.file_read_error", // NON-NLSf
+          filename);
     }
   }
 
@@ -85,13 +83,13 @@ public class ReadErrorDialog {
 
   public static void errorNoI18N(IOException e, String filename) {
     ErrorDialog.showDisableable(
-      null,
-      e,
-      e.getClass().getName() + "@" + filename,
-      "Unable to Read File", //NON-NLS
-      "Unable to Read File", //NON-NLS
-      "VASSAL was unable to read the file '" + filename + "'." //NON-NLS
-    );
+        null,
+        e,
+        e.getClass().getName() + "@" + filename,
+        "Unable to Read File", // NON-NLS
+        "Unable to Read File", // NON-NLS
+        "VASSAL was unable to read the file '" + filename + "'." // NON-NLS
+        );
   }
 
   public static void errorNoI18N(IOException e, File file) {

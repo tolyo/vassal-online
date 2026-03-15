@@ -16,13 +16,11 @@
  */
 package VASSAL.launch;
 
+import VASSAL.tools.version.GitProperties;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.apache.commons.lang3.SystemUtils;
-
-import VASSAL.tools.version.GitProperties;
 
 public class StandardConfig implements Config {
   private final Path baseDir;
@@ -42,13 +40,14 @@ public class StandardConfig implements Config {
     // Set the version, reportable version
     final GitProperties gitProperties = new GitProperties();
     version = gitProperties.getVersion();
-    reportableVersion = version.contains("-") && !version.matches(".*-beta\\d+") ? version.substring(0, version.indexOf('-')) : version;
+    reportableVersion =
+        version.contains("-") && !version.matches(".*-beta\\d+")
+            ? version.substring(0, version.indexOf('-'))
+            : version;
 
     baseDir = Path.of(System.getProperty("user.dir"));
 
-    docDir = baseDir.resolve(
-      SystemUtils.IS_OS_MAC ? "Contents/Resources/doc" : "doc"
-    );
+    docDir = baseDir.resolve(SystemUtils.IS_OS_MAC ? "Contents/Resources/doc" : "doc");
 
     // Set up the config dir and ensure it exists
     // Use the value of VASSAL.conf if set, otherwise use the
@@ -56,25 +55,21 @@ public class StandardConfig implements Config {
     final String confProp = System.getProperty("VASSAL.conf");
     if (confProp != null) {
       confDir = Path.of(confProp);
-    }
-    else if (SystemUtils.IS_OS_MAC) {
-      confDir = Path.of(System.getProperty("user.home"), "Library/Application Support/VASSAL"); //NON-NLS
-    }
-    else if (SystemUtils.IS_OS_WINDOWS) {
-      confDir = Path.of(System.getenv("APPDATA"), "VASSAL"); //NON-NLS
-    }
-    else {
-      confDir = Path.of(System.getProperty("user.home"), ".VASSAL"); //NON-NLS
+    } else if (SystemUtils.IS_OS_MAC) {
+      confDir =
+          Path.of(System.getProperty("user.home"), "Library/Application Support/VASSAL"); // NON-NLS
+    } else if (SystemUtils.IS_OS_WINDOWS) {
+      confDir = Path.of(System.getenv("APPDATA"), "VASSAL"); // NON-NLS
+    } else {
+      confDir = Path.of(System.getProperty("user.home"), ".VASSAL"); // NON-NLS
     }
 
     final String cacheProp = System.getProperty("VASSAL.cache");
     if (cacheProp != null) {
       cacheDir = Path.of(cacheProp);
-    }
-    else if (SystemUtils.IS_OS_WINDOWS) {
-      cacheDir = Path.of(System.getenv("LOCALAPPDATA"), "VASSAL"); //NON-NLS
-    }
-    else {
+    } else if (SystemUtils.IS_OS_WINDOWS) {
+      cacheDir = Path.of(System.getenv("LOCALAPPDATA"), "VASSAL"); // NON-NLS
+    } else {
       cacheDir = confDir;
     }
 
@@ -83,10 +78,10 @@ public class StandardConfig implements Config {
     prefsDir = confDir.resolve("prefs");
     errorLogPath = confDir.resolve("errorLog-" + getVersion());
 
-    javaBinPath = Path.of(System.getProperty("java.home"), "bin", "java"); //NON-NLS
+    javaBinPath = Path.of(System.getProperty("java.home"), "bin", "java"); // NON-NLS
 
     // Set up the temp dir and ensure it exists
-    tmpDir = Files.createTempDirectory("vassal_"); //NON-NLS
+    tmpDir = Files.createTempDirectory("vassal_"); // NON-NLS
     tmpDir.toFile().deleteOnExit();
   }
 

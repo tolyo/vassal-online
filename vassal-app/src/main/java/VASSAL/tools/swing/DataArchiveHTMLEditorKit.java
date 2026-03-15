@@ -2,10 +2,11 @@ package VASSAL.tools.swing;
 
 import VASSAL.Info;
 import VASSAL.tools.DataArchive;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.codec.digest.DigestUtils;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
@@ -14,15 +15,13 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.ImageView;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Extended HTML Editor kit to let the <src> tag display images from the
- * module DataArchive where no pathname is included in the image name.
+ * Extended HTML Editor kit to let the <src> tag display images from the module DataArchive where no
+ * pathname is included in the image name.
  */
 public class DataArchiveHTMLEditorKit extends HTMLEditorKit {
   private static final long serialVersionUID = 1L;
@@ -61,8 +60,7 @@ public class DataArchiveHTMLEditorKit extends HTMLEditorKit {
         }
 
         url = out.toUri().toURL();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         logger.error("Failed to load {}", src, e);
       }
 

@@ -18,18 +18,16 @@
 
 package VASSAL.launch;
 
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.swing.AbstractAction;
-
 import VASSAL.Info;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.swing.AboutWindow;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.swing.AbstractAction;
 
 /**
  * @author Joel Uckelman
@@ -47,22 +45,19 @@ public class AboutVASSALAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    final String name = "/images/Splash.png"; //NON-NLS
+    final String name = "/images/Splash.png"; // NON-NLS
 
     final BufferedImage img;
     try {
       img = ImageUtils.getImage(name, getClass().getResourceAsStream(name));
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ErrorDialog.bug(e);
       return;
     }
 
-    final AboutWindow about = new AboutWindow(
-      window,
-      img,
-      Resources.getString("AboutScreen.vassal_version", Info.getVersion())
-    );
+    final AboutWindow about =
+        new AboutWindow(
+            window, img, Resources.getString("AboutScreen.vassal_version", Info.getVersion()));
 
     about.setVisible(true);
     about.toFront();

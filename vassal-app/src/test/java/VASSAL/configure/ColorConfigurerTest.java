@@ -15,13 +15,13 @@
  * License along with this library; if not, copies are available
  * at http://www.opensource.org.
  */
- package VASSAL.configure;
+package VASSAL.configure;
 
 // import VASSAL.tools.DataArchive;
 // import VASSAL.build.GameModule;
-import java.awt.Color;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.awt.Color;
 import org.junit.jupiter.api.Test;
 
 public class ColorConfigurerTest {
@@ -39,7 +39,7 @@ public class ColorConfigurerTest {
     final int B = 129;
     final int A = 15;
     final String colorString = "" + R + "," + G + "," + B + "," + A;
-    final Color color = new Color(R,G,B,A);
+    final Color color = new Color(R, G, B, A);
     final ColorConfigurer cc = new ColorConfigurer(key, name, color);
 
     final Color newColor = cc.stringToColor(colorString);
@@ -48,6 +48,6 @@ public class ColorConfigurerTest {
     assertEquals(color.getGreen(), newColor.getGreen());
     assertEquals(color.getAlpha(), newColor.getAlpha());
 
-    assertEquals(cc.getValueString(),colorString);
+    assertEquals(cc.getValueString(), colorString);
   }
 }

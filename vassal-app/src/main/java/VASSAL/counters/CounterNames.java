@@ -21,4 +21,3 @@ package VASSAL.counters;
 public interface CounterNames {
   String nameOf(String s);
 }
-

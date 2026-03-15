@@ -19,13 +19,6 @@ package VASSAL.counters;
 
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ScrollPane;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionListener;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.KeyAdapter;
@@ -35,6 +28,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.IntStream;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionListener;
+import net.miginfocom.swing.MigLayout;
 
 public class MultiImagePicker extends JPanel {
   private static final long serialVersionUID = 1L;
@@ -49,15 +48,16 @@ public class MultiImagePicker extends JPanel {
 
     imageList = new JList<>(imageListElements);
     imageList.addListSelectionListener(e -> showSelected());
-    imageList.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyReleased(KeyEvent evt) {
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-          showSelected();
-        }
-      }
-    });
-    //imageList.setVisibleRowCount(4);
+    imageList.addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyReleased(KeyEvent evt) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+              showSelected();
+            }
+          }
+        });
+    // imageList.setVisibleRowCount(4);
     imageList.setPrototypeCellValue("Image 999"); // NON-NLS
     imageList.setMinimumSize(imageList.getPreferredSize());
 
@@ -82,7 +82,8 @@ public class MultiImagePicker extends JPanel {
   }
 
   public void addEntry() {
-    final String entry = Resources.getString("Editor.MultiImagePicker.image", (imageListElements.size() + 1));
+    final String entry =
+        Resources.getString("Editor.MultiImagePicker.image", (imageListElements.size() + 1));
     imageListElements.addElement(entry);
     final ImagePicker pick = new ImagePicker();
     multiPanel.add(entry, pick);
@@ -123,8 +124,7 @@ public class MultiImagePicker extends JPanel {
     imageListElements.removeElementAt(index);
     if (index < imageListElements.size()) {
       imageList.setSelectedIndex(index);
-    }
-    else if (index > 0) {
+    } else if (index > 0) {
       imageList.setSelectedIndex(index - 1);
     }
     if (imageList.getSelectedValue() != null) {
@@ -153,11 +153,9 @@ public class MultiImagePicker extends JPanel {
       final Component c;
       if (i == index1) {
         c = components[index2];
-      }
-      else if (i == index2) {
+      } else if (i == index2) {
         c = components[index1];
-      }
-      else {
+      } else {
         c = components[i];
       }
       multiPanel.add(c, Resources.getString("Editor.MultiImagePicker.image", (i + 1)));
@@ -171,8 +169,7 @@ public class MultiImagePicker extends JPanel {
     while (names.length > multiPanel.getComponentCount()) {
       addEntry();
     }
-    IntStream
-      .range(0, names.length)
-      .forEach(i -> ((ImagePicker) multiPanel.getComponent(i)).setImageName(names[i]));
+    IntStream.range(0, names.length)
+        .forEach(i -> ((ImagePicker) multiPanel.getComponent(i)).setImageName(names[i]));
   }
 }

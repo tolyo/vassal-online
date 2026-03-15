@@ -29,7 +29,6 @@ import VASSAL.counters.ColoredBorder;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.Stack;
 import VASSAL.i18n.Resources;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,10 +36,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 
-public class HighlightLastMoved extends AbstractConfigurable implements Drawable, MouseListener, GameComponent {
-  public static final String ENABLED = "enabled"; //NON-NLS
-  public static final String COLOR = "color"; //NON-NLS
-  public static final String THICKNESS = "thickness"; //NON-NLS
+public class HighlightLastMoved extends AbstractConfigurable
+    implements Drawable, MouseListener, GameComponent {
+  public static final String ENABLED = "enabled"; // NON-NLS
+  public static final String COLOR = "color"; // NON-NLS
+  public static final String THICKNESS = "thickness"; // NON-NLS
 
   protected ColoredBorder highlighter;
   protected GamePiece lastMoved;
@@ -56,29 +56,21 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-        Resources.getString("Editor.HighlightLastMoved.enabled"), //$NON-NLS-1$
-        Resources.getString(Resources.COLOR_LABEL),
-        Resources.getString("Editor.HighlightLastMoved.thickness"), //$NON-NLS-1$
+    return new String[] {
+      Resources.getString("Editor.HighlightLastMoved.enabled"), // $NON-NLS-1$
+      Resources.getString(Resources.COLOR_LABEL),
+      Resources.getString("Editor.HighlightLastMoved.thickness"), // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      Boolean.class,
-      Color.class,
-      Integer.class
-    };
+    return new Class<?>[] {Boolean.class, Color.class, Integer.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      ENABLED,
-      COLOR,
-      THICKNESS
-    };
+    return new String[] {ENABLED, COLOR, THICKNESS};
   }
 
   @Override
@@ -88,14 +80,12 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
         value = ColorConfigurer.stringToColor((String) value);
       }
       highlighter.setColor((Color) value);
-    }
-    else if (THICKNESS.equals(key)) {
+    } else if (THICKNESS.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       highlighter.setThickness((Integer) value);
-    }
-    else if (ENABLED.equals(key)) {
+    } else if (ENABLED.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
@@ -107,14 +97,11 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
   public String getAttributeValueString(String key) {
     if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(highlighter.getColor());
-    }
-    else if (THICKNESS.equals(key)) {
+    } else if (THICKNESS.equals(key)) {
       return String.valueOf(highlighter.getThickness());
-    }
-    else if (ENABLED.equals(key)) {
+    } else if (ENABLED.equals(key)) {
       return String.valueOf(enabled);
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -149,15 +136,13 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
       final double zoom = map.getZoom() * os_scale;
 
       highlighter.draw(
-        lastMoved,
-        g,
-        (int) (lastMoved.getPosition().x * zoom),
-        (int) (lastMoved.getPosition().y * zoom),
-        map.getView(),
-        zoom
-      );
-    }
-    else {
+          lastMoved,
+          g,
+          (int) (lastMoved.getPosition().x * zoom),
+          (int) (lastMoved.getPosition().y * zoom),
+          map.getView(),
+          zoom);
+    } else {
       lastMoved = null;
     }
   }
@@ -184,8 +169,7 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
     if (currentlyEnabled) {
       if (p.getParent() instanceof Stack) {
         lastMoved = p.getParent();
-      }
-      else {
+      } else {
         lastMoved = p;
       }
       if (lastMoved.getMap() != null) {
@@ -200,12 +184,10 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
   }
 
   @Override
-  public void mouseClicked(MouseEvent e) {
-  }
+  public void mouseClicked(MouseEvent e) {}
 
   @Override
-  public void mousePressed(MouseEvent e) {
-  }
+  public void mousePressed(MouseEvent e) {}
 
   @Override
   public void mouseReleased(MouseEvent e) {
@@ -213,20 +195,18 @@ public class HighlightLastMoved extends AbstractConfigurable implements Drawable
   }
 
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) {}
 
   @Override
-  public void mouseExited(MouseEvent e) {
-  }
+  public void mouseExited(MouseEvent e) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "LastMoveHighlighter"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "LastMoveHighlighter"); // NON-NLS
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.HighlightLastMoved.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.HighlightLastMoved.component_type"); // $NON-NLS-1$
   }
 
   @Override

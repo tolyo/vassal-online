@@ -20,16 +20,13 @@ package VASSAL.configure;
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.i18n.Resources;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ensures that at most a single instance of a given type
- * belongs to a given parent
- * Runs Recursively down whole component tree from target, using Buildable.isUnique to identify sub-components
- * that should be unique
- * Designed to be attached to the GameModule.
+ * Ensures that at most a single instance of a given type belongs to a given parent Runs Recursively
+ * down whole component tree from target, using Buildable.isUnique to identify sub-components that
+ * should be unique Designed to be attached to the GameModule.
  */
 public class RecursiveSingleChildInstance implements ValidityChecker {
 
@@ -39,20 +36,29 @@ public class RecursiveSingleChildInstance implements ValidityChecker {
       final AbstractConfigurable parent = (AbstractConfigurable) b;
       // Keep track of what we have reported for this component so far
       final List<String> errorsSoFar = new ArrayList<>();
-      parent.getBuildables().forEach(buildable -> {
-        if (buildable.isUnique() && parent.getComponentsOf(buildable.getClass()).size() > 1) {
-          final String childClass = ConfigureTree.getConfigureName(buildable.getClass());
-          final String parentName = ConfigureTree.getConfigureName(parent);
-          final String parentClass = ConfigureTree.getConfigureName(b.getClass());
-          final String compare = childClass + parentName + parentClass;
+      parent
+          .getBuildables()
+          .forEach(
+              buildable -> {
+                if (buildable.isUnique()
+                    && parent.getComponentsOf(buildable.getClass()).size() > 1) {
+                  final String childClass = ConfigureTree.getConfigureName(buildable.getClass());
+                  final String parentName = ConfigureTree.getConfigureName(parent);
+                  final String parentClass = ConfigureTree.getConfigureName(b.getClass());
+                  final String compare = childClass + parentName + parentClass;
 
-          // Suppress duplicate reports
-          if (!errorsSoFar.contains(compare)) {
-            errorsSoFar.add(compare);
-            report.addWarning(Resources.getString("Editor.ValidityChecker.single_warning", childClass, parentName, parentClass));
-          }
-        }
-      });
+                  // Suppress duplicate reports
+                  if (!errorsSoFar.contains(compare)) {
+                    errorsSoFar.add(compare);
+                    report.addWarning(
+                        Resources.getString(
+                            "Editor.ValidityChecker.single_warning",
+                            childClass,
+                            parentName,
+                            parentClass));
+                  }
+                }
+              });
 
       // Check the children
       parent.getBuildables().forEach(buildable -> validate(buildable, report));

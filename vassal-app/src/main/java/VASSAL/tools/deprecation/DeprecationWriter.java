@@ -34,17 +34,17 @@ public class DeprecationWriter {
     if ("-o".equals(args[0])) {
       outfile = args[1];
       infile = args[2];
-    }
-    else {
+    } else {
       outfile = null;
       infile = args[0];
     }
 
     final DeprecationWalker d = new DeprecationWalker();
 
-    try (PrintStream ps = args.length == 1 ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
+    try (PrintStream ps =
+        args.length == 1 ? System.out : new PrintStream(outfile, StandardCharsets.UTF_8)) {
       d.setCallback((n, s, r) -> ps.println(n + "\t" + s + "\t" + r));
       Processor.process(d, infile);
     }
   }
-} 
+}

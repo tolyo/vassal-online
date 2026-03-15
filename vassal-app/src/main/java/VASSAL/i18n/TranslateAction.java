@@ -17,23 +17,19 @@
  */
 package VASSAL.i18n;
 
+import VASSAL.build.Configurable;
+import VASSAL.build.module.documentation.HelpWindow;
+import VASSAL.configure.ConfigureTree;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 
-import VASSAL.build.Configurable;
-import VASSAL.build.module.documentation.HelpWindow;
-import VASSAL.configure.ConfigureTree;
-
-/**
- * Action to open the Translation Window for a component
- */
+/** Action to open the Translation Window for a component */
 public class TranslateAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
@@ -44,7 +40,7 @@ public class TranslateAction extends AbstractAction {
   protected ConfigureTree tree;
 
   public TranslateAction(Configurable target, HelpWindow helpWindow, ConfigureTree tree) {
-    super(Resources.getString("Editor.ModuleEditor.translate")); //$NON-NLS-1$
+    super(Resources.getString("Editor.ModuleEditor.translate")); // $NON-NLS-1$
     this.helpWindow = helpWindow;
     this.target = target;
     this.dialogOwner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, tree);
@@ -56,12 +52,13 @@ public class TranslateAction extends AbstractAction {
     TranslateWindow w = openWindows.get(target);
     if (w == null) {
       w = new TranslateWindow(dialogOwner, false, target, tree);
-      w.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosed(WindowEvent e) {
-          openWindows.remove(target);
-        }
-      });
+      w.addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+              openWindows.remove(target);
+            }
+          });
       openWindows.put(target, w);
       w.setVisible(true);
     }

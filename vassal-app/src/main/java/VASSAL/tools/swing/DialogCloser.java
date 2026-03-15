@@ -19,9 +19,7 @@ package VASSAL.tools.swing;
 
 import javax.swing.JDialog;
 
-/**
- * Close Dialog Box after a specified delay interval
- */
+/** Close Dialog Box after a specified delay interval */
 public class DialogCloser implements Runnable {
 
   final JDialog dialog;
@@ -37,8 +35,7 @@ public class DialogCloser implements Runnable {
     if (ms > 0) { // zero or less *really* means no sleep (retaining execution priority)
       try {
         Thread.sleep(ms);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
     }

@@ -1,35 +1,34 @@
 package VASSAL.counters;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-
-import java.awt.event.InputEvent;
-import java.awt.image.BufferedImage;
-
-import org.junit.jupiter.api.Test;
 
 import VASSAL.build.GameModule;
-import VASSAL.tools.ResourcePathFinder;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.NamedKeyStroke;
-import VASSAL.tools.imageop.Op;
+import VASSAL.tools.ResourcePathFinder;
 import VASSAL.tools.imageop.ImageOp;
+import VASSAL.tools.imageop.Op;
+import java.awt.event.InputEvent;
+import java.awt.image.BufferedImage;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class EmbellishmentSerializeTest extends SerializeTest<Embellishment> {
   class MockResourcePathFinder implements ResourcePathFinder {
     public String findImagePath(String name) {
       return "images/" + name;
     }
+
     public String findHelpFileName(String name) {
       return name;
     }
   }
+
   @Test
   public void serialize() throws Exception {
     Embellishment emb = new Embellishment();

@@ -22,19 +22,15 @@ import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
-
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.w3c.dom.Element;
 
-/**
- * Container for definitions of Generic Color Definitions
- */
+/** Container for definitions of Generic Color Definitions */
 public class FontManager extends AbstractConfigurable {
 
   protected static FontManager instance;
@@ -45,18 +41,20 @@ public class FontManager extends AbstractConfigurable {
 
   protected Map<String, FontStyle> fontStyles = new HashMap<>();
 
-  public static final String DIALOG = "Dialog"; //$NON-NLS-1$
-  public static final String SERIF = "Serif"; //$NON-NLS-1$
-  public static final String SANS_SERIF = "SanSerif"; //$NON-NLS-1$
-  public static final String DIALOG_INPUT = "DialogInput"; //$NON-NLS-1$
-  public static final String MONOSPACED = "Monospaced"; //$NON-NLS-1$
+  public static final String DIALOG = "Dialog"; // $NON-NLS-1$
+  public static final String SERIF = "Serif"; // $NON-NLS-1$
+  public static final String SANS_SERIF = "SanSerif"; // $NON-NLS-1$
+  public static final String DIALOG_INPUT = "DialogInput"; // $NON-NLS-1$
+  public static final String MONOSPACED = "Monospaced"; // $NON-NLS-1$
 
-  public static final String DEFAULT = "Default"; //$NON-NLS-1$
+  public static final String DEFAULT = "Default"; // $NON-NLS-1$
   public static final OutlineFont DEFAULT_FONT = new OutlineFont(DIALOG, Font.PLAIN, 12, false);
   public static final FontStyle DEFAULT_STYLE = new FontStyle();
 
-//  public static final String[] ALLOWABLE_FONTS = new String[] { DIALOG, DIALOG_INPUT, MONOSPACED, SANS_SERIF, SERIF };
-  public static final String[] ALLOWABLE_FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+  //  public static final String[] ALLOWABLE_FONTS = new String[] { DIALOG, DIALOG_INPUT,
+  // MONOSPACED, SANS_SERIF, SERIF };
+  public static final String[] ALLOWABLE_FONTS =
+      GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
   @Override
   public void build(Element e) {
@@ -98,8 +96,7 @@ public class FontManager extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -113,7 +110,7 @@ public class FontManager extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { FontStyle.class };
+    return new Class<?>[] {FontStyle.class};
   }
 
   public static String getConfigureTypeName() {
@@ -126,13 +123,13 @@ public class FontManager extends AbstractConfigurable {
     if (b instanceof FontStyle) {
       final FontStyle def = (FontStyle) b;
       fontStyles.put(def.getConfigureName(), def);
-      def.addPropertyChangeListener(evt -> {
-        if (NAME_PROPERTY.equals(evt.getPropertyName())) {
-          fontStyles.remove(evt.getOldValue());
-          fontStyles.put((String) evt.getNewValue(),
-                         (FontStyle) evt.getSource());
-        }
-      });
+      def.addPropertyChangeListener(
+          evt -> {
+            if (NAME_PROPERTY.equals(evt.getPropertyName())) {
+              fontStyles.remove(evt.getOldValue());
+              fontStyles.put((String) evt.getNewValue(), (FontStyle) evt.getSource());
+            }
+          });
     }
   }
 
@@ -146,12 +143,12 @@ public class FontManager extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GamePieceImageDefinitions.html", "FontStyles"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GamePieceImageDefinitions.html", "FontStyles"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   public String[] getFontNames() {
     final List<String> names = new ArrayList<>(fontStyles.size());

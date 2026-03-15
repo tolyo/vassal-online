@@ -17,16 +17,13 @@
  */
 package VASSAL.launch;
 
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.JOptionPane;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.i18n.Resources;
 import VASSAL.tools.BrowserSupport;
 import VASSAL.tools.version.AbstractUpdateCheckRequest;
+import java.util.concurrent.ExecutionException;
+import javax.swing.JOptionPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 3.1.0
@@ -34,8 +31,7 @@ import VASSAL.tools.version.AbstractUpdateCheckRequest;
  */
 public class UpdateCheckRequest extends AbstractUpdateCheckRequest {
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(UpdateCheckRequest.class);
+  private static final Logger logger = LoggerFactory.getLogger(UpdateCheckRequest.class);
 
   @Override
   protected void done() {
@@ -44,16 +40,16 @@ public class UpdateCheckRequest extends AbstractUpdateCheckRequest {
       if (update) {
         // running version is obsolete
         if (JOptionPane.showConfirmDialog(
-            ModuleManagerWindow.getInstance(),
-            Resources.getString("UpdateCheckAction.update_available_message"),
-            Resources.getString("UpdateCheckAction.update_available_title"),
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-          BrowserSupport.openURL("https://vassalengine.org/download.html"); //NON-NLS
+                ModuleManagerWindow.getInstance(),
+                Resources.getString("UpdateCheckAction.update_available_message"),
+                Resources.getString("UpdateCheckAction.update_available_title"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE)
+            == JOptionPane.YES_OPTION) {
+          BrowserSupport.openURL("https://vassalengine.org/download.html"); // NON-NLS
         }
       }
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       logger.error("", e);
     }
   }

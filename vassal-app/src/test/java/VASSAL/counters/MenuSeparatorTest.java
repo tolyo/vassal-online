@@ -24,7 +24,11 @@ import org.junit.jupiter.api.Test;
 public class MenuSeparatorTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     MenuSeparator trait = new MenuSeparator();
 
@@ -46,6 +50,5 @@ public class MenuSeparatorTest extends DecoratorTest {
     trait.key = NamedKeyStroke.of("xyzzy");
     trait.desc = "plover";
     serializeTest("Description and Key Stroke", trait); // NON-NLS
-
   }
 }

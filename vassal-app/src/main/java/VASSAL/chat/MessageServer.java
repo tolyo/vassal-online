@@ -17,5 +17,4 @@
  */
 package VASSAL.chat;
 
-public interface MessageServer {
-}
+public interface MessageServer {}

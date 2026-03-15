@@ -37,7 +37,11 @@ import org.mockito.Mockito;
 public class MovementMarkableTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     MovementMarkable trait = createTrait(null);
 
@@ -45,7 +49,10 @@ public class MovementMarkableTest extends DecoratorTest {
     serializeTest("Default trait", trait); // NON-NLS
 
     // Set a Command and Named KeyStroke
-    trait = createTrait("markmoved;Undo16.gif;1;2;xyzzy;" + NamedHotKeyConfigurer.encode(NamedKeyStroke.of("plugh"))); // NON-NLS
+    trait =
+        createTrait(
+            "markmoved;Undo16.gif;1;2;xyzzy;"
+                + NamedHotKeyConfigurer.encode(NamedKeyStroke.of("plugh"))); // NON-NLS
     trait.setMoved(true);
     trait.setDescription("plover");
     serializeTest("Complex trait", trait); // NON-NLS

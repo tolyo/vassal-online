@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Summarizes error/warning messages about invalid module configuration
- */
+/** Summarizes error/warning messages about invalid module configuration */
 public class ValidationReport {
   private final List<String> messages = new ArrayList<>();
 

@@ -26,17 +26,14 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.BrowserSupport;
 import VASSAL.tools.ButtonFactory;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import net.miginfocom.swing.MigLayout;
 
-/**
- * Interactively build inline(beanshell) expressions
- */
+/** Interactively build inline(beanshell) expressions */
 public class ExpressionBuilder extends JDialog {
 
   private static final long serialVersionUID = 1L;
@@ -57,20 +54,19 @@ public class ExpressionBuilder extends JDialog {
     context = c.getContext();
     save = target.getValueString();
     setLayout(new MigLayout("ins 0,filly", "[]", "[grow]rel[]"));
-    final JPanel p = new JPanel(new MigLayout("wrap 1,filly", "[]", "[grow]rel[]")); //NON-NLS
+    final JPanel p = new JPanel(new MigLayout("wrap 1,filly", "[]", "[grow]rel[]")); // NON-NLS
 
     final String value = target.getValueString();
 
     if (value.startsWith("{") && value.endsWith("}")) {
       setExpression(value.substring(1, value.length() - 1));
-    }
-    else {
+    } else {
       setExpression(convert(value));
     }
 
-    p.add(expression.getControls(), "grow"); //NON-NLS
+    p.add(expression.getControls(), "grow"); // NON-NLS
 
-    final JPanel buttonBox = new JPanel(new MigLayout("", "[]rel[]rel[]")); //NON-NLS
+    final JPanel buttonBox = new JPanel(new MigLayout("", "[]rel[]rel[]")); // NON-NLS
     final JButton okButton = ButtonFactory.getOkButton();
     okButton.addActionListener(e -> save());
     buttonBox.add(okButton);
@@ -80,10 +76,15 @@ public class ExpressionBuilder extends JDialog {
     buttonBox.add(cancelButton);
 
     final JButton helpButton = ButtonFactory.getHelpButton();
-    helpButton.addActionListener(e -> BrowserSupport.openURL(HelpFile.getReferenceManualPage("ExpressionBuilder.html").getContents().toString())); //NON-NLS
+    helpButton.addActionListener(
+        e ->
+            BrowserSupport.openURL(
+                HelpFile.getReferenceManualPage("ExpressionBuilder.html")
+                    .getContents()
+                    .toString())); // NON-NLS
     buttonBox.add(helpButton);
 
-    p.add(buttonBox, "align center"); //NON-NLS
+    p.add(buttonBox, "align center"); // NON-NLS
     add(p, "growy");
 
     // Default actions for Enter/ESC
@@ -92,24 +93,23 @@ public class ExpressionBuilder extends JDialog {
     pack();
     setLocationRelativeTo(getParent());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent we) {
-        cancel();
-      }
-    });
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent we) {
+            cancel();
+          }
+        });
   }
 
   /**
-   * OK button pressed. Set the expression back into the target configurer
-   * as an inline expression.
+   * OK button pressed. Set the expression back into the target configurer as an inline expression.
    */
   public void save() {
     final String expr = expression.getValueString().trim();
     if (expr.startsWith("{") && expr.endsWith("}")) {
       target.setValue(expr);
-    }
-    else {
+    } else {
       target.setValue("{" + expr + "}");
     }
     dispose();
@@ -121,6 +121,7 @@ public class ExpressionBuilder extends JDialog {
 
   /**
    * Convert an old-style $variable$ string to a BeanShell Expression
+   *
    * @param s Old-style string
    * @return expression
    */
@@ -130,7 +131,10 @@ public class ExpressionBuilder extends JDialog {
 
   public void setExpression(String value) {
     if (expression == null) {
-      final String prompt = target.getName().length() == 0 ? Resources.getString("Editor.ExpressionBuilder.expression") : target.getName();
+      final String prompt =
+          target.getName().length() == 0
+              ? Resources.getString("Editor.ExpressionBuilder.expression")
+              : target.getName();
       expression = new BeanShellExpressionConfigurer(null, prompt, value, pieceTarget);
     }
     expression.setValue(value);
@@ -141,5 +145,4 @@ public class ExpressionBuilder extends JDialog {
   public String getExpression() {
     return expression == null ? "" : expression.getValueString();
   }
-
 }

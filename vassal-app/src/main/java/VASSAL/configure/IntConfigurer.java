@@ -17,9 +17,7 @@
  */
 package VASSAL.configure;
 
-/**
- * A Configurer for Integer values
- */
+/** A Configurer for Integer values */
 public class IntConfigurer extends StringConfigurer {
   public IntConfigurer(String key, String name) {
     this(key, name, 0);
@@ -33,7 +31,7 @@ public class IntConfigurer extends StringConfigurer {
   }
 
   public IntConfigurer(Integer val) {
-    this (null, "", val);
+    this(null, "", val);
   }
 
   @Override
@@ -41,8 +39,7 @@ public class IntConfigurer extends StringConfigurer {
     Integer i;
     try {
       i = Integer.valueOf(s);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       i = null;
     }
     if (i != null) {
@@ -53,8 +50,7 @@ public class IntConfigurer extends StringConfigurer {
   public int getIntValue(int defaultValue) {
     if (getValue() instanceof Integer) {
       return (Integer) getValue();
-    }
-    else {
+    } else {
       return defaultValue;
     }
   }

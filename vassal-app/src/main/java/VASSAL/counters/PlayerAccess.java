@@ -23,7 +23,6 @@ import VASSAL.build.GameModule;
  * Access is granted if {@link GameModule#getUserId()} matches
  *
  * @author rkinney
- *
  */
 public class PlayerAccess implements PieceAccess {
   private static PlayerAccess instance;

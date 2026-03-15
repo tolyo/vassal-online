@@ -17,10 +17,6 @@
  */
 package VASSAL.tools.concurrent;
 
-/**
- * A {@link SimpleFuture} that is a {@link SettableRunnableFuture}.
- */
-public abstract class SimpleRunnableFuture<V>
-  extends SimpleFuture<V>
-  implements SettableRunnableFuture<V> {
-}
+/** A {@link SimpleFuture} that is a {@link SettableRunnableFuture}. */
+public abstract class SimpleRunnableFuture<V> extends SimpleFuture<V>
+    implements SettableRunnableFuture<V> {}

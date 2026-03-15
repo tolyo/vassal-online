@@ -17,33 +17,31 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.tools.PropertiesEncoder;
+import VASSAL.tools.SequenceEncoder;
 import java.io.IOException;
 import java.util.Properties;
 
-import VASSAL.tools.PropertiesEncoder;
-import VASSAL.tools.SequenceEncoder;
-
 /**
- * Utility method for encoding server-related commands into strings. Messages
- * sent or interpreted by the server are encoded here. Messages sent from one
- * client to another are simply forwarded as strings without being decoded.
+ * Utility method for encoding server-related commands into strings. Messages sent or interpreted by
+ * the server are encoded here. Messages sent from one client to another are simply forwarded as
+ * strings without being decoded.
  */
 public class Protocol {
-  public static final String REGISTER = "REG\t"; //$NON-NLS-1$
-  public static final String REG_REQUEST = "REG_REQUEST\t"; //$NON-NLS-1$
-  public static final String JOIN = "JOIN\t"; //$NON-NLS-1$
-  public static final String FORWARD = "FWD\t"; //$NON-NLS-1$
-  public static final String STATS = "STATS\t"; //$NON-NLS-1$
-  public static final String LIST = "LIST\t"; //$NON-NLS-1$
-  public static final String CONTENTS = "SERVER_CONTENTS\t"; //$NON-NLS-1$
-  public static final String NODE_INFO = "NODE_INFO\t"; //$NON-NLS-1$
-  public static final String ROOM_INFO = "ROOM_INFO\t"; //$NON-NLS-1$
-  public static final String LOGIN = "LOGIN\t"; //$NON-NLS-1$
-  public static final String KICK = "KICK\t"; //$NON-NLS-1$
+  public static final String REGISTER = "REG\t"; // $NON-NLS-1$
+  public static final String REG_REQUEST = "REG_REQUEST\t"; // $NON-NLS-1$
+  public static final String JOIN = "JOIN\t"; // $NON-NLS-1$
+  public static final String FORWARD = "FWD\t"; // $NON-NLS-1$
+  public static final String STATS = "STATS\t"; // $NON-NLS-1$
+  public static final String LIST = "LIST\t"; // $NON-NLS-1$
+  public static final String CONTENTS = "SERVER_CONTENTS\t"; // $NON-NLS-1$
+  public static final String NODE_INFO = "NODE_INFO\t"; // $NON-NLS-1$
+  public static final String ROOM_INFO = "ROOM_INFO\t"; // $NON-NLS-1$
+  public static final String LOGIN = "LOGIN\t"; // $NON-NLS-1$
+  public static final String KICK = "KICK\t"; // $NON-NLS-1$
 
   /**
-   * Contains registration information sent when a client initially connects to
-   * the server
+   * Contains registration information sent when a client initially connects to the server
    *
    * @param id
    * @param initialPath
@@ -62,7 +60,8 @@ public class Protocol {
   public static String[] decodeRegisterCommand(String cmd) {
     String[] info = null;
     if (cmd.startsWith(REGISTER)) {
-      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(REGISTER.length()), '\t');
+      final SequenceEncoder.Decoder st =
+          new SequenceEncoder.Decoder(cmd.substring(REGISTER.length()), '\t');
       info = new String[] {st.nextToken(), st.nextToken(), st.nextToken()};
     }
     return info;
@@ -96,11 +95,10 @@ public class Protocol {
   public static String[] decodeJoinCommand(String cmd) {
     String[] info = null;
     if (cmd.startsWith(JOIN)) {
-      final String[] parts = cmd.split("\\t"); //NON-NLS
+      final String[] parts = cmd.split("\\t"); // NON-NLS
       if (parts.length == 2) {
         info = new String[] {parts[1]};
-      }
-      else if (parts.length == 3) {
+      } else if (parts.length == 3) {
         info = new String[] {parts[1], parts[2]};
       }
     }
@@ -110,8 +108,7 @@ public class Protocol {
   /**
    * Forward a message to other client nodes
    *
-   * @param recipientPath
-   *          a path name specifying the indented recipients of the message
+   * @param recipientPath a path name specifying the indented recipients of the message
    * @param message
    * @return
    */
@@ -127,7 +124,8 @@ public class Protocol {
   public static String[] decodeForwardCommand(String cmd) {
     String[] info = null;
     if (cmd.startsWith(FORWARD)) {
-      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(FORWARD.length()), '\t');
+      final SequenceEncoder.Decoder st =
+          new SequenceEncoder.Decoder(cmd.substring(FORWARD.length()), '\t');
       info = new String[] {st.nextToken(), st.nextToken()};
     }
     return info;
@@ -136,9 +134,7 @@ public class Protocol {
   /**
    * Sent when a player updates his personal information
    *
-   * @param info
-   *          the encoded properties of the {@link PlayerNode} corresponding to
-   *          the player
+   * @param info the encoded properties of the {@link PlayerNode} corresponding to the player
    * @see Node#setInfo
    * @return
    */
@@ -167,13 +163,12 @@ public class Protocol {
   public static String encodeNodeInfoCommand(Node n) {
     String info = n.getInfo();
     if (info == null) {
-      info = ""; //$NON-NLS-1$
+      info = ""; // $NON-NLS-1$
     }
     return NODE_INFO + new SequenceEncoder(n.getPath(), '=').append(info).getValue();
   }
 
   /**
-   *
    * @param cmd
    * @return path, info
    * @see #encodeNodeInfoCommand
@@ -182,7 +177,8 @@ public class Protocol {
     String[] s = null;
     if (cmd.startsWith(NODE_INFO)) {
       s = new String[2];
-      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(NODE_INFO.length()), '=');
+      final SequenceEncoder.Decoder st =
+          new SequenceEncoder.Decoder(cmd.substring(NODE_INFO.length()), '=');
       s[0] = st.nextToken();
       s[1] = st.nextToken();
     }
@@ -220,8 +216,8 @@ public class Protocol {
   }
 
   /**
-   * A dump of the current connections to the server. Includes a path name and
-   * info for each player node
+   * A dump of the current connections to the server. Includes a path name and info for each player
+   * node
    *
    * @param nodes
    * @return
@@ -248,7 +244,8 @@ public class Protocol {
     Node node = null;
     if (cmd.startsWith(LIST)) {
       final Node root = new Node(null, null, null);
-      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(LIST.length()), '\t');
+      final SequenceEncoder.Decoder st =
+          new SequenceEncoder.Decoder(cmd.substring(LIST.length()), '\t');
       while (st.hasMoreTokens()) {
         final String nodeInfo = st.nextToken();
         final SequenceEncoder.Decoder st2 = new SequenceEncoder.Decoder(nodeInfo, '=');
@@ -305,39 +302,39 @@ public class Protocol {
     return player;
   }
 
-//  /**
-//   * A dump of the current connections to the server. Includes a path name and
-//   * info for each player node, and info for each room node as well
-//   *
-//   * @param nodes
-//   * @return
-//   */
-//  public static String encodeContentsCommand(Node[] nodes) {
-//    SequenceEncoder list = new SequenceEncoder('\t');
-//    for (int i = 0; i < nodes.length; ++i) {
-//      list.append(nodes[i].getPathAndInfo());
-//    }
-//    return CONTENTS + list.getValue();
-//  }
+  //  /**
+  //   * A dump of the current connections to the server. Includes a path name and
+  //   * info for each player node, and info for each room node as well
+  //   *
+  //   * @param nodes
+  //   * @return
+  //   */
+  //  public static String encodeContentsCommand(Node[] nodes) {
+  //    SequenceEncoder list = new SequenceEncoder('\t');
+  //    for (int i = 0; i < nodes.length; ++i) {
+  //      list.append(nodes[i].getPathAndInfo());
+  //    }
+  //    return CONTENTS + list.getValue();
+  //  }
 
-
-//  /**
-//   * @see #encodeContentsCommand
-//   * @param cmd
-//   * @return
-//   */
-//  public static Node decodeContentsCommand(String cmd) {
-//    Node node = null;
-//    if (cmd.startsWith(CONTENTS)) {
-//      Node root = new Node(null,null, null);
-//      SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(CONTENTS.length()), '\t');
-//      while (st.hasMoreTokens()) {
-//        String pathAndInfo = st.nextToken();
-//        Node.build(root, pathAndInfo);
-//      }
-//      node = root;
-//    }
-//    return node;
-//  }
+  //  /**
+  //   * @see #encodeContentsCommand
+  //   * @param cmd
+  //   * @return
+  //   */
+  //  public static Node decodeContentsCommand(String cmd) {
+  //    Node node = null;
+  //    if (cmd.startsWith(CONTENTS)) {
+  //      Node root = new Node(null,null, null);
+  //      SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cmd.substring(CONTENTS.length()),
+  // '\t');
+  //      while (st.hasMoreTokens()) {
+  //        String pathAndInfo = st.nextToken();
+  //        Node.build(root, pathAndInfo);
+  //      }
+  //      node = root;
+  //    }
+  //    return node;
+  //  }
 
 }

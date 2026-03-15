@@ -18,14 +18,16 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.configure.Configurer;
+import VASSAL.configure.StringArrayConfigurer;
 import VASSAL.i18n.Resources;
+import VASSAL.tools.ScrollPane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,20 +40,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import VASSAL.configure.Configurer;
-import VASSAL.configure.StringArrayConfigurer;
-import VASSAL.tools.ScrollPane;
-
-/**
- * Controls for configuring an individual ItemInstance
- */
+/** Controls for configuring an individual ItemInstance */
 public class InstanceConfigurer extends Configurer {
 
   protected GamePieceImage defn;
   protected Box visBox;
   protected Visualizer visualizer = new Visualizer();
   protected JPanel panel;
-  //protected TextPanel itemPanel;
+  // protected TextPanel itemPanel;
   protected SymbolPanel symbolPanel;
   protected InstanceConfigurer me;
 
@@ -122,24 +118,19 @@ public class InstanceConfigurer extends Configurer {
     return StringArrayConfigurer.arrayToString(p);
   }
 
-  public static List<ItemInstance> StringToProperties(String s,
-                                                      GamePieceImage defn) {
+  public static List<ItemInstance> StringToProperties(String s, GamePieceImage defn) {
     final List<ItemInstance> props = new ArrayList<>();
     final String[] p = StringArrayConfigurer.stringToArray(s);
     for (final String item : p) {
       if (item.startsWith(SymbolItem.TYPE)) {
         props.add(new SymbolItemInstance(item, defn));
-      }
-      else if (item.startsWith(TextBoxItem.TYPE)) {
+      } else if (item.startsWith(TextBoxItem.TYPE)) {
         props.add(new TextBoxItemInstance(item, defn));
-      }
-      else if (item.startsWith(TextItem.TYPE)) {
+      } else if (item.startsWith(TextItem.TYPE)) {
         props.add(new TextItemInstance(item, defn));
-      }
-      else if (item.startsWith(ShapeItem.TYPE)) {
+      } else if (item.startsWith(ShapeItem.TYPE)) {
         props.add(new ShapeItemInstance(item, defn));
-      }
-      else if (item.startsWith(ImageItem.TYPE)) {
+      } else if (item.startsWith(ImageItem.TYPE)) {
         props.add(new ImageItemInstance(item, defn));
       }
     }
@@ -188,18 +179,18 @@ public class InstanceConfigurer extends Configurer {
         table.getSelectionModel().setSelectionInterval(0, 0);
       }
       final ListSelectionModel rowSM = table.getSelectionModel();
-      rowSM.addListSelectionListener(e -> {
-        if (e.getValueIsAdjusting()) return;
+      rowSM.addListSelectionListener(
+          e -> {
+            if (e.getValueIsAdjusting()) return;
 
-        final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (lsm.isSelectionEmpty()) {
-          showItem(NO_CURRENT_ITEM);
-        }
-        else {
-          final int selectedRow = lsm.getMinSelectionIndex();
-          showItem(selectedRow);
-        }
-      });
+            final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+            if (lsm.isSelectionEmpty()) {
+              showItem(NO_CURRENT_ITEM);
+            } else {
+              final int selectedRow = lsm.getMinSelectionIndex();
+              showItem(selectedRow);
+            }
+          });
 
       scrollPane = new ScrollPane(table);
       table.setPreferredScrollableViewportSize(new Dimension(300, 100));
@@ -211,7 +202,6 @@ public class InstanceConfigurer extends Configurer {
       add(mainPanel);
 
       showItem(0);
-
     }
 
     protected void showItem(int itemNo) {
@@ -286,15 +276,11 @@ public class InstanceConfigurer extends Configurer {
       public Object getValueAt(int row, int col) {
         if (col == NAME_COL) {
           return getValueList().get(row).getName();
-        }
-        else if (col == TYPE_COL) {
+        } else if (col == TYPE_COL) {
           return getValueList().get(row).getItem().getDisplayName();
-        }
-        else if (col == LOC_COL) {
+        } else if (col == LOC_COL) {
           return getValueList().get(row).getDisplayLocation();
-        }
-        else
-          return null;
+        } else return null;
       }
 
       @Override
@@ -308,9 +294,7 @@ public class InstanceConfigurer extends Configurer {
       }
 
       @Override
-      public void setValueAt(Object value, int row, int col) {
-
-      }
+      public void setValueAt(Object value, int row, int col) {}
     }
   }
 

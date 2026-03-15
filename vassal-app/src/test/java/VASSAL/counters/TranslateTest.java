@@ -24,7 +24,11 @@ import org.junit.jupiter.api.Test;
 public class TranslateTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Translate trait = new Translate();
 
@@ -45,8 +49,5 @@ public class TranslateTest extends DecoratorTest {
     trait.description = "plugh";
 
     serializeTest("Complex trait", trait); // NON-NLS
-
-
-
   }
 }

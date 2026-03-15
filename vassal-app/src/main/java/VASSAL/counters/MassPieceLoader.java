@@ -34,12 +34,24 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.swing.Dialogs;
 import VASSAL.tools.swing.SwingUtils;
-import net.miginfocom.swing.MigLayout;
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-import org.jdesktop.swingx.treetable.TreeTableNode;
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -62,29 +74,13 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreePath;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import net.miginfocom.swing.MigLayout;
+import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
+import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
+import org.jdesktop.swingx.treetable.TreeTableNode;
 
-/**
- * Class to load a directory full of images and create counters
- *
- */
+/** Class to load a directory full of images and create counters */
 public class MassPieceLoader {
   protected static final int SKIP_COL = 0;
   protected static final int DESC_COL = 1;
@@ -103,8 +99,10 @@ public class MassPieceLoader {
   private final List<Emb> layers = new ArrayList<>();
   protected MassLoaderDialog dialog;
   private static final DirectoryConfigurer dirConfig = new DirectoryConfigurer(null, "");
-  private static final BooleanConfigurer basicConfig = new BooleanConfigurer(null, "", Boolean.FALSE);
-  private static final BooleanConfigurer emptyLevelConfig = new BooleanConfigurer(null, "", Boolean.FALSE);
+  private static final BooleanConfigurer basicConfig =
+      new BooleanConfigurer(null, "", Boolean.FALSE);
+  private static final BooleanConfigurer emptyLevelConfig =
+      new BooleanConfigurer(null, "", Boolean.FALSE);
   private static final MassPieceDefiner definer = new MassPieceDefiner();
 
   public MassPieceLoader(ConfigureTree tree, Configurable target) {
@@ -122,9 +120,7 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Mass Piece Loader dialog
-   */
+  /** Mass Piece Loader dialog */
   class MassLoaderDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     protected boolean cancelled = false;
@@ -138,71 +134,80 @@ public class MassPieceLoader {
       super(configureTree.getFrame());
       setModal(true);
       setTitle(Resources.getString("Editor.MassPieceLoader.load_multiple"));
-      setLayout(new MigLayout("ins panel,wrap 2," + TraitLayout.STANDARD_GAPY, "[right]rel[grow,fill]", "[][][][]unrel[grow,fill]rel[]")); // NON-NLS
+      setLayout(
+          new MigLayout(
+              "ins panel,wrap 2," + TraitLayout.STANDARD_GAPY,
+              "[right]rel[grow,fill]",
+              "[][][][]unrel[grow,fill]rel[]")); // NON-NLS
       setPreferredSize(new Dimension(800, 600));
 
-      dirConfig.addPropertyChangeListener(e -> {
-        if (e.getNewValue() != null) {
-          buildTree((File) e.getNewValue());
-        }
-      });
+      dirConfig.addPropertyChangeListener(
+          e -> {
+            if (e.getNewValue() != null) {
+              buildTree((File) e.getNewValue());
+            }
+          });
       add(new JLabel(Resources.getString("Editor.MassPieceLoader.image_directory")));
       add(dirConfig.getControls(), "grow"); // NON-NLS
 
-      basicConfig.addPropertyChangeListener(e -> {
-        if (e.getNewValue() != null) {
-          buildTree(dirConfig.getFileValue());
-        }
-      });
+      basicConfig.addPropertyChangeListener(
+          e -> {
+            if (e.getNewValue() != null) {
+              buildTree(dirConfig.getFileValue());
+            }
+          });
       add(new JLabel(Resources.getString("Editor.MassPieceLoader.no_basic_piece")));
       add(basicConfig.getControls());
 
-      emptyLevelConfig.addPropertyChangeListener(e -> {
-        if (e.getNewValue() != null) {
-          buildTree(dirConfig.getFileValue());
-        }
-      });
+      emptyLevelConfig.addPropertyChangeListener(
+          e -> {
+            if (e.getNewValue() != null) {
+              buildTree(dirConfig.getFileValue());
+            }
+          });
       add(new JLabel(Resources.getString("Editor.MassPieceLoader.no_empty_level")));
       add(emptyLevelConfig.getControls());
 
       defineDialog = new DefineDialog(this);
-      final JButton defineButton = new JButton(Resources.getString("Editor.MassPieceLoader.edit_piece_template"));
-      defineButton.addActionListener(e -> {
-        final GamePiece savePiece = definer.getPiece();
-        SwingUtils.ensureOnScreen(defineDialog);
-        defineDialog.setVisible(true);
-        if (defineDialog.isCancelled()) {
-          definer.setPiece(savePiece);
-        }
-        else {
-          buildTree(dirConfig.getFileValue());
-        }
-      });
+      final JButton defineButton =
+          new JButton(Resources.getString("Editor.MassPieceLoader.edit_piece_template"));
+      defineButton.addActionListener(
+          e -> {
+            final GamePiece savePiece = definer.getPiece();
+            SwingUtils.ensureOnScreen(defineDialog);
+            defineDialog.setVisible(true);
+            if (defineDialog.isCancelled()) {
+              definer.setPiece(savePiece);
+            } else {
+              buildTree(dirConfig.getFileValue());
+            }
+          });
       add(defineButton, "skip 1, growx 0"); // NON-NLS
 
       tree = new MyTreeTable();
       buildTree(dirConfig.getFileValue());
-      //final JPanel treePanel = new JPanel(new MigLayout("ins 0", "[grow,fill]", "[grow,fill]")); // NON-NLS
-      //treePanel.add(tree, "grow"); // NON-NLS
+      // final JPanel treePanel = new JPanel(new MigLayout("ins 0", "[grow,fill]", "[grow,fill]"));
+      // // NON-NLS
+      // treePanel.add(tree, "grow"); // NON-NLS
       final JScrollPane scrollPane = new JScrollPane(tree);
       add(scrollPane, "span 2,grow,push"); // NON-NLS
 
-      final JPanel buttonBox = new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
+      final JPanel buttonBox =
+          new JPanel(new MigLayout("ins 0", "push[]rel[]rel[]push")); // NON-NLS
       final JButton okButton = new JButton(Resources.getString(Resources.OK));
       okButton.addActionListener(e -> save());
       buttonBox.add(okButton);
 
-      final JButton cancelButton = new JButton(Resources
-          .getString(Resources.CANCEL));
+      final JButton cancelButton = new JButton(Resources.getString(Resources.CANCEL));
       cancelButton.addActionListener(e -> cancel());
       buttonBox.add(cancelButton);
 
-      final JButton helpButton = new JButton(Resources
-          .getString(Resources.HELP));
-      helpButton.addActionListener(e -> {
-        final HelpFile h = HelpFile.getReferenceManualPage("MassPieceLoader.html"); //NON-NLS
-        BrowserSupport.openURL(h.getContents().toString());
-      });
+      final JButton helpButton = new JButton(Resources.getString(Resources.HELP));
+      helpButton.addActionListener(
+          e -> {
+            final HelpFile h = HelpFile.getReferenceManualPage("MassPieceLoader.html"); // NON-NLS
+            BrowserSupport.openURL(h.getContents().toString());
+          });
       buttonBox.add(helpButton);
 
       add(buttonBox, "span 2,center,grow 0"); // NON-NLS
@@ -213,12 +218,13 @@ public class MassPieceLoader {
       pack();
       setLocationRelativeTo(getParent());
       setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-      addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent we) {
-          cancel();
-        }
-      });
+      addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+              cancel();
+            }
+          });
     }
 
     public void cancel() {
@@ -231,22 +237,28 @@ public class MassPieceLoader {
       int pieceCount = 0;
       for (int i = 0; i < root.getChildCount(); ++i) {
         final PieceNode node = (PieceNode) root.getChildAt(i);
-        if (! node.isSkip()) {
+        if (!node.isSkip()) {
           pieceCount += node.getCopies();
         }
       }
 
       // Do they really want to do this?
       if (pieceCount > 0) {
-        final String message = Resources.getString("Editor.MassPieceLoader.this_will_load", pieceCount, target.getConfigureName());
-        final int result = Dialogs.showConfirmDialog(null, Resources.getString("Editor.MassPieceLoader.confirm_load"),
-          Resources.getString("Editor.MassPieceLoader.confirm_load"), message, JOptionPane.WARNING_MESSAGE,
-            JOptionPane.YES_NO_CANCEL_OPTION);
+        final String message =
+            Resources.getString(
+                "Editor.MassPieceLoader.this_will_load", pieceCount, target.getConfigureName());
+        final int result =
+            Dialogs.showConfirmDialog(
+                null,
+                Resources.getString("Editor.MassPieceLoader.confirm_load"),
+                Resources.getString("Editor.MassPieceLoader.confirm_load"),
+                message,
+                JOptionPane.WARNING_MESSAGE,
+                JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == 1) {
           cancel();
           return;
-        }
-        else if (result == 2) {
+        } else if (result == 2) {
           return;
         }
       }
@@ -280,12 +292,10 @@ public class MassPieceLoader {
     }
 
     /**
-     * Build a tree representing the Game Pieces, Layers, Levels and images to
-     * be loaded. This tree is used as a model for the JxTreeTable, and also as
-     * the guide to load the counters.
+     * Build a tree representing the Game Pieces, Layers, Levels and images to be loaded. This tree
+     * is used as a model for the JxTreeTable, and also as the guide to load the counters.
      *
-     * @param dir
-     *          Directory containing images
+     * @param dir Directory containing images
      */
     protected void buildTree(File dir) {
 
@@ -321,8 +331,7 @@ public class MassPieceLoader {
 
         if (match) {
           levelImages.add(imageName);
-        }
-        else {
+        } else {
           baseImages.add(imageName);
         }
       }
@@ -338,9 +347,8 @@ public class MassPieceLoader {
             final BasicNode layerNode = new LayerNode(newLayer.getLayerName());
             for (int i = 0; i < newLayer.getImageNames().length; i++) {
               final String levelName = newLayer.getLevelNames()[i];
-              final BasicNode levelNode = new LevelNode(
-                levelName == null ? "" : levelName, newLayer
-                .getImageNames()[i], i);
+              final BasicNode levelNode =
+                  new LevelNode(levelName == null ? "" : levelName, newLayer.getImageNames()[i], i);
               layerNode.add(levelNode);
             }
             pieceNode.add(layerNode);
@@ -374,94 +382,89 @@ public class MassPieceLoader {
       final JTableHeader header = tree.getTableHeader();
       header.add(skipCheckBox);
 
-      header.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          if (header.getResizingColumn() != null) {
-            return;
-          }
+      header.addMouseListener(
+          new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+              if (header.getResizingColumn() != null) {
+                return;
+              }
 
-          final JTable table = header.getTable();
+              final JTable table = header.getTable();
 
-          final Point p = e.getPoint();
-          final int col = table.columnAtPoint(p);
-          if (col == -1) {
-            return;
-          }
+              final Point p = e.getPoint();
+              final int col = table.columnAtPoint(p);
+              if (col == -1) {
+                return;
+              }
 
-          final int mcol = table.convertColumnIndexToModel(col);
-          if (mcol != SKIP_COL) {
-            return;
-          }
+              final int mcol = table.convertColumnIndexToModel(col);
+              if (mcol != SKIP_COL) {
+                return;
+              }
 
-          // -1 -> 0, 0 -> 1, 1 -> 0
-          skipCheckBox.setSelectionState(
-            (Math.abs(skipCheckBox.getSelectionState()) + 1) % 2
-          );
+              // -1 -> 0, 0 -> 1, 1 -> 0
+              skipCheckBox.setSelectionState((Math.abs(skipCheckBox.getSelectionState()) + 1) % 2);
 
-          header.repaint();
-        }
-      });
-
-      skipCheckBox.addChangeListener(e -> {
-        switch (skipCheckBox.getSelectionState()) {
-        case -1:
-          break;
-        case 0:
-          skipAll();
-          break;
-        case 1:
-          skipNone();
-          break;
-        }
-      });
-
-      model.addTreeModelListener(new TreeModelListener() {
-        @Override
-        public void treeNodesChanged(TreeModelEvent e) {
-          if (!Arrays.stream(e.getChildren()).anyMatch(c -> c instanceof PieceNode)) {
-            return;
-          }
-
-          // Update header checkbox to reflect new selection.
-          // Irritatingly, there is no way to detect from the event
-          // if this was a check box change.
-          boolean hadSelected = false;
-          boolean hadUnselected = false;
-
-          final int count = root.getChildCount();
-          for (int i = 0; i < count; ++i) {
-            if (((PieceNode) root.getChildAt(i)).isSkip()) {
-              hadUnselected = true;
+              header.repaint();
             }
-            else {
-              hadSelected = true;
+          });
+
+      skipCheckBox.addChangeListener(
+          e -> {
+            switch (skipCheckBox.getSelectionState()) {
+              case -1:
+                break;
+              case 0:
+                skipAll();
+                break;
+              case 1:
+                skipNone();
+                break;
+            }
+          });
+
+      model.addTreeModelListener(
+          new TreeModelListener() {
+            @Override
+            public void treeNodesChanged(TreeModelEvent e) {
+              if (!Arrays.stream(e.getChildren()).anyMatch(c -> c instanceof PieceNode)) {
+                return;
+              }
+
+              // Update header checkbox to reflect new selection.
+              // Irritatingly, there is no way to detect from the event
+              // if this was a check box change.
+              boolean hadSelected = false;
+              boolean hadUnselected = false;
+
+              final int count = root.getChildCount();
+              for (int i = 0; i < count; ++i) {
+                if (((PieceNode) root.getChildAt(i)).isSkip()) {
+                  hadUnselected = true;
+                } else {
+                  hadSelected = true;
+                }
+
+                if (hadSelected && hadUnselected) {
+                  // mixed selection, no need to go further
+                  break;
+                }
+              }
+
+              skipCheckBox.setSelectionState(hadSelected ? (hadUnselected ? -1 : 1) : 0);
+              header.repaint();
             }
 
-            if (hadSelected && hadUnselected) {
-              // mixed selection, no need to go further
-              break;
-            }
-          }
+            @Override
+            public void treeNodesInserted(TreeModelEvent e) {}
 
-          skipCheckBox.setSelectionState(
-            hadSelected ? (hadUnselected ? -1 : 1) : 0
-          );
-          header.repaint();
-        }
+            @Override
+            public void treeNodesRemoved(TreeModelEvent e) {}
 
-        @Override
-        public void treeNodesInserted(TreeModelEvent e) {
-        }
-
-        @Override
-        public void treeNodesRemoved(TreeModelEvent e) {
-        }
-
-        @Override
-        public void treeStructureChanged(TreeModelEvent e) {
-        }
-      });
+            @Override
+            public void treeStructureChanged(TreeModelEvent e) {}
+          });
     }
 
     class ComponentHeaderRenderer extends DefaultTableCellRenderer {
@@ -475,8 +478,8 @@ public class MassPieceLoader {
       }
 
       @Override
-      public Component getTableCellRendererComponent(JTable table,
-          Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+      public Component getTableCellRendererComponent(
+          JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
         final JTableHeader header = table.getTableHeader();
         comp.setForeground(header.getForeground());
         comp.setBackground(header.getBackground());
@@ -489,12 +492,11 @@ public class MassPieceLoader {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public Component getTableCellRendererComponent(JTable table,
-          Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-        final Component c = super.getTableCellRendererComponent(table, value,
-            isSelected, hasFocus, row, col);
-        final BasicNode node = (BasicNode) tree.getPathForRow(row)
-            .getLastPathComponent();
+      public Component getTableCellRendererComponent(
+          JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+        final Component c =
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+        final BasicNode node = (BasicNode) tree.getPathForRow(row).getLastPathComponent();
         c.setEnabled(!node.isSkip());
         c.setForeground(EDITABLE_COLOR);
         return c;
@@ -505,8 +507,12 @@ public class MassPieceLoader {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        final JLabel renderedLabel = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      public Component getTableCellRendererComponent(
+          JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        final JLabel renderedLabel =
+            (JLabel)
+                super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
         final BasicNode node = (BasicNode) tree.getPathForRow(row).getLastPathComponent();
         renderedLabel.setHorizontalAlignment(CENTER);
         renderedLabel.setEnabled(!node.isSkip());
@@ -519,16 +525,21 @@ public class MassPieceLoader {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public Component getTableCellRendererComponent(JTable table,
-          Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-        final DefaultTableCellRenderer c = (DefaultTableCellRenderer) super.getTableCellRendererComponent(table, value,
-            isSelected, hasFocus, row, col);
-        final BasicNode node = (BasicNode) tree.getPathForRow(row)
-            .getLastPathComponent();
+      public Component getTableCellRendererComponent(
+          JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+        final DefaultTableCellRenderer c =
+            (DefaultTableCellRenderer)
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+        final BasicNode node = (BasicNode) tree.getPathForRow(row).getLastPathComponent();
         c.setEnabled(!node.isSkip());
         if (node instanceof PieceNode) {
           final String image = node.getImageName();
-          final String i = "<html><img src=\"file:/" + loadDirectory.getAbsolutePath() + "/" + image + "\"></html>"; //NON-NLS
+          final String i =
+              "<html><img src=\"file:/"
+                  + loadDirectory.getAbsolutePath()
+                  + "/"
+                  + image
+                  + "\"></html>"; // NON-NLS
           c.setToolTipText(i);
         }
         return c;
@@ -543,9 +554,10 @@ public class MassPieceLoader {
       }
 
       @Override
-      public Component getTableCellEditorComponent(JTable table, Object value,
-          boolean isSelected, int row, int column) {
-        final Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+      public Component getTableCellEditorComponent(
+          JTable table, Object value, boolean isSelected, int row, int column) {
+        final Component c =
+            super.getTableCellEditorComponent(table, value, isSelected, row, column);
         c.setForeground(Color.blue);
         return c;
       }
@@ -572,9 +584,7 @@ public class MassPieceLoader {
       }
     }
 
-    /**
-     * Load the Pieces based on the Node Tree built while user was editing
-     */
+    /** Load the Pieces based on the Node Tree built while user was editing */
     public void load() {
       // Check a Directory has been entered
       final File dir = dialog.getDirectory();
@@ -595,8 +605,7 @@ public class MassPieceLoader {
     /**
      * Load a specific piece and and all referenced images.
      *
-     * @param pieceNode
-     *          Sub-tree representing piece
+     * @param pieceNode Sub-tree representing piece
      */
     public void load(PieceNode pieceNode) {
 
@@ -606,12 +615,14 @@ public class MassPieceLoader {
 
       // Create the BasicPiece
       final String basicType =
-        new SequenceEncoder("", ';')
-          .append("")
-          .append(basicConfig.booleanValue() ? "" : baseImage)
-          .append(pieceNode.getName()).getValue();
+          new SequenceEncoder("", ';')
+              .append("")
+              .append(basicConfig.booleanValue() ? "" : baseImage)
+              .append(pieceNode.getName())
+              .getValue();
 
-      final BasicPiece basic = (BasicPiece) GameModule.getGameModule().createPiece(BasicPiece.ID + basicType);
+      final BasicPiece basic =
+          (BasicPiece) GameModule.getGameModule().createPiece(BasicPiece.ID + basicType);
 
       // Build the piece from the template
       GamePiece template = definer.getPiece();
@@ -642,9 +653,9 @@ public class MassPieceLoader {
               piece = GameModule.getGameModule().createPiece(newLayer.getType());
               piece.setState(saveState);
             }
-          }
-          else {
-            final Decorator newTrait = (Decorator) GameModule.getGameModule().createPiece(trait.getType());
+          } else {
+            final Decorator newTrait =
+                (Decorator) GameModule.getGameModule().createPiece(trait.getType());
             newTrait.setState(trait.getState());
             newTrait.setInner(piece);
             final String saveState = newTrait.getState();
@@ -713,20 +724,20 @@ public class MassPieceLoader {
       state = s;
 
       switch (state) {
-      case -1:
-        setSelected(true);
-        setEnabled(false);
-        break;
-      case 0:
-        setSelected(false);
-        setEnabled(true);
-        break;
-      case 1:
-        setSelected(true);
-        setEnabled(true);
-        break;
-      default:
-        throw new IllegalArgumentException();
+        case -1:
+          setSelected(true);
+          setEnabled(false);
+          break;
+        case 0:
+          setSelected(false);
+          setEnabled(true);
+          break;
+        case 1:
+          setSelected(true);
+          setEnabled(true);
+          break;
+        default:
+          throw new IllegalArgumentException();
       }
     }
 
@@ -738,16 +749,15 @@ public class MassPieceLoader {
   /**
    * Add the named image to the module
    *
-   * @param name
-   *          Image name
+   * @param name Image name
    */
   protected void addImageToModule(String name) {
     if (name != null && name.length() > 0) {
       try {
-        GameModule.getGameModule().getArchiveWriter().addImage(
-            new File(dirConfig.getFileValue(), name).getCanonicalPath(), name);
-      }
-      catch (IOException e) {
+        GameModule.getGameModule()
+            .getArchiveWriter()
+            .addImage(new File(dirConfig.getFileValue(), name).getCanonicalPath(), name);
+      } catch (IOException e) {
         // FIXME: Log error properly
         // ErrorLog.log()
       }
@@ -755,30 +765,25 @@ public class MassPieceLoader {
   }
 
   /**
-   * Maintain a record of all names changed by the user for image basenames.
-   * Default name is image name with image suffix stripped.
+   * Maintain a record of all names changed by the user for image basenames. Default name is image
+   * name with image suffix stripped.
    *
-   * @param baseName
-   *          Image name
+   * @param baseName Image name
    * @return user modified name
    */
   protected String getPieceName(String baseName) {
     final PieceInfo info = pieceInfo.get(baseName);
-    return info == null ? ImageUtils.stripImageSuffix(baseName) : info
-        .getName();
+    return info == null ? ImageUtils.stripImageSuffix(baseName) : info.getName();
   }
 
-  /**
-   *
-   * A custom piece definer based on the Prototype piece definer
-   *
-   */
+  /** A custom piece definer based on the Prototype piece definer */
   static class MassPieceDefiner extends PrototypeDefinition.Config.Definer {
     private static final long serialVersionUID = 1L;
 
     protected static DefaultListModel<GamePiece> newModel;
-    protected boolean copyIsEmb;  /** Is the current trait in the Clipboard an Emb trait? */
+    protected boolean copyIsEmb;
 
+    /** Is the current trait in the Clipboard an Emb trait? */
     public MassPieceDefiner() {
       super(GameModule.getGameModule().getGpIdSupport());
 
@@ -786,7 +791,7 @@ public class MassPieceLoader {
       // with a replacement ImagePicker.
       if (newModel == null) {
         newModel = new DefaultListModel<>();
-        for (final Enumeration<?> e = availableModel.elements(); e.hasMoreElements();) {
+        for (final Enumeration<?> e = availableModel.elements(); e.hasMoreElements(); ) {
           final Object o = e.nextElement();
           newModel.addElement((GamePiece) o);
           if (o instanceof Embellishment) {
@@ -797,7 +802,6 @@ public class MassPieceLoader {
 
       availableList.setModel(newModel);
       setPiece(null);
-
     }
 
     @Override
@@ -809,9 +813,10 @@ public class MassPieceLoader {
     @Override
     protected void paste() {
       final String type = clipBoard.getType();
-      final Decorator c =  (type.startsWith(Embellishment.ID) && copyIsEmb) ?
-        new Emb(type, null) :
-        (Decorator) GameModule.getGameModule().createPiece(type, null);
+      final Decorator c =
+          (type.startsWith(Embellishment.ID) && copyIsEmb)
+              ? new Emb(type, null)
+              : (Decorator) GameModule.getGameModule().createPiece(type, null);
       if (c instanceof PlaceMarker) {
         ((PlaceMarker) c).updateGpId(GameModule.getGameModule().getGpIdSupport());
       }
@@ -827,15 +832,9 @@ public class MassPieceLoader {
     public boolean isPrototype() {
       return true;
     }
-
   }
 
-  /**
-   *
-   * Dialog to hold the PieceDefiner used to specify the multi-load piece
-   * template.
-   *
-   */
+  /** Dialog to hold the PieceDefiner used to specify the multi-load piece template. */
   private static class DefineDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     protected boolean cancelled = false;
@@ -846,7 +845,11 @@ public class MassPieceLoader {
       setVisible(false);
       setTitle(Resources.getString("Editor.MassPieceLoader.multiple_piece_template"));
       setLocationRelativeTo(owner);
-      setLayout(new MigLayout("ins panel,wrap 1," + TraitLayout.STANDARD_GAPY, "[grow,fill]", "[grow,fill][]")); // NON-NLS
+      setLayout(
+          new MigLayout(
+              "ins panel,wrap 1," + TraitLayout.STANDARD_GAPY,
+              "[grow,fill]",
+              "[grow,fill][]")); // NON-NLS
       add(definer, "grow"); // NON-NLS
 
       final JButton saveButton = new JButton(Resources.getString(Resources.SAVE));
@@ -862,12 +865,13 @@ public class MassPieceLoader {
       add(bbox, "center"); // NON-NLS
 
       setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-      addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent we) {
-          cancel();
-        }
-      });
+      addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+              cancel();
+            }
+          });
 
       pack();
     }
@@ -885,12 +889,11 @@ public class MassPieceLoader {
     public boolean isCancelled() {
       return cancelled;
     }
-
   }
 
   /**
-   * *************************************************************************
-   * Custom Tree table model:- - Return column count - Return column headings
+   * ************************************************************************* Custom Tree table
+   * model:- - Return column count - Return column headings
    */
   private class MyTreeTableModel extends DefaultTreeTableModel {
 
@@ -906,16 +909,16 @@ public class MassPieceLoader {
     @Override
     public String getColumnName(int col) {
       switch (col) {
-      case DESC_COL:
-        return Resources.getString("Editor.MassPieceLoader.item");
-      case NAME_COL:
-        return Resources.getString("Editor.MassPieceLoader.piece_name");
-      case IMAGE_COL:
-        return Resources.getString("Editor.MassPieceLoader.image_name");
-      case SKIP_COL:
-        return Resources.getString("Editor.MassPieceLoader.skip");
-      case COPIES_COL:
-        return Resources.getString("Editor.MassPieceLoader.copies");
+        case DESC_COL:
+          return Resources.getString("Editor.MassPieceLoader.item");
+        case NAME_COL:
+          return Resources.getString("Editor.MassPieceLoader.piece_name");
+        case IMAGE_COL:
+          return Resources.getString("Editor.MassPieceLoader.image_name");
+        case SKIP_COL:
+          return Resources.getString("Editor.MassPieceLoader.skip");
+        case COPIES_COL:
+          return Resources.getString("Editor.MassPieceLoader.copies");
       }
       return "";
     }
@@ -924,11 +927,9 @@ public class MassPieceLoader {
     public Class<?> getColumnClass(int column) {
       if (column == SKIP_COL) {
         return Boolean.class;
-      }
-      else if (column == COPIES_COL) {
+      } else if (column == COPIES_COL) {
         return Integer.class;
-      }
-      else {
+      } else {
         return String.class;
       }
     }
@@ -938,8 +939,7 @@ public class MassPieceLoader {
       if (node instanceof PieceNode) {
         if (column == NAME_COL || column == COPIES_COL) {
           return !((PieceNode) node).isSkip();
-        }
-        else {
+        } else {
           return column == SKIP_COL;
         }
       }
@@ -959,12 +959,10 @@ public class MassPieceLoader {
         if (column == NAME_COL) {
           ((PieceNode) node).setName((String) value);
           changed = true;
-        }
-        else if (column == SKIP_COL) {
+        } else if (column == SKIP_COL) {
           ((PieceNode) node).setSkip(!((Boolean) value));
           changed = true;
-        }
-        else if (column == COPIES_COL) {
+        } else if (column == COPIES_COL) {
           final int val = value == null ? 1 : Math.max((Integer) value, 1);
           ((PieceNode) node).setCopies(val);
           changed = true;
@@ -973,8 +971,7 @@ public class MassPieceLoader {
         if (changed) {
           modelSupport.firePathChanged(new TreePath(getPathToRoot((TreeTableNode) node)));
         }
-      }
-      else {
+      } else {
         super.setValueAt(value, node, column);
       }
     }
@@ -986,9 +983,7 @@ public class MassPieceLoader {
   }
 
   /**
-   * Custom implementation of JXTreeTable Fix for bug on startup generating
-   * illegal column numbers
-   *
+   * Custom implementation of JXTreeTable Fix for bug on startup generating illegal column numbers
    */
   private class MyTreeTable extends JXTreeTable {
 
@@ -1014,20 +1009,17 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Blank Cell Renderer
-   */
+  /** Blank Cell Renderer */
   private static class NullRenderer implements TableCellRenderer {
     @Override
-    public Component getTableCellRendererComponent(JTable arg0, Object arg1,
-        boolean arg2, boolean arg3, int arg4, int arg5) {
+    public Component getTableCellRendererComponent(
+        JTable arg0, Object arg1, boolean arg2, boolean arg3, int arg4, int arg5) {
       return new JLabel("");
     }
   }
 
   /**
-   * *************************************************************************
-   * Custom TreeTable Node
+   * ************************************************************************* Custom TreeTable Node
    */
   private static class BasicNode extends DefaultMutableTreeTableNode {
     protected String name;
@@ -1085,26 +1077,22 @@ public class MassPieceLoader {
     @Override
     public Object getValueAt(int col) {
       switch (col) {
-      case DESC_COL:
-        return getDescription();
-      case NAME_COL:
-        return getName();
-      case IMAGE_COL:
-        return getImageName();
-      case SKIP_COL:
-        return !isSkip();
-      case COPIES_COL:
-        return getCopies();
+        case DESC_COL:
+          return getDescription();
+        case NAME_COL:
+          return getName();
+        case IMAGE_COL:
+          return getImageName();
+        case SKIP_COL:
+          return !isSkip();
+        case COPIES_COL:
+          return getCopies();
       }
       return "";
     }
   }
 
-  /**
-   * Node representing a GamePiece to be loaded. imageName is the name of the
-   * Basic Piece image
-   *
-   */
+  /** Node representing a GamePiece to be loaded. imageName is the name of the Basic Piece image */
   private class PieceNode extends BasicNode {
 
     public PieceNode(String imageName) {
@@ -1114,8 +1102,7 @@ public class MassPieceLoader {
       if (info == null) {
         setName(ImageUtils.stripImageSuffix(imageName));
         setSkip(false);
-      }
-      else {
+      } else {
         setName(info.getName());
         setSkip(info.isSkip());
       }
@@ -1125,13 +1112,11 @@ public class MassPieceLoader {
       return super.getImageName();
     }
 
-
     @Override
     public String getImageName() {
       if (basicConfig.booleanValue()) {
         return "";
-      }
-      else {
+      } else {
         return super.getImageName();
       }
     }
@@ -1154,9 +1139,7 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Node representing a Layer trait of a GamePiece
-   */
+  /** Node representing a Layer trait of a GamePiece */
   private static class LayerNode extends BasicNode {
     public LayerNode(String name) {
       super(name, "");
@@ -1164,7 +1147,8 @@ public class MassPieceLoader {
 
     @Override
     public String getDescription() {
-      return Resources.getString("Editor.MassPieceLoader.layer_desc") + (name.length() > 0 ? " [" + name + "]" : "");
+      return Resources.getString("Editor.MassPieceLoader.layer_desc")
+          + (name.length() > 0 ? " [" + name + "]" : "");
     }
 
     @Override
@@ -1173,10 +1157,7 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Node representing an individual Image Level within a Layer trait
-   *
-   */
+  /** Node representing an individual Image Level within a Layer trait */
   private static class LevelNode extends BasicNode {
     final int levelNumber;
 
@@ -1187,7 +1168,9 @@ public class MassPieceLoader {
 
     @Override
     public String getDescription() {
-      return Resources.getString("Editor.MassPieceLoader.level") + " " + (levelNumber + 1)
+      return Resources.getString("Editor.MassPieceLoader.level")
+          + " "
+          + (levelNumber + 1)
           + (name.length() > 0 ? " [" + name + "]" : "");
     }
 
@@ -1197,11 +1180,7 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Utility class to hold user changes about pieces - Updated piece name - Skip
-   * load flag
-   *
-   */
+  /** Utility class to hold user changes about pieces - Updated piece name - Skip load flag */
   private static class PieceInfo {
     protected String name;
     protected boolean skip;
@@ -1228,9 +1207,7 @@ public class MassPieceLoader {
     }
   }
 
-  /**
-   * Subclass of Embellishment to allow us to directly manipulate its members
-   */
+  /** Subclass of Embellishment to allow us to directly manipulate its members */
   private static class Emb extends Embellishment {
     private final List<String> builtImages = new ArrayList<>();
 
@@ -1242,8 +1219,6 @@ public class MassPieceLoader {
       super(type, p);
     }
 
-
-
     public String[] getImageNames() {
       return imageName;
     }
@@ -1254,8 +1229,9 @@ public class MassPieceLoader {
 
     @Override
     public String getDescription() {
-      return Resources.getString("Editor.MassPieceLoader.embellishment_trait_description") +
-        super.getDescription().substring(Resources.getString("Editor.Embellishment.trait_description").length());
+      return Resources.getString("Editor.MassPieceLoader.embellishment_trait_description")
+          + super.getDescription()
+              .substring(Resources.getString("Editor.Embellishment.trait_description").length());
     }
 
     // Return true if the specified file name matches the level
@@ -1271,24 +1247,19 @@ public class MassPieceLoader {
 
     protected boolean match(String s, String levelName) {
       if (levelName != null && levelName.length() > 1) { // Check 1 to skip
-                                                         // command char
+        // command char
         if (levelName.charAt(0) == BASE_IMAGE.charAt(0)) {
           return false;
-        }
-        else if (levelName.charAt(0) == ENDS_WITH.charAt(0)) {
+        } else if (levelName.charAt(0) == ENDS_WITH.charAt(0)) {
           return s.endsWith(levelName.substring(1));
-        }
-        else if (levelName.charAt(0) == INCLUDES.charAt(0)) {
+        } else if (levelName.charAt(0) == INCLUDES.charAt(0)) {
           return s.contains(levelName.substring(1));
-        }
-        else if (levelName.charAt(0) == EQUALS.charAt(0)) {
+        } else if (levelName.charAt(0) == EQUALS.charAt(0)) {
           return s.equals(levelName.substring(1));
-        }
-        else {
+        } else {
           try {
             return Pattern.matches(levelName.substring(1), s);
-          }
-          catch (Exception ex) { // Invalid pattern
+          } catch (Exception ex) { // Invalid pattern
 
           }
         }
@@ -1296,16 +1267,13 @@ public class MassPieceLoader {
       return false;
     }
 
-      /**
-       * Set the actual layer images based on a base image and the layer image
-       * template specification.
-       *
-       * @param baseImage
-       *          base Image name
-       * @param levelImages
-       *          List of available level images
-       * @return true if at least one layer built
-       */
+    /**
+     * Set the actual layer images based on a base image and the layer image template specification.
+     *
+     * @param baseImage base Image name
+     * @param levelImages List of available level images
+     * @return true if at least one layer built
+     */
     public boolean buildLayers(String baseImage, List<String> levelImages) {
       final String base = baseImage.split("\\.")[0];
       int count = 0;
@@ -1316,18 +1284,16 @@ public class MassPieceLoader {
         String thisImage = null;
         if (imageTemplate.charAt(0) == BASE_IMAGE.charAt(0)) {
           thisImage = baseImage;
-        }
-        else {
-          for (final Iterator<String> it = levelImages.iterator(); it.hasNext()
-              && thisImage == null;) {
+        } else {
+          for (final Iterator<String> it = levelImages.iterator();
+              it.hasNext() && thisImage == null; ) {
             final String checkImage = it.next();
             final String checkImageBase = checkImage.split("\\.")[0];
             if (imageTemplate.charAt(0) == EQUALS.charAt(0)) {
               if (match(checkImageBase, imageTemplate)) {
                 thisImage = checkImage;
               }
-            }
-            else {
+            } else {
               if (checkImage.startsWith(base)) {
                 if (match(checkImageBase, imageTemplate)) {
                   thisImage = checkImage;
@@ -1378,25 +1344,24 @@ public class MassPieceLoader {
       protected MultiImagePicker getImagePicker() {
         return new LoaderImagePicker();
       }
-
     }
 
     @Override
     public PieceEditor getEditor() {
       return new LoaderEd(this);
     }
-
   }
 
-  /**
-   * Replacement class for the MultiImagePicker to specify image match strings
-   */
+  /** Replacement class for the MultiImagePicker to specify image match strings */
   private static class LoaderImagePicker extends MultiImagePicker {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void addEntry() {
-      final String entry = Resources.getString("Editor.MassPieceLoader.image") + " " + (imageListElements.size() + 1);
+      final String entry =
+          Resources.getString("Editor.MassPieceLoader.image")
+              + " "
+              + (imageListElements.size() + 1);
       imageListElements.addElement(entry);
       final Entry pick = new Entry();
       multiPanel.add(entry, pick);
@@ -1434,35 +1399,37 @@ public class MassPieceLoader {
     }
   }
 
-  protected static final String ENDS_WITH = "ends with"; //NON-NLS (really)
-  protected static final String INCLUDES = "includes"; //NON-NLS (really)
-  protected static final String MATCHES = "matches"; //NON-NLS (really)
-  protected static final String EQUALS = "same as"; //NON-NLS (really)
-  protected static final String BASE_IMAGE = "use Base Image"; //NON-NLS (really)
+  protected static final String ENDS_WITH = "ends with"; // NON-NLS (really)
+  protected static final String INCLUDES = "includes"; // NON-NLS (really)
+  protected static final String MATCHES = "matches"; // NON-NLS (really)
+  protected static final String EQUALS = "same as"; // NON-NLS (really)
+  protected static final String BASE_IMAGE = "use Base Image"; // NON-NLS (really)
 
   private static class Entry extends JPanel {
     private static final long serialVersionUID = 1L;
     private final TranslatingStringEnumConfigurer typeConfig;
     private final StringConfigurer nameConfig;
-    private final JLabel warning = new JLabel(Resources.getString("Editor.MassPieceLoader.warning_suffix"));
+    private final JLabel warning =
+        new JLabel(Resources.getString("Editor.MassPieceLoader.warning_suffix"));
 
     public Entry() {
       setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-      add(new JLabel(
-        Resources.getString("Editor.MassPieceLoader.do_not_suffix")));
+      add(new JLabel(Resources.getString("Editor.MassPieceLoader.do_not_suffix")));
 
       final JPanel entry = new JPanel(new MigLayout("ins 0,hidemode 3", "[]rel[]")); // NON-NLS
       entry.add(new JLabel(Resources.getString("Editor.MassPieceLoader.image_name") + " "));
-      typeConfig = new TranslatingStringEnumConfigurer(null, "",
-        new String[] { ENDS_WITH, INCLUDES, MATCHES, EQUALS, BASE_IMAGE },
-        new String[] {
-          "Editor.MassPieceLoader.ends_with",
-          "Editor.MassPieceLoader.includes",
-          "Editor.MassPieceLoader.matches",
-          "Editor.MassPieceLoader.same_as",
-          "Editor.MassPieceLoader.base_image"
-        }
-        );
+      typeConfig =
+          new TranslatingStringEnumConfigurer(
+              null,
+              "",
+              new String[] {ENDS_WITH, INCLUDES, MATCHES, EQUALS, BASE_IMAGE},
+              new String[] {
+                "Editor.MassPieceLoader.ends_with",
+                "Editor.MassPieceLoader.includes",
+                "Editor.MassPieceLoader.matches",
+                "Editor.MassPieceLoader.same_as",
+                "Editor.MassPieceLoader.base_image"
+              });
       entry.add(typeConfig.getControls());
       nameConfig = new StringConfigurer(null, "");
       entry.add(nameConfig.getControls());
@@ -1477,35 +1444,32 @@ public class MassPieceLoader {
     }
 
     protected void updateVisibility() {
-      warning
-          .setVisible(ImageUtils.hasImageSuffix(nameConfig.getValueString()));
-      nameConfig.getControls().setVisible(
-          !typeConfig.getValueString().equals(BASE_IMAGE));
+      warning.setVisible(ImageUtils.hasImageSuffix(nameConfig.getValueString()));
+      nameConfig.getControls().setVisible(!typeConfig.getValueString().equals(BASE_IMAGE));
     }
 
     @Override
     public String toString() {
-      return typeConfig.getValueString().charAt(0)
-          + nameConfig.getValueString();
+      return typeConfig.getValueString().charAt(0) + nameConfig.getValueString();
     }
 
     public void setImageName(String s) {
       switch (s.charAt(0)) {
-      case 'e':
-        typeConfig.setValue(ENDS_WITH);
-        break;
-      case 'i':
-        typeConfig.setValue(INCLUDES);
-        break;
-      case 'm':
-        typeConfig.setValue(MATCHES);
-        break;
-      case 's':
-        typeConfig.setValue(EQUALS);
-        break;
-      case 'u':
-        typeConfig.setValue(BASE_IMAGE);
-        break;
+        case 'e':
+          typeConfig.setValue(ENDS_WITH);
+          break;
+        case 'i':
+          typeConfig.setValue(INCLUDES);
+          break;
+        case 'm':
+          typeConfig.setValue(MATCHES);
+          break;
+        case 's':
+          typeConfig.setValue(EQUALS);
+          break;
+        case 'u':
+          typeConfig.setValue(BASE_IMAGE);
+          break;
       }
 
       nameConfig.setValue(s.substring(1));

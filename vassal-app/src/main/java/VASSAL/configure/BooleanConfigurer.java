@@ -20,12 +20,9 @@ package VASSAL.configure;
 import java.awt.event.FocusListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-
 import net.miginfocom.swing.MigLayout;
 
-/**
- * Configurer for Boolean values
- */
+/** Configurer for Boolean values */
 public class BooleanConfigurer extends Configurer {
   protected JPanel p;
   private JCheckBox box;
@@ -113,12 +110,19 @@ public class BooleanConfigurer extends Configurer {
   @Override
   public java.awt.Component getControls() {
     if (p == null) {
-      p = new JPanel(new MigLayout(ConfigurerLayout.DEFAULT_CFG_LAYOUT_CONSTRAINTS, (getName() == null || getName().isEmpty()) ? "[]0[0]" : "[][][]", "push[]push"));
+      p =
+          new JPanel(
+              new MigLayout(
+                  ConfigurerLayout.DEFAULT_CFG_LAYOUT_CONSTRAINTS,
+                  (getName() == null || getName().isEmpty()) ? "[]0[0]" : "[][][]",
+                  "push[]push"));
 
       box = new JCheckBox();
       box.setSelected(booleanValue());
-      // NOTE: Changed from ItemListener to ActionListener. There is a know problem with ItemListener if the
-      // listener fires off a hotkey that opens another window, it causes the checkbox to untick, firing a second event
+      // NOTE: Changed from ItemListener to ActionListener. There is a know problem with
+      // ItemListener if the
+      // listener fires off a hotkey that opens another window, it causes the checkbox to untick,
+      // firing a second event
       box.addActionListener(e -> setValue(box.isSelected()));
       p.add(box);
     }
@@ -154,7 +158,5 @@ public class BooleanConfigurer extends Configurer {
     if (p instanceof ConfigurerPanel) {
       ((ConfigurerPanel) p).setLabelVisibility(visible);
     }
-
-
   }
 }

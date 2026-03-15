@@ -19,9 +19,7 @@ package VASSAL.chat;
 
 import VASSAL.command.Command;
 
-/**
- * Date: Mar 11, 2003
- */
+/** Date: Mar 11, 2003 */
 @FunctionalInterface
 public interface WelcomeMessageServer {
   Command getWelcomeMessage();

@@ -18,9 +18,32 @@
 package VASSAL.build.module.map;
 
 import VASSAL.build.AbstractFolder;
+import VASSAL.build.AutoConfigurable;
+import VASSAL.build.Buildable;
+import VASSAL.build.Configurable;
+import VASSAL.build.GameModule;
+import VASSAL.build.module.GameComponent;
+import VASSAL.build.module.Map;
+import VASSAL.build.module.documentation.HelpFile;
+import VASSAL.command.Command;
+import VASSAL.configure.AutoConfigurer;
+import VASSAL.configure.ColorConfigurer;
+import VASSAL.configure.Configurer;
+import VASSAL.configure.ConfigurerFactory;
+import VASSAL.configure.IconConfigurer;
 import VASSAL.configure.NamedHotKeyConfigurer;
+import VASSAL.configure.VisibilityCondition;
+import VASSAL.counters.GamePiece;
+import VASSAL.i18n.ComponentI18nData;
+import VASSAL.i18n.Resources;
+import VASSAL.i18n.Translatable;
 import VASSAL.search.ImageSearchTarget;
 import VASSAL.search.SearchTarget;
+import VASSAL.tools.KeyStrokeSource;
+import VASSAL.tools.LaunchButton;
+import VASSAL.tools.NamedKeyStroke;
+import VASSAL.tools.ScrollPane;
+import VASSAL.tools.swing.SwingUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -42,51 +65,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import VASSAL.build.AutoConfigurable;
-import VASSAL.build.Buildable;
-import VASSAL.build.Configurable;
-import VASSAL.build.GameModule;
-import VASSAL.build.module.GameComponent;
-import VASSAL.build.module.Map;
-import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.command.Command;
-import VASSAL.configure.AutoConfigurer;
-import VASSAL.configure.ColorConfigurer;
-import VASSAL.configure.Configurer;
-import VASSAL.configure.ConfigurerFactory;
-import VASSAL.configure.IconConfigurer;
-import VASSAL.configure.VisibilityCondition;
-import VASSAL.counters.GamePiece;
-import VASSAL.i18n.ComponentI18nData;
-import VASSAL.i18n.Resources;
-import VASSAL.i18n.Translatable;
-import VASSAL.tools.KeyStrokeSource;
-import VASSAL.tools.LaunchButton;
-import VASSAL.tools.NamedKeyStroke;
-import VASSAL.tools.ScrollPane;
-import VASSAL.tools.swing.SwingUtils;
-
 /**
- * This is scaled version of a {@link Map} that gives an overview.
- * Users can navigate around the Map by clicking on the GlobalMap, which
- * draws a rectangular region of interest (ROI) indicating the current
- * viewable area in the map window.
+ * This is scaled version of a {@link Map} that gives an overview. Users can navigate around the Map
+ * by clicking on the GlobalMap, which draws a rectangular region of interest (ROI) indicating the
+ * current viewable area in the map window.
  */
-public class GlobalMap implements AutoConfigurable,
-                                  GameComponent,
-                                  Drawable,
-                                  SearchTarget,
-                                  ImageSearchTarget {
+public class GlobalMap
+    implements AutoConfigurable, GameComponent, Drawable, SearchTarget, ImageSearchTarget {
   private static final long serialVersionUID = 2L;
 
   protected Map map;
@@ -111,24 +104,21 @@ public class GlobalMap implements AutoConfigurable,
 
     final ActionListener al = e -> scroll.setVisible(!scroll.isVisible());
 
-    launch = new LaunchButton(null, TOOLTIP, BUTTON_TEXT,
-                              HOTKEY, ICON_NAME, al);
+    launch = new LaunchButton(null, TOOLTIP, BUTTON_TEXT, HOTKEY, ICON_NAME, al);
     launch.setAttribute(TOOLTIP, Resources.getString("Editor.GlobalMap.show_hide_overview_window"));
-    launch.setAttribute(HOTKEY,
-      NamedKeyStroke.of(
-        KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK
-      )
-    );
+    launch.setAttribute(
+        HOTKEY,
+        NamedKeyStroke.of(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
   }
 
   /**
-   * Expects to be added to a {@link Map}. Adds itself as a {@link
-   * GameComponent} and a {@link Drawable}component
+   * Expects to be added to a {@link Map}. Adds itself as a {@link GameComponent} and a {@link
+   * Drawable}component
    */
   @Override
   public void addTo(Buildable b) {
     if (b instanceof AbstractFolder) {
-      b = ((AbstractFolder)b).getNonFolderAncestor();
+      b = ((AbstractFolder) b).getNonFolderAncestor();
     }
     map = (Map) b;
 
@@ -136,8 +126,8 @@ public class GlobalMap implements AutoConfigurable,
 
     GameModule.getGameModule().getGameState().addGameComponent(this);
 
-    GameModule.getGameModule().addKeyStrokeSource(
-      new KeyStrokeSource(view, JComponent.WHEN_FOCUSED));
+    GameModule.getGameModule()
+        .addKeyStrokeSource(new KeyStrokeSource(view, JComponent.WHEN_FOCUSED));
 
     map.addDrawComponent(this);
     map.getToolBar().add(launch);
@@ -150,17 +140,15 @@ public class GlobalMap implements AutoConfigurable,
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
-  public void remove(Buildable b) {
-  }
+  public void remove(Buildable b) {}
 
   @Override
   public void removeFrom(Buildable b) {
     if (b instanceof AbstractFolder) {
-      b = ((AbstractFolder)b).getNonFolderAncestor();
+      b = ((AbstractFolder) b).getNonFolderAncestor();
     }
 
     map = (Map) b;
@@ -176,24 +164,17 @@ public class GlobalMap implements AutoConfigurable,
     AutoConfigurable.Util.buildAttributes(e, this);
   }
 
-  protected static final String SCALE = "scale"; //NON-NLS
-  protected static final String COLOR = "color"; //NON-NLS
-  protected static final String HOTKEY = "hotkey"; //NON-NLS
-  protected static final String ICON_NAME = "icon"; //NON-NLS
-  protected static final String TOOLTIP = "tooltip"; //NON-NLS
-  protected static final String BUTTON_TEXT = "buttonText"; //NON-NLS
-  protected static final String DEFAULT_ICON = "/images/overview.gif"; //NON-NLS
+  protected static final String SCALE = "scale"; // NON-NLS
+  protected static final String COLOR = "color"; // NON-NLS
+  protected static final String HOTKEY = "hotkey"; // NON-NLS
+  protected static final String ICON_NAME = "icon"; // NON-NLS
+  protected static final String TOOLTIP = "tooltip"; // NON-NLS
+  protected static final String BUTTON_TEXT = "buttonText"; // NON-NLS
+  protected static final String DEFAULT_ICON = "/images/overview.gif"; // NON-NLS
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      TOOLTIP,
-      BUTTON_TEXT,
-      ICON_NAME,
-      HOTKEY,
-      SCALE,
-      COLOR
-    };
+    return new String[] {TOOLTIP, BUTTON_TEXT, ICON_NAME, HOTKEY, SCALE, COLOR};
   }
 
   @Override
@@ -208,14 +189,12 @@ public class GlobalMap implements AutoConfigurable,
         value = Double.valueOf((String) value);
       }
       scale = (Double) value;
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
       rectColor = (Color) value;
-    }
-    else {
+    } else {
       launch.setAttribute(key, value);
     }
   }
@@ -224,11 +203,9 @@ public class GlobalMap implements AutoConfigurable,
   public String getAttributeValueString(String key) {
     if (SCALE.equals(key)) {
       return String.valueOf(scale);
-    }
-    else if (COLOR.equals(key)) {
+    } else if (COLOR.equals(key)) {
       return ColorConfigurer.colorToString(rectColor);
-    }
-    else {
+    } else {
       return launch.getAttributeValueString(key);
     }
   }
@@ -239,28 +216,22 @@ public class GlobalMap implements AutoConfigurable,
       Resources.getString(Resources.TOOLTIP_TEXT),
       Resources.getString(Resources.BUTTON_TEXT),
       Resources.getString(Resources.BUTTON_ICON),
-      Resources.getString("Editor.GlobalMap.show_hide"), //$NON-NLS-1$
-      Resources.getString("Editor.GlobalMap.scale_factor"), //$NON-NLS-1$
-      Resources.getString("Editor.GlobalMap.hilight"), //$NON-NLS-1$
+      Resources.getString("Editor.GlobalMap.show_hide"), // $NON-NLS-1$
+      Resources.getString("Editor.GlobalMap.scale_factor"), // $NON-NLS-1$
+      Resources.getString("Editor.GlobalMap.hilight"), // $NON-NLS-1$
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return new Class<?>[] {
-      String.class,
-      String.class,
-      IconConfig.class,
-      NamedKeyStroke.class,
-      Double.class,
-      Color.class
+      String.class, String.class, IconConfig.class, NamedKeyStroke.class, Double.class, Color.class
     };
   }
 
   public static class IconConfig implements ConfigurerFactory {
     @Override
-    public Configurer getConfigurer(AutoConfigurable c,
-                                    String key, String name) {
+    public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
       return new IconConfigurer(key, name, DEFAULT_ICON);
     }
   }
@@ -277,29 +248,30 @@ public class GlobalMap implements AutoConfigurable,
 
   public Point componentToMap(Point p) {
     return new Point(
-      (int) Math.round(p.x / scale) + map.getEdgeBuffer().width,
-      (int) Math.round(p.y / scale) + map.getEdgeBuffer().height);
+        (int) Math.round(p.x / scale) + map.getEdgeBuffer().width,
+        (int) Math.round(p.y / scale) + map.getEdgeBuffer().height);
   }
 
   public Point mapToComponent(Point p) {
-    return new Point((int) ((p.x - map.getEdgeBuffer().width) * scale),
-                     (int) ((p.y - map.getEdgeBuffer().height) * scale));
+    return new Point(
+        (int) ((p.x - map.getEdgeBuffer().width) * scale),
+        (int) ((p.y - map.getEdgeBuffer().height) * scale));
   }
 
   public Point mapToDrawing(Point p, double os_scale) {
     final double dscale = scale * os_scale;
-    return new Point((int) ((p.x - map.getEdgeBuffer().width) * dscale),
-                     (int) ((p.y - map.getEdgeBuffer().height) * dscale));
+    return new Point(
+        (int) ((p.x - map.getEdgeBuffer().width) * dscale),
+        (int) ((p.y - map.getEdgeBuffer().height) * dscale));
   }
 
   public Rectangle mapToDrawing(Rectangle r, double os_scale) {
     final double dscale = scale * os_scale;
     return new Rectangle(
-      (int) ((r.x - map.getEdgeBuffer().width) * dscale),
-      (int) ((r.y - map.getEdgeBuffer().height) * dscale),
-      (int) (r.width * dscale),
-      (int) (r.height * dscale)
-    );
+        (int) ((r.x - map.getEdgeBuffer().width) * dscale),
+        (int) ((r.y - map.getEdgeBuffer().height) * dscale),
+        (int) (r.width * dscale),
+        (int) (r.height * dscale));
   }
 
   public String getToolTipText(@SuppressWarnings("unused") MouseEvent e) {
@@ -315,8 +287,7 @@ public class GlobalMap implements AutoConfigurable,
   public void setup(boolean show) {
     if (show) {
       scroll.setMaximumSize(scroll.getPreferredSize());
-    }
-    else {
+    } else {
       scroll.setVisible(false);
     }
 
@@ -324,8 +295,7 @@ public class GlobalMap implements AutoConfigurable,
       view.addMouseListener(mouseOverViewer);
       view.addMouseMotionListener(mouseOverViewer);
       scroll.addKeyListener(mouseOverViewer);
-    }
-    else {
+    } else {
       view.removeMouseListener(mouseOverViewer);
       view.removeMouseMotionListener(mouseOverViewer);
       scroll.removeKeyListener(mouseOverViewer);
@@ -333,7 +303,7 @@ public class GlobalMap implements AutoConfigurable,
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.GlobalMap.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.GlobalMap.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -357,12 +327,11 @@ public class GlobalMap implements AutoConfigurable,
   }
 
   @Override
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-  }
+  public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Map.html", "OverviewWindow"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Map.html", "OverviewWindow"); // NON-NLS
   }
 
   @Override
@@ -379,14 +348,11 @@ public class GlobalMap implements AutoConfigurable,
     @Override
     protected List<GamePiece> getDisplayablePieces() {
       final Point oldPoint = currentMousePosition.getPoint();
-      final Point mapPoint =
-        GlobalMap.this.map.mapToComponent(componentToMap(oldPoint));
+      final Point mapPoint = GlobalMap.this.map.mapToComponent(componentToMap(oldPoint));
 
-      currentMousePosition.translatePoint(mapPoint.x - oldPoint.x,
-                                          mapPoint.y - oldPoint.y);
+      currentMousePosition.translatePoint(mapPoint.x - oldPoint.x, mapPoint.y - oldPoint.y);
       final List<GamePiece> l = super.getDisplayablePieces();
-      currentMousePosition.translatePoint(oldPoint.x - mapPoint.x,
-                                          oldPoint.y - mapPoint.y);
+      currentMousePosition.translatePoint(oldPoint.x - mapPoint.x, oldPoint.y - mapPoint.y);
       return l;
     }
 
@@ -396,15 +362,12 @@ public class GlobalMap implements AutoConfigurable,
     }
   }
 
-  /**
-   * The scroll pane in which the map {@link View} is displayed.
-   */
+  /** The scroll pane in which the map {@link View} is displayed. */
   protected class GlobalMapScrollPane extends ScrollPane {
     private static final long serialVersionUID = 1L;
 
     public GlobalMapScrollPane(Component view) {
-      super(view, VERTICAL_SCROLLBAR_AS_NEEDED,
-                  HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      super(view, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
 
     /**
@@ -451,23 +414,20 @@ public class GlobalMap implements AutoConfigurable,
 
       if (availSize.width < viewSize.width) {
         realSize.width = availSize.width;
-      }
-      else if (vsbNeeded) {
-        realSize.width = Math.min(availSize.width,
-          viewSize.width + verticalScrollBar.getPreferredSize().width);
-      }
-      else {
+      } else if (vsbNeeded) {
+        realSize.width =
+            Math.min(availSize.width, viewSize.width + verticalScrollBar.getPreferredSize().width);
+      } else {
         realSize.width = viewSize.width;
       }
 
       if (availSize.height < viewSize.height) {
         realSize.height = availSize.height;
-      }
-      else if (hsbNeeded) {
-        realSize.height = Math.min(availSize.height,
-        viewSize.height + horizontalScrollBar.getPreferredSize().height);
-      }
-      else {
+      } else if (hsbNeeded) {
+        realSize.height =
+            Math.min(
+                availSize.height, viewSize.height + horizontalScrollBar.getPreferredSize().height);
+      } else {
         realSize.height = viewSize.height;
       }
 
@@ -475,8 +435,8 @@ public class GlobalMap implements AutoConfigurable,
     }
 
     /**
-     * This function is overridden to make sure that the parent layout
-     * is redone when the GlobalMap is shown.
+     * This function is overridden to make sure that the parent layout is redone when the GlobalMap
+     * is shown.
      */
     @Override
     public void setVisible(boolean visible) {
@@ -490,9 +450,7 @@ public class GlobalMap implements AutoConfigurable,
     }
   }
 
-  /**
-   * The Map view that appears inside the ScrollPane
-   */
+  /** The Map view that appears inside the ScrollPane */
   protected class View extends JPanel implements MouseListener {
     private static final long serialVersionUID = 1L;
 
@@ -501,8 +459,7 @@ public class GlobalMap implements AutoConfigurable,
       final Graphics2D g2d = (Graphics2D) g;
 
       g2d.addRenderingHints(SwingUtils.FONT_HINTS);
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
 
@@ -516,12 +473,11 @@ public class GlobalMap implements AutoConfigurable,
       final double dscale = scale * os_scale;
 
       map.drawBoards(
-        g,
-        -Math.round((float) dscale * map.getEdgeBuffer().width),
-        -Math.round((float) dscale * map.getEdgeBuffer().height),
-        dscale,
-        this
-      );
+          g,
+          -Math.round((float) dscale * map.getEdgeBuffer().width),
+          -Math.round((float) dscale * map.getEdgeBuffer().height),
+          dscale,
+          this);
 
       for (final GamePiece gp : map.getPieces()) {
         final Point p = mapToDrawing(gp.getPosition(), os_scale);
@@ -533,7 +489,8 @@ public class GlobalMap implements AutoConfigurable,
       // Draw a rectangle indicating the present viewing area
       g.setColor(rectColor);
 
-      final Rectangle vr = mapToDrawing(map.componentToMap(map.getView().getVisibleRect()), os_scale);
+      final Rectangle vr =
+          mapToDrawing(map.componentToMap(map.getView().getVisibleRect()), os_scale);
       g.drawRect(vr.x, vr.y, vr.width, vr.height);
       g.drawRect(vr.x - 1, vr.y - 1, vr.width + 2, vr.height + 2);
 
@@ -541,20 +498,16 @@ public class GlobalMap implements AutoConfigurable,
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
-    }
+    public void mousePressed(MouseEvent e) {}
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-    }
+    public void mouseEntered(MouseEvent e) {}
 
     @Override
-    public void mouseExited(MouseEvent e) {
-    }
+    public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-    }
+    public void mouseClicked(MouseEvent e) {}
 
     // FIXME: mouseClicked()?
     @Override
@@ -567,23 +520,24 @@ public class GlobalMap implements AutoConfigurable,
     @Override
     public Dimension getPreferredSize() {
       return new Dimension(
-        (int)((map.mapSize().width - 2 * map.getEdgeBuffer().width) * scale),
-        (int)((map.mapSize().height - 2 * map.getEdgeBuffer().height) * scale)
-      );
+          (int) ((map.mapSize().width - 2 * map.getEdgeBuffer().width) * scale),
+          (int) ((map.mapSize().height - 2 * map.getEdgeBuffer().height) * scale));
     }
   }
 
   @Override
   public ComponentI18nData getI18nData() {
     if (myI18nData == null) {
-      myI18nData = new ComponentI18nData(this, "GlobalMap");  //NON-NLS
+      myI18nData = new ComponentI18nData(this, "GlobalMap"); // NON-NLS
     }
     return myI18nData;
   }
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -592,6 +546,7 @@ public class GlobalMap implements AutoConfigurable,
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override
@@ -601,6 +556,7 @@ public class GlobalMap implements AutoConfigurable,
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -610,7 +566,9 @@ public class GlobalMap implements AutoConfigurable,
 
   /**
    * {@link SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -619,13 +577,13 @@ public class GlobalMap implements AutoConfigurable,
 
   /**
    * {@link SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
   public List<String> getPropertyList() {
     return Collections.emptyList();
   }
-
 
   /**
    * @return names of all images used by the component and any subcomponents
@@ -639,7 +597,9 @@ public class GlobalMap implements AutoConfigurable,
   }
 
   /**
-   * Adds all images used by this component AND any children (or inner decorators/pieces) to the collection.
+   * Adds all images used by this component AND any children (or inner decorators/pieces) to the
+   * collection.
+   *
    * @param s Collection to add image names to
    */
   @Override
@@ -658,8 +618,9 @@ public class GlobalMap implements AutoConfigurable,
   }
 
   /**
-   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order to add
-   * the names of any image files they use to the collection. For "find unused images" and "search".
+   * Classes extending {@link VASSAL.build.AbstractBuildable} should override this method in order
+   * to add the names of any image files they use to the collection. For "find unused images" and
+   * "search".
    *
    * @param s Collection to add image names to
    */

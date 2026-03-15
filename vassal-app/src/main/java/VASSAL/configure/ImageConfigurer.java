@@ -17,16 +17,15 @@
  */
 package VASSAL.configure;
 
-import java.io.File;
-
 import VASSAL.build.GameModule;
 import VASSAL.tools.ArchiveWriter;
 import VASSAL.tools.filechooser.FileChooser;
 import VASSAL.tools.filechooser.ImageFileFilter;
+import java.io.File;
 
 /**
- * A Configurer for {@link java.awt.Image} values. Allows the user to select an
- * image file and writes it to a {@link ArchiveWriter}.
+ * A Configurer for {@link java.awt.Image} values. Allows the user to select an image file and
+ * writes it to a {@link ArchiveWriter}.
  */
 public class ImageConfigurer extends FileConfigurer {
   protected static DirectoryConfigurer resourceDirPref;
@@ -46,8 +45,7 @@ public class ImageConfigurer extends FileConfigurer {
       gm.getPrefs().addOption(null, resourceDirPref);
     }
 
-    final FileChooser fc =
-      FileChooser.createFileChooser(gm.getPlayerWindow(), resourceDirPref);
+    final FileChooser fc = FileChooser.createFileChooser(gm.getPlayerWindow(), resourceDirPref);
     fc.setFileFilter(new ImageFileFilter());
     return fc;
   }

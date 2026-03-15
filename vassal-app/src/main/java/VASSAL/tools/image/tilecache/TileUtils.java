@@ -18,6 +18,7 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.image.ImageIOException;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -25,8 +26,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -36,17 +37,14 @@ import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.codec.digest.DigestUtils;
-
-import VASSAL.tools.image.ImageIOException;
 
 /**
  * A class for reading and writing image tiles.
  *
- * The VASSAL tile format consists of the 18-byte header, followed by gzipped
- * 4-bpp image data. The header is the signature 'VASSAL' (6 bytes), the tile
- * width (4 bytes), the tile height (4 bytes), and the image type (4 bytes).
+ * <p>The VASSAL tile format consists of the 18-byte header, followed by gzipped 4-bpp image data.
+ * The header is the signature 'VASSAL' (6 bytes), the tile width (4 bytes), the tile height (4
+ * bytes), and the image type (4 bytes).
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -60,7 +58,6 @@ public class TileUtils {
    *
    * @param src the path of the tile file
    * @return the tile image
-   *
    * @throws ImageIOException if the read fails
    * @throws TileNotFoundException if the file isn't found
    */
@@ -73,19 +70,16 @@ public class TileUtils {
    *
    * @param src the path of the tile file
    * @return the tile image
-   *
    * @throws ImageIOException if the read fails
    * @throws TileNotFoundException if the file isn't found
    */
   public static BufferedImage read(File src) throws ImageIOException {
     try (InputStream fin = Files.newInputStream(src.toPath());
-         InputStream in = new BufferedInputStream(fin)) {
+        InputStream in = new BufferedInputStream(fin)) {
       return read(in);
-    }
-    catch (NoSuchFileException e) {
+    } catch (NoSuchFileException e) {
       throw new TileNotFoundException(src, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(src, e);
     }
   }
@@ -95,7 +89,6 @@ public class TileUtils {
    *
    * @param in a stream containing the tile data
    * @return the tile image
-   *
    * @throws IOException if the read fails
    */
   public static BufferedImage read(InputStream in) throws IOException {
@@ -120,7 +113,7 @@ public class TileUtils {
 
     // decompress the image data
     try (InputStream bin = new ByteArrayInputStream(cdata);
-         InputStream zin = new GZIPInputStream(bin)) {
+        InputStream zin = new GZIPInputStream(bin)) {
       bb = ByteBuffer.wrap(zin.readAllBytes());
     }
 
@@ -135,12 +128,12 @@ public class TileUtils {
     final IntBuffer ib = bb.asIntBuffer();
     ib.get(data);
 
-/*
-    if (ib.hasRemaining()) {
-      // buffer contains garbage at the end!
-      throw new IOException("found " + (4*ib.remaining()) + " more bytes!");
-    }
-*/
+    /*
+        if (ib.hasRemaining()) {
+          // buffer contains garbage at the end!
+          throw new IOException("found " + (4*ib.remaining()) + " more bytes!");
+        }
+    */
 
     return img;
   }
@@ -150,7 +143,6 @@ public class TileUtils {
    *
    * @param in the stream
    * @return the header
-   *
    * @throws IOException if the read fails or there is too little data
    */
   static byte[] readHeader(InputStream in) throws IOException {
@@ -167,15 +159,14 @@ public class TileUtils {
    * Checks that the given byte array equals the tile signature.
    *
    * @param sig the byte array to check
-   *
    * @throws IOException if the byte array is not the tile signature
    */
   static void checkSignature(byte[] sig) throws IOException {
-    if (!Arrays.equals(sig, "VASSAL".getBytes(StandardCharsets.UTF_8))) { //NON-NLS
+    if (!Arrays.equals(sig, "VASSAL".getBytes(StandardCharsets.UTF_8))) { // NON-NLS
       throw new IOException(
-        "bad signature: got \"" + new String(sig, StandardCharsets.UTF_8) +
-        "\", expected \"VASSAL\""
-      );
+          "bad signature: got \""
+              + new String(sig, StandardCharsets.UTF_8)
+              + "\", expected \"VASSAL\"");
     }
   }
 
@@ -184,7 +175,6 @@ public class TileUtils {
    *
    * @param src the path of the tile file
    * @return the dimensions
-   *
    * @throws ImageIOException if the read fails
    * @throws TileNotFoundException if the file isn't found
    */
@@ -197,7 +187,6 @@ public class TileUtils {
    *
    * @param src the path of the tile file
    * @return the dimensions
-   *
    * @throws ImageIOException if the read fails
    * @throws TileNotFoundException if the file isn't found
    */
@@ -205,11 +194,9 @@ public class TileUtils {
     try (InputStream in = Files.newInputStream(src.toPath())) {
       // NB: We don't buffer here because we're reading only 18 bytes.
       return size(in);
-    }
-    catch (NoSuchFileException e) {
+    } catch (NoSuchFileException e) {
       throw new TileNotFoundException(src, e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(src, e);
     }
   }
@@ -219,7 +206,6 @@ public class TileUtils {
    *
    * @param in the stream
    * @return the dimensions
-   *
    * @throws IOException if the read fails
    */
   public static Dimension size(InputStream in) throws IOException {
@@ -243,11 +229,9 @@ public class TileUtils {
    *
    * @param tile the image
    * @param dst the tile file
-   *
    * @throws ImageIOException if the write fails
    */
-  public static void write(BufferedImage tile, String dst)
-                                                      throws ImageIOException {
+  public static void write(BufferedImage tile, String dst) throws ImageIOException {
     write(tile, new File(dst));
   }
 
@@ -256,16 +240,13 @@ public class TileUtils {
    *
    * @param tile the image
    * @param dst the tile file
-   *
    * @throws ImageIOException if the write fails
    */
-  public static void write(BufferedImage tile, File dst)
-                                                      throws ImageIOException {
+  public static void write(BufferedImage tile, File dst) throws ImageIOException {
     try (OutputStream fout = Files.newOutputStream(dst.toPath());
-         OutputStream out = new BufferedOutputStream(fout)) {
+        OutputStream out = new BufferedOutputStream(fout)) {
       write(tile, out);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException(dst, e);
     }
   }
@@ -275,20 +256,18 @@ public class TileUtils {
    *
    * @param tile the image
    * @param out the stream
-   *
    * @throws ImageIOException if the write fails
    */
-  public static void write(BufferedImage tile, OutputStream out)
-                                                           throws IOException {
+  public static void write(BufferedImage tile, OutputStream out) throws IOException {
     ByteBuffer bb;
 
     // write the header
     bb = ByteBuffer.allocate(18);
 
-    bb.put("VASSAL".getBytes(StandardCharsets.UTF_8)) //NON-NLS
-      .putInt(tile.getWidth())
-      .putInt(tile.getHeight())
-      .putInt(tile.getType());
+    bb.put("VASSAL".getBytes(StandardCharsets.UTF_8)) // NON-NLS
+        .putInt(tile.getWidth())
+        .putInt(tile.getHeight())
+        .putInt(tile.getType());
 
     out.write(bb.array());
 
@@ -305,13 +284,12 @@ public class TileUtils {
   }
 
   /**
-   * Calculates the number of tiles needed to cover an image, summed over
-   * all sizes from 1:1 to the vanishing point.
+   * Calculates the number of tiles needed to cover an image, summed over all sizes from 1:1 to the
+   * vanishing point.
    *
    * @param i the image dimensions
    * @param t the tile dimensions
    * @return the number of tiles needed to cover the image
-   *
    * @throws IllegalArgumentException if any argument is nonpositive
    */
   public static int tileCount(Dimension i, Dimension t) {
@@ -319,15 +297,14 @@ public class TileUtils {
   }
 
   /**
-   * Calculates the number of tiles needed to cover an image, summed over
-   * all sizes from 1:1 to the vanishing point.
+   * Calculates the number of tiles needed to cover an image, summed over all sizes from 1:1 to the
+   * vanishing point.
    *
    * @param iw the image width
    * @param ih the image height
    * @param tw the tile width
    * @param th the tile height
    * @return the number of tiles needed to cover the image
-   *
    * @throws IllegalArgumentException if any argument is nonpositive
    */
   public static int tileCount(int iw, int ih, int tw, int th) {
@@ -340,14 +317,12 @@ public class TileUtils {
   }
 
   /**
-   * Calculates the number of tiles needed to cover an image at a given
-   * scale.
+   * Calculates the number of tiles needed to cover an image at a given scale.
    *
    * @param i the image dimensions
    * @param t the tile dimensions
    * @param div the scale divisor
    * @return the number of tiles needed to cover the image
-   *
    * @throws IllegalArgumentException if any argument is nonpositive
    */
   public static int tileCountAtScale(Dimension i, Dimension t, int div) {
@@ -355,8 +330,7 @@ public class TileUtils {
   }
 
   /**
-   * Calculates the number of tiles needed to cover an image at a given
-   * scale.
+   * Calculates the number of tiles needed to cover an image at a given scale.
    *
    * @param iw the image width
    * @param ih the image height
@@ -364,7 +338,6 @@ public class TileUtils {
    * @param th the tile height
    * @param div the scale divisor
    * @return the number of tiles needed to cover the image
-   *
    * @throws IllegalArgumentException if any argument is nonpositive
    */
   public static int tileCountAtScale(int iw, int ih, int tw, int th, int div) {
@@ -389,9 +362,7 @@ public class TileUtils {
    * @return the name of the tile file
    */
   public static String tileName(String iname, int tileX, int tileY, int div) {
-    final String sha = DigestUtils.sha1Hex(
-      iname + "(" + tileX + "," + tileY + "@1:" + div
-    );
+    final String sha = DigestUtils.sha1Hex(iname + "(" + tileX + "," + tileY + "@1:" + div);
 
     return sha.substring(0, 1) + '/' + sha.substring(0, 2) + '/' + sha;
   }

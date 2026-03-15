@@ -57,16 +57,6 @@ import VASSAL.tools.io.ZipWriter;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.Dialogs;
 import VASSAL.tools.version.VersionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -100,27 +90,45 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 /**
- * The GameState contains methods to track and read/write the complete enumerated game state of the game
- * currently being played. Its main methods deal with saving/loading games and starting/ending games: see
- * {@link #saveGameAs()}, {@link #loadGame()}, {@link #setup(boolean)}. In each case, appropriate calls
- * are made to designated methods in all relevant GameComponents. Can also be queried if a game is in progress
- * {@link #isGameStarted()} and if the game state has been modified since the last save {@link #isModified()}.
+ * The GameState contains methods to track and read/write the complete enumerated game state of the
+ * game currently being played. Its main methods deal with saving/loading games and starting/ending
+ * games: see {@link #saveGameAs()}, {@link #loadGame()}, {@link #setup(boolean)}. In each case,
+ * appropriate calls are made to designated methods in all relevant GameComponents. Can also be
+ * queried if a game is in progress {@link #isGameStarted()} and if the game state has been modified
+ * since the last save {@link #isModified()}.
  *
- * Only one game can be open at once in a single Player, or in a single Editor/Player pair.
+ * <p>Only one game can be open at once in a single Player, or in a single Editor/Player pair.
  *
  * @see GameModule#getGameState
  */
 public class GameState implements CommandEncoder {
-  private static final org.slf4j.Logger log =
-    LoggerFactory.getLogger(GameState.class);
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(GameState.class);
 
   protected Map<String, GamePiece> pieces = new HashMap<>();
   protected List<GameComponent> gameComponents = new ArrayList<>();
   protected List<GameSetupStep> setupSteps = new ArrayList<>();
-  // FIXME loadGameOld retained for build process backward compliance. Can be removed at a major Vassal version (at time of writing, 3.8)
-  protected Action loadGame, loadGameOld, saveGame, saveGameAs, newGame, closeGame, loadContinuation, loadAndFastForward, loadAndAppend;
+  // FIXME loadGameOld retained for build process backward compliance. Can be removed at a major
+  // Vassal version (at time of writing, 3.8)
+  protected Action loadGame,
+      loadGameOld,
+      saveGame,
+      saveGameAs,
+      newGame,
+      closeGame,
+      loadContinuation,
+      loadAndFastForward,
+      loadAndAppend;
   protected String lastSave;
   protected File lastSaveFile = null;
   protected DirectoryConfigurer savedGameDirectoryPreference;
@@ -160,116 +168,131 @@ public class GameState implements CommandEncoder {
     lastSaveFile = f;
   }
 
-  //public GameState() {}
+  // public GameState() {}
 
   /**
-   * Expects to be added to a GameModule.  Adds <code>New</code>,
-   * <code>Load</code>, <code>Close</code>, and <code>Save</code>
-   * entries to the <code>File</code> menu of the controls window
+   * Expects to be added to a GameModule. Adds <code>New</code>, <code>Load</code>, <code>Close
+   * </code>, and <code>Save</code> entries to the <code>File</code> menu of the controls window
    */
   public void addTo(@SuppressWarnings("unused") GameModule mod) {
-    loadGame = new AbstractAction(Resources.getString("GameState.load_game_new")) {
-      private static final long serialVersionUID = 1L;
+    loadGame =
+        new AbstractAction(Resources.getString("GameState.load_game_new")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (isNewGameAllowed()) {
-          loadGame(false);
-        }
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (isNewGameAllowed()) {
+              loadGame(false);
+            }
+          }
+        };
 
-    loadGame.putValue(Action.MNEMONIC_KEY, (int)Resources.getString("GameState.load_game.shortcut").charAt(0));
+    loadGame.putValue(
+        Action.MNEMONIC_KEY, (int) Resources.getString("GameState.load_game.shortcut").charAt(0));
 
-    loadContinuation = new AbstractAction(Resources.getString("GameState.load_game_old")) {
-      private static final long serialVersionUID = 1L;
+    loadContinuation =
+        new AbstractAction(Resources.getString("GameState.load_game_old")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        //  Load Continuation is excused the restrictions that apply to new games & log files in online rooms
-        if (loadContinuation.isEnabled() || isNewGameAllowed()) {
-          loadGame(true);
-        }
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            //  Load Continuation is excused the restrictions that apply to new games & log files in
+            // online rooms
+            if (loadContinuation.isEnabled() || isNewGameAllowed()) {
+              loadGame(true);
+            }
+          }
+        };
 
-    loadAndFastForward = new AbstractAction(Resources.getString("GameState.load_and_fast_forward")) {
-      private static final long serialVersionUID = 1L;
+    loadAndFastForward =
+        new AbstractAction(Resources.getString("GameState.load_and_fast_forward")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (isNewGameAllowed()) {
-          loadFastForward(false);
-        }
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (isNewGameAllowed()) {
+              loadFastForward(false);
+            }
+          }
+        };
 
-    loadAndAppend = new AbstractAction(Resources.getString("GameState.load_and_append")) {
-      private static final long serialVersionUID = 1L;
+    loadAndAppend =
+        new AbstractAction(Resources.getString("GameState.load_and_append")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (isNewGameAllowed()) {
-          loadFastForward(true);
-        }
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (isNewGameAllowed()) {
+              loadFastForward(true);
+            }
+          }
+        };
 
-    saveGame = new AbstractAction(Resources.getString("GameState.save_game")) {
-      private static final long serialVersionUID = 1L;
+    saveGame =
+        new AbstractAction(Resources.getString("GameState.save_game")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        saveGame();
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            saveGame();
+          }
+        };
 
-    saveGame.putValue(Action.MNEMONIC_KEY, (int)Resources.getString("GameState.save_game.shortcut").charAt(0));
+    saveGame.putValue(
+        Action.MNEMONIC_KEY, (int) Resources.getString("GameState.save_game.shortcut").charAt(0));
 
-    saveGameAs = new AbstractAction(Resources.getString("GameState.save_game_as")) {
-      private static final long serialVersionUID = 1L;
+    saveGameAs =
+        new AbstractAction(Resources.getString("GameState.save_game_as")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        saveGameAs();
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            saveGameAs();
+          }
+        };
 
-    saveGameAs.putValue(Action.MNEMONIC_KEY, (int)Resources.getString("GameState.save_game_as.shortcut").charAt(0));
+    saveGameAs.putValue(
+        Action.MNEMONIC_KEY,
+        (int) Resources.getString("GameState.save_game_as.shortcut").charAt(0));
 
-    newGame = new AbstractAction(Resources.getString("GameState.new_game")) {
-      private static final long serialVersionUID = 1L;
+    newGame =
+        new AbstractAction(Resources.getString("GameState.new_game")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (!isNewGameAllowed()) return;
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (!isNewGameAllowed()) return;
 
-        GameModule.getGameModule().setGameFileMode(GameModule.GameFileMode.NEW_GAME);
-        setup(false);
+            GameModule.getGameModule().setGameFileMode(GameModule.GameFileMode.NEW_GAME);
+            setup(false);
 
-        final Logger log = GameModule.getGameModule().getLogger();
-        if (log instanceof BasicLogger) {
-          ((BasicLogger)log).setMultiPlayer(GameModule.getGameModule().isMultiPlayer());
-        }
+            final Logger log = GameModule.getGameModule().getLogger();
+            if (log instanceof BasicLogger) {
+              ((BasicLogger) log).setMultiPlayer(GameModule.getGameModule().isMultiPlayer());
+            }
 
-        setup(true);
-        GameModule.getGameModule().getGameState().freshenStartupGlobalKeyCommands(GameModule.getGameModule());
-      }
-    };
+            setup(true);
+            GameModule.getGameModule()
+                .getGameState()
+                .freshenStartupGlobalKeyCommands(GameModule.getGameModule());
+          }
+        };
 
-    newGame.putValue(Action.MNEMONIC_KEY, (int)Resources.getString("GameState.new_game.shortcut").charAt(0));
+    newGame.putValue(
+        Action.MNEMONIC_KEY, (int) Resources.getString("GameState.new_game.shortcut").charAt(0));
 
-    closeGame = new AbstractAction(
-        Resources.getString("GameState.close_game")) {
-      private static final long serialVersionUID = 1L;
+    closeGame =
+        new AbstractAction(Resources.getString("GameState.close_game")) {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        closeGame();
-      }
-    };
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            closeGame();
+          }
+        };
 
-    closeGame.putValue(Action.MNEMONIC_KEY, (int)Resources.getString("GameState.close_game.shortcut").charAt(0));
+    closeGame.putValue(
+        Action.MNEMONIC_KEY, (int) Resources.getString("GameState.close_game.shortcut").charAt(0));
 
     final MenuManager mm = MenuManager.getInstance();
     mm.addAction("GameState.new_game", newGame);
@@ -303,24 +326,24 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Add a {@link GameComponent} to the list of objects that will
-   * be notified when a game is started/ended
+   * Add a {@link GameComponent} to the list of objects that will be notified when a game is
+   * started/ended
    */
   public void addGameComponent(GameComponent theComponent) {
     gameComponents.add(theComponent);
   }
 
   /**
-   * Remove a {@link GameComponent} from the list of objects that will
-   * be notified when a game is started/ended
+   * Remove a {@link GameComponent} from the list of objects that will be notified when a game is
+   * started/ended
    */
   public void removeGameComponent(GameComponent theComponent) {
     gameComponents.remove(theComponent);
   }
 
   /**
-   * @return a Collection of all {@link GameComponent} objects
-   * that have been added to this GameState
+   * @return a Collection of all {@link GameComponent} objects that have been added to this
+   *     GameState
    */
   public Collection<GameComponent> getGameComponents() {
     return Collections.unmodifiableCollection(gameComponents);
@@ -337,8 +360,7 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * @return an iterator of all {@link GameSetupStep}s that are not
-   * yet finished
+   * @return an iterator of all {@link GameSetupStep}s that are not yet finished
    */
   public Iterator<GameSetupStep> getUnfinishedSetupSteps() {
     final List<GameSetupStep> l = new ArrayList<>();
@@ -351,7 +373,7 @@ public class GameState implements CommandEncoder {
   }
 
   /* Using an instance variable allows us to shut down in the
-     middle of a startup. */
+  middle of a startup. */
   private boolean gameStarting = false;
   private boolean gameStarted = false;
 
@@ -376,8 +398,8 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Start a game for updating (via editor).
-   * <em>NOTE: This method is not for use in custom code.</em>
+   * Start a game for updating (via editor). <em>NOTE: This method is not for use in custom
+   * code.</em>
    */
   public void setup(boolean gameStarting, boolean gameUpdating) {
     GameModule.getGameModule().setGameFileMode(GameModule.GameFileMode.NEW_GAME);
@@ -385,9 +407,7 @@ public class GameState implements CommandEncoder {
     setup(gameStarting);
   }
 
-  /**
-   * Indicated game update is completed and game is saved.
-   */
+  /** Indicated game update is completed and game is saved. */
   public void updateDone() {
     this.gameUpdating = false;
     this.refreshInProgress = false;
@@ -396,21 +416,22 @@ public class GameState implements CommandEncoder {
   public boolean isUpdating() {
     return this.gameUpdating;
   }
+
   //
   // END FIXME
   //
 
-
   /**
-   * When we're known to be starting a fresh game from a Predefined Setup, freshen the starting-a-new-game flag for all SGKCs
+   * When we're known to be starting a fresh game from a Predefined Setup, freshen the
+   * starting-a-new-game flag for all SGKCs
+   *
    * @param target the Game Module
    */
   public void freshenStartupGlobalKeyCommands(AbstractBuildable target) {
     for (final Buildable b : target.getBuildables()) {
       if (b instanceof StartupGlobalKeyCommand) {
         ((StartupGlobalKeyCommand) b).freshGame();
-      }
-      else if (b instanceof AbstractBuildable) {
+      } else if (b instanceof AbstractBuildable) {
         freshenStartupGlobalKeyCommands((AbstractBuildable) b);
       }
     }
@@ -419,6 +440,7 @@ public class GameState implements CommandEncoder {
   /**
    * Searches recursively through the game module for Startup Global Key Commands, applying them
    * assuming they haven't been applied already.
+   *
    * @param target the Game Module to be thoroughly reamed for SGKCs
    */
   private boolean applyStartupGlobalKeyCommands(AbstractBuildable target, boolean playerChange) {
@@ -428,20 +450,19 @@ public class GameState implements CommandEncoder {
       if (b instanceof StartupGlobalKeyCommand) {
         if (playerChange) {
           any |= ((StartupGlobalKeyCommand) b).applyPlayerChange();
-        }
-        else {
+        } else {
           any |= ((StartupGlobalKeyCommand) b).applyIfNotApplied();
         }
-      }
-      else if (b instanceof AbstractBuildable) {
-        any |= applyStartupGlobalKeyCommands((AbstractBuildable)b, playerChange);
+      } else if (b instanceof AbstractBuildable) {
+        any |= applyStartupGlobalKeyCommands((AbstractBuildable) b, playerChange);
       }
     }
     return any;
   }
 
   /**
-   * Applies all of the Startup Global Key Commands in order, and then blocks undo past this point if any were applied.
+   * Applies all of the Startup Global Key Commands in order, and then blocks undo past this point
+   * if any were applied.
    */
   public void doStartupGlobalKeyCommands(boolean playerChange) {
     if (applyStartupGlobalKeyCommands(GameModule.getGameModule(), playerChange)) {
@@ -459,7 +480,7 @@ public class GameState implements CommandEncoder {
       if (l instanceof BasicLogger) {
         // +2 because this is done by a command that is about to be added to the
         // list, and there's _also_ a sentinel command added after that
-        ((BasicLogger )l).blockUndo(2);
+        ((BasicLogger) l).blockUndo(2);
       }
     }
 
@@ -469,22 +490,29 @@ public class GameState implements CommandEncoder {
     }
   }
 
-  public static final int NO_NEED_TO_SAVE = (~JOptionPane.NO_OPTION & 0x01) | (~JOptionPane.YES_OPTION & 0x02) | (~JOptionPane.CANCEL_OPTION & 0x04) | (~JOptionPane.CLOSED_OPTION & 0x08);
+  public static final int NO_NEED_TO_SAVE =
+      (~JOptionPane.NO_OPTION & 0x01)
+          | (~JOptionPane.YES_OPTION & 0x02)
+          | (~JOptionPane.CANCEL_OPTION & 0x04)
+          | (~JOptionPane.CLOSED_OPTION & 0x08);
 
   /**
    * Offers player the chance to save the game if an unsaved one is active and modified
-   * @return Whether Yes, No, or Cancel was selected (if Yes was selected, game is saved before returning result). Or NO_NEED_TO_SAVE if game wasn't in a state needing to be saved.
+   *
+   * @return Whether Yes, No, or Cancel was selected (if Yes was selected, game is saved before
+   *     returning result). Or NO_NEED_TO_SAVE if game wasn't in a state needing to be saved.
    */
   public int maybeSaveGame() {
     if (!gameStarted || !isModified() || !saveGame.isEnabled()) {
       return NO_NEED_TO_SAVE;
     }
 
-    final int result = JOptionPane.showConfirmDialog(
-      GameModule.getGameModule().getPlayerWindow(),
-      Resources.getString("GameState.save_game_query"), //$NON-NLS-1$
-      Resources.getString("GameState.game_modified"),   //$NON-NLS-1$
-      JOptionPane.YES_NO_CANCEL_OPTION);
+    final int result =
+        JOptionPane.showConfirmDialog(
+            GameModule.getGameModule().getPlayerWindow(),
+            Resources.getString("GameState.save_game_query"), // $NON-NLS-1$
+            Resources.getString("GameState.game_modified"), // $NON-NLS-1$
+            JOptionPane.YES_NO_CANCEL_OPTION);
 
     if (result == JOptionPane.YES_OPTION) {
       saveGame();
@@ -494,9 +522,8 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Start/end a game.  Prompt to save if the game state has been
-   * modified since last save.  Invoke {@link GameComponent#setup}
-   * on all registered {@link GameComponent} objects.
+   * Start/end a game. Prompt to save if the game state has been modified since last save. Invoke
+   * {@link GameComponent#setup} on all registered {@link GameComponent} objects.
    */
   public void setup(boolean gameStarting) {
     final GameModule g = GameModule.getGameModule();
@@ -507,12 +534,12 @@ public class GameState implements CommandEncoder {
 
     if (!gameStarting) {
       switch (maybeSaveGame()) {
-      case JOptionPane.YES_OPTION:
-        saveGame();
-        break;
-      case JOptionPane.CANCEL_OPTION:
-      case JOptionPane.CLOSED_OPTION:
-        return;
+        case JOptionPane.YES_OPTION:
+          saveGame();
+          break;
+        case JOptionPane.CANCEL_OPTION:
+        case JOptionPane.CLOSED_OPTION:
+          return;
       }
     }
 
@@ -551,38 +578,44 @@ public class GameState implements CommandEncoder {
       if (gameStarting) {
 
         // Things that we invokeLater
-        SwingUtilities.invokeLater(fastForwarding ? () -> {
+        SwingUtilities.invokeLater(
+            fastForwarding
+                ? () -> {
 
-          // Resolve any Pending Attachments
-          getAttachmentManager().resolvePendingAttachments();
+                  // Resolve any Pending Attachments
+                  getAttachmentManager().resolvePendingAttachments();
 
-          // Ask the IndexManager to rebuild all indexes so at-start stack pieces are all included
-          // This is required for any SGKC's to work
-          GameModule.getGameModule().getIndexManager().rebuild();
+                  // Ask the IndexManager to rebuild all indexes so at-start stack pieces are all
+                  // included
+                  // This is required for any SGKC's to work
+                  GameModule.getGameModule().getIndexManager().rebuild();
 
-          // Apply all of the startup global key commands, in order
-          doStartupGlobalKeyCommands(false);
-        } : () -> {
-          // Resolve any Pending Attachments
-          getAttachmentManager().resolvePendingAttachments();
+                  // Apply all of the startup global key commands, in order
+                  doStartupGlobalKeyCommands(false);
+                }
+                : () -> {
+                  // Resolve any Pending Attachments
+                  getAttachmentManager().resolvePendingAttachments();
 
-          // Ask the IndexManager to rebuild all indexes so at-start stack pieces are all included
-          // This is required for any SGKC's to work
-          GameModule.getGameModule().getIndexManager().rebuild();
+                  // Ask the IndexManager to rebuild all indexes so at-start stack pieces are all
+                  // included
+                  // This is required for any SGKC's to work
+                  GameModule.getGameModule().getIndexManager().rebuild();
 
-          // Apply all of the startup global key commands, in order
-          doStartupGlobalKeyCommands(false);
+                  // Apply all of the startup global key commands, in order
+                  doStartupGlobalKeyCommands(false);
 
-          // If we're starting a new session, prompt to create a new logfile.
-          // But NOT if we're starting a session by *replaying* a logfile -- in that case we'd get the reminder at the
-          // end of the logfile.
-          final Logger logger = GameModule.getGameModule().getLogger();
-          if (logger instanceof BasicLogger) {
-            if (!((BasicLogger)logger).isReplaying()) {
-              ((BasicLogger) logger).queryNewLogFile(true);
-            }
-          }
-        });
+                  // If we're starting a new session, prompt to create a new logfile.
+                  // But NOT if we're starting a session by *replaying* a logfile -- in that case
+                  // we'd get the reminder at the
+                  // end of the logfile.
+                  final Logger logger = GameModule.getGameModule().getLogger();
+                  if (logger instanceof BasicLogger) {
+                    if (!((BasicLogger) logger).isReplaying()) {
+                      ((BasicLogger) logger).queryNewLogFile(true);
+                    }
+                  }
+                });
       }
     }
 
@@ -597,10 +630,10 @@ public class GameState implements CommandEncoder {
     return gameStarted;
   }
 
-  /** Return true if starting new games is currently disabled
-   * New games are disabled if you are in a multi-player room and are not the owner
-   * */
-
+  /**
+   * Return true if starting new games is currently disabled New games are disabled if you are in a
+   * multi-player room and are not the owner
+   */
   public boolean isNewGameAllowed() {
     final GameModule g = GameModule.getGameModule();
     final ServerConnection server = g.getServer();
@@ -608,8 +641,7 @@ public class GameState implements CommandEncoder {
       ChatServerConnection connection = null;
       if (server instanceof HybridClient) {
         connection = ((HybridClient) server).getDelegate();
-      }
-      else if (server instanceof ChatServerConnection) {
+      } else if (server instanceof ChatServerConnection) {
         connection = (ChatServerConnection) server;
       }
       if (connection != null) {
@@ -617,13 +649,12 @@ public class GameState implements CommandEncoder {
           final NodeClient client = (NodeClient) connection;
           if (!client.isOwner()) {
             ProblemDialog.show(
-              JOptionPane.INFORMATION_MESSAGE,
-              GameModule.getGameModule().getPlayerWindow(),
-              null,
-              Resources.getString("GameState.new_game_not_allowed_title"),
-              Resources.getString("GameState.new_game_not_allowed_heading"),
-              Resources.getString("GameState.new_game_not_allowed_warning")
-            );
+                JOptionPane.INFORMATION_MESSAGE,
+                GameModule.getGameModule().getPlayerWindow(),
+                null,
+                Resources.getString("GameState.new_game_not_allowed_title"),
+                Resources.getString("GameState.new_game_not_allowed_heading"),
+                Resources.getString("GameState.new_game_not_allowed_warning"));
             return false;
           }
         }
@@ -631,15 +662,17 @@ public class GameState implements CommandEncoder {
     }
     return true;
   }
+
   /**
    * @param file to validate as a legitimate save file
-   * @return true if metadata is valid (or explicitly cleared-for-crash by user) and clear to proceed
+   * @return true if metadata is valid (or explicitly cleared-for-crash by user) and clear to
+   *     proceed
    */
   public boolean isSaveMetaDataValid(File file) {
     // Check the Save game for validity
     final AbstractMetaData metaData = MetaDataFactory.buildMetaData(file);
     if (!(metaData instanceof SaveMetaData)) {
-      WarningDialog.show("GameState.invalid_save_file", file.getPath()); //NON-NLS
+      WarningDialog.show("GameState.invalid_save_file", file.getPath()); // NON-NLS
       return false;
     }
 
@@ -665,66 +698,73 @@ public class GameState implements CommandEncoder {
 
       // For a module name discrepancy, still show an Are You Sure dialog.
       if (!saveModuleName.equals(moduleName)) {
-        final String m = Resources.getString("GameState.load_module_mismatch", saveModuleName, moduleName);
+        final String m =
+            Resources.getString("GameState.load_module_mismatch", saveModuleName, moduleName);
         g.warn("!<b>" + m);
         log.info(m);
         final StringBuilder message = new StringBuilder();
-        message.append(Resources.getString("GameState.load_mismatch_header",  file.getName()))
-          .append("\n\n")
-          .append(m)
-          .append("\n\n")
-          .append(Resources.getString("GameState.load_mismatch_trailer"))
-          .append('\n');
+        message
+            .append(Resources.getString("GameState.load_mismatch_header", file.getName()))
+            .append("\n\n")
+            .append(m)
+            .append("\n\n")
+            .append(Resources.getString("GameState.load_mismatch_trailer"))
+            .append('\n');
 
         if (JOptionPane.showConfirmDialog(
-          null,
-          message.toString(),
-          Resources.getString("GameState.load_mismatch"),
-          JOptionPane.YES_NO_OPTION,
-          JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+                null,
+                message.toString(),
+                Resources.getString("GameState.load_mismatch"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE)
+            != JOptionPane.YES_OPTION) {
           return false;
         }
       }
 
       // For Module Version and Vassal Version mismatches, just report in chat.
       if (!saveModuleVersion.equals(moduleVersion)) {
-        final String message = Resources.getString("GameState.load_version_mismatch", saveModuleVersion, moduleVersion);
+        final String message =
+            Resources.getString(
+                "GameState.load_version_mismatch", saveModuleVersion, moduleVersion);
         g.warn("?<b>" + message);
         log.info(message);
       }
 
       if (!saveVassalVersion.equals(vassalVersion)) {
-        final String message = Resources.getString("GameState.load_vassal_mismatch", saveVassalVersion, vassalVersion);
+        final String message =
+            Resources.getString("GameState.load_vassal_mismatch", saveVassalVersion, vassalVersion);
         g.warn("?<b>" + message);
         log.info(message);
       }
     }
 
     log.info(
-      "Loading save game " + file.getPath() + //NON-NLS
-        ", created with module version " + saveModuleVersion //NON-NLS
-    );
+        "Loading save game "
+            + file.getPath()
+            + // NON-NLS
+            ", created with module version "
+            + saveModuleVersion // NON-NLS
+        );
 
     return true;
   }
 
   /**
-   * Read the game from a savefile.  The contents of the file is
-   * sent to {@link GameModule#decode} and translated into a
-   * {@link Command}, which is then executed.  The command read from the
-   * file should be that returned by {@link #getRestoreCommand}.
+   * Read the game from a savefile. The contents of the file is sent to {@link GameModule#decode}
+   * and translated into a {@link Command}, which is then executed. The command read from the file
+   * should be that returned by {@link #getRestoreCommand}.
    *
-   * This version for binary compatibility w/ old style.
+   * <p>This version for binary compatibility w/ old style.
    */
   public void loadGame() {
     loadGame(true);
   }
 
   /**
-   * Read the game from a savefile.  The contents of the file is
-   * sent to {@link GameModule#decode} and translated into a
-   * {@link Command}, which is then executed.  The command read from the
-   * file should be that returned by {@link #getRestoreCommand}.
+   * Read the game from a savefile. The contents of the file is sent to {@link GameModule#decode}
+   * and translated into a {@link Command}, which is then executed. The command read from the file
+   * should be that returned by {@link #getRestoreCommand}.
    *
    * @param continuation if true then do the "old-style" version of load continuation
    */
@@ -733,10 +773,9 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Read the game from a savefile.  The contents of the file is
-   * sent to {@link GameModule#decode} and translated into a
-   * {@link Command}, which is then executed.  The command read from the
-   * file should be that returned by {@link #getRestoreCommand}.
+   * Read the game from a savefile. The contents of the file is sent to {@link GameModule#decode}
+   * and translated into a {@link Command}, which is then executed. The command read from the file
+   * should be that returned by {@link #getRestoreCommand}.
    *
    * @param continuation if true then do the "old-style" version of load continuation
    * @param forceForeground if true then force load in foreground
@@ -752,20 +791,19 @@ public class GameState implements CommandEncoder {
           Resources.getString("GameState.dont_prompt_again")
         };
 
-        final int result = JOptionPane.showOptionDialog(
-          g.getPlayerWindow(),
-          Resources.getString("GameState.old_continuation_warning"),
-          "",
-          JOptionPane.YES_NO_CANCEL_OPTION,
-          JOptionPane.QUESTION_MESSAGE,
-          null,
-          options,
-          options[0]
-        );
+        final int result =
+            JOptionPane.showOptionDialog(
+                g.getPlayerWindow(),
+                Resources.getString("GameState.old_continuation_warning"),
+                "",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
         if (result == JOptionPane.NO_OPTION) { // Note - this is actually the "Cancel" option.
           return;
-        }
-        else if (result == JOptionPane.CANCEL_OPTION) { // "Don't Prompt Again" option.
+        } else if (result == JOptionPane.CANCEL_OPTION) { // "Don't Prompt Again" option.
           g.getPrefs().setValue(GlobalOptions.OLD_CONTINUATION, Boolean.FALSE);
         }
       }
@@ -783,6 +821,7 @@ public class GameState implements CommandEncoder {
 
   /**
    * Loads a specific file as a saved game
+   *
    * @param f File to load
    * @param continuation true if this is to be a continuation
    * @return true if a file load was successfully started
@@ -793,6 +832,7 @@ public class GameState implements CommandEncoder {
 
   /**
    * Loads a specific file as a saved game
+   *
    * @param f File to load
    * @param continuation true if this is to be a continuation
    * @return true if a file load was successfully started
@@ -801,7 +841,8 @@ public class GameState implements CommandEncoder {
     final GameModule g = GameModule.getGameModule();
 
     try {
-      if (!f.isFile()) throw new FileNotFoundException("Unable to locate \"" + f.getAbsolutePath() + "\"");
+      if (!f.isFile())
+        throw new FileNotFoundException("Unable to locate \"" + f.getAbsolutePath() + "\"");
 
       // Check the Save game for validity
       if (!isSaveMetaDataValid(f)) {
@@ -811,8 +852,7 @@ public class GameState implements CommandEncoder {
 
       if (gameStarted && continuation) {
         loadContinuation(f);
-      }
-      else {
+      } else {
         int optionToSave = NO_NEED_TO_SAVE;
         if (gameStarted) {
           optionToSave = maybeSaveGame();
@@ -823,40 +863,38 @@ public class GameState implements CommandEncoder {
 
         g.setGameFile(f.getName(), GameModule.GameFileMode.LOADED_GAME);
 
-        //BR// New preferred style load for vlogs is close the old stuff and hard-reset to the new log state.
+        // BR// New preferred style load for vlogs is close the old stuff and hard-reset to the new
+        // log state.
         if (gameStarted) {
           g.setGameFileMode(GameModule.GameFileMode.NEW_GAME);
 
           g.setLoadOverSemaphore(true); // Stop updating Map UI etc for a bit
           try {
             gameStarted = false; // Prevent setup(false) from re-asking about saving the game
-            setup(false);        // Completely wipe the game state *before* we decode the saved game
-            loadGameInForeground(f); // Foreground loading minimizes the bad behavior of windows during vlog load "mid game"
-          }
-          finally {
+            setup(false); // Completely wipe the game state *before* we decode the saved game
+            loadGameInForeground(
+                f); // Foreground loading minimizes the bad behavior of windows during vlog load
+            // "mid game"
+          } finally {
             g.setLoadOverSemaphore(false); // Resume normal UI updates
           }
-        }
-        else if (forceForeground) {
+        } else if (forceForeground) {
           loadGameInForeground(f);
-        }
-        else {
+        } else {
           loadGameInBackground(f);
         }
       }
-    }
-    catch (IllegalStateException e) {
+    } catch (IllegalStateException e) {
       final String msg = e.getMessage();
-      if (msg != null && msg.startsWith(Resources.getString("Decorator.no_state_for_trait"))) { //BR//
-        WarningDialog.show("GameState.probably_wrong_version"); //NON-NLS
+      if (msg != null
+          && msg.startsWith(Resources.getString("Decorator.no_state_for_trait"))) { // BR//
+        WarningDialog.show("GameState.probably_wrong_version"); // NON-NLS
         gameStarted = false;
         setup(false);
-      }
-      else {
+      } else {
         throw e;
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, f);
       return false;
     }
@@ -868,7 +906,9 @@ public class GameState implements CommandEncoder {
 
   private void updateRecentGames(File f) {
     // get existing recent games list
-    final StringArrayConfigurer recentGamesConf = (StringArrayConfigurer) GameModule.getGameModule().getPrefs().getOption(GameModule.RECENT_GAMES);
+    final StringArrayConfigurer recentGamesConf =
+        (StringArrayConfigurer)
+            GameModule.getGameModule().getPrefs().getOption(GameModule.RECENT_GAMES);
     final List<String> rgs = new ArrayList<>(Arrays.asList(recentGamesConf.getStringArray()));
     final String path = f.toString();
 
@@ -883,9 +923,10 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Load a VLOG, and starts a new VLOG from the same *initial* state, fast forward to the end of the log (while retaining
-   * same initial state and likewise retaining the existing commands in the log), and thus any new commands added are essentially
-   * appended to the existing log rather than starting from some later state.
+   * Load a VLOG, and starts a new VLOG from the same *initial* state, fast forward to the end of
+   * the log (while retaining same initial state and likewise retaining the existing commands in the
+   * log), and thus any new commands added are essentially appended to the existing log rather than
+   * starting from some later state.
    */
   private void loadFastForward(boolean append) {
     fastForwarding = true;
@@ -896,10 +937,13 @@ public class GameState implements CommandEncoder {
     final BasicLogger bl = g.getBasicLogger();
     if (bl.isReplaying()) {
       if (!bl.isLogging() && append) {
-        bl.queryNewLogFile(true, true); // We begin logging a new file immediately w/ the starting state of the old log
+        bl.queryNewLogFile(
+            true,
+            true); // We begin logging a new file immediately w/ the starting state of the old log
       }
 
-      // Replay all of the commands in the game -- since we're logging they will be picked up in the new log
+      // Replay all of the commands in the game -- since we're logging they will be picked up in the
+      // new log
       while (bl.isReplaying()) {
         final Command c = bl.logInput.get(bl.nextInput++);
         c.execute();
@@ -910,25 +954,21 @@ public class GameState implements CommandEncoder {
       if (append) {
         if (!bl.isLogging()) {
           g.warn(Resources.getString("GameState.fast_forward_only"));
-        }
-        else {
+        } else {
           g.warn(Resources.getString("GameState.fast_forward_and_append"));
         }
-      }
-      else {
+      } else {
         if (!bl.isLogging()) {
           bl.queryNewLogFile(false, true);
         }
 
         if (!bl.isLogging()) {
           g.warn(Resources.getString("GameState.fast_forward"));
-        }
-        else {
+        } else {
           g.warn(Resources.getString("GameState.fast_forward_new_log"));
         }
       }
-    }
-    else {
+    } else {
       g.warn(Resources.getString("GameState.simple_save_append"));
     }
 
@@ -936,7 +976,9 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Accepts a saved file dropped onto the main window or a map, attempts to load it as a saved game.
+   * Accepts a saved file dropped onto the main window or a map, attempts to load it as a saved
+   * game.
+   *
    * @param dtde DropTargetDropEvent from the drop() handler
    */
   public void dropFile(DropTargetDropEvent dtde) {
@@ -945,7 +987,8 @@ public class GameState implements CommandEncoder {
     final DataFlavor[] flavors = transferable.getTransferDataFlavors();
     for (final DataFlavor flavor : flavors) {
 
-      // If the drop item is a Discord file link (or a text URL), we attempt to open the connection and Load That Shit Right Off The Internet
+      // If the drop item is a Discord file link (or a text URL), we attempt to open the connection
+      // and Load That Shit Right Off The Internet
       if (flavor.isFlavorTextType()) {
         try {
           final String text = transferable.getTransferData(flavor).toString();
@@ -954,36 +997,33 @@ public class GameState implements CommandEncoder {
 
           if (maybeSaveGame() != JOptionPane.CANCEL_OPTION) {
 
-            try (InputStream is = uc.getInputStream(); BufferedInputStream bis = new BufferedInputStream(is)) {
+            try (InputStream is = uc.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is)) {
               if (gameStarted) {
                 GameModule.getGameModule().setGameFileMode(GameModule.GameFileMode.NEW_GAME);
-                GameModule.getGameModule().setLoadOverSemaphore(true); // Stop updating Map UI etc for a bit
+                GameModule.getGameModule()
+                    .setLoadOverSemaphore(true); // Stop updating Map UI etc for a bit
                 gameStarted = false; // Prevent setup(false) from re-asking about saving the game
-                setup(false);        // Completely wipe the game state *before* we decode the saved game
-              }
-              else {
+                setup(false); // Completely wipe the game state *before* we decode the saved game
+              } else {
                 GameModule.getGameModule().setGameFile(text, GameModule.GameFileMode.LOADED_GAME);
               }
 
               try {
                 try {
                   loadGameInForeground(text, bis);
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                   ReadErrorDialog.error(e, text);
                 }
                 break; // Once we have a successful load, nothing else.
-              }
-              finally {
+              } finally {
                 GameModule.getGameModule().setLoadOverSemaphore(false); // Resume normal UI updates
               }
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
               // Do nothing, this must not have been a URL
             }
           }
-        }
-        catch (IOException | UnsupportedFlavorException | InvalidDnDOperationException e) {
+        } catch (IOException | UnsupportedFlavorException | InvalidDnDOperationException e) {
           // Do nothing -- we only failed to read anything out of the drag-and-drop
         }
       }
@@ -996,13 +1036,11 @@ public class GameState implements CommandEncoder {
           for (final File file : files) {
             if (file.getName().toLowerCase().endsWith("url")) { // NON-NLS
               break; // Don't try to load a Discord url link as a file
-            }
-            else if (GameModule.getGameModule().getGameState().loadGame(file, false)) {
+            } else if (GameModule.getGameModule().getGameState().loadGame(file, false)) {
               break; // Only load the first file in the list
             }
           }
-        }
-        catch (IOException | UnsupportedFlavorException | InvalidDnDOperationException e) {
+        } catch (IOException | UnsupportedFlavorException | InvalidDnDOperationException e) {
           // Do nothing -- we only failed to read anything out of the drag-and-drop
         }
       }
@@ -1022,16 +1060,16 @@ public class GameState implements CommandEncoder {
       if (md instanceof SaveMetaData) {
         if (Info.hasOldFormat(md.getVassalVersion())) {
           return Dialogs.showConfirmDialog(
-            GameModule.getGameModule().getPlayerWindow(),
-            Resources.getString("Warning.save_will_be_updated_title"),
-            Resources.getString("Warning.save_will_be_updated_heading"),
-            Resources.getString(
-              "Warning.save_will_be_updated_message",
-              f.getPath(),
-              VersionUtils.truncateToMinorVersion(Info.getVersion())
-            ),
-              JOptionPane.WARNING_MESSAGE,
-            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.CANCEL_OPTION;
+                  GameModule.getGameModule().getPlayerWindow(),
+                  Resources.getString("Warning.save_will_be_updated_title"),
+                  Resources.getString("Warning.save_will_be_updated_heading"),
+                  Resources.getString(
+                      "Warning.save_will_be_updated_message",
+                      f.getPath(),
+                      VersionUtils.truncateToMinorVersion(Info.getVersion())),
+                  JOptionPane.WARNING_MESSAGE,
+                  JOptionPane.OK_CANCEL_OPTION)
+              != JOptionPane.CANCEL_OPTION;
         }
       }
     }
@@ -1046,7 +1084,7 @@ public class GameState implements CommandEncoder {
 
     final Logger log = GameModule.getGameModule().getLogger();
     if (log instanceof BasicLogger) {
-      ((BasicLogger)log).setMultiPlayer(false);
+      ((BasicLogger) log).setMultiPlayer(false);
     }
   }
 
@@ -1060,14 +1098,13 @@ public class GameState implements CommandEncoder {
       try {
         saveGame(lastSaveFile);
         if (!GameModule.getGameModule().isReplayingOrLogging()) {
-          GameModule.getGameModule().setGameFile(lastSaveFile.getName(), GameModule.GameFileMode.SAVED_GAME);
+          GameModule.getGameModule()
+              .setGameFile(lastSaveFile.getName(), GameModule.GameFileMode.SAVED_GAME);
         }
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         WriteErrorDialog.error(e, lastSaveFile);
       }
-    }
-    else {
+    } else {
       saveGameAs();
     }
   }
@@ -1078,9 +1115,8 @@ public class GameState implements CommandEncoder {
 
     final File saveFile = getSaveFile();
     if (saveFile == null) {
-      g.warn(Resources.getString("GameState.save_canceled"));  //$NON-NLS-1$
-    }
-    else {
+      g.warn(Resources.getString("GameState.save_canceled")); // $NON-NLS-1$
+    } else {
       if (!checkForOldSaveFile(saveFile)) {
         return;
       }
@@ -1091,8 +1127,7 @@ public class GameState implements CommandEncoder {
         if (!GameModule.getGameModule().isReplayingOrLogging()) {
           g.setGameFile(saveFile.getName(), GameModule.GameFileMode.SAVED_GAME);
         }
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         WriteErrorDialog.error(e, saveFile);
       }
     }
@@ -1101,8 +1136,7 @@ public class GameState implements CommandEncoder {
   public void setModified(boolean modified) {
     if (modified) {
       lastSave = null;
-    }
-    else {
+    } else {
       lastSave = saveString();
     }
   }
@@ -1115,8 +1149,7 @@ public class GameState implements CommandEncoder {
     if (lastSaveFile != null) {
       // if there is a lastSaveFile, use it as the default
       fc.setSelectedFile(lastSaveFile);
-    }
-    else {
+    } else {
       // otherwise, set the directory by the previous file
       final File f = fc.getSelectedFile();
       if (f != null && !f.isDirectory()) {
@@ -1129,17 +1162,16 @@ public class GameState implements CommandEncoder {
     File file = fc.getSelectedFile();
 
     // append .vsav if it's not there already
-    if (!file.getName().endsWith(".vsav")) { //NON-NLS
-      file = new File(file.getParent(), file.getName() + ".vsav"); //NON-NLS
+    if (!file.getName().endsWith(".vsav")) { // NON-NLS
+      file = new File(file.getParent(), file.getName() + ".vsav"); // NON-NLS
     }
 
     return file;
   }
 
   /**
-   *  Add a {@link GamePiece} to the current game.
-   * The GameState keeps track of all GamePieces in the system,
-   * regardless of which {@link Map} they belong to (if any)
+   * Add a {@link GamePiece} to the current game. The GameState keeps track of all GamePieces in the
+   * system, regardless of which {@link Map} they belong to (if any)
    */
   public void addPiece(GamePiece p) {
     if (p.getId() == null) {
@@ -1156,9 +1188,7 @@ public class GameState implements CommandEncoder {
     return id == null ? null : pieces.get(id);
   }
 
-  /**
-   *  Remove a {@link GamePiece} from the current game
-   */
+  /** Remove a {@link GamePiece} from the current game */
   public void removePiece(String id) {
     if (id != null) {
       pieces.remove(id);
@@ -1173,9 +1203,8 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * @return a String identifier guaranteed to be different from the
-   * id of all GamePieces in the game
-   *
+   * @return a String identifier guaranteed to be different from the id of all GamePieces in the
+   *     game
    * @see GamePiece#getId
    */
   public String getNewPieceId() {
@@ -1189,32 +1218,37 @@ public class GameState implements CommandEncoder {
 
   public void loadContinuation(File f) throws IOException {
     final GameModule g = GameModule.getGameModule();
-    g.warn(Resources.getString("GameState.loading", f.getName()));  //$NON-NLS-1$
+    g.warn(Resources.getString("GameState.loading", f.getName())); // $NON-NLS-1$
 
     Command c;
 
-    g.setLoadingContinuationSemaphore(true); //BR// So we won't thrash the listeners while decoding.
+    g.setLoadingContinuationSemaphore(
+        true); // BR// So we won't thrash the listeners while decoding.
     try {
       c = decodeSavedGame(f);
-    }
-    finally {
+    } finally {
       g.setLoadingContinuationSemaphore(false);
     }
 
-    final CommandFilter filter = new CommandFilter() {
-      @Override
-      protected boolean accept(Command c) {
-        return c instanceof BasicLogger.LogCommand;
-      }
-    };
+    final CommandFilter filter =
+        new CommandFilter() {
+          @Override
+          protected boolean accept(Command c) {
+            return c instanceof BasicLogger.LogCommand;
+          }
+        };
     c = filter.apply(c);
     if (c != null) {
       c.execute();
     }
-    g.setGameFile(f.getName(), ((BasicLogger)g.getLogger()).isReplaying() ? GameModule.GameFileMode.REPLAYING_GAME : GameModule.GameFileMode.LOADED_GAME);
-    String msg = Resources.getString("GameState.loaded", f.getName());  //$NON-NLS-1$
+    g.setGameFile(
+        f.getName(),
+        ((BasicLogger) g.getLogger()).isReplaying()
+            ? GameModule.GameFileMode.REPLAYING_GAME
+            : GameModule.GameFileMode.LOADED_GAME);
+    String msg = Resources.getString("GameState.loaded", f.getName()); // $NON-NLS-1$
     if (loadComments != null && loadComments.length() > 0) {
-      msg = "!" + msg + ": <b>" + loadComments + "</b>"; //$NON-NLS-1$
+      msg = "!" + msg + ": <b>" + loadComments + "</b>"; // $NON-NLS-1$
     }
     GameModule.getGameModule().warn(msg);
   }
@@ -1228,7 +1262,9 @@ public class GameState implements CommandEncoder {
     return Collections.enumeration(getAllPieces());
   }
 
-  /** @return a Collection of all {@link GamePiece}s in the game */
+  /**
+   * @return a Collection of all {@link GamePiece}s in the game
+   */
   public Collection<GamePiece> getAllPieces() {
     return pieces.values();
   }
@@ -1255,14 +1291,13 @@ public class GameState implements CommandEncoder {
     }
   }
 
-  public static final String SAVEFILE_ZIP_ENTRY = "savedGame";  //$NON-NLS-1$
+  public static final String SAVEFILE_ZIP_ENTRY = "savedGame"; // $NON-NLS-1$
 
   /**
-   * @return a {@link Command} that, when executed, will restore the
-   * game to its current state -- this command can then be written to
-   * a save game file. Invokes {@link GameComponent#getRestoreCommand}
-   * on each registered {@link GameComponent}, and then creates an AddPiece command
-   * for each game piece.
+   * @return a {@link Command} that, when executed, will restore the game to its current state --
+   *     this command can then be written to a save game file. Invokes {@link
+   *     GameComponent#getRestoreCommand} on each registered {@link GameComponent}, and then creates
+   *     an AddPiece command for each game piece.
    */
   public Command getRestoreCommand() {
     if (!saveGame.isEnabled()) {
@@ -1279,22 +1314,30 @@ public class GameState implements CommandEncoder {
   }
 
   private Command checkVersionCommand() {
-    final String runningVersion = GameModule.getGameModule().getAttributeValueString(GameModule.VASSAL_VERSION_RUNNING);
-    ConditionalCommand.Condition cond = new ConditionalCommand.Lt(GameModule.VASSAL_VERSION_RUNNING, runningVersion);
-    final Command c = new ConditionalCommand(new ConditionalCommand.Condition[]{cond}, new AlertCommand(Resources.getString("GameState.version_mismatch", runningVersion)));  //$NON-NLS-1$
-    final String moduleName = GameModule.getGameModule().getAttributeValueString(GameModule.MODULE_NAME);
-    final String moduleVersion = GameModule.getGameModule().getAttributeValueString(GameModule.MODULE_VERSION);
+    final String runningVersion =
+        GameModule.getGameModule().getAttributeValueString(GameModule.VASSAL_VERSION_RUNNING);
+    ConditionalCommand.Condition cond =
+        new ConditionalCommand.Lt(GameModule.VASSAL_VERSION_RUNNING, runningVersion);
+    final Command c =
+        new ConditionalCommand(
+            new ConditionalCommand.Condition[] {cond},
+            new AlertCommand(
+                Resources.getString("GameState.version_mismatch", runningVersion))); // $NON-NLS-1$
+    final String moduleName =
+        GameModule.getGameModule().getAttributeValueString(GameModule.MODULE_NAME);
+    final String moduleVersion =
+        GameModule.getGameModule().getAttributeValueString(GameModule.MODULE_VERSION);
     cond = new ConditionalCommand.Lt(GameModule.MODULE_VERSION, moduleVersion);
     c.append(
-      new ConditionalCommand(
-        new ConditionalCommand.Condition[]{cond},
-        new AlertCommand(Resources.getString("GameState.version_mismatch2", moduleName, moduleVersion))));  //$NON-NLS-1$
+        new ConditionalCommand(
+            new ConditionalCommand.Condition[] {cond},
+            new AlertCommand(
+                Resources.getString(
+                    "GameState.version_mismatch2", moduleName, moduleVersion)))); // $NON-NLS-1$
     return c;
   }
 
-  /**
-   * A GameState recognizes instances of {@link SetupCommand}
-   */
+  /** A GameState recognizes instances of {@link SetupCommand} */
   @Override
   public String encode(Command c) {
     if (!(c instanceof SetupCommand)) {
@@ -1303,9 +1346,7 @@ public class GameState implements CommandEncoder {
     return ((SetupCommand) c).isGameStarting() ? END_SAVE : BEGIN_SAVE;
   }
 
-  /**
-   * A GameState recognizes instances of {@link SetupCommand}
-   */
+  /** A GameState recognizes instances of {@link SetupCommand} */
   @Override
   public Command decode(String theCommand) {
     if (BEGIN_SAVE.equals(theCommand)) {
@@ -1319,8 +1360,8 @@ public class GameState implements CommandEncoder {
     return null;
   }
 
-  public static final String BEGIN_SAVE = "begin_save";  //$NON-NLS-1$
-  public static final String END_SAVE = "end_save";  //$NON-NLS-1$
+  public static final String BEGIN_SAVE = "begin_save"; // $NON-NLS-1$
+  public static final String END_SAVE = "end_save"; // $NON-NLS-1$
 
   public void saveGameRefresh(ZipArchive archive) throws IOException {
     final SaveMetaData metaData;
@@ -1330,16 +1371,18 @@ public class GameState implements CommandEncoder {
     // store the prompt pref
     final GameModule mod = GameModule.getGameModule();
     final Prefs myPrefs = mod.getPrefs();
-    final Boolean oldPrompt = (Boolean)myPrefs.getValue(SaveMetaData.PROMPT_LOG_COMMENT);
+    final Boolean oldPrompt = (Boolean) myPrefs.getValue(SaveMetaData.PROMPT_LOG_COMMENT);
 
     // turn off prompting for the save
     myPrefs.setValue(SaveMetaData.PROMPT_LOG_COMMENT, false);
-    metaData = new SaveMetaData(); // this also potentially prompts for save file comments, so do *before* possibly long save file write
+    metaData =
+        new SaveMetaData(); // this also potentially prompts for save file comments, so do *before*
+    // possibly long save file write
 
     final String save = saveString();
     try (OutputStream zout = archive.getOutputStream(SAVEFILE_ZIP_ENTRY);
-         BufferedOutputStream bout = new BufferedOutputStream(zout);
-         OutputStream out = new ObfuscatingOutputStream(bout)) {
+        BufferedOutputStream bout = new BufferedOutputStream(zout);
+        OutputStream out = new ObfuscatingOutputStream(bout)) {
       out.write(save.getBytes(StandardCharsets.UTF_8));
     }
     archive.close();
@@ -1351,20 +1394,25 @@ public class GameState implements CommandEncoder {
 
   public void saveGame(File f) throws IOException {
     final SaveMetaData metaData;
-    GameModule.getGameModule().warn(Resources.getString("GameState.saving_game") + ": " + f.getName());  //$NON-NLS-1$
+    GameModule.getGameModule()
+        .warn(Resources.getString("GameState.saving_game") + ": " + f.getName()); // $NON-NLS-1$
     // FIXME: It is extremely inefficient to produce the save string. It would
     // be faster to write directly to the output stream instead.
-    metaData = new SaveMetaData(); // this also potentially prompts for save file comments, so do *before* possibly long save file write
+    metaData =
+        new SaveMetaData(); // this also potentially prompts for save file comments, so do *before*
+    // possibly long save file write
 
     final String save = saveString();
 
-    // Can be null if we get in here during odd asynchronous crud (save game is disabled, so getRestoreCommand will return null)
+    // Can be null if we get in here during odd asynchronous crud (save game is disabled, so
+    // getRestoreCommand will return null)
     if (save == null) {
       GameModule.getGameModule().warn("~" + Resources.getString("GameState.save_disabled"));
     }
 
     try (ZipWriter zw = new ZipWriter(f)) {
-      try (OutputStream out = new ObfuscatingOutputStream(new BufferedOutputStream(zw.write(SAVEFILE_ZIP_ENTRY)))) {
+      try (OutputStream out =
+          new ObfuscatingOutputStream(new BufferedOutputStream(zw.write(SAVEFILE_ZIP_ENTRY)))) {
         out.write(save.getBytes(StandardCharsets.UTF_8));
       }
       metaData.save(zw);
@@ -1374,10 +1422,14 @@ public class GameState implements CommandEncoder {
     final String msg;
     final String saveComments = metaData.getLocalizedDescription();
     if (!StringUtils.isEmpty(saveComments)) {
-      msg = "!" + Resources.getString("GameState.game_saved") + ": <b>" + saveComments + "</b>"; //$NON-NLS-1$
-    }
-    else {
-      msg = Resources.getString("GameState.game_saved"); //$NON-NLS-1$
+      msg =
+          "!"
+              + Resources.getString("GameState.game_saved")
+              + ": <b>"
+              + saveComments
+              + "</b>"; //$NON-NLS-1$
+    } else {
+      msg = Resources.getString("GameState.game_saved"); // $NON-NLS-1$
     }
     GameModule.getGameModule().warn(msg);
     ModuleManagerUpdateHelper.sendGameUpdate(f);
@@ -1386,40 +1438,40 @@ public class GameState implements CommandEncoder {
 
   public void loadGameInForeground(final File f) {
     try {
-      loadGameInForeground(
-        f.getName(),
-        new BufferedInputStream(Files.newInputStream(f.toPath()))
-      );
-    }
-    catch (IOException e) {
+      loadGameInForeground(f.getName(), new BufferedInputStream(Files.newInputStream(f.toPath())));
+    } catch (IOException e) {
       ReadErrorDialog.error(e, f);
     }
   }
 
-  public void loadGameInForeground(final String shortName,
-                                   final InputStream in) throws IOException {
+  public void loadGameInForeground(final String shortName, final InputStream in)
+      throws IOException {
     final GameModule g = GameModule.getGameModule();
-    g.warn(Resources.getString("GameState.loading", shortName));  //$NON-NLS-1$
+    g.warn(Resources.getString("GameState.loading", shortName)); // $NON-NLS-1$
 
-    // Need to force message to display before we intentionally cockblock the EDT to prevent any pre-existing map window
+    // Need to force message to display before we intentionally cockblock the EDT to prevent any
+    // pre-existing map window
     // from visibly closing-then-eventually-re-opening in a Series Of Messy Steps
     final Chatter ch = g.getChatter();
     ch.paintImmediately(0, 0, ch.getWidth(), ch.getHeight());
-    
+
     final Command loadCommand = decodeSavedGame(in);
     if (loadCommand != null) {
       try {
         loadCommand.execute();
-      }
-      finally {
+      } finally {
         final String msg;
 
         if (g.getGameState().isGameStarted() || refreshInProgress) {
           if (loadComments != null && loadComments.length() > 0) {
-            msg = "!" + Resources.getString("GameState.loaded", shortName) + ": <b>" + loadComments + "</b>"; //$NON-NLS-1$
-          }
-          else {
-            msg = Resources.getString("GameState.loaded", shortName); //$NON-NLS-1$
+            msg =
+                "!"
+                    + Resources.getString("GameState.loaded", shortName)
+                    + ": <b>"
+                    + loadComments
+                    + "</b>"; //$NON-NLS-1$
+          } else {
+            msg = Resources.getString("GameState.loaded", shortName); // $NON-NLS-1$
           }
 
           g.setGameFile(shortName, GameModule.GameFileMode.LOADED_GAME);
@@ -1427,8 +1479,7 @@ public class GameState implements CommandEncoder {
           if (((BasicLogger) g.getLogger()).isReplaying()) {
             lastSaveFile = null;
           }
-        }
-        else {
+        } else {
           msg = Resources.getString("GameState.cancel_load", shortName);
         }
         g.warn(msg);
@@ -1438,12 +1489,8 @@ public class GameState implements CommandEncoder {
 
   public void loadGameInBackground(final File f) {
     try {
-      loadGameInBackground(
-        f.getName(),
-        new BufferedInputStream(Files.newInputStream(f.toPath()))
-      );
-    }
-    catch (IOException e) {
+      loadGameInBackground(f.getName(), new BufferedInputStream(Files.newInputStream(f.toPath())));
+    } catch (IOException e) {
       ReadErrorDialog.error(e, f);
     }
   }
@@ -1452,11 +1499,10 @@ public class GameState implements CommandEncoder {
     loadGameInBackground(shortName, in, false);
   }
 
-  public void loadGameInBackground(final String shortName,
-                                   final InputStream in,
-                                   final boolean fromPredefinedSetup)  {
-    GameModule.getGameModule().warn(
-      Resources.getString("GameState.loading", shortName));  //$NON-NLS-1$
+  public void loadGameInBackground(
+      final String shortName, final InputStream in, final boolean fromPredefinedSetup) {
+    GameModule.getGameModule()
+        .warn(Resources.getString("GameState.loading", shortName)); // $NON-NLS-1$
 
     final JFrame frame = GameModule.getGameModule().getPlayerWindow();
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -1478,21 +1524,18 @@ public class GameState implements CommandEncoder {
           String msg = null;
           try {
             loadCommand = get();
-          }
-          catch (InterruptedException e) {
+          } catch (InterruptedException e) {
             ErrorDialog.bug(e);
           }
           // FIXME: review error message
           catch (ExecutionException e) {
-// FIXME: This is a temporary hack to catch OutOfMemoryErrors; there should
-// be a better, more uniform and more permanent way of handling these, since
-// an OOME is neither a VASSAL bug, a module bug, nor due to bad data.
-            final OutOfMemoryError oom =
-              ThrowableUtils.getAncestor(OutOfMemoryError.class, e);
+            // FIXME: This is a temporary hack to catch OutOfMemoryErrors; there should
+            // be a better, more uniform and more permanent way of handling these, since
+            // an OOME is neither a VASSAL bug, a module bug, nor due to bad data.
+            final OutOfMemoryError oom = ThrowableUtils.getAncestor(OutOfMemoryError.class, e);
             if (oom != null) {
               ErrorDialog.bug(e);
-            }
-            else {
+            } else {
               log.error("", e);
             }
             msg = Resources.getString("GameState.error_loading", shortName);
@@ -1512,30 +1555,31 @@ public class GameState implements CommandEncoder {
           if (g.getGameState().isGameStarted()) {
             if (loadCommand != null) {
               if (loadComments != null && loadComments.length() > 0) {
-                msg = "!" + Resources.getString("GameState.loaded", shortName) + ": <b>" + loadComments + "</b>"; //$NON-NLS-1$
-              }
-              else {
-                msg = Resources.getString("GameState.loaded", shortName); //$NON-NLS-1$
+                msg =
+                    "!"
+                        + Resources.getString("GameState.loaded", shortName)
+                        + ": <b>"
+                        + loadComments
+                        + "</b>"; //$NON-NLS-1$
+              } else {
+                msg = Resources.getString("GameState.loaded", shortName); // $NON-NLS-1$
               }
               g.setGameFile(shortName, GameModule.GameFileMode.LOADED_GAME);
 
               if (((BasicLogger) g.getLogger()).isReplaying() || fromPredefinedSetup) {
                 lastSaveFile = null;
               }
-            }
-            else {
-              msg = Resources.getString("GameState.invalid_savefile", shortName);  //$NON-NLS-1$
+            } else {
+              msg = Resources.getString("GameState.invalid_savefile", shortName); // $NON-NLS-1$
               g.setGameFileMode(GameModule.GameFileMode.NEW_GAME);
             }
-          }
-          else {
+          } else {
             msg = Resources.getString("GameState.cancel_load", shortName);
             g.setGameFileMode(GameModule.GameFileMode.NEW_GAME);
           }
 
           g.warn(msg);
-        }
-        finally {
+        } finally {
           frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
           setLoadingInBackground(false);
         }
@@ -1544,9 +1588,8 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * @return a Command that, when executed, will add all pieces currently
-   * in the game. Used when saving a game. Pieces are grouped by map, and
-   * within a map by visual layer.
+   * @return a Command that, when executed, will add all pieces currently in the game. Used when
+   *     saving a game. Pieces are grouped by map, and within a map by visual layer.
    */
   public Command getRestorePiecesCommand() {
     final List<GamePiece> pieceList = new ArrayList<>();
@@ -1558,45 +1601,42 @@ public class GameState implements CommandEncoder {
         pieceList.add(piece);
       }
     }
-    pieceList.sort(new Comparator<>() {
-      private final Map<GamePiece, Integer> indices = new HashMap<>();
+    pieceList.sort(
+        new Comparator<>() {
+          private final Map<GamePiece, Integer> indices = new HashMap<>();
 
-      // Cache indices because indexOf() is linear;
-      // otherwise sorting would be quadratic.
-      private int indexOf(GamePiece p, VASSAL.build.module.Map m) {
-        return indices.computeIfAbsent(
-          p,
-          k -> m.getPieceCollection().indexOf(k)
-        );
-      }
+          // Cache indices because indexOf() is linear;
+          // otherwise sorting would be quadratic.
+          private int indexOf(GamePiece p, VASSAL.build.module.Map m) {
+            return indices.computeIfAbsent(p, k -> m.getPieceCollection().indexOf(k));
+          }
 
-      @Override
-      public int compare(GamePiece a, GamePiece b) {
+          @Override
+          public int compare(GamePiece a, GamePiece b) {
 
-        final VASSAL.build.module.Map amap = a == null ? null : a.getMap();
-        final VASSAL.build.module.Map bmap = b == null ? null : b.getMap();
+            final VASSAL.build.module.Map amap = a == null ? null : a.getMap();
+            final VASSAL.build.module.Map bmap = b == null ? null : b.getMap();
 
-        if (amap == null) {
-          return bmap == null ?
-            // order by id if neither piece is on a map
-            a.getId().compareTo(b.getId()) :
-            // null map < nonnull map
-            -1;
-        }
-        else if (bmap == null) {
-          // nonnull map > null map
-          return 1;
-        }
-        else if (amap.getId().equals(bmap.getId())) {
-          // same map, sort according to piece list
-          return indexOf(a, amap) - indexOf(b, bmap);
-        }
-        else {
-          // different maps, order by map
-          return amap.getId().compareTo(bmap.getId());
-        }
-      }
-    });
+            if (amap == null) {
+              return bmap == null
+                  ?
+                  // order by id if neither piece is on a map
+                  a.getId().compareTo(b.getId())
+                  :
+                  // null map < nonnull map
+                  -1;
+            } else if (bmap == null) {
+              // nonnull map > null map
+              return 1;
+            } else if (amap.getId().equals(bmap.getId())) {
+              // same map, sort according to piece list
+              return indexOf(a, amap) - indexOf(b, bmap);
+            } else {
+              // different maps, order by map
+              return amap.getId().compareTo(bmap.getId());
+            }
+          }
+        });
 
     final Command c = new NullCommand();
     for (final GamePiece p : pieceList) {
@@ -1606,40 +1646,38 @@ public class GameState implements CommandEncoder {
   }
 
   /**
-   * Read a saved game and translate it into a Command.  Executing the
-   * command will load the saved game.
+   * Read a saved game and translate it into a Command. Executing the command will load the saved
+   * game.
    *
    * @param saveFile Save file name
    * @return Command
    * @throws IOException I/O Exception
    */
   public Command decodeSavedGame(File saveFile) throws IOException {
-    return decodeSavedGame(
-      new BufferedInputStream(Files.newInputStream(saveFile.toPath())));
+    return decodeSavedGame(new BufferedInputStream(Files.newInputStream(saveFile.toPath())));
   }
 
   public Command decodeSavedGame(InputStream in) throws IOException {
     try (ZipInputStream zipInput = new ZipInputStream(in)) {
-      for (ZipEntry entry = zipInput.getNextEntry(); entry != null;
-           entry = zipInput.getNextEntry()) {
+      for (ZipEntry entry = zipInput.getNextEntry();
+          entry != null;
+          entry = zipInput.getNextEntry()) {
         if (SAVEFILE_ZIP_ENTRY.equals(entry.getName())) {
           try (InputStream din = new DeobfuscatingInputStream(zipInput)) {
             // FIXME: toString() is very inefficient, make decode() use the stream directly
-            return GameModule.getGameModule().decode(
-              IOUtils.toString(din, StandardCharsets.UTF_8)
-            );
+            return GameModule.getGameModule().decode(IOUtils.toString(din, StandardCharsets.UTF_8));
           }
         }
       }
     }
 
-// FIXME: give more specific error message
-    throw new IOException("Invalid saveFile format"); //NON-NLS
+    // FIXME: give more specific error message
+    throw new IOException("Invalid saveFile format"); // NON-NLS
   }
 
   public DirectoryConfigurer getSavedGameDirectoryPreference() {
     if (savedGameDirectoryPreference == null) {
-      savedGameDirectoryPreference = new DirectoryConfigurer("savedGameDir", null); //NON-NLS
+      savedGameDirectoryPreference = new DirectoryConfigurer("savedGameDir", null); // NON-NLS
       GameModule.getGameModule().getPrefs().addOption(null, savedGameDirectoryPreference);
     }
     return savedGameDirectoryPreference;
@@ -1647,7 +1685,7 @@ public class GameState implements CommandEncoder {
 
   public DirectoryConfigurer getEditorImageDirectoryPreference() {
     if (editorImageDirectoryPreference == null) {
-      editorImageDirectoryPreference = new DirectoryConfigurer("editorImageDir", null); //NON-NLS
+      editorImageDirectoryPreference = new DirectoryConfigurer("editorImageDir", null); // NON-NLS
       GameModule.getGameModule().getPrefs().addOption(null, editorImageDirectoryPreference);
     }
     return editorImageDirectoryPreference;
@@ -1655,7 +1693,7 @@ public class GameState implements CommandEncoder {
 
   public DirectoryConfigurer getEditorSoundDirectoryPreference() {
     if (editorSoundDirectoryPreference == null) {
-      editorSoundDirectoryPreference = new DirectoryConfigurer("editorSoundDir", null); //NON-NLS
+      editorSoundDirectoryPreference = new DirectoryConfigurer("editorSoundDir", null); // NON-NLS
       GameModule.getGameModule().getPrefs().addOption(null, editorSoundDirectoryPreference);
     }
     return editorSoundDirectoryPreference;

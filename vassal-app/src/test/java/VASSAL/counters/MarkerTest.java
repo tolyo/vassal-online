@@ -23,7 +23,11 @@ import org.junit.jupiter.api.Test;
 public class MarkerTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Marker trait = new Marker();
 
@@ -41,6 +45,5 @@ public class MarkerTest extends DecoratorTest {
     trait.keys = new String[] {"xyzzy,plover,plugh"};
     trait.values = new String[] {"abc,def,ghi"};
     serializeTest("Multi value", trait); // NON-NLS
-
   }
 }

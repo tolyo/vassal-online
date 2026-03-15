@@ -19,11 +19,13 @@
 package VASSAL.configure;
 
 /**
- * Components that have descriptions which can be displayed next to their component types/names in the main Editor window
+ * Components that have descriptions which can be displayed next to their component types/names in
+ * the main Editor window
  */
 public interface ComponentDescription {
   /**
-   * @return Description to be displayed next to component type/name in the main Editor window. Or null or "" to not display anything.
+   * @return Description to be displayed next to component type/name in the main Editor window. Or
+   *     null or "" to not display anything.
    */
   default String getDescription() {
     return null;

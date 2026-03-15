@@ -24,9 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * An rereadable {@link InputStream}. The {@link #reset()} method may be
- * uesd to rewind this input stream to a previously {@link #mark(int)}ed
- * location.
+ * An rereadable {@link InputStream}. The {@link #reset()} method may be uesd to rewind this input
+ * stream to a previously {@link #mark(int)}ed location.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -41,8 +40,8 @@ public class RereadableInputStream extends InputStream {
   private ByteArrayOutputStream savedBytes;
 
   /**
-   * Creates a <code>RereadableInputStream</code> which uses the given
-   * <code>InputStream</code> as its source.
+   * Creates a <code>RereadableInputStream</code> which uses the given <code>InputStream</code> as
+   * its source.
    *
    * @param src source input stream
    */
@@ -60,10 +59,9 @@ public class RereadableInputStream extends InputStream {
   /**
    * Set the current marked position in the stream.
    *
-   * Note: The <code>readLimit</code> for this class determines only the
-   * initial size of the buffer. Reading more than <code>readLimit</code>
-   * bytes after calling this method will not invalidate the previous mark,
-   * but will cause the buffer to be resized.
+   * <p>Note: The <code>readLimit</code> for this class determines only the initial size of the
+   * buffer. Reading more than <code>readLimit</code> bytes after calling this method will not
+   * invalidate the previous mark, but will cause the buffer to be resized.
    *
    * @param readlimit the initial buffer size
    */
@@ -76,11 +74,9 @@ public class RereadableInputStream extends InputStream {
   /** {@inheritDoc} */
   @Override
   public synchronized void reset() throws IOException {
-    if (!marked)
-      throw new IOException("Cannot reset unmarked stream");
+    if (!marked) throw new IOException("Cannot reset unmarked stream");
 
-    src = new CompositeInputStream(
-      new ByteArrayInputStream(savedBytes.toByteArray()), src);
+    src = new CompositeInputStream(new ByteArrayInputStream(savedBytes.toByteArray()), src);
 
     marked = false;
   }

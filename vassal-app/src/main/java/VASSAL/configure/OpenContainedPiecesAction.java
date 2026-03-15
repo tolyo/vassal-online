@@ -22,20 +22,16 @@ import VASSAL.build.module.documentation.HelpWindow;
 import VASSAL.build.widget.PieceSlot;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.swing.Dialogs;
-
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
-
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-
 import org.apache.commons.lang3.ArrayUtils;
 
-
 /**
- * Action to edit all {@link VASSAL.counters.GamePiece}'s within a given component
- * in separate Piece Definer windows
+ * Action to edit all {@link VASSAL.counters.GamePiece}'s within a given component in separate Piece
+ * Definer windows
  */
 public class OpenContainedPiecesAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
@@ -45,23 +41,31 @@ public class OpenContainedPiecesAction extends AbstractAction {
   protected Frame dialogOwner;
   protected ConfigureTree tree;
 
-  public OpenContainedPiecesAction(Configurable target, HelpWindow helpWindow, Frame dialogOwner, ConfigureTree tree) {
+  public OpenContainedPiecesAction(
+      Configurable target, HelpWindow helpWindow, Frame dialogOwner, ConfigureTree tree) {
     super(Resources.getString("Editor.OpenContainedPiecesAction.what_it_does"));
     this.target = target;
     this.helpWindow = helpWindow;
     this.dialogOwner = dialogOwner;
     this.tree = tree;
-    setEnabled(Arrays.stream(target.getConfigureComponents()).anyMatch(c -> c instanceof PieceSlot));
+    setEnabled(
+        Arrays.stream(target.getConfigureComponents()).anyMatch(c -> c instanceof PieceSlot));
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
     final Configurable[] items = target.getConfigureComponents();
     if (items.length > 40) {
-      final String message = Resources.getString("Editor.OpenContainedPiecesAction.this_will_load", items.length);
-      final int result = Dialogs.showConfirmDialog(null, Resources.getString("Editor.OpenContainedPiecesAction.confirm_open"),
-        Resources.getString("Editor.OpenContainedPiecesAction.confirm_open"), message, JOptionPane.WARNING_MESSAGE,
-        JOptionPane.YES_NO_OPTION);
+      final String message =
+          Resources.getString("Editor.OpenContainedPiecesAction.this_will_load", items.length);
+      final int result =
+          Dialogs.showConfirmDialog(
+              null,
+              Resources.getString("Editor.OpenContainedPiecesAction.confirm_open"),
+              Resources.getString("Editor.OpenContainedPiecesAction.confirm_open"),
+              message,
+              JOptionPane.WARNING_MESSAGE,
+              JOptionPane.YES_NO_OPTION);
       if (result != JOptionPane.YES_OPTION) {
         return;
       }

@@ -18,6 +18,10 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.build.AutoConfigurable;
+import VASSAL.configure.TranslatableStringEnum;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.SequenceEncoder;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -25,24 +29,18 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-
-import VASSAL.configure.TranslatableStringEnum;
-import VASSAL.i18n.Resources;
 import org.apache.commons.lang3.ArrayUtils;
-
-import VASSAL.build.AutoConfigurable;
-import VASSAL.tools.SequenceEncoder;
 
 public class SymbolItem extends Item {
 
-  public static final String TYPE = "Symbol"; //$NON-NLS-1$
+  public static final String TYPE = "Symbol"; // $NON-NLS-1$
 
-  protected static final String SET = "set"; //$NON-NLS-1$
-  protected static final String WIDTH = "width"; //$NON-NLS-1$
-  protected static final String HEIGHT = "height"; //$NON-NLS-1$
-  protected static final String LINE_WIDTH = "linewidth"; //$NON-NLS-1$
+  protected static final String SET = "set"; // $NON-NLS-1$
+  protected static final String WIDTH = "width"; // $NON-NLS-1$
+  protected static final String HEIGHT = "height"; // $NON-NLS-1$
+  protected static final String LINE_WIDTH = "linewidth"; // $NON-NLS-1$
 
-  protected String symbolSet = ""; //$NON-NLS-1$
+  protected String symbolSet = ""; // $NON-NLS-1$
   protected int height = 30;
   protected int width = 40;
   protected double lineWidth = 1.0f;
@@ -65,33 +63,23 @@ public class SymbolItem extends Item {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.insert(
-      2, super.getAttributeDescriptions(),
-      Resources.getString("Editor.SymbolItem.symbol_set"),
-      Resources.getString("Editor.width"),
-      Resources.getString("Editor.height"),
-      Resources.getString("Editor.SymbolItem.line_width")
-    );
+        2,
+        super.getAttributeDescriptions(),
+        Resources.getString("Editor.SymbolItem.symbol_set"),
+        Resources.getString("Editor.width"),
+        Resources.getString("Editor.height"),
+        Resources.getString("Editor.SymbolItem.line_width"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.insert(
-      2, super.getAttributeTypes(),
-      SetConfig.class,
-      Integer.class,
-      Integer.class,
-      Double.class);
+        2, super.getAttributeTypes(), SetConfig.class, Integer.class, Integer.class, Double.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.insert(
-      2, super.getAttributeNames(),
-      SET,
-      WIDTH,
-      HEIGHT,
-      LINE_WIDTH
-    );
+    return ArrayUtils.insert(2, super.getAttributeNames(), SET, WIDTH, HEIGHT, LINE_WIDTH);
   }
 
   public static class SetConfig extends TranslatableStringEnum {
@@ -106,34 +94,33 @@ public class SymbolItem extends Item {
     }
   }
 
-
   @Override
   public void setAttribute(String key, Object o) {
     switch (key) {
-    case WIDTH:
-      if (o instanceof String) {
-        o = Integer.valueOf((String) o);
-      }
-      width = (Integer) o;
-      if (width < 1) width = 1;
-      break;
-    case HEIGHT:
-      if (o instanceof String) {
-        o = Integer.valueOf((String) o);
-      }
-      height = (Integer) o;
-      if (height < 1) height = 1;
-      break;
-    case LINE_WIDTH:
-      if (o instanceof String) {
-        o = Double.valueOf((String) o);
-      }
-      lineWidth = (Double) o;
-      if (lineWidth < 0) lineWidth = 0;
-      break;
-    default:
-      super.setAttribute(key, o);
-      break;
+      case WIDTH:
+        if (o instanceof String) {
+          o = Integer.valueOf((String) o);
+        }
+        width = (Integer) o;
+        if (width < 1) width = 1;
+        break;
+      case HEIGHT:
+        if (o instanceof String) {
+          o = Integer.valueOf((String) o);
+        }
+        height = (Integer) o;
+        if (height < 1) height = 1;
+        break;
+      case LINE_WIDTH:
+        if (o instanceof String) {
+          o = Double.valueOf((String) o);
+        }
+        lineWidth = (Double) o;
+        if (lineWidth < 0) lineWidth = 0;
+        break;
+      default:
+        super.setAttribute(key, o);
+        break;
     }
 
     if (layout != null) {
@@ -146,17 +133,13 @@ public class SymbolItem extends Item {
 
     if (SET.equals(key)) {
       return symbolSet;
-    }
-    else if (WIDTH.equals(key)) {
+    } else if (WIDTH.equals(key)) {
       return String.valueOf(width);
-    }
-    else if (HEIGHT.equals(key)) {
+    } else if (HEIGHT.equals(key)) {
       return String.valueOf(height);
-    }
-    else if (LINE_WIDTH.equals(key)) {
+    } else if (LINE_WIDTH.equals(key)) {
       return String.valueOf(lineWidth);
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -177,10 +160,14 @@ public class SymbolItem extends Item {
     }
     final Symbol symbol;
     if (si == null) {
-      symbol = new Symbol(Symbol.NATO, Symbol.NatoUnitSymbolSet.INFANTRY, Symbol.NatoUnitSymbolSet.NONE, Symbol.NatoUnitSymbolSet.SZ_DIVISION);
+      symbol =
+          new Symbol(
+              Symbol.NATO,
+              Symbol.NatoUnitSymbolSet.INFANTRY,
+              Symbol.NatoUnitSymbolSet.NONE,
+              Symbol.NatoUnitSymbolSet.SZ_DIVISION);
       si = new SymbolItemInstance();
-    }
-    else {
+    } else {
       symbol = new Symbol(Symbol.NATO, si.getSymbol1(), si.getSymbol2(), si.getSize());
     }
 
@@ -191,18 +178,25 @@ public class SymbolItem extends Item {
 
     if (getRotation() != 0) {
       final AffineTransform newXForm =
-          AffineTransform.getRotateInstance(Math.toRadians(getRotation()), layout.getPosition(this).x, layout.getPosition(this).y);
+          AffineTransform.getRotateInstance(
+              Math.toRadians(getRotation()),
+              layout.getPosition(this).x,
+              layout.getPosition(this).y);
       g2d.transform(newXForm);
     }
 
     final Object aa = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     g2d.setRenderingHint(
         RenderingHints.KEY_ANTIALIASING,
-        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON :
-                        RenderingHints.VALUE_ANTIALIAS_OFF
-    );
+        isAntialias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
-    symbol.draw(g, r, si.getFgColor().getColor(), si.getBgColor().getColor(), si.getSizeColor().getColor(), (float) lineWidth);
+    symbol.draw(
+        g,
+        r,
+        si.getFgColor().getColor(),
+        si.getBgColor().getColor(),
+        si.getSizeColor().getColor(),
+        (float) lineWidth);
 
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, aa);
   }

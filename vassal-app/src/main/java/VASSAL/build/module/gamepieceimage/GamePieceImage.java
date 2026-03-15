@@ -33,7 +33,6 @@ import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.UniqueIdManager;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.SourceOp;
-
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -41,30 +40,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
-
 import org.w3c.dom.Element;
 
-/**
- *
- */
-public class GamePieceImage extends AbstractConfigurable implements Visualizable, Cloneable, UniqueIdManager.Identifyable {
+/** */
+public class GamePieceImage extends AbstractConfigurable
+    implements Visualizable, Cloneable, UniqueIdManager.Identifyable {
 
-  protected static final String NAME = "name"; //$NON-NLS-1$
-  protected static final String PROPS = "props"; //$NON-NLS-1$
+  protected static final String NAME = "name"; // $NON-NLS-1$
+  protected static final String PROPS = "props"; // $NON-NLS-1$
 
-  public static final String PART_SIZE = "Size"; //$NON-NLS-1$
-  public static final String PART_SYMBOL1 = "Symbol1"; //$NON-NLS-1$
-  public static final String PART_SYMBOL2 = "Symbol2"; //$NON-NLS-1$
+  public static final String PART_SIZE = "Size"; // $NON-NLS-1$
+  public static final String PART_SYMBOL1 = "Symbol1"; // $NON-NLS-1$
+  public static final String PART_SYMBOL2 = "Symbol2"; // $NON-NLS-1$
 
-  public static final String BG_COLOR = "bgColor"; //$NON-NLS-1$
-  public static final String BORDER_COLOR = "borderColor"; //$NON-NLS-1$
+  public static final String BG_COLOR = "bgColor"; // $NON-NLS-1$
+  public static final String BORDER_COLOR = "borderColor"; // $NON-NLS-1$
   public static final String VERSION = "version";
   public static final String VERSION_0 = "0";
   public static final String VERSION_1 = "1";
@@ -77,17 +73,19 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
   protected ColorSwatch borderColor = ColorSwatch.getBlack();
   protected String id;
 
-  protected static final UniqueIdManager idMgr = new UniqueIdManager("GamePieceImage"); //$NON-NLS-1$
+  protected static final UniqueIdManager idMgr =
+      new UniqueIdManager("GamePieceImage"); // $NON-NLS-1$
   protected String nameInUse;
   protected Image visImage = null;
 
   protected SourceOp srcOp;
+
   /** version number. Existing GPI's loaded from a module will be defaulted to version 0 */
   protected String version = VERSION_0;
 
   public GamePieceImage() {
     super();
-    setConfigureName(""); //$NON-NLS-1$
+    setConfigureName(""); // $NON-NLS-1$
   }
 
   public GamePieceImage(String s) {
@@ -213,11 +211,10 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       }
       setConfigureName(newName);
       // If the user manages to type in a proper V1 image name, flip it over to Version 1
-      if (! isVersion1() && isVersion1ImageName(newName)) {
+      if (!isVersion1() && isVersion1ImageName(newName)) {
         version = VERSION_1;
       }
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       if (value instanceof String) {
         value = new ColorSwatch((String) value);
       }
@@ -225,8 +222,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       if (defnConfig != null) {
         defnConfig.visualizer.rebuild();
       }
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       if (value instanceof String) {
         value = new ColorSwatch((String) value);
       }
@@ -234,8 +230,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       if (defnConfig != null) {
         defnConfig.visualizer.rebuild();
       }
-    }
-    else if (PROPS.equals(key)) {
+    } else if (PROPS.equals(key)) {
       if (value instanceof String) {
         value = InstanceConfigurer.StringToProperties((String) value, this);
       }
@@ -247,8 +242,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
         defnConfig.visualizer.rebuild();
         defnConfig.repack();
       }
-    }
-    else if (VERSION.equals(key)) {
+    } else if (VERSION.equals(key)) {
       version = (String) value;
     }
     if (defnConfig != null) {
@@ -260,36 +254,30 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       return bgColor.encode();
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       return borderColor.encode();
-    }
-    else if (PROPS.equals(key)) {
+    } else if (PROPS.equals(key)) {
       return InstanceConfigurer.PropertiesToString(instances);
-    }
-    else if (VERSION.equals(key)) {
+    } else if (VERSION.equals(key)) {
       return version;
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
     if (BORDER_COLOR.equals(name)) {
       return borderCond;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
 
-  private final VisibilityCondition borderCond = () -> {
-    return getLayout() != null && getLayout().isColoredBorder();
-  };
+  private final VisibilityCondition borderCond =
+      () -> {
+        return getLayout() != null && getLayout().isColoredBorder();
+      };
 
   @Override
   public void addLocalImageNames(Collection<String> s) {
@@ -303,7 +291,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GamePieceImage.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("GamePieceImage.html"); // $NON-NLS-1$
   }
 
   @Override
@@ -369,8 +357,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       final ArchiveWriter w = GameModule.getGameModule().getArchiveWriter();
       if (w != null) {
         if (getConfigureName() != null && getConfigureName().length() > 0) {
-          w.addImage(getConfigureName(),
-                     getEncodedImage((BufferedImage) visImage));
+          w.addImage(getConfigureName(), getEncodedImage((BufferedImage) visImage));
           final SourceOp op = Op.load(getConfigureName());
           op.update();
         }
@@ -381,17 +368,16 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
   public byte[] getEncodedImage(BufferedImage bufferedImage) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
-      ImageIO.write(bufferedImage, "png", out); //$NON-NLS-1$
-    }
-    catch (IOException e) {
+      ImageIO.write(bufferedImage, "png", out); // $NON-NLS-1$
+    } catch (IOException e) {
       ErrorDialog.bug(e);
-// FIXME: why byte[1] instead of byte[0]?
+      // FIXME: why byte[1] instead of byte[0]?
       return new byte[1];
     }
     return out.toByteArray();
   }
 
-  public ItemInstance getInstance(String name) { //NOPMD
+  public ItemInstance getInstance(String name) { // NOPMD
     for (final ItemInstance instance : instances) {
       if (name.equals(instance.getName())) {
         return instance;
@@ -482,8 +468,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
         }
 
         if (!found) {
-          final ItemInstance instance =
-            ItemInstance.newDefaultInstance(name, type, location);
+          final ItemInstance instance = ItemInstance.newDefaultInstance(name, type, location);
           instance.addTo(this);
           newInstances.add(instance);
         }
@@ -534,10 +519,9 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
   }
 
   /**
-   * ImageNameFilter that controls how the user can change the Image Name.
-   * If the GPI is still version 0, then no controls. Note we can't force change an image
-   * name because other components may reference that image.
-   * Once the GPI is version 1, then enforce a .png suffix
+   * ImageNameFilter that controls how the user can change the Image Name. If the GPI is still
+   * version 0, then no controls. Note we can't force change an image name because other components
+   * may reference that image. Once the GPI is version 1, then enforce a .png suffix
    */
   private static class ImageNameFilter extends DocumentFilter {
     private final PngImageNameConfigurer config;
@@ -556,8 +540,7 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       String currentValue;
       try {
         currentValue = doc.getText(0, doc.getLength());
-      }
-      catch (BadLocationException ignored) {
+      } catch (BadLocationException ignored) {
         currentValue = "";
       }
 
@@ -581,7 +564,9 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       return string == null ? "" : string.replaceAll("[^\\w.-]", "");
     }
 
-    /** Don't let any of the '.png' at the end of the string be removed and clean unwanted characters */
+    /**
+     * Don't let any of the '.png' at the end of the string be removed and clean unwanted characters
+     */
     @Override
     public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
       if (!config.isGpiVersion1()) {
@@ -600,7 +585,8 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
 
     /** Nothing to be inserted within the '.png' at the end and clean unwanted characters */
     @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+        throws BadLocationException {
       if (!config.isGpiVersion1()) {
         super.insertString(fb, offset, string, attr);
         return;
@@ -615,9 +601,13 @@ public class GamePieceImage extends AbstractConfigurable implements Visualizable
       fixPng(fb, offset + clean(string).length());
     }
 
-    /** No part of '.png' at then end of the current text to be replaced and clean unwanted characters */
+    /**
+     * No part of '.png' at then end of the current text to be replaced and clean unwanted
+     * characters
+     */
     @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+        throws BadLocationException {
       if (!config.isGpiVersion1()) {
         super.replace(fb, offset, length, text, attrs);
         return;

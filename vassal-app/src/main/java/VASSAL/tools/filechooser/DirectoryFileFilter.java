@@ -18,7 +18,6 @@
 package VASSAL.tools.filechooser;
 
 import VASSAL.i18n.Resources;
-
 import java.io.File;
 
 /**

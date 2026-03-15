@@ -19,7 +19,6 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.Properties;
 import VASSAL.counters.Stack;
 import VASSAL.script.expression.ExpressionException;
-
 import java.security.SecureRandom;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -62,12 +61,12 @@ public class ExpressionInterpreterTest {
     // Evaluating a non-existent custom function should throw an ExpressionException
     ExpressionInterpreter interpreter = new ExpressionInterpreter("Blurgh()");
     assertThrows(ExpressionException.class, () -> interpreter.evaluate());
-
   }
 
   // Check the Vassal bsh Parser extensions are included:
   // 1. Adding null to an integer does not throw error - 2 + "" = 2
-  // 2. Adding a String to an integer converts both to Strings and does not throw error = 2 + "a" = "2a"
+  // 2. Adding a String to an integer converts both to Strings and does not throw error = 2 + "a" =
+  // "2a"
   // 3. Allow comparison operators  on strings - "1" == "1" = true, "1" < "2" = true
   // 4. =~ Regexp operator
   // 5. !~ Regexp operator
@@ -134,7 +133,6 @@ public class ExpressionInterpreterTest {
     o = interpreter.wrap("abc");
     assertThat(o, is(instanceOf(String.class)));
     assertThat(o, is(equalTo("abc")));
-
   }
 
   private static final String GETKEY1 = "key1";
@@ -149,38 +147,36 @@ public class ExpressionInterpreterTest {
 
   @Test
   public void getProperty() throws ExpressionException {
-    PropertySource ps = new PropertySource() {
-      @Override
-      public Object getProperty(Object key) {
-        if (String.valueOf(key).equals(GETKEY1)) {
-          return GETVAL1;
-        }
-        else if (String.valueOf(key).equals(GETKEY2)) {
-          return GETVAL2;
-        }
-        else if (String.valueOf(key).equals(GETKEY3)) {
-          return GETVAL3;
-        }
-        else if (String.valueOf(key).equals(GETKEY4)) {
-          return GETVAL4;
-        }
-        else {
-          return null;
-        }
-      }
-      @Override
-      public Object getLocalizedProperty(Object key) {
-        if (String.valueOf(key).equals(GETKEY1)) {
-          return GETLVAL1;
-        }
-        else {
-          return null;
-        }
-      }
-    };
+    PropertySource ps =
+        new PropertySource() {
+          @Override
+          public Object getProperty(Object key) {
+            if (String.valueOf(key).equals(GETKEY1)) {
+              return GETVAL1;
+            } else if (String.valueOf(key).equals(GETKEY2)) {
+              return GETVAL2;
+            } else if (String.valueOf(key).equals(GETKEY3)) {
+              return GETVAL3;
+            } else if (String.valueOf(key).equals(GETKEY4)) {
+              return GETVAL4;
+            } else {
+              return null;
+            }
+          }
+
+          @Override
+          public Object getLocalizedProperty(Object key) {
+            if (String.valueOf(key).equals(GETKEY1)) {
+              return GETLVAL1;
+            } else {
+              return null;
+            }
+          }
+        };
 
     // Check GetProperty bsh function
-    ExpressionInterpreter interpreter = new ExpressionInterpreter("GetProperty(\"" + GETKEY1 + "\")");
+    ExpressionInterpreter interpreter =
+        new ExpressionInterpreter("GetProperty(\"" + GETKEY1 + "\")");
     String result = interpreter.evaluate(ps);
     assertThat(result, is(equalTo(GETVAL1)));
 
@@ -189,7 +185,8 @@ public class ExpressionInterpreterTest {
     result = interpreter.evaluate(ps);
     assertThat(result, is(equalTo(GETLVAL1)));
 
-    // Regression Test - Check numeric literals returned as properties do not get converted to floating point values
+    // Regression Test - Check numeric literals returned as properties do not get converted to
+    // floating point values
     interpreter = new ExpressionInterpreter(GETKEY2);
     result = interpreter.evaluate(ps);
     assertThat(result, is(equalTo(GETVAL2)));
@@ -220,22 +217,31 @@ public class ExpressionInterpreterTest {
     GamePiece piece = mock(GamePiece.class);
     when(piece.getMap()).thenReturn(map);
 
-    ExpressionInterpreter interpreter = new ExpressionInterpreter("GetZoneProperty(\"" + ZONE_PROP + "\", \"" + ZONE_NAME + "\")");
+    ExpressionInterpreter interpreter =
+        new ExpressionInterpreter("GetZoneProperty(\"" + ZONE_PROP + "\", \"" + ZONE_NAME + "\")");
     String result = interpreter.evaluate(piece);
     assertThat(result, is(equalTo(ZONE_VAL)));
 
     try (MockedStatic<Map> staticMap = Mockito.mockStatic(Map.class)) {
       staticMap.when(Map::getMapList).thenReturn(List.of(map));
 
-      interpreter = new ExpressionInterpreter("GetZoneProperty(\"" + ZONE_PROP + "\", \"" + ZONE_NAME + "\", \"" + MAP_NAME + "\")");
+      interpreter =
+          new ExpressionInterpreter(
+              "GetZoneProperty(\""
+                  + ZONE_PROP
+                  + "\", \""
+                  + ZONE_NAME
+                  + "\", \""
+                  + MAP_NAME
+                  + "\")");
       result = interpreter.evaluate(piece);
       assertThat(result, is(equalTo(ZONE_VAL)));
-
     }
   }
 
   private static final String MAP_PROP = "mapProp";
   private static final String MAP_VAL = "mapVal";
+
   @Test
   public void getMapProperty() throws ExpressionException {
     try (MockedStatic<Map> staticMap = Mockito.mockStatic(Map.class)) {
@@ -244,10 +250,10 @@ public class ExpressionInterpreterTest {
       when(map.getProperty(MAP_PROP)).thenReturn(MAP_VAL);
       staticMap.when(Map::getMapList).thenReturn(List.of(map));
 
-      ExpressionInterpreter interpreter = new ExpressionInterpreter("GetMapProperty(\"" + MAP_PROP + "\", \"" + MAP_NAME + "\")");
+      ExpressionInterpreter interpreter =
+          new ExpressionInterpreter("GetMapProperty(\"" + MAP_PROP + "\", \"" + MAP_NAME + "\")");
       String result = interpreter.evaluate();
       assertThat(result, is(equalTo(MAP_VAL)));
-
     }
   }
 
@@ -269,7 +275,6 @@ public class ExpressionInterpreterTest {
     ExpressionInterpreter interpreter = new ExpressionInterpreter("SumStack(\"" + SUM_PROP + "\")");
     String result = interpreter.evaluate(bp1);
     assertThat(result, is(equalTo("42")));
-
   }
 
   @Test
@@ -355,12 +360,15 @@ public class ExpressionInterpreterTest {
       staticMap.when(Map::getMapList).thenReturn(List.of(map1, map2));
 
       // Sum Test 1 - No map name, should select pieces 1, 3 & 4 across both maps.
-      ExpressionInterpreter interpreter = new ExpressionInterpreter("Sum(\"" + SUM_PROP + "\", \"" + MATCH_EXPR + "\")");
+      ExpressionInterpreter interpreter =
+          new ExpressionInterpreter("Sum(\"" + SUM_PROP + "\", \"" + MATCH_EXPR + "\")");
       String result = interpreter.evaluate(bp1);
       assertThat("Sum properties across multiple maps", result, is(equalTo("26")));
 
       // Sum Test 2 - Map name provided,  should select pieces 1 and 3
-      interpreter = new ExpressionInterpreter("Sum(\"" + SUM_PROP + "\", \"" + MATCH_EXPR + "\", \"" + MAP_NAME_2 + "\")");
+      interpreter =
+          new ExpressionInterpreter(
+              "Sum(\"" + SUM_PROP + "\", \"" + MATCH_EXPR + "\", \"" + MAP_NAME_2 + "\")");
       result = interpreter.evaluate(bp1);
       assertThat("Sum properties on named map", result, is(equalTo("10")));
 
@@ -370,10 +378,10 @@ public class ExpressionInterpreterTest {
       assertThat("Count across multiple maps", result, is(equalTo("3")));
 
       // Count Test 2 - Map name provided,  should select pieces 1 and 3
-      interpreter = new ExpressionInterpreter("Count(\"" + MATCH_EXPR + "\", \"" + MAP_NAME_2 + "\")");
+      interpreter =
+          new ExpressionInterpreter("Count(\"" + MATCH_EXPR + "\", \"" + MAP_NAME_2 + "\")");
       result = interpreter.evaluate(bp1);
       assertThat("Count on named map", result, is(equalTo("2")));
     }
   }
-
 }

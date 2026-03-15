@@ -17,19 +17,17 @@
  */
 package VASSAL.script.proxy;
 
-import java.awt.Point;
-
 import VASSAL.script.BeanShell;
+import java.awt.Point;
 
 /**
  * BeanShell proxy for the Vassal GamePiece object
  *
- * BeanShell proxies control access to Vassal components and expose
- * a consistent API to BeanShell Scripts.
+ * <p>BeanShell proxies control access to Vassal components and expose a consistent API to BeanShell
+ * Scripts.
  *
- * PLEASE NOTE
- * New methods may be added, but DO NOT remove or change the
- * call signature of any existing methods
+ * <p>PLEASE NOTE New methods may be added, but DO NOT remove or change the call signature of any
+ * existing methods
  */
 public class GamePiece {
 

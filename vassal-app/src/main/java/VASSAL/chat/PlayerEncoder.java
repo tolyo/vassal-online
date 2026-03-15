@@ -17,12 +17,9 @@
  */
 package VASSAL.chat;
 
-
-
-/**
- * Date: Mar 16, 2003
- */
+/** Date: Mar 16, 2003 */
 public interface PlayerEncoder {
   Player stringToPlayer(String s);
+
   String playerToString(Player p);
 }

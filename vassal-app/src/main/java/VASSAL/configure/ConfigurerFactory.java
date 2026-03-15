@@ -21,10 +21,11 @@ import VASSAL.build.AutoConfigurable;
  */
 
 /**
- * General purpose type for defining property-sheet editors.
- * Classes that implement {@link AutoConfigurable} can return a class that implements
- * this interface as one of the classes returned in {@link AutoConfigurable#getAttributeTypes}
- * Implementing classes should have a no-arg constructor.
+ * General purpose type for defining property-sheet editors. Classes that implement {@link
+ * AutoConfigurable} can return a class that implements this interface as one of the classes
+ * returned in {@link AutoConfigurable#getAttributeTypes} Implementing classes should have a no-arg
+ * constructor.
+ *
  * @see AutoConfigurer
  * @see AutoConfigurable
  */

@@ -18,10 +18,7 @@ package VASSAL.script.expression;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-/**
- * An expression consisting of a String only
- *
- */
+/** An expression consisting of a String only */
 public class StringExpression extends Expression {
   private StringExpression(String s) {
     super(s.intern());

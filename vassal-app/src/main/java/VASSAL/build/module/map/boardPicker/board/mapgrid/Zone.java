@@ -51,18 +51,6 @@ import VASSAL.tools.FormattedString;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.swing.FlowLabel;
 import VASSAL.tools.swing.SwingUtils;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -91,15 +79,25 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import net.miginfocom.swing.MigLayout;
 
-public class Zone extends AbstractConfigurable implements GridContainer, MutablePropertiesContainer, PropertySource, GameComponent {
-  public static final String NAME = "name"; //NON-NLS
-  public static final String PATH = "path"; //NON-NLS
-  public static final String USE_PARENT_GRID = "useParentGrid"; //NON-NLS
-  public static final String LOCATION_FORMAT = "locationFormat"; //NON-NLS
-  public static final String GRID_LOCATION = "gridLocation"; //NON-NLS
-  public static final String USE_HIGHLIGHT = "useHighlight"; //NON-NLS
-  public static final String HIGHLIGHT_PROPERTY = "highlightProperty"; //NON-NLS
+public class Zone extends AbstractConfigurable
+    implements GridContainer, MutablePropertiesContainer, PropertySource, GameComponent {
+  public static final String NAME = "name"; // NON-NLS
+  public static final String PATH = "path"; // NON-NLS
+  public static final String USE_PARENT_GRID = "useParentGrid"; // NON-NLS
+  public static final String LOCATION_FORMAT = "locationFormat"; // NON-NLS
+  public static final String GRID_LOCATION = "gridLocation"; // NON-NLS
+  public static final String USE_HIGHLIGHT = "useHighlight"; // NON-NLS
+  public static final String HIGHLIGHT_PROPERTY = "highlightProperty"; // NON-NLS
   protected static final Dimension DEFAULT_SIZE = new Dimension(600, 600);
   protected String locationFormat = "$" + NAME + "$";
   protected FormattedString format = new FormattedString();
@@ -147,19 +145,14 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      LOCATION_FORMAT,
-      PATH,
-      USE_PARENT_GRID,
-      USE_HIGHLIGHT,
-      HIGHLIGHT_PROPERTY
+    return new String[] {
+      NAME, LOCATION_FORMAT, PATH, USE_PARENT_GRID, USE_HIGHLIGHT, HIGHLIGHT_PROPERTY
     };
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString("Editor.Zone.location_format"),
       Resources.getString("Editor.Zone.shape"),
@@ -171,7 +164,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       LocationFormatConfig.class,
       ShapeEditor.class,
@@ -184,7 +177,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   public static class LocationFormatConfig implements TranslatableConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new FormattedStringConfigurer(key, name, new String[]{NAME, GRID_LOCATION});
+      return new FormattedStringConfigurer(key, name, new String[] {NAME, GRID_LOCATION});
     }
   }
 
@@ -230,20 +223,15 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (PATH.equals(key)) {
+    } else if (PATH.equals(key)) {
       return PolygonEditor.polygonToString(myPolygon);
-    }
-    else if (LOCATION_FORMAT.equals(key)) {
+    } else if (LOCATION_FORMAT.equals(key)) {
       return locationFormat;
-    }
-    else if (USE_PARENT_GRID.equals(key)) {
+    } else if (USE_PARENT_GRID.equals(key)) {
       return String.valueOf(useParentGrid);
-    }
-    else if (USE_HIGHLIGHT.equals(key)) {
+    } else if (USE_HIGHLIGHT.equals(key)) {
       return String.valueOf(useHighlight);
-    }
-    else if (HIGHLIGHT_PROPERTY.equals(key)) {
+    } else if (HIGHLIGHT_PROPERTY.equals(key)) {
       return highlightPropertyName;
     }
     return null;
@@ -251,24 +239,18 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
   @Override
   public void setAttribute(String key, Object val) {
-    if (val == null)
-      return;
+    if (val == null) return;
     if (NAME.equals(key)) {
       setConfigureName((String) val);
-    }
-    else if (PATH.equals(key)) {
+    } else if (PATH.equals(key)) {
       myPolygon = PolygonEditor.stringToPolygon((String) val);
-    }
-    else if (LOCATION_FORMAT.equals(key)) {
+    } else if (LOCATION_FORMAT.equals(key)) {
       locationFormat = (String) val;
-    }
-    else if (USE_PARENT_GRID.equals(key)) {
-      useParentGrid = "true".equals(val) || Boolean.TRUE.equals(val); //NON-NLS
-    }
-    else if (USE_HIGHLIGHT.equals(key)) {
-      useHighlight = "true".equals(val) || Boolean.TRUE.equals(val); //NON-NLS
-    }
-    else if (HIGHLIGHT_PROPERTY.equals(key)) {
+    } else if (USE_PARENT_GRID.equals(key)) {
+      useParentGrid = "true".equals(val) || Boolean.TRUE.equals(val); // NON-NLS
+    } else if (USE_HIGHLIGHT.equals(key)) {
+      useHighlight = "true".equals(val) || Boolean.TRUE.equals(val); // NON-NLS
+    } else if (HIGHLIGHT_PROPERTY.equals(key)) {
       highlightPropertyName = (String) val;
     }
   }
@@ -277,22 +259,16 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   public VisibilityCondition getAttributeVisibility(String name) {
     if (HIGHLIGHT_PROPERTY.equals(name)) {
       return () -> useHighlight;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return useParentGrid ?
-      new Class<?>[]{ZoneProperty.class} :
-      new Class<?>[]{
-        HexGrid.class,
-        SquareGrid.class,
-        RegionGrid.class,
-        ZoneProperty.class
-      };
+    return useParentGrid
+        ? new Class<?>[] {ZoneProperty.class}
+        : new Class<?>[] {HexGrid.class, SquareGrid.class, RegionGrid.class, ZoneProperty.class};
   }
 
   @Override
@@ -311,8 +287,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   }
 
   public Point getLocation(String location) throws BadCoords {
-    final SequenceEncoder.Decoder se =
-      new SequenceEncoder.Decoder(locationFormat, '$');
+    final SequenceEncoder.Decoder se = new SequenceEncoder.Decoder(locationFormat, '$');
     boolean isProperty = true;
     final StringBuilder regex = new StringBuilder();
     int groupCount = 0;
@@ -324,11 +299,9 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
       if (token.length() > 0) {
         if (!isProperty || !se.hasMoreTokens()) {
           regex.append(Pattern.quote(token));
-        }
-        else if (token.equals(NAME)) {
+        } else if (token.equals(NAME)) {
           regex.append(Pattern.quote(getConfigureName()));
-        }
-        else if (token.equals(GRID_LOCATION) && getGrid() != null) {
+        } else if (token.equals(GRID_LOCATION) && getGrid() != null) {
           regex.append("(.*)");
           ++groupCount;
         }
@@ -348,16 +321,15 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
     final Point p;
     if (groupCount > 0) {
-      final String locationName = location.substring(matcher.start(groupCount), matcher.end(groupCount));
+      final String locationName =
+          location.substring(matcher.start(groupCount), matcher.end(groupCount));
       p = getGrid().getLocation(locationName);
       if (p == null || !contains(p)) {
         throw new BadCoords();
-      }
-      else {
+      } else {
         return p;
       }
-    }
-    else {
+    } else {
       // no grid to match against
       // try the geographic mean
       p = new Point(0, 0);
@@ -500,7 +472,8 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   /*
    * Draw the grid if visible and the highlighter if set.
    */
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
+  public void draw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
     if ((getGrid() != null && getGrid().isVisible()) || highlighter != null) {
       final Graphics2D g2d = (Graphics2D) g;
       final Shape oldClip = g2d.getClip();
@@ -525,8 +498,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
     if (scale == lastScale && lastPolygon == myPolygon && lastScaledShape != null) {
       return lastScaledShape;
     }
-    final AffineTransform transform =
-      AffineTransform.getScaleInstance(scale, scale);
+    final AffineTransform transform = AffineTransform.getScaleInstance(scale, scale);
     lastScaledShape = transform.createTransformedShape(myPolygon);
     lastScale = scale;
     lastPolygon = myPolygon;
@@ -537,16 +509,12 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
    * Calculate and cache the scaled, translated zone shape
    */
   protected Shape getCachedShape(Polygon poly, int x, int y, double scale) {
-    if (poly.equals(lastPolygon) &&
-        x == lastBoundsX &&
-        y == lastBoundsY &&
-        scale == lastScale) {
+    if (poly.equals(lastPolygon) && x == lastBoundsX && y == lastBoundsY && scale == lastScale) {
       return lastTransformedShape;
     }
 
     final Shape scaled = getScaledShape(myPolygon, scale);
-    final AffineTransform transform =
-      AffineTransform.getTranslateInstance(x, y);
+    final AffineTransform transform = AffineTransform.getTranslateInstance(x, y);
     lastTransformedShape = transform.createTransformedShape(scaled);
     lastPolygon = myPolygon;
     lastBoundsX = x;
@@ -563,12 +531,10 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   @Override
   public Object getProperty(Object key) {
     final Object value;
-    final MutableProperty p =
-      propsContainer.getMutableProperty(String.valueOf(key));
+    final MutableProperty p = propsContainer.getMutableProperty(String.valueOf(key));
     if (p != null) {
       value = p.getPropertyValue();
-    }
-    else {
+    } else {
       value = getMap().getProperty(key);
     }
     return value;
@@ -577,8 +543,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   @Override
   public Object getLocalizedProperty(Object key) {
     Object value = null;
-    final MutableProperty p =
-      propsContainer.getMutableProperty(String.valueOf(key));
+    final MutableProperty p = propsContainer.getMutableProperty(String.valueOf(key));
     if (p != null) {
       value = p.getPropertyValue();
     }
@@ -588,9 +553,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
     return value;
   }
 
-  /**
-   * Implement PropertyNameSource - expose names of my ZoneProperties
-   */
+  /** Implement PropertyNameSource - expose names of my ZoneProperties */
   @Override
   public List<String> getPropertyNames() {
     final List<String> l = new ArrayList<>();
@@ -622,8 +585,11 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
   public void setup(boolean gameStarting) {
     if (gameStarting) {
       if (useHighlight && highlightPropertyName.length() > 0) {
-        highlightProperty = MutableProperty.Util
-            .findMutableProperty(highlightPropertyName, Arrays.asList(new MutablePropertiesContainer[]{this, getMap(), GameModule.getGameModule()}));
+        highlightProperty =
+            MutableProperty.Util.findMutableProperty(
+                highlightPropertyName,
+                Arrays.asList(
+                    new MutablePropertiesContainer[] {this, getMap(), GameModule.getGameModule()}));
         if (highlightProperty != null) {
           if (highlightPropertyChangeListener == null) {
             highlightPropertyChangeListener = e -> setHighlighter((String) e.getNewValue());
@@ -632,8 +598,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
           setHighlighter(highlightProperty.getPropertyValue());
         }
       }
-    }
-    else {
+    } else {
       if (highlightProperty != null && highlightPropertyChangeListener != null) {
         highlightProperty.removeMutablePropertyChangeListener(highlightPropertyChangeListener);
         highlightProperty = null;
@@ -655,9 +620,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
     return null;
   }
 
-  /**
-   * Our configurer for the Zone, including ability to edit the polygon
-   */
+  /** Our configurer for the Zone, including ability to edit the polygon */
   public static class Editor extends Configurer implements PolygonConfigurer {
     private final JPanel buttonPanel;
     private final JButton button;
@@ -671,7 +634,8 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
     protected FlowLabel coordsLabel;
     protected JLabel coordLabel;
     protected Zone zone;
-    protected final JLabel warning = new JLabel(Resources.getString("Editor.Zone.zone_has_not_been_defined"));
+    protected final JLabel warning =
+        new JLabel(Resources.getString("Editor.Zone.zone_has_not_been_defined"));
 
     public Editor(final Zone zone) {
       super(PATH, null);
@@ -692,9 +656,7 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
       this.zone = zone;
     }
 
-    /**
-     * Copies the current zone coordinates to the system clipboard.
-     */
+    /** Copies the current zone coordinates to the system clipboard. */
     private void copyCoords() {
       if ((frame == null) || !frame.isVisible()) {
         init(zone, false);
@@ -705,7 +667,9 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
       final StringSelection stringSelection = new StringSelection(coords);
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       clipboard.setContents(stringSelection, null);
-      GameModule.getGameModule().warn(Resources.getString("Editor.Zone.copied", (poly == null) ? 0 : poly.npoints, coords));
+      GameModule.getGameModule()
+          .warn(
+              Resources.getString("Editor.Zone.copied", (poly == null) ? 0 : poly.npoints, coords));
     }
 
     private void pasteCoords() {
@@ -733,9 +697,13 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
           setValue((Object) getValueString());
           editor.repaint();
 
-          GameModule.getGameModule().warn(Resources.getString("Editor.Zone.pasted", (editor.getPolygon() == null) ? 0 : editor.getPolygon().npoints, pasteShape));
-        }
-        catch (UnsupportedFlavorException | IOException | InvalidDnDOperationException e) {
+          GameModule.getGameModule()
+              .warn(
+                  Resources.getString(
+                      "Editor.Zone.pasted",
+                      (editor.getPolygon() == null) ? 0 : editor.getPolygon().npoints,
+                      pasteShape));
+        } catch (UnsupportedFlavorException | IOException | InvalidDnDOperationException e) {
           // Can't Paste This DUN NUH NUH Nunh...
         }
       }
@@ -747,10 +715,10 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
       if (polygon != null) {
         for (int p = 0; p < polygon.npoints; p++) {
           s.append('(')
-            .append(polygon.xpoints[p])
-            .append(',')
-            .append(polygon.ypoints[p])
-            .append(") ");
+              .append(polygon.xpoints[p])
+              .append(',')
+              .append(polygon.ypoints[p])
+              .append(") ");
         }
       }
       coordsLabel.setText(s.toString());
@@ -778,37 +746,40 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
     }
 
     private void init(Zone zone, boolean show) {
-      editor = new PolygonEditor(new Polygon(zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints)) {
-        private static final long serialVersionUID = 1L;
+      editor =
+          new PolygonEditor(
+              new Polygon(zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints)) {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        protected void paintBackground(Graphics g) {
-          if (board != null) {
-            final Graphics2D g2d = (Graphics2D) g;
-            final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
-            final AffineTransform orig_t = g2d.getTransform();
-            g2d.setTransform(SwingUtils.descaleTransform(orig_t));
+            @Override
+            protected void paintBackground(Graphics g) {
+              if (board != null) {
+                final Graphics2D g2d = (Graphics2D) g;
+                final double os_scale =
+                    g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
+                final AffineTransform orig_t = g2d.getTransform();
+                g2d.setTransform(SwingUtils.descaleTransform(orig_t));
 
-            final Rectangle b = getVisibleRect();
-            b.x *= os_scale;
-            b.y *= os_scale;
-            b.width *= os_scale;
-            b.height *= os_scale;
+                final Rectangle b = getVisibleRect();
+                b.x *= os_scale;
+                b.y *= os_scale;
+                b.width *= os_scale;
+                b.height *= os_scale;
 
-            g.clearRect(b.x, b.y, b.width, b.height);
-            board.draw(g, 0, 0, os_scale, editor);
+                g.clearRect(b.x, b.y, b.width, b.height);
+                board.draw(g, 0, 0, os_scale, editor);
 
-            g2d.setTransform(orig_t);
-          }
-          else {
-            super.paintBackground(g);
-          }
-        }
-      };
+                g2d.setTransform(orig_t);
+              } else {
+                super.paintBackground(g);
+              }
+            }
+          };
 
       editor.setMyConfigurer(this);
 
-      frame = new JDialog(GameModule.getGameModule().getPlayerWindow(), zone.getConfigureName(), true);
+      frame =
+          new JDialog(GameModule.getGameModule().getPlayerWindow(), zone.getConfigureName(), true);
       frame.setFocusTraversalKeysEnabled(false);
 
       frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
@@ -828,47 +799,58 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
       final JPanel bPanel = new JPanel(new MigLayout("ins 0")); // NON-NLS
 
-      final JButton direct = new JButton(Resources.getString("Editor.Zone.set_coordinates_directly"));
+      final JButton direct =
+          new JButton(Resources.getString("Editor.Zone.set_coordinates_directly"));
       direct.setFocusable(false);
-      direct.addActionListener(e -> {
-        String newShape = JOptionPane.showInputDialog(frame, Resources.getString("Editor.Zone.enter_points_instructions"), PolygonEditor
-          .polygonToString(editor.getPolygon()).replace(';', ' '));
-        if (newShape != null) {
-          final StringBuilder buffer = new StringBuilder();
-          final StringTokenizer st = new StringTokenizer(newShape);
-          while (st.hasMoreTokens()) {
-            buffer.append(st.nextToken());
-            if (st.hasMoreTokens()) {
-              buffer.append(';');
+      direct.addActionListener(
+          e -> {
+            String newShape =
+                JOptionPane.showInputDialog(
+                    frame,
+                    Resources.getString("Editor.Zone.enter_points_instructions"),
+                    PolygonEditor.polygonToString(editor.getPolygon()).replace(';', ' '));
+            if (newShape != null) {
+              final StringBuilder buffer = new StringBuilder();
+              final StringTokenizer st = new StringTokenizer(newShape);
+              while (st.hasMoreTokens()) {
+                buffer.append(st.nextToken());
+                if (st.hasMoreTokens()) {
+                  buffer.append(';');
+                }
+              }
+              newShape = buffer.toString();
+              editor.setPolygon(PolygonEditor.stringToPolygon(newShape));
+
+              // We've just manually defined a completely new polygon, so center on it.
+              final Rectangle polyBounds = editor.getPolygon().getBounds();
+              final Point polyCenter =
+                  new Point(
+                      polyBounds.x + polyBounds.width / 2, polyBounds.y + polyBounds.height / 2);
+              editor.center(polyCenter);
+
+              editor.repaint();
             }
-          }
-          newShape = buffer.toString();
-          editor.setPolygon(PolygonEditor.stringToPolygon(newShape));
-
-          // We've just manually defined a completely new polygon, so center on it.
-          final Rectangle polyBounds = editor.getPolygon().getBounds();
-          final Point polyCenter = new Point(polyBounds.x + polyBounds.width / 2,
-            polyBounds.y + polyBounds.height / 2);
-          editor.center(polyCenter);
-
-          editor.repaint();
-        }
-      });
+          });
       direct.setAlignmentX(0.0f);
       bPanel.add(direct);
 
       final JButton delete = new JButton(Resources.getString("Editor.Zone.delete_all_points"));
       delete.setFocusable(false);
-      delete.addActionListener(e -> {
-        editor.setPolygon(PolygonEditor.stringToPolygon(""));
-        editor.repaint();
-      });
+      delete.addActionListener(
+          e -> {
+            editor.setPolygon(PolygonEditor.stringToPolygon(""));
+            editor.repaint();
+          });
       delete.setAlignmentX(0.0f);
       bPanel.add(delete);
 
       frame.add(bPanel);
 
-      scroll = new AdjustableSpeedScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      scroll =
+          new AdjustableSpeedScrollPane(
+              editor,
+              JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+              JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       editor.setScroll(scroll);
       frame.add(scroll);
 
@@ -885,18 +867,20 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
       final JButton closeButton = new JButton(Resources.getString("General.ok"));
       closeButton.setFocusable(false);
-      closeButton.addActionListener(e -> {
-        setValue((Object) getValueString());
-        frame.setVisible(false);
-      });
+      closeButton.addActionListener(
+          e -> {
+            setValue((Object) getValueString());
+            frame.setVisible(false);
+          });
 
       final JButton canButton = new JButton(Resources.getString("General.cancel"));
       canButton.setFocusable(false);
-      canButton.addActionListener(e -> {
-        editor.setPolygon(savePoly);
-        setValue((Object) getValueString());
-        frame.setVisible(false);
-      });
+      canButton.addActionListener(
+          e -> {
+            editor.setPolygon(savePoly);
+            setValue((Object) getValueString());
+            frame.setVisible(false);
+          });
 
       buttonPanel.add(closeButton);
       buttonPanel.add(canButton);
@@ -908,19 +892,26 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
       board = zone.getBoard();
       editor.setPreferredSize(board != null ? board.getSize() : DEFAULT_SIZE);
       editor.reset();
-      savePoly = new Polygon(zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints);
-      editor.setPolygon((zone.myPolygon.npoints == 0) ? null : new Polygon(zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints));
+      savePoly =
+          new Polygon(zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints);
+      editor.setPolygon(
+          (zone.myPolygon.npoints == 0)
+              ? null
+              : new Polygon(
+                  zone.myPolygon.xpoints, zone.myPolygon.ypoints, zone.myPolygon.npoints));
       if (editor.getPolygon() != null) {
         final Rectangle polyBounds = editor.getPolygon().getBounds();
-        final Point polyCenter = new Point(polyBounds.x + polyBounds.width / 2,
-          polyBounds.y + polyBounds.height / 2);
+        final Point polyCenter =
+            new Point(polyBounds.x + polyBounds.width / 2, polyBounds.y + polyBounds.height / 2);
         if (!editor.getVisibleRect().contains(polyCenter)) {
           editor.center(polyCenter);
         }
       }
       frame.pack();
       final Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-      frame.setSize(Math.min(frame.getWidth(), d.width * 2 / 3), Math.min(frame.getHeight(), d.height * 2 / 3));
+      frame.setSize(
+          Math.min(frame.getWidth(), d.width * 2 / 3),
+          Math.min(frame.getHeight(), d.height * 2 / 3));
       frame.setTitle(zone.getConfigureName());
 
       if (show) {
@@ -951,7 +942,9 @@ public class Zone extends AbstractConfigurable implements GridContainer, Mutable
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {

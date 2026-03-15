@@ -24,21 +24,20 @@ import VASSAL.script.expression.Auditable;
 /**
  * A filter for GamePieces
  *
- * Sample implementations include:
- * {@link PropertyExpression} - used for "matching expressions" in Global Key Commands and the like
- * {@link RangeFilter} - filters for pieces within range of a point
- * {@link BooleanOrPieceFilter} - "OR"s two Filters together to make one Amazing Disjunctive Filter
- * {@link BooleanAndPieceFilter} - "AND"s two Filters together and you'd better satisfy both
- * {@link VASSAL.build.module.map.CounterDetailViewer.Filter} - Filter created from Mouseover Stack Viewer settings
- * {@link VASSAL.build.module.Inventory.Selector} - Layered filter for Piece Inventory window
+ * <p>Sample implementations include: {@link PropertyExpression} - used for "matching expressions"
+ * in Global Key Commands and the like {@link RangeFilter} - filters for pieces within range of a
+ * point {@link BooleanOrPieceFilter} - "OR"s two Filters together to make one Amazing Disjunctive
+ * Filter {@link BooleanAndPieceFilter} - "AND"s two Filters together and you'd better satisfy both
+ * {@link VASSAL.build.module.map.CounterDetailViewer.Filter} - Filter created from Mouseover Stack
+ * Viewer settings {@link VASSAL.build.module.Inventory.Selector} - Layered filter for Piece
+ * Inventory window
  */
 @SuppressWarnings("JavadocReference")
 @FunctionalInterface
 public interface PieceFilter {
   /**
-   * Test if a piece matches the filter.
-   * This sig should only be used for filters that can not have Expressions as a component of the filter
-   * and thus have no Expression Auditing requirementts
+   * Test if a piece matches the filter. This sig should only be used for filters that can not have
+   * Expressions as a component of the filter and thus have no Expression Auditing requirementts
    *
    * @param piece piece
    * @return true if piece match filter
@@ -47,6 +46,7 @@ public interface PieceFilter {
 
   /**
    * Test if a piece matches the filter and provide Expression auditing facilities
+   *
    * @param piece piece to test
    * @param owner owner of the filter
    * @param fieldKey EMesage key of the field holding the filter expression
@@ -58,6 +58,7 @@ public interface PieceFilter {
 
   /**
    * Test if a piece matches the filter and provide Expression auditing facilities
+   *
    * @param piece piece to test
    * @param owner owner of the filter
    * @param audit Audit Trail to record evaluation of the filter
@@ -66,6 +67,4 @@ public interface PieceFilter {
   default boolean accept(GamePiece piece, Auditable owner, AuditTrail audit) {
     return accept(piece);
   }
-
-
 }

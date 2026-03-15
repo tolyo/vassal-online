@@ -16,24 +16,24 @@
  * at http://www.opensource.org.
  */
 
-//package VASSAL.tools.swing;
+// package VASSAL.tools.swing;
 //
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
-//import javax.swing.SwingUtilities;
-//import javax.swing.Timer;
+// import java.awt.event.ActionEvent;
+// import java.awt.event.ActionListener;
+// import javax.swing.SwingUtilities;
+// import javax.swing.Timer;
 //
-//import java.awt.Font;
-//import java.util.Enumeration;
-//import java.util.Iterator;
-//import javax.swing.UIDefaults;
-//import javax.swing.UIManager;
-//import javax.swing.plaf.FontUIResource;
+// import java.awt.Font;
+// import java.util.Enumeration;
+// import java.util.Iterator;
+// import javax.swing.UIDefaults;
+// import javax.swing.UIManager;
+// import javax.swing.plaf.FontUIResource;
 //
-//import java.util.HashMap;
-//import java.util.Map;
+// import java.util.HashMap;
+// import java.util.Map;
 //
-//public class ProgressDialogTest {
+// public class ProgressDialogTest {
 //
 //  protected static class GTKLaF extends com.sun.java.swing.plaf.gtk.GTKLookAndFeel {
 ////  protected static class GTKLaF extends com.sun.java.swing.plaf.windows.WindowsLookAndFeel {
@@ -72,7 +72,7 @@
 //
 //  public static void main(String[] args) throws Exception {
 //
-///*
+/// *
 //    for (Iterator i = UIManager.getLookAndFeelDefaults().keySet().iterator(); i.hasNext();) {
 //      Object key = i.next();
 //
@@ -83,9 +83,9 @@
 //        UIManager.put(key,biggerFont);
 //      }
 //    }
-//*/
+// */
 //
-///*
+/// *
 //    final UIDefaults defaults = UIManager.getLookAndFeelDefaults();
 //    final Enumeration keys = defaults.keys();
 //    while (keys.hasMoreElements()) {
@@ -96,7 +96,7 @@
 //        defaults.put(key, new FontUIResource(font.getFontName(), font.getStyle(), 16));
 //          System.out.println('!');
 //        }
-///*
+/// *
 //
 //      if (value instanceof Font) {
 //        UIManager.put(key, null);
@@ -106,10 +106,10 @@
 //          UIManager.put(key, new FontUIResource(font.deriveFont(size*96f/72f)));
 //        }
 //      }
-//*/
+// */
 ////   }
 //
-///*
+/// *
 //    float scale=1.5f;
 //
 //    //if you want to change LaF to a spesific LaF,such as "GTK"
@@ -125,7 +125,8 @@
 //        Object current = UIManager.get(obj);
 //        if (current instanceof FontUIResource) {
 //            FontUIResource resource = (FontUIResource) current;
-//            defaults.put(obj, new FontUIResource(resource.deriveFont(resource.getSize2D()*scale)));
+//            defaults.put(obj, new
+// FontUIResource(resource.deriveFont(resource.getSize2D()*scale)));
 //            // System.out.printf("%50s : %s\n", obj,  UIManager.get(obj));
 //        } else if (current instanceof Font) {
 //            Font resource = (Font) current;
@@ -133,7 +134,7 @@
 //            // System.out.printf("%50s : %s\n", obj,  UIManager.get(obj));
 //        }
 //    }
-//*/
+// */
 //
 //    UIManager.setLookAndFeel(new GTKLaF());
 //
@@ -165,4 +166,4 @@
 //      }
 //    });
 //  }
-//}
+// }

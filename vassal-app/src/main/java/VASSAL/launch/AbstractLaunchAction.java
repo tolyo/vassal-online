@@ -38,15 +38,6 @@ import VASSAL.tools.filechooser.ModuleFileFilter;
 import VASSAL.tools.io.ProcessLauncher;
 import VASSAL.tools.io.ProcessWrapper;
 import VASSAL.tools.lang.MemoryUtils;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -63,11 +54,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.zip.ZipFile;
+import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
- * The base class for {@link javax.swing.Action}s which launch processes from the
- * {@link ModuleManagerWindow}.
+ * The base class for {@link javax.swing.Action}s which launch processes from the {@link
+ * ModuleManagerWindow}.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -75,8 +73,7 @@ import java.util.zip.ZipFile;
 public abstract class AbstractLaunchAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(AbstractLaunchAction.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLaunchAction.class);
 
   //
   // memory-related constants
@@ -89,7 +86,7 @@ public abstract class AbstractLaunchAction extends AbstractAction {
     // Determine how much physical RAM this machine has
     // Assume 4GB if we can't determine how much RAM there is
     final long physMemoryBytes = MemoryUtils.getPhysicalMemory();
-    PHYS_MEMORY = physMemoryBytes <= 0 ? 4096 : (int)(physMemoryBytes >> 20);
+    PHYS_MEMORY = physMemoryBytes <= 0 ? 4096 : (int) (physMemoryBytes >> 20);
   }
 
   protected final Window window;
@@ -102,8 +99,7 @@ public abstract class AbstractLaunchAction extends AbstractAction {
     return useTracker;
   }
 
-  public AbstractLaunchAction(String name, Window window,
-                              String entryPoint, LaunchRequest lr) {
+  public AbstractLaunchAction(String name, Window window, String entryPoint, LaunchRequest lr) {
     super(name);
 
     this.window = window;
@@ -161,23 +157,21 @@ public abstract class AbstractLaunchAction extends AbstractAction {
 
   protected File promptForFile() {
     // prompt the user to pick a file
-    final FileChooser fc = FileChooser.createFileChooser(window,
-      (DirectoryConfigurer)
-        Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
+    final FileChooser fc =
+        FileChooser.createFileChooser(
+            window, (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
 
     addFileFilters(fc);
 
     // loop until cancellation or we get an existing file
     if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
       lr.module = fc.getSelectedFile();
-      final AbstractMetaData metadata =
-        MetaDataFactory.buildMetaData(lr.module);
+      final AbstractMetaData metadata = MetaDataFactory.buildMetaData(lr.module);
       if (!(metadata instanceof ModuleMetaData)) {
-        ErrorDialog.show(
-          "Error.invalid_vassal_module", lr.module.getAbsolutePath()); //NON-NLS
+        ErrorDialog.show("Error.invalid_vassal_module", lr.module.getAbsolutePath()); // NON-NLS
         logger.error(
-          "-- Load of {} failed: Not a Vassal module", //NON-NLS
-          lr.module.getAbsolutePath());
+            "-- Load of {} failed: Not a Vassal module", // NON-NLS
+            lr.module.getAbsolutePath());
         lr.module = null;
       }
     }
@@ -199,17 +193,15 @@ public abstract class AbstractLaunchAction extends AbstractAction {
     final Map<String, Map<String, String>> removed = rd.getLeft();
     if (!removed.isEmpty()) {
       final String msg =
-        "Removed classes, methods, and fields in " + f.toString() +
-        "\n(used by => removed item, version when removed\n" +
-        RemovalAndDeprecationChecker.formatResult(removed);
+          "Removed classes, methods, and fields in "
+              + f.toString()
+              + "\n(used by => removed item, version when removed\n"
+              + RemovalAndDeprecationChecker.formatResult(removed);
 
       logger.error(msg);
 
-      FutureUtils.wait(ProblemDialog.showDetails(
-        JOptionPane.ERROR_MESSAGE,
-        msg,
-        "Dialogs.removed_code"
-      ));
+      FutureUtils.wait(
+          ProblemDialog.showDetails(JOptionPane.ERROR_MESSAGE, msg, "Dialogs.removed_code"));
       // Using anything removed is fatal
       return false;
     }
@@ -217,14 +209,14 @@ public abstract class AbstractLaunchAction extends AbstractAction {
     final Map<String, Map<String, String>> deprecated = rd.getRight();
     if (!deprecated.isEmpty()) {
       // always show deprecation dialog in edit mode
-      boolean showDialog = lr.mode == LaunchRequest.Mode.EDIT ||
-                           lr.mode == LaunchRequest.Mode.EDIT_EXT;
+      boolean showDialog =
+          lr.mode == LaunchRequest.Mode.EDIT || lr.mode == LaunchRequest.Mode.EDIT_EXT;
       final LocalDate sixMonthsFromNow = LocalDate.now().plusMonths(6);
 
       // convert deprecation date to date eligible for removal (+1 year)
       final DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE;
-      for (final Map.Entry<String, Map<String, String>> e1: deprecated.entrySet()) {
-        for (final Map.Entry<String, String> e2: e1.getValue().entrySet()) {
+      for (final Map.Entry<String, Map<String, String>> e1 : deprecated.entrySet()) {
+        for (final Map.Entry<String, String> e2 : e1.getValue().entrySet()) {
           final LocalDate removalDate = LocalDate.parse(e2.getValue(), fmt).plusYears(1);
           // show deprecation dialog if anything is within 6 months of removal
           if (removalDate.isBefore(sixMonthsFromNow)) {
@@ -236,18 +228,16 @@ public abstract class AbstractLaunchAction extends AbstractAction {
       }
 
       final String msg =
-        "Deprecated classes, methods, and fields in " + f.toString() +
-        "\n(used by => removed item, date eligible for removal)\n" +
-        RemovalAndDeprecationChecker.formatResult(deprecated);
+          "Deprecated classes, methods, and fields in "
+              + f.toString()
+              + "\n(used by => removed item, date eligible for removal)\n"
+              + RemovalAndDeprecationChecker.formatResult(deprecated);
 
       logger.warn(msg);
 
       if (showDialog) {
-        FutureUtils.wait(ProblemDialog.showDetails(
-          JOptionPane.WARNING_MESSAGE,
-          msg,
-          "Dialogs.deprecated_code"
-        ));
+        FutureUtils.wait(
+            ProblemDialog.showDetails(JOptionPane.WARNING_MESSAGE, msg, "Dialogs.deprecated_code"));
       }
     }
 
@@ -256,16 +246,14 @@ public abstract class AbstractLaunchAction extends AbstractAction {
 
   protected class LaunchTask extends SwingWorker<Void, Void> {
     // lr might be modified before the task is over, keep a local copy
-    protected final LaunchRequest lr =
-      new LaunchRequest(AbstractLaunchAction.this.lr);
+    protected final LaunchRequest lr = new LaunchRequest(AbstractLaunchAction.this.lr);
 
     @Override
-    public Void doInBackground() throws InterruptedException,
-                                        IOException {
-// FIXME: this should be in an abstract method and farmed out to subclasses
+    public Void doInBackground() throws InterruptedException, IOException {
+      // FIXME: this should be in an abstract method and farmed out to subclasses
       // send some basic information to the log
       if (lr.module != null) {
-        logger.info("Loading module file {}", lr.module.getAbsolutePath()); //NON-NLS
+        logger.info("Loading module file {}", lr.module.getAbsolutePath()); // NON-NLS
 
         // check for removed and deprecated elements
         if (!checkRemovedAndDeprecated(lr.module)) {
@@ -280,48 +268,36 @@ public abstract class AbstractLaunchAction extends AbstractAction {
         }
 
         // read maximum heap size from global prefs
-        final int max_tiler_heap = getHeapSize(
-          Prefs.getGlobalPrefs(),
-          ModuleManager.TILER_MAXIMUM_HEAP,
-          3*PHYS_MEMORY/4
-        );
+        final int max_tiler_heap =
+            getHeapSize(
+                Prefs.getGlobalPrefs(), ModuleManager.TILER_MAXIMUM_HEAP, 3 * PHYS_MEMORY / 4);
 
         // slice tiles for module
         final String aname = lr.module.getAbsolutePath();
         final ModuleMetaData meta = new ModuleMetaData(new ZipFile(aname));
-        final String hstr =
-          DigestUtils.sha1Hex(meta.getName() + "_" + meta.getVersion());
+        final String hstr = DigestUtils.sha1Hex(meta.getName() + "_" + meta.getVersion());
 
         final File cdir = new File(Info.getCacheDir(), "tiles/" + hstr);
 
-        final TilingHandler th = new TilingHandler(
-          aname,
-          cdir,
-          new Dimension(256, 256),
-          max_tiler_heap
-        );
+        final TilingHandler th =
+            new TilingHandler(aname, cdir, new Dimension(256, 256), max_tiler_heap);
 
         try {
           th.sliceTiles();
-        }
-        catch (CancellationException e) {
+        } catch (CancellationException e) {
           cancel(true);
           return null;
         }
 
         // slice tiles for extensions
         for (final File ext : mgr.getActiveExtensions()) {
-          final TilingHandler eth = new TilingHandler(
-            ext.getAbsolutePath(),
-            cdir,
-            new Dimension(256, 256),
-            max_tiler_heap
-          );
+          final TilingHandler eth =
+              new TilingHandler(
+                  ext.getAbsolutePath(), cdir, new Dimension(256, 256), max_tiler_heap);
 
           try {
             eth.sliceTiles();
-          }
-          catch (CancellationException e) {
+          } catch (CancellationException e) {
             cancel(true);
             return null;
           }
@@ -329,31 +305,29 @@ public abstract class AbstractLaunchAction extends AbstractAction {
       }
 
       if (lr.game != null) {
-        logger.info("Loading game file {}", lr.game.getAbsolutePath()); //NON-NLS
+        logger.info("Loading game file {}", lr.game.getAbsolutePath()); // NON-NLS
       }
 
       if (lr.importFile != null) {
         logger.info(
-          "Importing module file {}", //NON-NLS
-          lr.importFile.getAbsolutePath()
-        );
+            "Importing module file {}", // NON-NLS
+            lr.importFile.getAbsolutePath());
       }
-// end FIXME
+      // end FIXME
 
       // set default heap size
       int maximumHeap = DEFAULT_MAXIMUM_HEAP;
 
       String moduleName = null;
 
-// FIXME: this should be in an abstract method and farmed out to subclasses,
-// rather than a case structure for each kind of thing which may be loaded.
+      // FIXME: this should be in an abstract method and farmed out to subclasses,
+      // rather than a case structure for each kind of thing which may be loaded.
       // find module-specific heap settings, if any
       if (lr.module != null) {
         final AbstractMetaData data = MetaDataFactory.buildMetaData(lr.module);
 
         if (data == null) {
-          ErrorDialog.show(
-            "Error.invalid_vassal_file", lr.module.getAbsolutePath()); //NON-NLS
+          ErrorDialog.show("Error.invalid_vassal_file", lr.module.getAbsolutePath()); // NON-NLS
           return null;
         }
 
@@ -361,57 +335,51 @@ public abstract class AbstractLaunchAction extends AbstractAction {
           moduleName = ((ModuleMetaData) data).getName();
 
           // log the module name
-          logger.info("Loading module {}", moduleName); //NON-NLS
+          logger.info("Loading module {}", moduleName); // NON-NLS
 
           // read module prefs
           final ReadOnlyPrefs p = new ReadOnlyPrefs(moduleName);
 
           // read maximum heap size from module prefs
-          maximumHeap = getHeapSize(
-            p, GlobalOptions.MAXIMUM_HEAP, DEFAULT_MAXIMUM_HEAP
-          );
+          maximumHeap = getHeapSize(p, GlobalOptions.MAXIMUM_HEAP, DEFAULT_MAXIMUM_HEAP);
 
           // log the JVM maximum heap
-          logger.info("JVM maximum heap size: {} MB", maximumHeap); //NON-NLS
-
+          logger.info("JVM maximum heap size: {} MB", maximumHeap); // NON-NLS
         }
-      }
-      else if (lr.importFile != null) {
+      } else if (lr.importFile != null) {
         final Prefs p = Prefs.getGlobalPrefs();
 
         // read maximum heap size from global prefs
-        maximumHeap = getHeapSize(
-          p, ModuleManager.CONVERTER_MAXIMUM_HEAP, DEFAULT_MAXIMUM_HEAP
-        );
+        maximumHeap = getHeapSize(p, ModuleManager.CONVERTER_MAXIMUM_HEAP, DEFAULT_MAXIMUM_HEAP);
       }
-// end FIXME
+      // end FIXME
 
       //
       // Heap size sanity checks: fall back to failsafe heap sizes in
       // case the given initial or maximum heap is not usable.
       //
 
-// FIXME: The heap size messages are too nonspecific. They should
-// differentiate between loading a module and importing a module,
-// since the heap sizes are set in different places for those two
-// actions.
+      // FIXME: The heap size messages are too nonspecific. They should
+      // differentiate between loading a module and importing a module,
+      // since the heap sizes are set in different places for those two
+      // actions.
       // maximum heap must fit in physical RAM
       if (maximumHeap > PHYS_MEMORY) {
         maximumHeap = FAILSAFE_MAXIMUM_HEAP;
 
-        FutureUtils.wait(WarningDialog.show(
-          "Warning.maximum_heap_too_large", //NON-NLS
-          FAILSAFE_MAXIMUM_HEAP
-        ));
+        FutureUtils.wait(
+            WarningDialog.show(
+                "Warning.maximum_heap_too_large", // NON-NLS
+                FAILSAFE_MAXIMUM_HEAP));
       }
       // maximum heap must be at least the failsafe size
       else if (maximumHeap < FAILSAFE_MAXIMUM_HEAP) {
         maximumHeap = FAILSAFE_MAXIMUM_HEAP;
 
-        FutureUtils.wait(WarningDialog.show(
-          "Warning.maximum_heap_too_small", //NON-NLS
-          FAILSAFE_MAXIMUM_HEAP
-        ));
+        FutureUtils.wait(
+            WarningDialog.show(
+                "Warning.maximum_heap_too_small", // NON-NLS
+                FAILSAFE_MAXIMUM_HEAP));
       }
 
       final int initialHeap = maximumHeap;
@@ -420,48 +388,42 @@ public abstract class AbstractLaunchAction extends AbstractAction {
       final String[] args = argumentList.toArray(new String[0]);
 
       // try to start a child process with the given heap sizes
-      args[1] = "-Xms" + initialHeap + "M"; //NON-NLS
-      args[2] = "-Xmx" + maximumHeap + "M"; //NON-NLS
+      args[1] = "-Xms" + initialHeap + "M"; // NON-NLS
+      args[2] = "-Xmx" + maximumHeap + "M"; // NON-NLS
 
       ProcessWrapper proc = new ProcessLauncher().launch(args);
       try {
         proc.future.get(1000L, TimeUnit.MILLISECONDS);
-      }
-      catch (CancellationException e) {
+      } catch (CancellationException e) {
         cancel(true);
         return null;
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         logger.error("", e);
-      }
-      catch (TimeoutException e) {
+      } catch (TimeoutException e) {
         // this is expected
       }
 
       // if launch failed, use conservative heap sizes
       if (proc.future.isDone()) {
-        args[1] = "-Xms" + FAILSAFE_MAXIMUM_HEAP + "M"; //NON-NLS
-        args[2] = "-Xmx" + FAILSAFE_MAXIMUM_HEAP + "M"; //NON-NLS
+        args[1] = "-Xms" + FAILSAFE_MAXIMUM_HEAP + "M"; // NON-NLS
+        args[2] = "-Xmx" + FAILSAFE_MAXIMUM_HEAP + "M"; // NON-NLS
         proc = new ProcessLauncher().launch(args);
 
         try {
           proc.future.get(1000L, TimeUnit.MILLISECONDS);
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
           logger.error("", e);
-        }
-        catch (TimeoutException e) {
+        } catch (TimeoutException e) {
           // this is expected
         }
 
         if (proc.future.isDone()) {
           throw new IOException("failed to start child process");
-        }
-        else {
-          FutureUtils.wait(WarningDialog.show(
-            "Warning.maximum_heap_too_large", //NON-NLS
-            FAILSAFE_MAXIMUM_HEAP
-          ));
+        } else {
+          FutureUtils.wait(
+              WarningDialog.show(
+                  "Warning.maximum_heap_too_large", // NON-NLS
+                  FAILSAFE_MAXIMUM_HEAP));
         }
       }
 
@@ -473,8 +435,7 @@ public abstract class AbstractLaunchAction extends AbstractAction {
 
       try {
         proc.future.get();
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         logger.error("", e);
       }
 
@@ -488,8 +449,7 @@ public abstract class AbstractLaunchAction extends AbstractAction {
 
       try {
         return Integer.parseInt(val.toString());
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         return -1;
       }
     }
@@ -508,30 +468,21 @@ public abstract class AbstractLaunchAction extends AbstractAction {
     protected void done() {
       try {
         get();
-      }
-      catch (CancellationException e) {
+      } catch (CancellationException e) {
         // this means that loading was cancelled
-      }
-      catch (ExecutionException e) {
-        if (SystemUtils.IS_OS_WINDOWS &&
-            ThrowableUtils.getAncestor(IOException.class, e) != null) {
+      } catch (ExecutionException e) {
+        if (SystemUtils.IS_OS_WINDOWS && ThrowableUtils.getAncestor(IOException.class, e) != null) {
           final String msg = e.getMessage();
           if (msg.contains("jre\\bin\\java") && msg.contains("CreateProcess")) {
             ErrorDialog.showDetails(
-              e,
-              ThrowableUtils.getStackTrace(e),
-              "Error.possible_windows_av_interference",
-              msg
-            );
+                e, ThrowableUtils.getStackTrace(e), "Error.possible_windows_av_interference", msg);
             return;
           }
         }
         ErrorDialog.bug(e);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         ErrorDialog.bug(e);
-      }
-      finally {
+      } finally {
         ModuleManagerWindow.getInstance().setWaitCursor(false);
       }
     }
@@ -540,57 +491,57 @@ public abstract class AbstractLaunchAction extends AbstractAction {
       final List<String> result = new ArrayList<>();
 
       result.add(Info.getJavaBinPath().getAbsolutePath());
-      result.add("");   // reserved for initial heap
-      result.add("");   // reserved for maximum heap
+      result.add(""); // reserved for initial heap
+      result.add(""); // reserved for maximum heap
 
       result.addAll(new CustomVmOptions().getCustomVmOptions());
 
       // pass on the user's home, if it's set
       final String userHome = System.getProperty("user.home");
-      if (userHome != null) result.add("-Duser.home=" + userHome); //NON-NLS
+      if (userHome != null) result.add("-Duser.home=" + userHome); // NON-NLS
 
       // pass on the user's working dir, if it's set
       final String userDir = System.getProperty("user.dir");
-      if (userDir != null) result.add("-Duser.dir=" + userDir); //NON-NLS
+      if (userDir != null) result.add("-Duser.dir=" + userDir); // NON-NLS
 
       // pass on VASSAL's conf dir, if it's set
       final String vConf = System.getProperty("VASSAL.conf");
-      if (vConf != null) result.add("-DVASSAL.conf=" + vConf); //NON-NLS
+      if (vConf != null) result.add("-DVASSAL.conf=" + vConf); // NON-NLS
 
       // set the classpath
-      result.add("-cp"); //NON-NLS
+      result.add("-cp"); // NON-NLS
       result.add(System.getProperty("java.class.path"));
 
       if (SystemUtils.IS_OS_MAC) {
         // set the MacOS dock parameters
 
         // use the module name for the dock if we found a module name
-// FIXME: should "Unnamed module" be localized?
-        final String d_name = moduleName != null && moduleName.length() > 0
-          ? moduleName : Resources.getString("Editor.AbstractLaunchAction.unnamed_module"); //NON-NLS
+        // FIXME: should "Unnamed module" be localized?
+        final String d_name =
+            moduleName != null && moduleName.length() > 0
+                ? moduleName
+                : Resources.getString("Editor.AbstractLaunchAction.unnamed_module"); // NON-NLS
 
         // get the path to the app icon
-        final String d_icon = new File(Info.getBaseDir(),
-          "Contents/Resources/VASSAL.icns").getAbsolutePath();
+        final String d_icon =
+            new File(Info.getBaseDir(), "Contents/Resources/VASSAL.icns").getAbsolutePath();
 
-        result.add("-Xdock:name=" + d_name); //NON-NLS
-        result.add("-Xdock:icon=" + d_icon); //NON-NLS
+        result.add("-Xdock:name=" + d_name); // NON-NLS
+        result.add("-Xdock:icon=" + d_icon); // NON-NLS
 
         // Apple Silicon Macs need FBOs disabled in OpenGL, at least until
         // Metal in Java 17
         final Boolean disableOGLFBO =
-          (Boolean) Prefs.getGlobalPrefs().getValue(Prefs.DISABLE_OGL_FBO);
+            (Boolean) Prefs.getGlobalPrefs().getValue(Prefs.DISABLE_OGL_FBO);
         if (Boolean.TRUE.equals(disableOGLFBO)) {
-          result.add("-Dsun.java2d.opengl=true"); //NON-NLS
-          result.add("-Dsun.java2d.opengl.fbobject=false"); //NON-NLS
+          result.add("-Dsun.java2d.opengl=true"); // NON-NLS
+          result.add("-Dsun.java2d.opengl.fbobject=false"); // NON-NLS
         }
-      }
-      else if (SystemUtils.IS_OS_WINDOWS) {
+      } else if (SystemUtils.IS_OS_WINDOWS) {
         // Disable the 2D to Direct3D pipeline?
-        final Boolean disableD3d =
-          (Boolean) Prefs.getGlobalPrefs().getValue(Prefs.DISABLE_D3D);
+        final Boolean disableD3d = (Boolean) Prefs.getGlobalPrefs().getValue(Prefs.DISABLE_D3D);
         if (Boolean.TRUE.equals(disableD3d)) {
-          result.add("-Dsun.java2d.d3d=false"); //NON-NLS
+          result.add("-Dsun.java2d.d3d=false"); // NON-NLS
         }
       }
 

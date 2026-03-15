@@ -17,20 +17,17 @@
  */
 package VASSAL.tools.version;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.i18n.Resources;
 import VASSAL.tools.BrowserSupport;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.WarningDialog;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
+import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 3.1.0
@@ -39,8 +36,7 @@ import VASSAL.tools.WarningDialog;
 public class UpdateCheckAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(UpdateCheckAction.class);
+  private static final Logger logger = LoggerFactory.getLogger(UpdateCheckAction.class);
 
   private final Frame frame;
 
@@ -62,29 +58,26 @@ public class UpdateCheckAction extends AbstractAction {
         if (!update) {
           // running version is current
           JOptionPane.showMessageDialog(
-            frame,
-            Resources.getString("UpdateCheckAction.version_current_message"),
-            Resources.getString("UpdateCheckAction.version_current_title"),
-            JOptionPane.INFORMATION_MESSAGE
-          );
-        }
-        else {
+              frame,
+              Resources.getString("UpdateCheckAction.version_current_message"),
+              Resources.getString("UpdateCheckAction.version_current_title"),
+              JOptionPane.INFORMATION_MESSAGE);
+        } else {
           // running version is obsolete
           if (JOptionPane.showConfirmDialog(
-              frame,
-              Resources.getString("UpdateCheckAction.update_available_message"),
-              Resources.getString("UpdateCheckAction.update_available_title"),
-              JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                  frame,
+                  Resources.getString("UpdateCheckAction.update_available_message"),
+                  Resources.getString("UpdateCheckAction.update_available_title"),
+                  JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE)
+              == JOptionPane.YES_OPTION) {
             BrowserSupport.openURL("https://vassalengine.org/download.html");
           }
         }
         return;
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         ErrorDialog.bug(e);
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         logger.error("", e);
       }
 

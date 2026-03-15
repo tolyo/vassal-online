@@ -21,10 +21,11 @@ import java.beans.PropertyChangeListener;
 
 /**
  * A component that can contain global properties
- * @author rkinney
  *
+ * @author rkinney
  */
 public interface GlobalPropertiesContainer {
   PropertyChangeListener getPropertyListener();
+
   GlobalProperty getGlobalProperty(String propertyName);
 }

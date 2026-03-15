@@ -23,7 +23,11 @@ import VASSAL.build.module.PieceWindow;
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ScrollPane;
-
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -31,22 +35,15 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * A Widget that corresponds to a panel with a {@link JList} sitting
- * to the right of a {@link JPanel} with a {@link CardLayout} layout.
- * Adding a Widget to a ListWidget adds the child Widget's component to
- * the JPanel and adds the child's name (via {@link
- * VASSAL.build.Configurable#getConfigureName}) to the JList.  Changing the
- * selection of the JList shows the corresponding child's
- * component */
-public class ListWidget extends Widget
-    implements ListSelectionListener {
+ * A Widget that corresponds to a panel with a {@link JList} sitting to the right of a {@link
+ * JPanel} with a {@link CardLayout} layout. Adding a Widget to a ListWidget adds the child Widget's
+ * component to the JPanel and adds the child's name (via {@link
+ * VASSAL.build.Configurable#getConfigureName}) to the JList. Changing the selection of the JList
+ * shows the corresponding child's component
+ */
+public class ListWidget extends Widget implements ListSelectionListener {
   private JPanel panel;
   private JSplitPane split;
   private JList<Widget> list;
@@ -54,8 +51,8 @@ public class ListWidget extends Widget
   private CardLayout layout;
   private JPanel multiPanel;
   private int width, height, divider;
-  private static final String DIVIDER = "divider"; //NON-NLS
-  public static final String SCALE = "scale"; //$NON-NLS-1$
+  private static final String DIVIDER = "divider"; // NON-NLS
+  public static final String SCALE = "scale"; // $NON-NLS-1$
   protected double scale;
 
   private final Map<Object, String> keys = new HashMap<>();
@@ -84,12 +81,11 @@ public class ListWidget extends Widget
     Widget w = this;
     while ((w = w.getParent()) != null) {
       if (w instanceof PieceWindow) {
-        return ((PieceWindow)w).shouldDockIntoMainWindow();
+        return ((PieceWindow) w).shouldDockIntoMainWindow();
       }
     }
     return false;
   }
-
 
   @Override
   public Component getComponent() {
@@ -118,8 +114,9 @@ public class ListWidget extends Widget
       split.setRightComponent(new ScrollPane(list));
 
       if (width > 0 && height > 0) {
-        // This was causing bad behavior in piece palettes - Jlist aggressively grabs space. This lets the size of the rest of the Piece Palette and/or Chatter govern.
-        final int grabWidth  = isMainPiecePalette() ? width / 2 : width;
+        // This was causing bad behavior in piece palettes - Jlist aggressively grabs space. This
+        // lets the size of the rest of the Piece Palette and/or Chatter govern.
+        final int grabWidth = isMainPiecePalette() ? width / 2 : width;
         final int grabHeight = isMainPiecePalette() ? height / 2 : height;
         split.setPreferredSize(new Dimension(grabWidth, grabHeight));
       }
@@ -175,42 +172,40 @@ public class ListWidget extends Widget
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{Resources.getString("Editor.name_label"), Resources.getString(Resources.DESCRIPTION), Resources.getString("Editor.ListWidget.image_scale")};
+    return new String[] {
+      Resources.getString("Editor.name_label"),
+      Resources.getString(Resources.DESCRIPTION),
+      Resources.getString("Editor.ListWidget.image_scale")
+    };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{String.class, String.class, Double.class};
+    return new Class<?>[] {String.class, String.class, Double.class};
   }
 
   @Override
   public void setAttribute(String name, Object value) {
     if (NAME.equals(name)) {
       setConfigureName((String) value);
-    }
-    else if (WIDTH.equals(name)) {
-      width = Integer.parseInt((String)value);
-    }
-    else if (HEIGHT.equals(name)) {
-      height = Integer.parseInt((String)value);
-    }
-    else if (DIVIDER.equals(name)) {
-      divider = Integer.parseInt((String)value);
-    }
-    else if (SCALE.equals(name)) {
+    } else if (WIDTH.equals(name)) {
+      width = Integer.parseInt((String) value);
+    } else if (HEIGHT.equals(name)) {
+      height = Integer.parseInt((String) value);
+    } else if (DIVIDER.equals(name)) {
+      divider = Integer.parseInt((String) value);
+    } else if (SCALE.equals(name)) {
       if (value instanceof String) {
         value = Double.valueOf((String) value);
       }
       scale = (Double) value;
-      if (scale < 0.01) { //BR// Just gonna go with some sanity.
+      if (scale < 0.01) { // BR// Just gonna go with some sanity.
         scale = 0.01;
-      }
-      else if (scale >= 4) {
+      } else if (scale >= 4) {
         scale = 4.0;
       }
-    }
-    else if (DESCRIPTION.equals(name)) {
-      description = (String)value;
+    } else if (DESCRIPTION.equals(name)) {
+      description = (String) value;
     }
   }
 
@@ -218,20 +213,15 @@ public class ListWidget extends Widget
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (WIDTH.equals(name)) {
+    } else if (WIDTH.equals(name)) {
       return String.valueOf(split == null ? width : split.getWidth());
-    }
-    else if (HEIGHT.equals(name)) {
+    } else if (HEIGHT.equals(name)) {
       return String.valueOf(split == null ? height : split.getHeight());
-    }
-    else if (DIVIDER.equals(name)) {
+    } else if (DIVIDER.equals(name)) {
       return String.valueOf(split == null ? divider : split.getDividerLocation());
-    }
-    else if (SCALE.equals(name)) {
+    } else if (SCALE.equals(name)) {
       return String.valueOf(scale);
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
     }
     return null;

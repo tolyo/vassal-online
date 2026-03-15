@@ -12,16 +12,16 @@ import VASSAL.counters.BasicPiece;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.Properties;
 import VASSAL.tools.DataArchive;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.util.Set;
 
 public class PiecePropertyIndexTest {
 
   private static final String PROP = "propName";
   private int pieceId = 1;
+
   @Test
   public void indexTest() {
 
@@ -160,11 +160,9 @@ public class PiecePropertyIndexTest {
     public void setProperty(Object key, Object val) {
       if (PROP.equals(key)) {
         value = (String) val;
-      }
-      else {
+      } else {
         super.setProperty(key, val);
       }
     }
   }
-
 }

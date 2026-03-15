@@ -17,10 +17,6 @@
  */
 package VASSAL.build.module.properties;
 
-import java.util.List;
-
-import javax.swing.JToolBar;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -32,18 +28,20 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.TemporaryToolBar;
 import VASSAL.tools.ToolBarComponent;
+import java.util.List;
+import javax.swing.JToolBar;
 
 /**
  * Adds a global property to a Map or Module
  *
  * @author rkinney
- *
  */
-public class GlobalTranslatableMessage extends AbstractConfigurable implements ToolBarComponent, GameComponent, PropertySource, TranslatableString {
-  public static final String NAME = "name"; //NON-NLS
-  public static final String INITIAL_VALUE = "initialValue"; //NON-NLS
-  public static final String DESCRIPTION = "description"; //NON-NLS
-  protected static final String COMMAND_PREFIX = "GlobalTranslatable\t"; //NON-NLS
+public class GlobalTranslatableMessage extends AbstractConfigurable
+    implements ToolBarComponent, GameComponent, PropertySource, TranslatableString {
+  public static final String NAME = "name"; // NON-NLS
+  public static final String INITIAL_VALUE = "initialValue"; // NON-NLS
+  public static final String DESCRIPTION = "description"; // NON-NLS
+  protected static final String COMMAND_PREFIX = "GlobalTranslatable\t"; // NON-NLS
   protected TemporaryToolBar tempToolbar = new TemporaryToolBar();
   protected String description = "";
   protected String initialValue = "";
@@ -52,9 +50,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
   protected TranslatableString.Impl property = new TranslatableString.Impl("", this);
   protected TranslatableStringContainer parentContainer;
 
-  public GlobalTranslatableMessage() {
-
-  }
+  public GlobalTranslatableMessage() {}
 
   public GlobalTranslatableMessage(GlobalTranslatableMessage p) {
     this();
@@ -65,7 +61,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString("Editor.GlobalTranslatableMessage.message"),
       Resources.getString("Editor.description_label"),
@@ -74,19 +70,15 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
-      String.class,
+    return new Class<?>[] {
+      String.class, String.class, String.class,
     };
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      INITIAL_VALUE,
-      DESCRIPTION,
+    return new String[] {
+      NAME, INITIAL_VALUE, DESCRIPTION,
     };
   }
 
@@ -95,15 +87,13 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
     if (NAME.equals(key)) {
       setConfigureName((String) value);
       property.setPropertyName(getConfigureName());
-    }
-    else if (INITIAL_VALUE.equals(key)) {
+    } else if (INITIAL_VALUE.equals(key)) {
       initialValue = (String) value;
       if (initialValue == null) {
         initialValue = "";
       }
       property.setPropertyValue(initialValue);
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       description = (String) value;
     }
   }
@@ -112,11 +102,9 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (INITIAL_VALUE.equals(key)) {
+    } else if (INITIAL_VALUE.equals(key)) {
       return initialValue;
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
     }
     return null;
@@ -130,7 +118,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GlobalTranslatableMessages.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("GlobalTranslatableMessages.html"); // NON-NLS
   }
 
   @Override
@@ -169,6 +157,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   /**
    * A String that identifies this property in an encoded Command
+   *
    * @return propertyId
    */
   protected String getPropertyId() {
@@ -218,6 +207,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -227,6 +217,7 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
@@ -236,7 +227,9 @@ public class GlobalTranslatableMessage extends AbstractConfigurable implements T
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {

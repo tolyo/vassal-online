@@ -16,9 +16,8 @@
  */
 package VASSAL.tools.logging;
 
-import java.util.concurrent.Future;
-
 import VASSAL.tools.concurrent.SimpleFuture;
+import java.util.concurrent.Future;
 
 /**
  * @author Joel Uckelman
@@ -31,16 +30,21 @@ public class Logger {
 
   @SuppressWarnings({"deprecation", "removal"})
   public static final int MESSAGE = LogEntry.MESSAGE;
+
   @SuppressWarnings({"deprecation", "removal"})
   public static final int WARNING = LogEntry.WARNING;
+
   @SuppressWarnings({"deprecation", "removal"})
-  public static final int ERROR =   LogEntry.ERROR;
+  public static final int ERROR = LogEntry.ERROR;
+
   @SuppressWarnings({"deprecation", "removal"})
-  public static final int BUG =     LogEntry.BUG;
+  public static final int BUG = LogEntry.BUG;
+
   @SuppressWarnings({"deprecation", "removal"})
-  public static final int DEBUG =   LogEntry.DEBUG;
+  public static final int DEBUG = LogEntry.DEBUG;
+
   @SuppressWarnings({"deprecation", "removal"})
-  public static final int SYSTEM =  LogEntry.SYSTEM;
+  public static final int SYSTEM = LogEntry.SYSTEM;
 
   public static void log(String message) {
     log(null, message, MESSAGE);
@@ -88,8 +92,7 @@ public class Logger {
   }
 
   @SuppressWarnings({"deprecation", "removal"})
-  public static Future<?> logAndWait(Throwable thrown,
-                                     String message, int type) {
+  public static Future<?> logAndWait(Throwable thrown, String message, int type) {
     return enqueue(new LogEntry(type, thrown, message, true));
   }
 
@@ -101,12 +104,10 @@ public class Logger {
   }
 
   @SuppressWarnings({"deprecation", "removal"})
-  public static void addLogListener(LogListener l) {
-  }
+  public static void addLogListener(LogListener l) {}
 
   @SuppressWarnings({"deprecation", "removal"})
-  public static void removeLogListener(LogListener l) {
-  }
+  public static void removeLogListener(LogListener l) {}
 
   @SuppressWarnings({"deprecation", "removal"})
   public static LogListener[] getLogListeners() {

@@ -16,13 +16,7 @@
  */
 package VASSAL.launch;
 
-import java.io.IOException;
-
-import javax.swing.JDialog;
-
 import VASSAL.Info;
-import org.apache.commons.lang3.StringUtils;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.ModuleExtension;
 import VASSAL.configure.ExtensionTree;
@@ -30,6 +24,9 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.WriteErrorDialog;
 import VASSAL.tools.menu.MenuManager;
+import java.io.IOException;
+import javax.swing.JDialog;
+import org.apache.commons.lang3.StringUtils;
 
 public class ExtensionEditorWindow extends EditorWindow {
 
@@ -62,9 +59,7 @@ public class ExtensionEditorWindow extends EditorWindow {
     pack();
   }
 
-  public void moduleLoading(GameModule mod) {
-
-  }
+  public void moduleLoading(GameModule mod) {}
 
   @Override
   public String getEditorType() {
@@ -76,48 +71,52 @@ public class ExtensionEditorWindow extends EditorWindow {
     String title;
 
     if (!StringUtils.isEmpty(extensionName)) {
-      title = extensionName; //NON-NLS
+      title = extensionName; // NON-NLS
       if (!StringUtils.isEmpty(moduleName)) {
-        title = title + " " + Resources.getString("Editor.ExtensionEditor.extends_what_module", moduleName);
+        title =
+            title
+                + " "
+                + Resources.getString("Editor.ExtensionEditor.extends_what_module", moduleName);
       }
-      title = title + " - " + Resources.getString("Editor.ExtensionEditor.editor_name", Info.getVersion());
-    }
-    else {
+      title =
+          title
+              + " - "
+              + Resources.getString("Editor.ExtensionEditor.editor_name", Info.getVersion());
+    } else {
       title = Resources.getString("Editor.ExtensionEditor.editor_name", Info.getVersion());
     }
 
     setTitle(title);
   }
 
-
   @Override
   protected void save() {
-    saver(() -> {
-      final DataArchive da = extension.getDataArchive();
-      try {
-        extension.save();
-        setExtensionName(da.getName());
-        ModuleManagerUpdateHelper.sendExtensionUpdate(da.getArchive().getFile());
-      }
-      catch (IOException e) {
-        WriteErrorDialog.error(e, da.getArchive().getFile().getName());
-      }
-    });
+    saver(
+        () -> {
+          final DataArchive da = extension.getDataArchive();
+          try {
+            extension.save();
+            setExtensionName(da.getName());
+            ModuleManagerUpdateHelper.sendExtensionUpdate(da.getArchive().getFile());
+          } catch (IOException e) {
+            WriteErrorDialog.error(e, da.getArchive().getFile().getName());
+          }
+        });
   }
 
   @Override
   protected void saveAs() {
-    saver(() -> {
-      final DataArchive da = extension.getDataArchive();
-      try {
-        extension.saveAs();
-        setExtensionName(da.getName());
-        ModuleManagerUpdateHelper.sendExtensionUpdate(da.getArchive().getFile());
-      }
-      catch (IOException e) {
-        WriteErrorDialog.error(e, da.getArchive().getFile().getName());
-      }
-    });
+    saver(
+        () -> {
+          final DataArchive da = extension.getDataArchive();
+          try {
+            extension.saveAs();
+            setExtensionName(da.getName());
+            ModuleManagerUpdateHelper.sendExtensionUpdate(da.getArchive().getFile());
+          } catch (IOException e) {
+            WriteErrorDialog.error(e, da.getArchive().getFile().getName());
+          }
+        });
   }
 
   public ModuleExtension getExtension() {

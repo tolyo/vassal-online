@@ -21,15 +21,14 @@ import VASSAL.configure.Configurer;
 import VASSAL.counters.EditablePiece;
 import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
-
 import VASSAL.tools.FormattedString;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to track the evaluation history of an expression.
- * AuditTrails will create an overhead on every BeanShell expression evaluated, so only
- * generate them if a preference has been set by the user.
+ * Class to track the evaluation history of an expression. AuditTrails will create an overhead on
+ * every BeanShell expression evaluated, so only generate them if a preference has been set by the
+ * user.
  */
 public class AuditTrail {
 
@@ -43,9 +42,11 @@ public class AuditTrail {
   private static boolean reportingInProgress = false;
 
   public static boolean isEnabled() {
-    // Since this will be called for every single Beanshell evaluation, make it as low overhead as possible.
+    // Since this will be called for every single Beanshell evaluation, make it as low overhead as
+    // possible.
 
-    // Do not create further AuditTrails during Audit reporting when the name of the component is evaluated
+    // Do not create further AuditTrails during Audit reporting when the name of the component is
+    // evaluated
     // as this may invoke a recursive cascade of Audit Trail creation
     if (isReportingInProgress()) {
       return false;
@@ -76,9 +77,9 @@ public class AuditTrail {
   /**
    * Factory method to create a new AuditTrail only if auditing is enabled
    *
-   * @param source             Audit source component
+   * @param source Audit source component
    * @param originalExpression Expression being audited
-   * @param comment            Additional comment about the audit source
+   * @param comment Additional comment about the audit source
    * @return An AuditTrail object if auditing is enabled, otherwise null
    */
   public static AuditTrail create(Auditable source, String originalExpression, String comment) {
@@ -88,23 +89,24 @@ public class AuditTrail {
   /**
    * Factory method to create a new AuditTrail only if auditing is enabled
    *
-   * @param source             Audit source component
+   * @param source Audit source component
    * @param originalExpression Expression being audited
-   * @param comment            Additional comment about the audit source
+   * @param comment Additional comment about the audit source
    * @return An AuditTrail object if auditing is enabled, otherwise null
    */
   public static AuditTrail create(Auditable source, Expression originalExpression, String comment) {
     return create(source, originalExpression.getExpression(), comment);
   }
 
-  public static AuditTrail create(Auditable source, FormattedString originalExpression, String comment) {
+  public static AuditTrail create(
+      Auditable source, FormattedString originalExpression, String comment) {
     return create(source, originalExpression.getFormat(), comment);
   }
 
   /**
    * Factory method to create a new AuditTrail only if auditing is enabled
    *
-   * @param source             Audit source component
+   * @param source Audit source component
    * @param originalExpression Expression being audited
    * @return An AuditTrail object if auditing is enabled, otherwise null
    */
@@ -115,7 +117,7 @@ public class AuditTrail {
   /**
    * Factory method to create a new AuditTrail only if auditing is enabled
    *
-   * @param source             Audit source component
+   * @param source Audit source component
    * @param originalExpression Expression being audited
    * @return An AuditTrail object if auditing is enabled, otherwise null
    */
@@ -126,6 +128,7 @@ public class AuditTrail {
   public static AuditTrail create(Auditable source, FormattedString originalExpression) {
     return create(source, originalExpression.getFormat(), "");
   }
+
   /**
    * Factory method to create a new AuditTrail only if auditing is enabled
    *
@@ -149,22 +152,22 @@ public class AuditTrail {
   /**
    * Create a new AuditTrail
    *
-   * @param source             Audit source component
+   * @param source Audit source component
    * @param originalExpression Expression being audited
-   * @param sourceField        Comment describing the source field of the expression being audited
+   * @param sourceField Comment describing the source field of the expression being audited
    */
   public AuditTrail(Auditable source, String originalExpression, String sourceField) {
     messages = new ArrayList<>();
 
     setSource(source);
-    if (sourceField != null && ! sourceField.isEmpty()) {
+    if (sourceField != null && !sourceField.isEmpty()) {
       addMessage(Resources.getString("Audit.source_field", sourceField));
     }
     setExpression(originalExpression);
   }
 
   public void setExpression(String expression) {
-    if (expression != null && ! expression.isEmpty()) {
+    if (expression != null && !expression.isEmpty()) {
       addMessage(Resources.getString("Audit.expression", expression));
     }
   }
@@ -184,7 +187,6 @@ public class AuditTrail {
     }
   }
 
-
   public void setSource(Auditable source) {
     this.source = source;
   }
@@ -200,25 +202,28 @@ public class AuditTrail {
 
     // Add some source identification to the audit trail
     if (source != null) {
-      // Calling getComponentName() on a GamePiece may cause further expression evaluations, which could fail.
-      // Set the reportingInProgress flag on which will prevent the creation of any more audit trails until
-      // this trail has completed reporting to prevent an infinite recursive cycle of Audit Trail creation.
+      // Calling getComponentName() on a GamePiece may cause further expression evaluations, which
+      // could fail.
+      // Set the reportingInProgress flag on which will prevent the creation of any more audit
+      // trails until
+      // this trail has completed reporting to prevent an infinite recursive cycle of Audit Trail
+      // creation.
       final boolean origReportingState = isReportingInProgress();
       setReportingInProgress(true);
 
       if (source instanceof EditablePiece) {
         sb.append("\n   ")
-          .append(Resources.getString("Audit.source_type", "Piece Trait"))
-          .append("\n   ")
-          .append(Resources.getString("Audit.source_name", source.getComponentName()))
-          .append("\n   ")
-          .append(Resources.getString("Audit.source_description", source.getComponentTypeName()));
+            .append(Resources.getString("Audit.source_type", "Piece Trait"))
+            .append("\n   ")
+            .append(Resources.getString("Audit.source_name", source.getComponentName()))
+            .append("\n   ")
+            .append(Resources.getString("Audit.source_description", source.getComponentTypeName()));
       }
       if (source instanceof AbstractConfigurable) {
         sb.append("\n   ")
-          .append(Resources.getString("Audit.source_type", source.getComponentTypeName()))
-          .append("\n   ")
-          .append(Resources.getString("Audit.source_name", source.getComponentName()));
+            .append(Resources.getString("Audit.source_type", source.getComponentTypeName()))
+            .append("\n   ")
+            .append(Resources.getString("Audit.source_name", source.getComponentName()));
       }
 
       setReportingInProgress(origReportingState);
@@ -232,4 +237,3 @@ public class AuditTrail {
     return sb.toString();
   }
 }
-

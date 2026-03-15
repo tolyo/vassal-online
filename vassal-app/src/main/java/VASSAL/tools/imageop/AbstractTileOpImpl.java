@@ -27,9 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * The abstract base class for {@link ImageOp}s which are
- * a single tile. This class provides simpler implementations of the
- * tile-related methods than does {@link AbstractTiledOpImpl}, as objects
+ * The abstract base class for {@link ImageOp}s which are a single tile. This class provides simpler
+ * implementations of the tile-related methods than does {@link AbstractTiledOpImpl}, as objects
  * instantiating this class' subclasses are all single tiles.
  *
  * @since 3.1.0
@@ -39,7 +38,7 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
   /**
    * {@inheritDoc}
    *
-   * This implementation is equivalent to {@link #getSize}.
+   * <p>This implementation is equivalent to {@link #getSize}.
    */
   @Override
   public Dimension getTileSize() {
@@ -49,7 +48,7 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
   /**
    * {@inheritDoc}
    *
-   * This implementation is equivalent to {@link #getHeight}.
+   * <p>This implementation is equivalent to {@link #getHeight}.
    */
   @Override
   public int getTileHeight() {
@@ -59,7 +58,7 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
   /**
    * {@inheritDoc}
    *
-   * This implementation is equivalent to {@link #getWidth}.
+   * <p>This implementation is equivalent to {@link #getWidth}.
    */
   @Override
   public int getTileWidth() {
@@ -90,16 +89,14 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
    * {@inheritDoc}
    *
    * @return <code>getImage(obs)</code>, because there is only one tile
-   * @throws IndexOutOfBoundsException
-   *    If <code>tileX != 0</code> or <code>tileY != 0</code>.
+   * @throws IndexOutOfBoundsException If <code>tileX != 0</code> or <code>tileY != 0</code>.
    */
   @Override
   public BufferedImage getTile(int tileX, int tileY, ImageOpObserver obs)
-    throws CancellationException, InterruptedException, ExecutionException {
+      throws CancellationException, InterruptedException, ExecutionException {
 
     // we are but a single humble tile
-    if (tileX != 0 || tileY != 0)
-      throw new IndexOutOfBoundsException();
+    if (tileX != 0 || tileY != 0) throw new IndexOutOfBoundsException();
 
     return getImage(obs);
   }
@@ -108,16 +105,14 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
    * {@inheritDoc}
    *
    * @return <code>getFutureImage(obs)</code>, because there is only one tile
-   * @throws IndexOutOfBoundsException
-   *    If <code>tileX != 0</code> or <code>tileY != 0</code>.
+   * @throws IndexOutOfBoundsException If <code>tileX != 0</code> or <code>tileY != 0</code>.
    */
   @Override
-  public Future<BufferedImage> getFutureTile(
-    int tileX, int tileY, ImageOpObserver obs) throws ExecutionException {
+  public Future<BufferedImage> getFutureTile(int tileX, int tileY, ImageOpObserver obs)
+      throws ExecutionException {
 
     // we are but a single humble tile
-    if (tileX != 0 || tileY != 0)
-      throw new IndexOutOfBoundsException();
+    if (tileX != 0 || tileY != 0) throw new IndexOutOfBoundsException();
 
     return getFutureImage(obs);
   }
@@ -125,8 +120,7 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
   @Override
   public ImageOp getTileOp(int tileX, int tileY) {
     // we are but a single humble tile
-    if (tileX != 0 || tileY != 0)
-      throw new IndexOutOfBoundsException();
+    if (tileX != 0 || tileY != 0) throw new IndexOutOfBoundsException();
 
     return this;
   }
@@ -139,7 +133,6 @@ public abstract class AbstractTileOpImpl extends AbstractOpImpl {
   @Override
   public Point[] getTileIndices(Rectangle rect) {
     if (rect == null) throw new IllegalArgumentException();
-    return rect.intersects(new Rectangle(getSize())) ?
-      new Point[]{new Point(0, 0)} : new Point[0];
+    return rect.intersects(new Rectangle(getSize())) ? new Point[] {new Point(0, 0)} : new Point[0];
   }
 }

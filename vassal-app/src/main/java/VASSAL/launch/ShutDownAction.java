@@ -18,15 +18,13 @@
 
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-
-import javax.swing.AbstractAction;
-
 import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.preferences.Prefs;
 import VASSAL.tools.WriteErrorDialog;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import javax.swing.AbstractAction;
 
 public class ShutDownAction extends AbstractAction {
   private static final long serialVersionUID = 1L;
@@ -40,14 +38,12 @@ public class ShutDownAction extends AbstractAction {
     if (GameModule.getGameModule() == null) {
       try (Prefs p = Prefs.getGlobalPrefs()) {
         p.save();
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         WriteErrorDialog.error(ex, Prefs.getGlobalPrefs().getFile().getPath());
       }
 
       System.exit(0);
-    }
-    else if (GameModule.getGameModule().shutDown()) {
+    } else if (GameModule.getGameModule().shutDown()) {
       System.exit(0);
     }
   }

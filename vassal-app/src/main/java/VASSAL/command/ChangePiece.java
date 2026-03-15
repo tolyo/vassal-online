@@ -24,13 +24,12 @@ import VASSAL.counters.GamePiece;
 import VASSAL.counters.Properties;
 import VASSAL.counters.StateMergeable;
 import VASSAL.tools.ProblemDialog;
-
 import java.util.NoSuchElementException;
 
 /**
- * This Command changes the state of a {@link GamePiece}.  Its undo
- * Command is another ChangePiece with the new and old states
- * reversed.  */
+ * This Command changes the state of a {@link GamePiece}. Its undo Command is another ChangePiece
+ * with the new and old states reversed.
+ */
 public class ChangePiece extends Command {
   protected String newState, oldState;
   private final String id;
@@ -47,9 +46,7 @@ public class ChangePiece extends Command {
     this.oldState = oldState;
   }
 
-  /**
-   * Changes the state of a {@link GamePiece} by invoking {@link GamePiece#setState}
-   */
+  /** Changes the state of a {@link GamePiece} by invoking {@link GamePiece#setState} */
   @Override
   protected void executeCommand() {
     final GamePiece target = GameModule.getGameModule().getGameState().getPieceForId(id);
@@ -60,24 +57,21 @@ public class ChangePiece extends Command {
         if (target instanceof StateMergeable) {
           try {
             ((StateMergeable) target).mergeState(newState, oldState);
+          } catch (NoSuchElementException e) {
+            ProblemDialog.showOutdatedModule("Piece: " + target.getName()); // NON-NLS
           }
-          catch (NoSuchElementException e) {
-            ProblemDialog.showOutdatedModule("Piece: " + target.getName()); //NON-NLS
-          }
-        }
-        else {
+        } else {
           target.setState(newState);
         }
-      }
-      else {
+      } else {
         oldState = target.getState();
         target.setState(newState);
       }
       bounds.addPiece(target);
       bounds.repaint();
       if (target.getMap() != null
-        && GlobalOptions.getInstance().centerOnOpponentsMove()
-        && !Boolean.TRUE.equals(target.getProperty(Properties.INVISIBLE_TO_ME))) {
+          && GlobalOptions.getInstance().centerOnOpponentsMove()
+          && !Boolean.TRUE.equals(target.getProperty(Properties.INVISIBLE_TO_ME))) {
         target.getMap().ensureVisible(target.getMap().selectionBoundsOf(target));
       }
     }
@@ -91,18 +85,17 @@ public class ChangePiece extends Command {
       last = sub[sub.length - 1];
     }
     if (c instanceof ChangePiece
-      && last instanceof ChangePiece
-      && ((ChangePiece) c).id != null
-      && ((ChangePiece) c).id.equals(((ChangePiece) last).id)
-      && ((ChangePiece) c).newState != null) {
+        && last instanceof ChangePiece
+        && ((ChangePiece) c).id != null
+        && ((ChangePiece) c).id.equals(((ChangePiece) last).id)
+        && ((ChangePiece) c).newState != null) {
       ((ChangePiece) last).newState = ((ChangePiece) c).newState;
       sub = c.getSubCommands();
       for (final Command command : sub) {
         append(command);
       }
       return this;
-    }
-    else {
+    } else {
       return super.append(c);
     }
   }
@@ -134,6 +127,6 @@ public class ChangePiece extends Command {
 
   @Override
   public String getDetails() {
-    return "id=" + id + ",oldState=" + oldState + ",newState=" + newState; //$NON-NLS$//
+    return "id=" + id + ",oldState=" + oldState + ",newState=" + newState; // $NON-NLS$//
   }
 }

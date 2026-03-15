@@ -16,20 +16,6 @@
  */
 package VASSAL.build.module;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Window;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
@@ -55,28 +41,41 @@ import VASSAL.tools.UniqueIdManager;
 import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SplitPane;
 import VASSAL.tools.swing.SwingUtils;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Window;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 /**
- * A window from which players can create new {@link GamePiece}s by
- * clicking and dragging from the PieceWindow.  The actual GamePieces
- * are contained in {@link PieceSlot} components.  PieceWindow extends
- * {@link Widget}, so it may be composed of various tabs, lists, etc.  */
+ * A window from which players can create new {@link GamePiece}s by clicking and dragging from the
+ * PieceWindow. The actual GamePieces are contained in {@link PieceSlot} components. PieceWindow
+ * extends {@link Widget}, so it may be composed of various tabs, lists, etc.
+ */
 public class PieceWindow extends Widget implements UniqueIdManager.Identifyable {
   protected String id;
   protected LaunchButton launch;
   protected boolean hidden;
-  public static final String DEPRECATED_NAME = "entryName"; //$NON-NLS-1$
-  public static final String NAME = "name"; //$NON-NLS-1$
-  public static final String BUTTON_TEXT = "text"; //$NON-NLS-1$
-  public static final String TOOLTIP = "tooltip"; //$NON-NLS-1$
-  public static final String ICON = "icon"; //$NON-NLS-1$
-  public static final String HOTKEY = "hotkey"; //$NON-NLS-1$
-  public static final String HIDDEN = "hidden"; //$NON-NLS-1$
-  public static final String SCALE = "scale"; //$NON-NLS-1$
-  public static final String DEFAULT_DOCKED_WIDTH = "defaultWidth"; //NON-NLS
-  protected static final UniqueIdManager idMgr = new UniqueIdManager(PieceWindow.class.getSimpleName());
+  public static final String DEPRECATED_NAME = "entryName"; // $NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
+  public static final String BUTTON_TEXT = "text"; // $NON-NLS-1$
+  public static final String TOOLTIP = "tooltip"; // $NON-NLS-1$
+  public static final String ICON = "icon"; // $NON-NLS-1$
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
+  public static final String HIDDEN = "hidden"; // $NON-NLS-1$
+  public static final String SCALE = "scale"; // $NON-NLS-1$
+  public static final String DEFAULT_DOCKED_WIDTH = "defaultWidth"; // NON-NLS
+  protected static final UniqueIdManager idMgr =
+      new UniqueIdManager(PieceWindow.class.getSimpleName());
   protected JComponent root;
-  protected String tooltip = ""; //$NON-NLS-1$
+  protected String tooltip = ""; // $NON-NLS-1$
   protected double scale;
   protected int defaultDockedWidth;
 
@@ -91,18 +90,18 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   public PieceWindow() {
     root = new JPanel(new BorderLayout());
 
-    launch = new LaunchButton(
-      Resources.getString("Editor.PieceWindow.pieces"),
-      TOOLTIP,
-      BUTTON_TEXT,
-      HOTKEY,
-      ICON,
-      e -> launchButtonPressed()
-    );
+    launch =
+        new LaunchButton(
+            Resources.getString("Editor.PieceWindow.pieces"),
+            TOOLTIP,
+            BUTTON_TEXT,
+            HOTKEY,
+            ICON,
+            e -> launchButtonPressed());
     launch.setToolTipText(
-      Resources.getString("Editor.PieceWindow.show_hide_pieces_window",
-      Resources.getString("Editor.PieceWindow.pieces"))
-    );
+        Resources.getString(
+            "Editor.PieceWindow.show_hide_pieces_window",
+            Resources.getString("Editor.PieceWindow.pieces")));
 
     scale = 1.0;
     defaultDockedWidth = 0;
@@ -124,25 +123,26 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
       d.add(root);
       d.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
       d.setTitle(getConfigureName());
-      addPropertyChangeListener(e -> {
-        if (NAME_PROPERTY.equals(e.getPropertyName())) {
-          d.setTitle((String) e.getNewValue());
-        }
-      });
+      addPropertyChangeListener(
+          e -> {
+            if (NAME_PROPERTY.equals(e.getPropertyName())) {
+              d.setTitle((String) e.getNewValue());
+            }
+          });
       return d;
-    }
-    else {
+    } else {
       final JFrame d = new JFrame();
       d.add(root);
       d.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
       d.setTitle(getConfigureName());
       d.setJMenuBar(MenuManager.getInstance().getMenuBarFor(d));
 
-      addPropertyChangeListener(e -> {
-        if (NAME_PROPERTY.equals(e.getPropertyName())) {
-          d.setTitle((String) e.getNewValue());
-        }
-      });
+      addPropertyChangeListener(
+          e -> {
+            if (NAME_PROPERTY.equals(e.getPropertyName())) {
+              d.setTitle((String) e.getNewValue());
+            }
+          });
 
       return d;
     }
@@ -151,8 +151,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   public void launchButtonPressed() {
     if (splitPane != null) {
       splitPane.toggleLeft();
-    }
-    else {
+    } else {
       final Container tla = root.getTopLevelAncestor();
       if (tla != null) {
         tla.setVisible(!tla.isVisible());
@@ -162,7 +161,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("PieceWindow.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("PieceWindow.html"); // $NON-NLS-1$
   }
 
   @Override
@@ -172,7 +171,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   }
 
   public boolean shouldDockIntoMainWindow() {
-    return firstId.equals(id); //$NON-NLS-1$
+    return firstId.equals(id); // $NON-NLS-1$
   }
 
   @Override
@@ -181,36 +180,27 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PieceWindow.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PieceWindow.component_type"); // $NON-NLS-1$
   }
 
   /**
-   * Children of PieceWindow may contain a {@link TabWidget}, a {@link
-   * PanelWidget}, a {@link BoxWidget}, a {@link ListWidget}, or a
-   * {@link PieceSlot}
-   **/
+   * Children of PieceWindow may contain a {@link TabWidget}, a {@link PanelWidget}, a {@link
+   * BoxWidget}, a {@link ListWidget}, or a {@link PieceSlot}
+   */
   @Override
   public Class<?>[] getChildAllowableConfigureComponents() {
-    return new Class<?>[]{
-      TabWidget.class,
-      PanelWidget.class,
-      BoxWidget.class,
-      ListWidget.class,
-      PieceSlot.class
+    return new Class<?>[] {
+      TabWidget.class, PanelWidget.class, BoxWidget.class, ListWidget.class, PieceSlot.class
     };
   }
 
   /**
-   * A PieceWindow may contain a {@link TabWidget}, a {@link
-   * PanelWidget}, a {@link BoxWidget}, a {@link ListWidget} -- but not a lone piece slot */
+   * A PieceWindow may contain a {@link TabWidget}, a {@link PanelWidget}, a {@link BoxWidget}, a
+   * {@link ListWidget} -- but not a lone piece slot
+   */
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{
-      TabWidget.class,
-      PanelWidget.class,
-      BoxWidget.class,
-      ListWidget.class
-    };
+    return new Class<?>[] {TabWidget.class, PanelWidget.class, BoxWidget.class, ListWidget.class};
   }
 
   @Override
@@ -239,17 +229,13 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
     return id;
   }
 
-  /**
-   * Each instanceof PieceWindow has a unique String identifier
-   */
+  /** Each instanceof PieceWindow has a unique String identifier */
   @Override
   public void setId(String s) {
     id = s;
   }
 
-  /**
-   * Docks us into the main window -- needs to be called AFTER Chatter has docked.
-   */
+  /** Docks us into the main window -- needs to be called AFTER Chatter has docked. */
   public void dockMe() {
     final Component controlPanel = GameModule.getGameModule().getControlPanel();
     final Container cppar = controlPanel.getParent();
@@ -264,8 +250,8 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   }
 
   /**
-   * Expects to be added to a {@link GameModule}.  When added, sets
-   * the containing window to visible */
+   * Expects to be added to a {@link GameModule}. When added, sets the containing window to visible
+   */
   @Override
   public void addTo(Buildable parent) {
     idMgr.add(this);
@@ -274,14 +260,14 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
       if (firstId.equals(id) && GlobalOptions.getInstance().isUseSingleWindow()) {
         // Register as the docked PieceWindow
         GameModule.getGameModule().setPieceWindow(this);
-      }
-      else {
+      } else {
         final String key = PositionOption.key + getConfigureName();
         final Window w = initFrame();
         final PositionOption pos = new VisibilityOption(key, w);
         GameModule.getGameModule().getPrefs().addOption(pos);
 
-        GameModule.getGameModule().addKeyStrokeSource(new KeyStrokeSource(root, JComponent.WHEN_IN_FOCUSED_WINDOW));
+        GameModule.getGameModule()
+            .addKeyStrokeSource(new KeyStrokeSource(root, JComponent.WHEN_IN_FOCUSED_WINDOW));
       }
       GameModule.getGameModule().getToolBar().add(launch);
     }
@@ -298,14 +284,14 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString(Resources.NAME_LABEL),
       Resources.getString(Resources.DESCRIPTION),
-      Resources.getString("Editor.PieceWindow.hidden"), //$NON-NLS-1$
+      Resources.getString("Editor.PieceWindow.hidden"), // $NON-NLS-1$
       Resources.getString(Resources.BUTTON_TEXT),
       Resources.getString(Resources.TOOLTIP_TEXT),
       Resources.getString(Resources.BUTTON_ICON),
-      Resources.getString("Editor.PieceWindow.show_hide"), //$NON-NLS-1$
+      Resources.getString("Editor.PieceWindow.show_hide"), // $NON-NLS-1$
       Resources.getString("Editor.PieceWindow.scale"),
       Resources.getString("Editor.PieceWindow.default_docked_width")
     };
@@ -313,7 +299,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       String.class,
       Boolean.class,
@@ -329,13 +315,15 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new IconConfigurer(key, name, "/images/counter.gif"); //$NON-NLS-1$
+      return new IconConfigurer(key, name, "/images/counter.gif"); // $NON-NLS-1$
     }
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, DESCRIPTION, HIDDEN, BUTTON_TEXT, TOOLTIP, ICON, HOTKEY, SCALE, DEFAULT_DOCKED_WIDTH };
+    return new String[] {
+      NAME, DESCRIPTION, HIDDEN, BUTTON_TEXT, TOOLTIP, ICON, HOTKEY, SCALE, DEFAULT_DOCKED_WIDTH
+    };
   }
 
   @Override
@@ -343,80 +331,66 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
     if (DEPRECATED_NAME.equals(name)) {
       setAttribute(NAME, value);
       setAttribute(BUTTON_TEXT, value);
-    }
-    else if (NAME.equals(name)) {
+    } else if (NAME.equals(name)) {
       final String s = (String) value;
       setConfigureName(s);
       if (tooltip.isEmpty()) {
         launch.setToolTipText(Resources.getString("Editor.PieceWindow.show_hide_pieces_window", s));
       }
-    }
-    else if (HIDDEN.equals(name)) {
+    } else if (HIDDEN.equals(name)) {
       if (value instanceof String) {
-        value = Boolean.valueOf((String)value);
+        value = Boolean.valueOf((String) value);
       }
       hidden = (Boolean) value;
-    }
-    else if (SCALE.equals(name)) {
+    } else if (SCALE.equals(name)) {
       if (value instanceof String) {
-        value = Double.valueOf((String)value);
+        value = Double.valueOf((String) value);
       }
       scale = (Double) value;
-      if (scale < 0.01) { //BR// Just gonna go with some sanity.
+      if (scale < 0.01) { // BR// Just gonna go with some sanity.
         scale = 0.01;
-      }
-      else if (scale >= 4) {
+      } else if (scale >= 4) {
         scale = 4.0;
       }
-    }
-    else if (TOOLTIP.equals(name)) {
+    } else if (TOOLTIP.equals(name)) {
       tooltip = (String) value;
       launch.setAttribute(name, value);
-    }
-    else if (DEFAULT_DOCKED_WIDTH.equals(name)) {
+    } else if (DEFAULT_DOCKED_WIDTH.equals(name)) {
       if (value instanceof String) {
-        value = Integer.valueOf((String)value);
+        value = Integer.valueOf((String) value);
       }
-      defaultDockedWidth = (Integer)value;
-    }
-    else if (DESCRIPTION.equals(name)) {
-      description = (String)value;
-    }
-    else {
+      defaultDockedWidth = (Integer) value;
+    } else if (DESCRIPTION.equals(name)) {
+      description = (String) value;
+    } else {
       launch.setAttribute(name, value);
     }
   }
-
 
   @Override
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (HIDDEN.equals(name)) {
+    } else if (HIDDEN.equals(name)) {
       return String.valueOf(hidden);
-    }
-    else if (SCALE.equals(name)) {
+    } else if (SCALE.equals(name)) {
       return String.valueOf(scale);
-    }
-    else if (TOOLTIP.equals(name)) {
+    } else if (TOOLTIP.equals(name)) {
       return tooltip.isEmpty() ? launch.getAttributeValueString(name) : tooltip;
-    }
-    else if (DEFAULT_DOCKED_WIDTH.equals(name)) {
+    } else if (DEFAULT_DOCKED_WIDTH.equals(name)) {
       return String.valueOf(defaultDockedWidth);
-    }
-    else if (DESCRIPTION.equals(name)) {
+    } else if (DESCRIPTION.equals(name)) {
       return description;
-    }
-    else {
+    } else {
       return launch.getAttributeValueString(name);
     }
   }
 
-
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -425,6 +399,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Named KeyStrokes referenced in the Configurable, if any (for search)
    */
   @Override

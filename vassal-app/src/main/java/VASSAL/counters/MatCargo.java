@@ -16,6 +16,13 @@
  */
 package VASSAL.counters;
 
+import static VASSAL.counters.BasicPiece.BASIC_NAME;
+import static VASSAL.counters.BasicPiece.CURRENT_BOARD;
+import static VASSAL.counters.BasicPiece.CURRENT_MAP;
+import static VASSAL.counters.BasicPiece.CURRENT_ZONE;
+import static VASSAL.counters.BasicPiece.LOCATION_NAME;
+import static VASSAL.counters.BasicPiece.PIECE_NAME;
+
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
@@ -35,8 +42,6 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.imageop.GamePieceOp;
 import VASSAL.tools.imageop.Op;
 import VASSAL.tools.imageop.RotateScaleOp;
-
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -48,44 +53,47 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.KeyStroke;
 
-import static VASSAL.counters.BasicPiece.BASIC_NAME;
-import static VASSAL.counters.BasicPiece.CURRENT_BOARD;
-import static VASSAL.counters.BasicPiece.CURRENT_MAP;
-import static VASSAL.counters.BasicPiece.CURRENT_ZONE;
-import static VASSAL.counters.BasicPiece.LOCATION_NAME;
-import static VASSAL.counters.BasicPiece.PIECE_NAME;
-
-/**
- * Designates the piece as "Cargo", which can be placed on a "Mat" to move along with it
- */
+/** Designates the piece as "Cargo", which can be placed on a "Mat" to move along with it */
 public class MatCargo extends Decorator implements TranslatablePiece {
   public static final String ID = "matPiece;"; // NON-NLS
-  public static final String NO_MAT = "noMat"; //NON-NLS
+  public static final String NO_MAT = "noMat"; // NON-NLS
 
-  public static final String CURRENT_MAT    = "CurrentMat"; //NON-NLS     // Exposed property giving our current mat or "null"
-  public static final String CURRENT_MAT_ID = "CurrentMatID"; //NON-NLS   // Exposed property giving our current mat + uniqueID or "null"
-  public static final String CURRENT_MAT_X  = "CurrentMatX"; //NON-NLS    // Exposed property giving X position of our current mat
-  public static final String CURRENT_MAT_Y  = "CurrentMatY"; //NON-NLS    // Exposed property giving Y position of our current mat
-  public static final String CURRENT_MAT_OFFSET_X  = "CurrentMatOffsetX"; //NON-NLS    // Exposed property giving X offset to our current mat
-  public static final String CURRENT_MAT_OFFSET_Y  = "CurrentMatOffsetY"; //NON-NLS    // Exposed property giving Y offset to our current mat
-  public static final String CURRENT_MAT_PIECE_NAME = "CurrentMatPieceName"; // NON-NLS // Exposed property giving PieceName of our current mat
-  public static final String CURRENT_MAT_BASIC_NAME = "CurrentMatBasicName"; // NON-NLS // Exposed property giving BasicName of our current mat
-  public static final String CURRENT_MAT_LOCATION_NAME = "CurrentMatLocationName"; //NON-NLS
-  public static final String CURRENT_MAT_ZONE = "CurrentMatZone"; //NON-NLS
-  public static final String CURRENT_MAT_BOARD = "CurrentMatBoard"; //NON-NLS
-  public static final String CURRENT_MAT_MAP = "CurrentMatMap"; //NON-NLS
-  public static final String CURRENT_MAT_PROP0 = "CurrentMatProp0"; //NON-NLS // These expose identically named properties of the current mat (e.g. I would receive CurrentMatProp0 **of this piece's current map**
-  public static final String CURRENT_MAT_PROP1 = "CurrentMatProp1"; //NON-NLS
-  public static final String CURRENT_MAT_PROP2 = "CurrentMatProp2"; //NON-NLS
-  public static final String CURRENT_MAT_PROP3 = "CurrentMatProp3"; //NON-NLS
-  public static final String CURRENT_MAT_PROP4 = "CurrentMatProp4"; //NON-NLS
-  public static final String CURRENT_MAT_PROP5 = "CurrentMatProp5"; //NON-NLS
-  public static final String CURRENT_MAT_PROP6 = "CurrentMatProp6"; //NON-NLS
-  public static final String CURRENT_MAT_PROP7 = "CurrentMatProp7"; //NON-NLS
-  public static final String CURRENT_MAT_PROP8 = "CurrentMatProp8"; //NON-NLS
-  public static final String CURRENT_MAT_PROP9 = "CurrentMatProp9"; //NON-NLS
-  public static final String IS_CARGO       = "IsCargo"; //NON-NLS        // Exposed property returns "true"
+  public static final String CURRENT_MAT =
+      "CurrentMat"; // NON-NLS     // Exposed property giving our current mat or "null"
+  public static final String CURRENT_MAT_ID =
+      "CurrentMatID"; // NON-NLS   // Exposed property giving our current mat + uniqueID or "null"
+  public static final String CURRENT_MAT_X =
+      "CurrentMatX"; // NON-NLS    // Exposed property giving X position of our current mat
+  public static final String CURRENT_MAT_Y =
+      "CurrentMatY"; // NON-NLS    // Exposed property giving Y position of our current mat
+  public static final String CURRENT_MAT_OFFSET_X =
+      "CurrentMatOffsetX"; // NON-NLS    // Exposed property giving X offset to our current mat
+  public static final String CURRENT_MAT_OFFSET_Y =
+      "CurrentMatOffsetY"; // NON-NLS    // Exposed property giving Y offset to our current mat
+  public static final String CURRENT_MAT_PIECE_NAME =
+      "CurrentMatPieceName"; // NON-NLS // Exposed property giving PieceName of our current mat
+  public static final String CURRENT_MAT_BASIC_NAME =
+      "CurrentMatBasicName"; // NON-NLS // Exposed property giving BasicName of our current mat
+  public static final String CURRENT_MAT_LOCATION_NAME = "CurrentMatLocationName"; // NON-NLS
+  public static final String CURRENT_MAT_ZONE = "CurrentMatZone"; // NON-NLS
+  public static final String CURRENT_MAT_BOARD = "CurrentMatBoard"; // NON-NLS
+  public static final String CURRENT_MAT_MAP = "CurrentMatMap"; // NON-NLS
+  public static final String CURRENT_MAT_PROP0 =
+      "CurrentMatProp0"; // NON-NLS // These expose identically named properties of the current mat
+  // (e.g. I would receive CurrentMatProp0 **of this piece's current map**
+  public static final String CURRENT_MAT_PROP1 = "CurrentMatProp1"; // NON-NLS
+  public static final String CURRENT_MAT_PROP2 = "CurrentMatProp2"; // NON-NLS
+  public static final String CURRENT_MAT_PROP3 = "CurrentMatProp3"; // NON-NLS
+  public static final String CURRENT_MAT_PROP4 = "CurrentMatProp4"; // NON-NLS
+  public static final String CURRENT_MAT_PROP5 = "CurrentMatProp5"; // NON-NLS
+  public static final String CURRENT_MAT_PROP6 = "CurrentMatProp6"; // NON-NLS
+  public static final String CURRENT_MAT_PROP7 = "CurrentMatProp7"; // NON-NLS
+  public static final String CURRENT_MAT_PROP8 = "CurrentMatProp8"; // NON-NLS
+  public static final String CURRENT_MAT_PROP9 = "CurrentMatProp9"; // NON-NLS
+  public static final String IS_CARGO =
+      "IsCargo"; // NON-NLS        // Exposed property returns "true"
 
   // Type variables (configured in Ed)
   protected String desc;
@@ -110,16 +118,21 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   protected boolean useUnrotatedShape;
 
   public MatCargo() {
-    this(ID + ";true", null); //NON-NLS
+    this(ID + ";true", null); // NON-NLS
   }
 
   public MatCargo(String type, GamePiece inner) {
     mySetType(type);
     setInner(inner);
 
-    for (GamePiece check = inner; check instanceof Decorator; check = ((Decorator)check).getInner()) {
+    for (GamePiece check = inner;
+        check instanceof Decorator;
+        check = ((Decorator) check).getInner()) {
       if (check instanceof Mat) {
-        ErrorDialog.dataWarning(new BadDataReport("Same piece must not be both Mat and Mat Cargo -- will create infinite loops", type));
+        ErrorDialog.dataWarning(
+            new BadDataReport(
+                "Same piece must not be both Mat and Mat Cargo -- will create infinite loops",
+                type));
       }
     }
   }
@@ -144,11 +157,11 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(desc)
-      .append(maintainRelativeFacing)
-      .append(detectionDistanceX)
-      .append(detectionDistanceY)
-      .append(matFindKey)
-      .append(matDetachKey);
+        .append(maintainRelativeFacing)
+        .append(detectionDistanceX)
+        .append(detectionDistanceY)
+        .append(matFindKey)
+        .append(matDetachKey);
     return ID + se.getValue();
   }
 
@@ -161,7 +174,8 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Clear our relationship with any Mat we're assigned to. Does NOT clear the Mat's reference to us -- must be done separately.
+   * Clear our relationship with any Mat we're assigned to. Does NOT clear the Mat's reference to us
+   * -- must be done separately.
    */
   public void clearMat() {
     mat = null;
@@ -169,6 +183,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
 
   /**
    * Clear our relationship with any Mat we're assigned to, and return a command to do that.
+   *
    * @return return a command to clear our Mat relationship
    */
   public Command makeClearMatCommand() {
@@ -177,7 +192,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     }
 
     ChangeTracker ctMat = null;
-    final Mat actualMat = (Mat)getDecorator(getOutermost(mat), Mat.class);
+    final Mat actualMat = (Mat) getDecorator(getOutermost(mat), Mat.class);
     if (actualMat != null) {
       ctMat = new ChangeTracker(actualMat);
       actualMat.removeCargo(getOutermost(this));
@@ -197,6 +212,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
 
   /**
    * Mark us as being on a specific Mat piece
+   *
    * @param mat the mat we are joining
    */
   public void setMat(GamePiece mat) {
@@ -204,7 +220,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     if (mat != null) {
       final GamePiece actualMat = getDecorator(getOutermost(mat), Mat.class);
       if (actualMat != null) {
-        if (!((Mat)actualMat).hasCargo(getOutermost(this))) {
+        if (!((Mat) actualMat).hasCargo(getOutermost(this))) {
           ((Mat) actualMat).addCargo(getOutermost(this));
         }
       }
@@ -212,7 +228,9 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Places us "on" the designated Mat and returns a Command to duplicate the changes on other clients
+   * Places us "on" the designated Mat and returns a Command to duplicate the changes on other
+   * clients
+   *
    * @param newMat GamePiece with a Mat trait, that we are to be placed "on"
    * @return Command to duplicate the changes on other clients
    */
@@ -225,17 +243,18 @@ public class MatCargo extends Decorator implements TranslatablePiece {
       return makeClearMatCommand();
     }
 
-    final Mat actualMat = (Mat)getDecorator(getOutermost(newMat), Mat.class);
+    final Mat actualMat = (Mat) getDecorator(getOutermost(newMat), Mat.class);
     if (actualMat == null) {
       return makeClearMatCommand();
-    }
-    else {
+    } else {
       return actualMat.makeAddCargoCommand(this);
     }
   }
 
   /**
-   * Finds us a Mat to join at the specified point on a specified map. Or if no Mat, marks our removal from any we're on.
+   * Finds us a Mat to join at the specified point on a specified map. Or if no Mat, marks our
+   * removal from any we're on.
+   *
    * @param map map to check
    * @param pt point to check
    * @return A command that will duplicate any changes on another client.
@@ -250,8 +269,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
         if (mat != null) {
           comm = comm.append(mat.makeAddCargoCommand(getOutermost(this)));
         }
-      }
-      else {
+      } else {
         // We're NOT on a mat, so if we WERE on one, mark ourselves as no longer on it
         comm = comm.append(makeClearMatCommand());
       }
@@ -260,8 +278,9 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Non Command generating part of findNewMat(). Used to check for a potential
-   * valid mat at a target location without generating the Mat/Cargo commands
+   * Non Command generating part of findNewMat(). Used to check for a potential valid mat at a
+   * target location without generating the Mat/Cargo commands
+   *
    * @param map map to check
    * @param pt point to check
    * @return the Mat GamePiece at map.point or null if none
@@ -303,16 +322,19 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * Finds us a Mat to join at our current location. Or if no Mat, marks our removal from any we were on.
+   * Finds us a Mat to join at our current location. Or if no Mat, marks our removal from any we
+   * were on.
+   *
    * @return A Command that will duplicate any changes on another client.
    */
   public Command findNewMat() {
     return findNewMat(getMap(), getPosition());
   }
 
-
   /**
-   * Checks if GamePiece gp is a MatCargo, and if so finds it a new mat if needed (or clears it if it has moved off its former mat)
+   * Checks if GamePiece gp is a MatCargo, and if so finds it a new mat if needed (or clears it if
+   * it has moved off its former mat)
+   *
    * @param c Command to which to append
    * @param gp GamePiece
    * @return Command c with any needed additional commands appended
@@ -320,7 +342,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   public static Command findNewMat(Command c, GamePiece gp) {
     if (GameModule.getGameModule().isMatSupport()) {
       // If a cargo piece has been "sent", find it a new Mat if needed.
-      if (Boolean.TRUE.equals(gp.getProperty(IS_CARGO))) { //NON-NLS
+      if (Boolean.TRUE.equals(gp.getProperty(IS_CARGO))) { // NON-NLS
         final MatCargo cargo = (MatCargo) getDecorator(gp, MatCargo.class);
         if (cargo != null) {
           c = c.append(cargo.findNewMat());
@@ -341,7 +363,6 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   public KeyCommand[] myGetKeyCommands() {
     return KeyCommand.NONE;
   }
-
 
   @Override
   public String myGetState() {
@@ -383,7 +404,8 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     final String token = st.nextToken();
 
     mat = NO_MAT.equals(token) ? null : gm.getGameState().getPieceForId(token);
-    setMat(mat); //BR// This makes sure the Mat also knows about us. (if it loaded from saved game before us and couldn't find us yet)
+    setMat(mat); // BR// This makes sure the Mat also knows about us. (if it loaded from saved game
+    // before us and couldn't find us yet)
 
     gm.setMatSupport(true);
   }
@@ -398,12 +420,11 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     }
 
     Rectangle r;
-    if ((getGpOp() != null && getGpOp().isChanged()) ||
-        (r = bounds.get(angle)) == null) {
-      r = AffineTransform.getRotateInstance(-PI_180 * angle,
-                                            centerX(),
-                                            centerY())
-                         .createTransformedShape(b).getBounds();
+    if ((getGpOp() != null && getGpOp().isChanged()) || (r = bounds.get(angle)) == null) {
+      r =
+          AffineTransform.getRotateInstance(-PI_180 * angle, centerX(), centerY())
+              .createTransformedShape(b)
+              .getBounds();
       bounds.put(angle, r);
     }
 
@@ -433,7 +454,8 @@ public class MatCargo extends Decorator implements TranslatablePiece {
   }
 
   /**
-   * If we're maintaining facing to our Mat, rotate our graphics as appropriate to account for that when drawing
+   * If we're maintaining facing to our Mat, rotate our graphics as appropriate to account for that
+   * when drawing
    */
   @Override
   public void draw(Graphics g, int x, int y, Component obs, double zoom) {
@@ -450,8 +472,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
       rotOp.clear();
       op = Op.rotateScale(gpOp, angle, zoom);
       rotOp.put(angle, op);
-    }
-    else {
+    } else {
       op = rotOp.get(angle);
       if (op == null || op.getScale() != zoom) {
         op = Op.rotateScale(gpOp, angle, zoom);
@@ -484,6 +505,7 @@ public class MatCargo extends Decorator implements TranslatablePiece {
 
   /**
    * If we're maintaining facing to our Mat, rotate our piece's shape to account for that.
+   *
    * @return Properly rotated shape
    */
   @Override
@@ -495,9 +517,8 @@ public class MatCargo extends Decorator implements TranslatablePiece {
       return s;
     }
 
-    return AffineTransform.getRotateInstance(
-      -PI_180 * angle, centerX(), centerY()
-    ).createTransformedShape(s);
+    return AffineTransform.getRotateInstance(-PI_180 * angle, centerX(), centerY())
+        .createTransformedShape(s);
   }
 
   @Override
@@ -510,45 +531,42 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     if (mat != null) {
       if (CURRENT_MAT.equals(key)) {
         return mat.getProperty(Mat.MAT_NAME);
-      }
-      else if (Properties.IGNORE_GRID.equals(key) && mat != null) {
+      } else if (Properties.IGNORE_GRID.equals(key) && mat != null) {
         return true;
-      }
-      else if (CURRENT_MAT_ID.equals(key)) {
+      } else if (CURRENT_MAT_ID.equals(key)) {
         return mat.getProperty(Mat.MAT_ID);
-      }
-      else if (CURRENT_MAT_X.equals(key)) {
+      } else if (CURRENT_MAT_X.equals(key)) {
         return getOutermost(mat).getPosition().x;
-      }
-      else if (CURRENT_MAT_Y.equals(key)) {
+      } else if (CURRENT_MAT_Y.equals(key)) {
         return getOutermost(mat).getPosition().y;
-      }
-      else if (CURRENT_MAT_OFFSET_X.equals(key)) {
+      } else if (CURRENT_MAT_OFFSET_X.equals(key)) {
         return getOutermost(mat).getPosition().x - getOutermost(this).getPosition().x;
-      }
-      else if (CURRENT_MAT_OFFSET_Y.equals(key)) {
+      } else if (CURRENT_MAT_OFFSET_Y.equals(key)) {
         return getOutermost(mat).getPosition().y - getOutermost(this).getPosition().y;
-      }
-      else if (CURRENT_MAT_BASIC_NAME.equals(key)) {
+      } else if (CURRENT_MAT_BASIC_NAME.equals(key)) {
         return getOutermost(mat).getProperty(BASIC_NAME);
-      }
-      else if (CURRENT_MAT_PIECE_NAME.equals(key)) {
+      } else if (CURRENT_MAT_PIECE_NAME.equals(key)) {
         return getOutermost(mat).getProperty(PIECE_NAME);
-      }
-      else if (CURRENT_MAT_LOCATION_NAME.equals(key)) {
+      } else if (CURRENT_MAT_LOCATION_NAME.equals(key)) {
         return getOutermost(mat).getProperty(LOCATION_NAME);
-      }
-      else if (CURRENT_MAT_ZONE.equals(key)) {
+      } else if (CURRENT_MAT_ZONE.equals(key)) {
         return getOutermost(mat).getProperty(CURRENT_ZONE);
-      }
-      else if (CURRENT_MAT_BOARD.equals(key)) {
+      } else if (CURRENT_MAT_BOARD.equals(key)) {
         return getOutermost(mat).getProperty(CURRENT_BOARD);
-      }
-      else if (CURRENT_MAT_MAP.equals(key)) {
+      } else if (CURRENT_MAT_MAP.equals(key)) {
         return getOutermost(mat).getProperty(CURRENT_MAP);
-      }
-      else if (List.of(CURRENT_MAT_PROP0, CURRENT_MAT_PROP1, CURRENT_MAT_PROP2, CURRENT_MAT_PROP3, CURRENT_MAT_PROP4, CURRENT_MAT_PROP5, CURRENT_MAT_PROP6, CURRENT_MAT_PROP7, CURRENT_MAT_PROP8, CURRENT_MAT_PROP9
-      ).contains(key)) {
+      } else if (List.of(
+              CURRENT_MAT_PROP0,
+              CURRENT_MAT_PROP1,
+              CURRENT_MAT_PROP2,
+              CURRENT_MAT_PROP3,
+              CURRENT_MAT_PROP4,
+              CURRENT_MAT_PROP5,
+              CURRENT_MAT_PROP6,
+              CURRENT_MAT_PROP7,
+              CURRENT_MAT_PROP8,
+              CURRENT_MAT_PROP9)
+          .contains(key)) {
         return getOutermost(mat).getProperty(key);
       }
     }
@@ -564,42 +582,44 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     if (mat != null) {
       if (CURRENT_MAT.equals(key)) {
         return mat.getLocalizedProperty(Mat.MAT_NAME);
-      }
-      else if (Properties.IGNORE_GRID.equals(key) && mat != null) {
+      } else if (Properties.IGNORE_GRID.equals(key) && mat != null) {
         return true;
-      }
-      else if (CURRENT_MAT_BASIC_NAME.equals(key)) {
+      } else if (CURRENT_MAT_BASIC_NAME.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(BASIC_NAME);
-      }
-      else if (CURRENT_MAT_PIECE_NAME.equals(key)) {
+      } else if (CURRENT_MAT_PIECE_NAME.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(PIECE_NAME);
-      }
-      else if (CURRENT_MAT_LOCATION_NAME.equals(key)) {
+      } else if (CURRENT_MAT_LOCATION_NAME.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(LOCATION_NAME);
-      }
-      else if (CURRENT_MAT_ZONE.equals(key)) {
+      } else if (CURRENT_MAT_ZONE.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(CURRENT_ZONE);
-      }
-      else if (CURRENT_MAT_BOARD.equals(key)) {
+      } else if (CURRENT_MAT_BOARD.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(CURRENT_BOARD);
-      }
-      else if (CURRENT_MAT_MAP.equals(key)) {
+      } else if (CURRENT_MAT_MAP.equals(key)) {
         return getOutermost(mat).getLocalizedProperty(CURRENT_MAP);
-      }
-      else if (List.of(CURRENT_MAT_PROP0, CURRENT_MAT_PROP1, CURRENT_MAT_PROP2, CURRENT_MAT_PROP3, CURRENT_MAT_PROP4, CURRENT_MAT_PROP5, CURRENT_MAT_PROP6, CURRENT_MAT_PROP7, CURRENT_MAT_PROP8, CURRENT_MAT_PROP9
-      ).contains(key)) {
+      } else if (List.of(
+              CURRENT_MAT_PROP0,
+              CURRENT_MAT_PROP1,
+              CURRENT_MAT_PROP2,
+              CURRENT_MAT_PROP3,
+              CURRENT_MAT_PROP4,
+              CURRENT_MAT_PROP5,
+              CURRENT_MAT_PROP6,
+              CURRENT_MAT_PROP7,
+              CURRENT_MAT_PROP8,
+              CURRENT_MAT_PROP9)
+          .contains(key)) {
         return getOutermost(mat).getLocalizedProperty(key);
       }
     }
 
     if (List.of(
-      CURRENT_MAT_ID,
-      CURRENT_MAT_X,
-      CURRENT_MAT_Y,
-      CURRENT_MAT_OFFSET_X,
-      CURRENT_MAT_OFFSET_Y,
-      IS_CARGO
-    ).contains(key)) {
+            CURRENT_MAT_ID,
+            CURRENT_MAT_X,
+            CURRENT_MAT_Y,
+            CURRENT_MAT_OFFSET_X,
+            CURRENT_MAT_OFFSET_Y,
+            IS_CARGO)
+        .contains(key)) {
       return getProperty(key);
     }
     return super.getLocalizedProperty(key);
@@ -630,14 +650,13 @@ public class MatCargo extends Decorator implements TranslatablePiece {
 
   @Override
   public boolean testEquals(Object o) {
-    if (! (o instanceof MatCargo)) return false;
+    if (!(o instanceof MatCargo)) return false;
     final MatCargo c = (MatCargo) o;
     if (detectionDistanceX != c.detectionDistanceX) return false;
     if (detectionDistanceY != c.detectionDistanceY) return false;
     if (!Objects.equals(matFindKey, c.matFindKey)) return false;
     if (!Objects.equals(matDetachKey, c.matDetachKey)) return false;
-    return Objects.equals(desc, c.desc) &&
-           maintainRelativeFacing == c.maintainRelativeFacing;
+    return Objects.equals(desc, c.desc) && maintainRelativeFacing == c.maintainRelativeFacing;
   }
 
   @Override
@@ -645,41 +664,39 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     return HelpFile.getReferenceManualPage("MatCargo.html"); // NON-NLS
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   @Override
   public List<String> getPropertyNames() {
     return Arrays.asList(
-      CURRENT_MAT,
-      CURRENT_MAT_ID,
-      CURRENT_MAT_X,
-      CURRENT_MAT_Y,
-      CURRENT_MAT_OFFSET_X,
-      CURRENT_MAT_OFFSET_Y,
-      CURRENT_MAT_BASIC_NAME,
-      CURRENT_MAT_PIECE_NAME,
-      CURRENT_MAT_LOCATION_NAME,
-      CURRENT_MAT_ZONE,
-      CURRENT_MAT_BOARD,
-      CURRENT_MAT_MAP,
-      CURRENT_MAT_PROP0,
-      CURRENT_MAT_PROP1,
-      CURRENT_MAT_PROP2,
-      CURRENT_MAT_PROP3,
-      CURRENT_MAT_PROP4,
-      CURRENT_MAT_PROP5,
-      CURRENT_MAT_PROP6,
-      CURRENT_MAT_PROP7,
-      CURRENT_MAT_PROP8,
-      CURRENT_MAT_PROP9,
-      IS_CARGO,
-      BasicPiece.OLD_MAT,
-      BasicPiece.OLD_MAT_BASIC_NAME,
-      BasicPiece.OLD_MAT_ID,
-      BasicPiece.OLD_MAT_OFFSET_X,
-      BasicPiece.OLD_MAT_OFFSET_Y,
-      BasicPiece.OLD_MAT_PIECE_NAME);
+        CURRENT_MAT,
+        CURRENT_MAT_ID,
+        CURRENT_MAT_X,
+        CURRENT_MAT_Y,
+        CURRENT_MAT_OFFSET_X,
+        CURRENT_MAT_OFFSET_Y,
+        CURRENT_MAT_BASIC_NAME,
+        CURRENT_MAT_PIECE_NAME,
+        CURRENT_MAT_LOCATION_NAME,
+        CURRENT_MAT_ZONE,
+        CURRENT_MAT_BOARD,
+        CURRENT_MAT_MAP,
+        CURRENT_MAT_PROP0,
+        CURRENT_MAT_PROP1,
+        CURRENT_MAT_PROP2,
+        CURRENT_MAT_PROP3,
+        CURRENT_MAT_PROP4,
+        CURRENT_MAT_PROP5,
+        CURRENT_MAT_PROP6,
+        CURRENT_MAT_PROP7,
+        CURRENT_MAT_PROP8,
+        CURRENT_MAT_PROP9,
+        IS_CARGO,
+        BasicPiece.OLD_MAT,
+        BasicPiece.OLD_MAT_BASIC_NAME,
+        BasicPiece.OLD_MAT_ID,
+        BasicPiece.OLD_MAT_OFFSET_X,
+        BasicPiece.OLD_MAT_OFFSET_Y,
+        BasicPiece.OLD_MAT_PIECE_NAME);
   }
 
   public static class Ed implements PieceEditor {
@@ -723,11 +740,11 @@ public class MatCargo extends Decorator implements TranslatablePiece {
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(descInput.getValueString())
-        .append(rotInput.getValueBoolean())
-        .append(xInput.getIntValue(0))
-        .append(yInput.getIntValue(0))
-        .append(findInput.getValueString())
-        .append(detachInput.getValueString());
+          .append(rotInput.getValueBoolean())
+          .append(xInput.getIntValue(0))
+          .append(yInput.getIntValue(0))
+          .append(findInput.getValueString())
+          .append(detachInput.getValueString());
 
       return ID + se.getValue();
     }

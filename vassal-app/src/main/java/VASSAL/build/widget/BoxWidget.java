@@ -17,6 +17,10 @@
  */
 package VASSAL.build.widget;
 
+import VASSAL.build.Buildable;
+import VASSAL.build.Configurable;
+import VASSAL.build.Widget;
+import VASSAL.i18n.Resources;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
@@ -26,27 +30,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import VASSAL.build.Buildable;
-import VASSAL.build.Configurable;
-import VASSAL.build.Widget;
-import VASSAL.i18n.Resources;
-
 /**
- * A Widget that corresponds to a panel with a {@link JComboBox} above
- * a {@link JPanel} with a {@link CardLayout} layout.
- * Adding a Widget to a BoxWidget adds the child Widget's component
- * to the JPanel and adds the child's name
- * (via {@link Configurable#getConfigureName}) to the JComboBox.  Changing
- * the selection of the JComboBox shows the corresponding child's component
+ * A Widget that corresponds to a panel with a {@link JComboBox} above a {@link JPanel} with a
+ * {@link CardLayout} layout. Adding a Widget to a BoxWidget adds the child Widget's component to
+ * the JPanel and adds the child's name (via {@link Configurable#getConfigureName}) to the
+ * JComboBox. Changing the selection of the JComboBox shows the corresponding child's component
  */
-public class BoxWidget extends Widget
-    implements ItemListener, PropertyChangeListener {
+public class BoxWidget extends Widget implements ItemListener, PropertyChangeListener {
   private JPanel panel;
   private JComboBox<Widget> box;
   private final DefaultComboBoxModel<Widget> widgets = new DefaultComboBoxModel<>();
@@ -86,8 +81,7 @@ public class BoxWidget extends Widget
 
   @Override
   public void propertyChange(java.beans.PropertyChangeEvent evt) {
-    if (NAME_PROPERTY.equals(evt.getPropertyName())
-        && box != null) {
+    if (NAME_PROPERTY.equals(evt.getPropertyName()) && box != null) {
       box.revalidate();
     }
   }
@@ -141,28 +135,26 @@ public class BoxWidget extends Widget
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{NAME, WIDTH, HEIGHT};
+    return new String[] {NAME, WIDTH, HEIGHT};
   }
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{Resources.getString("Editor.name_label")};
+    return new String[] {Resources.getString("Editor.name_label")};
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{String.class};
+    return new Class<?>[] {String.class};
   }
 
   @Override
   public void setAttribute(String name, Object value) {
     if (NAME.equals(name)) {
       setConfigureName((String) value);
-    }
-    else if (WIDTH.equals(name)) {
+    } else if (WIDTH.equals(name)) {
       size.width = Integer.parseInt(value.toString());
-    }
-    else if (HEIGHT.equals(name)) {
+    } else if (HEIGHT.equals(name)) {
       size.height = Integer.parseInt(value.toString());
     }
   }
@@ -171,17 +163,17 @@ public class BoxWidget extends Widget
   public String getAttributeValueString(String name) {
     if (NAME.equals(name)) {
       return getConfigureName();
-    }
-    else if (WIDTH.equals(name)) {
-      final int w = allChildrenBuilt() ?
-        multiPanel.getLayout().preferredLayoutSize(multiPanel).width :
-        size.width;
+    } else if (WIDTH.equals(name)) {
+      final int w =
+          allChildrenBuilt()
+              ? multiPanel.getLayout().preferredLayoutSize(multiPanel).width
+              : size.width;
       return String.valueOf(w);
-    }
-    else if (HEIGHT.equals(name)) {
-      final int h = allChildrenBuilt() ?
-        multiPanel.getLayout().preferredLayoutSize(multiPanel).height :
-        size.height;
+    } else if (HEIGHT.equals(name)) {
+      final int h =
+          allChildrenBuilt()
+              ? multiPanel.getLayout().preferredLayoutSize(multiPanel).height
+              : size.height;
       return String.valueOf(h);
     }
     return null;

@@ -29,7 +29,6 @@ import VASSAL.configure.StringArrayConfigurer;
 import VASSAL.configure.StringConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -37,13 +36,13 @@ import java.awt.Shape;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
 import javax.swing.KeyStroke;
 
 /**
  * d/b/a "Restricted Access"
  *
- * A GamePiece with the Restricted trait can only be manipulated by the player playing a specific side
+ * <p>A GamePiece with the Restricted trait can only be manipulated by the player playing a specific
+ * side
  */
 public class Restricted extends Decorator implements EditablePiece {
   public static final String ID = "restrict;"; // NON-NLS
@@ -145,17 +144,20 @@ public class Restricted extends Decorator implements EditablePiece {
     return restricted;
   }
 
-/*  @Override
-  public void setMap(Map m) {
-    if (m != null && restrictByPlayer && owningPlayer.length() == 0) {
-      owningPlayer = GameModule.getActiveUserId();
+  /*  @Override
+    public void setMap(Map m) {
+      if (m != null && restrictByPlayer && owningPlayer.length() == 0) {
+        owningPlayer = GameModule.getActiveUserId();
+      }
+      super.setMap(m);
     }
-    super.setMap(m);
-  }
-*/
+  */
   @Override
   public void setProperty(Object key, Object val) {
-    if (Properties.SELECTED.equals(key) && Boolean.TRUE.equals(val) && restrictByPlayer && owningPlayer.length() == 0) {
+    if (Properties.SELECTED.equals(key)
+        && Boolean.TRUE.equals(val)
+        && restrictByPlayer
+        && owningPlayer.length() == 0) {
       if (getMap() != null) {
         owningPlayer = GameModule.getActiveUserId();
       }
@@ -172,11 +174,9 @@ public class Restricted extends Decorator implements EditablePiece {
   public Object getLocalizedProperty(Object key) {
     if (Properties.RESTRICTED.equals(key)) {
       return isRestricted();
-    }
-    else if (Properties.RESTRICTED_MOVEMENT.equals(key)) {
+    } else if (Properties.RESTRICTED_MOVEMENT.equals(key)) {
       return isRestricted() && restrictMovement;
-    }
-    else {
+    } else {
       return super.getLocalizedProperty(key);
     }
   }
@@ -185,11 +185,9 @@ public class Restricted extends Decorator implements EditablePiece {
   public Object getProperty(Object key) {
     if (Properties.RESTRICTED.equals(key)) {
       return isRestricted();
-    }
-    else if (Properties.RESTRICTED_MOVEMENT.equals(key)) {
+    } else if (Properties.RESTRICTED_MOVEMENT.equals(key)) {
       return isRestricted() && restrictMovement;
-    }
-    else {
+    } else {
       return super.getProperty(key);
     }
   }
@@ -201,7 +199,13 @@ public class Restricted extends Decorator implements EditablePiece {
 
   @Override
   public String myGetType() {
-    return ID + new SequenceEncoder(';').append(side).append(restrictByPlayer).append(restrictMovement).append(description).getValue();
+    return ID
+        + new SequenceEncoder(';')
+            .append(side)
+            .append(restrictByPlayer)
+            .append(restrictMovement)
+            .append(description)
+            .getValue();
   }
 
   @Override
@@ -213,8 +217,7 @@ public class Restricted extends Decorator implements EditablePiece {
   public Command keyEvent(KeyStroke stroke) {
     if (!isRestricted()) {
       return super.keyEvent(stroke);
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -232,11 +235,11 @@ public class Restricted extends Decorator implements EditablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Restricted)) return false;
+    if (!(o instanceof Restricted)) return false;
     final Restricted c = (Restricted) o;
     if (!Arrays.equals(side, c.side)) return false;
-    if (! Objects.equals(restrictByPlayer, c.restrictByPlayer)) return false;
-    if (! Objects.equals(restrictMovement, c.restrictMovement)) return false;
+    if (!Objects.equals(restrictByPlayer, c.restrictByPlayer)) return false;
+    if (!Objects.equals(restrictMovement, c.restrictMovement)) return false;
     return Objects.equals(owningPlayer, c.owningPlayer);
   }
 
@@ -244,7 +247,6 @@ public class Restricted extends Decorator implements EditablePiece {
   public PieceEditor getEditor() {
     return new Ed(this);
   }
-
 
   public static class Ed implements PieceEditor {
     private final BooleanConfigurer byPlayer;
@@ -284,13 +286,20 @@ public class Restricted extends Decorator implements EditablePiece {
 
     @Override
     public String getType() {
-      return ID + new SequenceEncoder(';').append(config.getValueString()).append(byPlayer.booleanValue()).append(movementConfig.booleanValue()).append(descInput.getValueString()).getValue();
+      return ID
+          + new SequenceEncoder(';')
+              .append(config.getValueString())
+              .append(byPlayer.booleanValue())
+              .append(movementConfig.booleanValue())
+              .append(descInput.getValueString())
+              .getValue();
     }
   }
+
   /**
    * When a player changes sides to become an observer, relinquish ownership of all pieces
-   * @author rodneykinney
    *
+   * @author rodneykinney
    */
   private static class RetirementHandler implements PlayerRoster.SideChangeListener, PieceVisitor {
 
@@ -301,7 +310,7 @@ public class Restricted extends Decorator implements EditablePiece {
         Command c = new NullCommand();
         for (final Map m : GameModule.getGameModule().getComponentsOf(Map.class)) {
           for (final GamePiece piece : m.getPieces()) {
-            c = c.append((Command)d.accept(piece));
+            c = c.append((Command) d.accept(piece));
           }
         }
         GameModule.getGameModule().sendAndLog(c);
@@ -311,9 +320,7 @@ public class Restricted extends Decorator implements EditablePiece {
     @Override
     public Object visitDefault(GamePiece p) {
       final Restricted r = (Restricted) getDecorator(p, Restricted.class);
-      if (r != null
-          && r.restrictByPlayer
-          && GameModule.getActiveUserId().equals(r.owningPlayer)) {
+      if (r != null && r.restrictByPlayer && GameModule.getActiveUserId().equals(r.owningPlayer)) {
 
         final ChangeTracker t = new ChangeTracker(p);
         r.owningPlayer = "";
@@ -326,10 +333,9 @@ public class Restricted extends Decorator implements EditablePiece {
     public Object visitStack(Stack s) {
       Command c = new NullCommand();
       for (final GamePiece gamePiece : s.asList()) {
-        c = c.append((Command)visitDefault(gamePiece));
+        c = c.append((Command) visitDefault(gamePiece));
       }
       return c;
     }
-
   }
 }

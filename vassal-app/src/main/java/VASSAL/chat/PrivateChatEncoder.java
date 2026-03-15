@@ -21,11 +21,9 @@ import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.tools.SequenceEncoder;
 
-/**
- *  Date: Mar 16, 2003
- */
+/** Date: Mar 16, 2003 */
 public class PrivateChatEncoder implements CommandEncoder {
-  public static final String COMMAND_PREFIX = "PRIV_CHAT"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "PRIV_CHAT"; // $NON-NLS-1$
 
   private final PlayerEncoder playerEncoder;
   private final PrivateChatManager pChatMgr;
@@ -42,9 +40,7 @@ public class PrivateChatEncoder implements CommandEncoder {
     }
     final PrivMsgCommand cmd = (PrivMsgCommand) c;
     final SequenceEncoder se = new SequenceEncoder(COMMAND_PREFIX, '/');
-    se
-      .append(playerEncoder.playerToString(cmd.getSender()))
-      .append(cmd.getMessage());
+    se.append(playerEncoder.playerToString(cmd.getSender())).append(cmd.getMessage());
     return se.getValue();
   }
 

@@ -18,6 +18,8 @@
 
 package VASSAL.tools.opcache;
 
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -30,11 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.swing.SwingWorker;
-
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
 
 /**
  * A memory-sensitive cache for {@link Op}s and their results.
@@ -44,9 +42,7 @@ import VASSAL.tools.concurrent.ConcurrentSoftHashMap;
  */
 public class OpCache {
 
-  /**
-   * A cache key for <code>OpCache</code>.
-   */
+  /** A cache key for <code>OpCache</code>. */
   public static class Key<V> {
     public final Op<V> op;
     public final int version;
@@ -76,9 +72,7 @@ public class OpCache {
       if (o.getClass() != this.getClass()) return false;
 
       final Key<?> k = (Key<?>) o;
-      return version == k.version &&
-             op.equals(k.op) &&
-             deps.equals(k.deps);
+      return version == k.version && op.equals(k.op) && deps.equals(k.deps);
     }
 
     /** {@inheritDoc} */
@@ -90,17 +84,15 @@ public class OpCache {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-      return this.getClass().getName() +
-        "[op=" + op + ",version=" + version + "]"; //NON-NLS
+      return this.getClass().getName() + "[op=" + op + ",version=" + version + "]"; // NON-NLS
     }
   }
 
-  protected final ConcurrentMap<Key<?>, Future<?>> cache =
-    new ConcurrentSoftHashMap<>();
+  protected final ConcurrentMap<Key<?>, Future<?>> cache = new ConcurrentSoftHashMap<>();
 
   /**
-   * A request for execution of an {@link Op} which will be completed
-   * synchronously and set manually.
+   * A request for execution of an {@link Op} which will be completed synchronously and set
+   * manually.
    */
   private static final class Result<V> implements Future<V> {
     private static final long serialVersionUID = 1L;
@@ -141,9 +133,8 @@ public class OpCache {
     }
 
     @Override
-    public V get(long timeout, TimeUnit unit) throws InterruptedException,
-                                                     ExecutionException,
-                                                     TimeoutException {
+    public V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException {
 
       if (done.await(timeout, unit)) {
         if (failed) throw new ExecutionException(new OpFailedException());
@@ -153,39 +144,36 @@ public class OpCache {
     }
   }
 
-  /**
-   * The {@link Future} which is cached on failure of an {@link Op}.
-   */
-  private static final Future<Void> failure = new Future<>() {
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-      return false;
-    }
+  /** The {@link Future} which is cached on failure of an {@link Op}. */
+  private static final Future<Void> failure =
+      new Future<>() {
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+          return false;
+        }
 
-    @Override
-    public Void get() throws ExecutionException {
-      throw new ExecutionException(new OpFailedException());
-    }
+        @Override
+        public Void get() throws ExecutionException {
+          throw new ExecutionException(new OpFailedException());
+        }
 
-    @Override
-    public Void get(long timeout, TimeUnit unit) throws ExecutionException {
-      throw new ExecutionException(new OpFailedException());
-    }
+        @Override
+        public Void get(long timeout, TimeUnit unit) throws ExecutionException {
+          throw new ExecutionException(new OpFailedException());
+        }
 
-    @Override
-    public boolean isCancelled() {
-      return false;
-    }
+        @Override
+        public boolean isCancelled() {
+          return false;
+        }
 
-    @Override
-    public boolean isDone() {
-      return true;
-    }
-  };
+        @Override
+        public boolean isDone() {
+          return true;
+        }
+      };
 
-  /**
-   * A request for execution of an {@link Op}, to be queued.
-   */
+  /** A request for execution of an {@link Op}, to be queued. */
   private class Request<V> extends SwingWorker<V, Void> {
     private final Key<V> key;
     private final OpObserver<V> obs;
@@ -208,16 +196,13 @@ public class OpCache {
       try {
         final V val = get();
         if (obs != null) obs.succeeded(key.op, val);
-      }
-      catch (CancellationException e) {
+      } catch (CancellationException e) {
         cache.remove(key, this);
         if (obs != null) obs.cancelled(key.op, e);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         cache.remove(key, this);
         if (obs != null) obs.interrupted(key.op, e);
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         cache.replace(key, this, failure);
         if (obs != null) obs.failed(key.op, e);
       }
@@ -233,8 +218,7 @@ public class OpCache {
   public <V> V get(Key<V> key) {
     try {
       return get(key, null);
-    }
-    catch (CancellationException | ExecutionException | InterruptedException e) {
+    } catch (CancellationException | ExecutionException | InterruptedException e) {
       // FIXME: bug until we permit cancellation
       ErrorDialog.bug(e);
     }
@@ -246,17 +230,14 @@ public class OpCache {
    * Gets a value from the cache, possibly asynchronously.
    *
    * @param key the <code>Key</code> for which to retrieve a value
-   * @param obs the <code>OpObserver</code> to notify when the value is
-   * available
+   * @param obs the <code>OpObserver</code> to notify when the value is available
    * @return the value associated with <code>key</code>
-   *
    * @throws CancellationException if the request is cancelled
    * @throws InterruptedException if the request is interrupted
    * @throws ExecutionException if the request fails
    */
-  public <V> V get(Key<V> key, OpObserver<V> obs) throws CancellationException,
-                                                         InterruptedException,
-                                                         ExecutionException {
+  public <V> V get(Key<V> key, OpObserver<V> obs)
+      throws CancellationException, InterruptedException, ExecutionException {
 
     final Future<V> fut = getFuture(key, obs);
 
@@ -265,16 +246,13 @@ public class OpCache {
     if (obs == null || fut.isDone()) {
       try {
         return fut.get();
-      }
-      catch (CancellationException e) {
+      } catch (CancellationException e) {
         cache.remove(key, fut);
         throw (CancellationException) new CancellationException().initCause(e);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
         cache.remove(key, fut);
         throw (InterruptedException) new InterruptedException().initCause(e);
-      }
-      catch (ExecutionException e) {
+      } catch (ExecutionException e) {
         cache.replace(key, fut, failure);
         throw new ExecutionException(e);
       }
@@ -285,21 +263,16 @@ public class OpCache {
   }
 
   /**
-   * Gets a {@link Future} from the cache. If <code>obs == null</code>, then
-   * the {@link Op} associated with <code>key</code> will be executed
-   * synchronously, and asynchronously otherwise.
+   * Gets a {@link Future} from the cache. If <code>obs == null</code>, then the {@link Op}
+   * associated with <code>key</code> will be executed synchronously, and asynchronously otherwise.
    *
-   * @param key the <code>Key</code> for which to retrieve a
-   *    <code>Future</code>
-   * @param obs the <code>OpObserver</code> to notify when the value is
-   *    available
+   * @param key the <code>Key</code> for which to retrieve a <code>Future</code>
+   * @param obs the <code>OpObserver</code> to notify when the value is available
    * @return the <code>Future</code> associated with <code>key</code>
-   *
    * @throws ExecutionException if the request is synchronous and fails
    */
   @SuppressWarnings("unchecked")
-  public <V> Future<V> getFuture(Key<V> key, OpObserver<V> obs)
-                                                    throws ExecutionException {
+  public <V> Future<V> getFuture(Key<V> key, OpObserver<V> obs) throws ExecutionException {
 
     // The code in this method was inspired by the article at
     // http://www.javaspecialists.eu/archive/Issue125.html.
@@ -316,20 +289,17 @@ public class OpCache {
           V val = null;
           try {
             val = key.op.eval();
-          }
-          catch (Throwable t) {
+          } catch (Throwable t) {
             res.fail();
             cache.put(key, failure);
             throw new ExecutionException(t);
-          }
-          finally {
+          } finally {
             res.set(val);
           }
 
           fut = res;
         }
-      }
-      else {
+      } else {
         final Request<V> req = new Request<>(key, obs);
         fut = (Future<V>) cache.putIfAbsent(key, req);
         if (fut == null) {
@@ -337,8 +307,7 @@ public class OpCache {
           fut = req;
         }
       }
-    }
-    else {
+    } else {
       // Are we a synchronous request in the queue being re-requested?
       if (obs == null && fut instanceof Runnable) {
         if (requestQueue.remove(fut)) {
@@ -351,14 +320,17 @@ public class OpCache {
     return fut;
   }
 
-/////
-// FIXME: finalize this...
-  private final BlockingQueue<Runnable> requestQueue =
-    new LinkedBlockingQueue<>();
+  /////
+  // FIXME: finalize this...
+  private final BlockingQueue<Runnable> requestQueue = new LinkedBlockingQueue<>();
 
   private static class Ex extends ThreadPoolExecutor {
-    public Ex(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-              TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+    public Ex(
+        int corePoolSize,
+        int maximumPoolSize,
+        long keepAliveTime,
+        TimeUnit unit,
+        BlockingQueue<Runnable> workQueue) {
       super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
     }
 
@@ -368,8 +340,7 @@ public class OpCache {
     }
   }
 
-  private final Ex threadPool =
-    new Ex(2, 2, 60, TimeUnit.SECONDS, requestQueue);
+  private final Ex threadPool = new Ex(2, 2, 60, TimeUnit.SECONDS, requestQueue);
 
   /**
    * Gets a value from the cache, if it is already calculated.
@@ -383,15 +354,14 @@ public class OpCache {
     if (fut != null && fut.isDone()) {
       try {
         return fut.get();
-      }
-      catch (CancellationException | ExecutionException | InterruptedException e) {
+      } catch (CancellationException | ExecutionException | InterruptedException e) {
       }
     }
     return null;
   }
 
   public void clear() {
-// FIXME: should cancel all pending requests?
+    // FIXME: should cancel all pending requests?
     cache.clear();
   }
 }

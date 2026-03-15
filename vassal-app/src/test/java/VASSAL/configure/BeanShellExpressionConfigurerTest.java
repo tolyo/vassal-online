@@ -9,7 +9,6 @@ import VASSAL.counters.DecoratorTest;
 import VASSAL.tools.icon.IconFactory;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -19,15 +18,17 @@ public class BeanShellExpressionConfigurerTest extends DecoratorTest {
   @Test
   public void constructors() {
     BufferedImage dummyImage = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-    // Create a static mock for IconFactory and return the Calculator icon when asked. Allows Editors with Beanshell configurers to initialise.
+    // Create a static mock for IconFactory and return the Calculator icon when asked. Allows
+    // Editors with Beanshell configurers to initialise.
     try (MockedStatic<IconFactory> staticIf = Mockito.mockStatic(IconFactory.class)) {
-      staticIf.when(() -> IconFactory.getIcon("calculator", 12)).thenReturn(new ImageIcon(dummyImage));
+      staticIf
+          .when(() -> IconFactory.getIcon("calculator", 12))
+          .thenReturn(new ImageIcon(dummyImage));
       final String key = "key";
       final String name = "name";
       final String value = "x * 2";
       final BasicPiece piece = createBasicPiece();
       final BeanShellExpressionConfigurer.Option option = BeanShellExpressionConfigurer.Option.PME;
-
 
       BeanShellExpressionConfigurer c;
 
@@ -49,6 +50,4 @@ public class BeanShellExpressionConfigurerTest extends DecoratorTest {
       assertThat(c.getValueString(), is(equalTo(value)));
     }
   }
-
-
 }

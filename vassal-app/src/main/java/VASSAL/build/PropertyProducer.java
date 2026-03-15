@@ -18,12 +18,9 @@
 
 package VASSAL.build;
 
-/**
- * A component that exposes properties
- */
+/** A component that exposes properties */
 @FunctionalInterface
 public interface PropertyProducer {
 
   Object getProperty(Object key);
-
 }

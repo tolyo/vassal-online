@@ -1,12 +1,12 @@
 package VASSAL.command;
 
-import org.junit.jupiter.api.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+
+import org.junit.jupiter.api.Test;
 
 class CommandCodecTest {
   private static final char COMMAND_SEPARATOR = 27;
@@ -67,8 +67,7 @@ class CommandCodecTest {
     }
 
     @Override
-    protected void executeCommand() {
-    }
+    protected void executeCommand() {}
 
     @Override
     protected Command myUndoCommand() {

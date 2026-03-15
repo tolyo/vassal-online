@@ -17,9 +17,6 @@
  */
 package VASSAL.build.module;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.module.map.CounterDetailViewer;
 import VASSAL.build.module.map.HandMetrics;
@@ -27,6 +24,8 @@ import VASSAL.build.module.map.StackExpander;
 import VASSAL.build.module.map.StackMetrics;
 import VASSAL.counters.GamePiece;
 import VASSAL.i18n.Resources;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 
 public class PlayerHand extends PrivateMap {
   @Override
@@ -37,8 +36,7 @@ public class PlayerHand extends PrivateMap {
         remove(se);
         removeLocalMouseListener(se);
       }
-      for (final CounterDetailViewer cdv :
-              getComponentsOf(CounterDetailViewer.class)) {
+      for (final CounterDetailViewer cdv : getComponentsOf(CounterDetailViewer.class)) {
         remove(cdv);
         cdv.removeFrom(this);
       }
@@ -46,12 +44,12 @@ public class PlayerHand extends PrivateMap {
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.PlayerHand.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.PlayerHand.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("PlayerHand.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("PlayerHand.html"); // $NON-NLS-1$
   }
 
   @Override

@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 public class StackTest {
@@ -413,7 +412,6 @@ public class StackTest {
 
     // assert
     assertNull(s.getProperty(key));
-
   }
 
   @Test
@@ -460,7 +458,6 @@ public class StackTest {
       final GamePiece gamePiece = iterator.next();
       assertEquals(gamePieces.get(i++), gamePiece);
     }
-
   }
 
   @Test

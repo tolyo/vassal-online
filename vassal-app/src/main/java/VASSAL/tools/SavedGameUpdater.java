@@ -17,12 +17,6 @@
  */
 package VASSAL.tools;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import VASSAL.build.Configurable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameState;
@@ -34,11 +28,18 @@ import VASSAL.counters.PieceCloner;
 import VASSAL.counters.Replace;
 import VASSAL.counters.Stack;
 import VASSAL.i18n.Resources;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class SavedGameUpdater {
   /**
-   * Returns a mapping of GamePiece type to the id of a PieceSlot in the module
-   * This information is exported from an old module version, then imported into a new module version to update saved games
+   * Returns a mapping of GamePiece type to the id of a PieceSlot in the module This information is
+   * exported from an old module version, then imported into a new module version to update saved
+   * games
+   *
    * @return Returns a mapping of GamePiece type to the id of a PieceSlot in the module
    */
   public Properties getPieceSlotsMap() {
@@ -49,13 +50,11 @@ public class SavedGameUpdater {
   }
 
   /**
-   *
    * @param pieceSlot the imported piece-slot map from an earlier version of the module
-   * @param savedGame the save game to update.  The file gets overwritten.
+   * @param savedGame the save game to update. The file gets overwritten.
    * @throws IOException oops
    */
-  public void updateSavedGame(Properties pieceSlot, File savedGame)
-                                                           throws IOException {
+  public void updateSavedGame(Properties pieceSlot, File savedGame) throws IOException {
     final GameState gs = GameModule.getGameModule().getGameState();
 
     gs.setup(false, true);
@@ -65,8 +64,7 @@ public class SavedGameUpdater {
     while (!gs.isGameStarted()) {
       try {
         Thread.sleep(100);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
       }
     }
 
@@ -78,15 +76,14 @@ public class SavedGameUpdater {
           Configurable[] path = null;
           try {
             path = ComponentPathBuilder.getInstance().getPath(slotId);
-            if (path != null &&
-                path.length > 0 &&
-                path[path.length - 1] instanceof PieceSlot) {
+            if (path != null && path.length > 0 && path[path.length - 1] instanceof PieceSlot) {
               final PieceSlot slot = (PieceSlot) path[path.length - 1];
               if (!slot.getPiece().getType().equals(p.getType())) {
                 if (!(p instanceof Decorator)) {
-                  GameModule.getGameModule().getChatter().show(Resources.getString("Editor.SavedGameUpdater.basic_only", p.getName()));
-                }
-                else {
+                  GameModule.getGameModule()
+                      .getChatter()
+                      .show(Resources.getString("Editor.SavedGameUpdater.basic_only", p.getName()));
+                } else {
                   final ReplaceTrait r = new ReplaceTrait(p, slot.getPiece());
                   r.replacePiece();
                 }
@@ -95,11 +92,16 @@ public class SavedGameUpdater {
           }
           // FIXME: review error message
           catch (ComponentPathBuilder.PathFormatException ex) {
-            GameModule.getGameModule().getChatter().show(Resources.getString("Editor.SavedGameUpdater.unable", p.getName(), ex.getMessage()));
+            GameModule.getGameModule()
+                .getChatter()
+                .show(
+                    Resources.getString(
+                        "Editor.SavedGameUpdater.unable", p.getName(), ex.getMessage()));
           }
-        }
-        else {
-          GameModule.getGameModule().getChatter().show(Resources.getString("Editor.SavedGameUpdater.no_slot", p.getName()));
+        } else {
+          GameModule.getGameModule()
+              .getChatter()
+              .show(Resources.getString("Editor.SavedGameUpdater.no_slot", p.getName()));
           GameModule.getGameModule().getChatter().show(p.getType());
         }
       }
@@ -110,21 +112,18 @@ public class SavedGameUpdater {
   }
 
   protected void findPieceSlots(List<Configurable> l, Properties p) {
-    final Configurable last = l.isEmpty() ?
-      GameModule.getGameModule() : l.get(l.size() - 1);
+    final Configurable last = l.isEmpty() ? GameModule.getGameModule() : l.get(l.size() - 1);
 
     if (last instanceof PieceSlot) {
       final PieceSlot slot = (PieceSlot) last;
 
       // Resolve prototypes
-      final GamePiece clone =
-        PieceCloner.getInstance().clonePiece(slot.getPiece());
+      final GamePiece clone = PieceCloner.getInstance().clonePiece(slot.getPiece());
 
-      p.setProperty(clone.getType(),
-        ComponentPathBuilder.getInstance().getId(
-          l.toArray(new Configurable[0])));
-    }
-    else {
+      p.setProperty(
+          clone.getType(),
+          ComponentPathBuilder.getInstance().getId(l.toArray(new Configurable[0])));
+    } else {
       final Configurable[] children = last.getConfigureComponents();
       for (final Configurable child : children) {
         l.add(child); // NOPMD
@@ -138,7 +137,7 @@ public class SavedGameUpdater {
     private final GamePiece replacement;
 
     public ReplaceTrait(GamePiece original, GamePiece replacement) {
-      super(ID + "Replace;R;dummy;;0;0;true", original); //NON-NLS
+      super(ID + "Replace;R;dummy;;0;0;true", original); // NON-NLS
       setProperty(VASSAL.counters.Properties.OUTER, original);
       original.setProperty(VASSAL.counters.Properties.OUTER, null);
       this.replacement = replacement;

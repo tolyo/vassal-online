@@ -17,11 +17,11 @@
  */
 package VASSAL.chat.messageboard;
 
+import VASSAL.i18n.Resources;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -31,8 +31,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-
-import VASSAL.i18n.Resources;
 
 public class MessageViewer extends JPanel {
   private static final long serialVersionUID = 1L;
@@ -48,11 +46,11 @@ public class MessageViewer extends JPanel {
 
   public void setMessages(Enumeration<Message> msgEnum) {
     msgList.clear();
-    msgText.setText("");  //$NON-NLS-1$
+    msgText.setText(""); // $NON-NLS-1$
     final Vector<Vector<String>> rows = new Vector<>(); // NOPMD
     final Vector<String> names = new Vector<>(); // NOPMD
-    names.addElement(Resources.getString("Chat.sender"));  //$NON-NLS-1$
-    names.addElement(Resources.getString("Chat.date"));  //$NON-NLS-1$
+    names.addElement(Resources.getString("Chat.sender")); // $NON-NLS-1$
+    names.addElement(Resources.getString("Chat.date")); // $NON-NLS-1$
     while (msgEnum.hasMoreElements()) {
       final Message msg = msgEnum.nextElement();
       msgList.add(msg);
@@ -71,7 +69,10 @@ public class MessageViewer extends JPanel {
   private void initComponents() {
     final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-    model = new DefaultTableModel(new Object[]{Resources.getString("Chat.sender"), Resources.getString("Chat.date")}, 0);   //$NON-NLS-1$ //$NON-NLS-2$
+    model =
+        new DefaultTableModel(
+            new Object[] {Resources.getString("Chat.sender"), Resources.getString("Chat.date")},
+            0); //$NON-NLS-1$ //$NON-NLS-2$
     msgTable = new JTable(model);
     msgTable.getSelectionModel().addListSelectionListener(new ShowMsgText());
     JScrollPane scroll = new JScrollPane(msgTable);
@@ -82,7 +83,7 @@ public class MessageViewer extends JPanel {
     msgText.setWrapStyleWord(true);
     msgText.setEditable(false);
     scroll = new JScrollPane(msgText);
-    scroll.setBorder(new TitledBorder(Resources.getString("Chat.message")));  //$NON-NLS-1$
+    scroll.setBorder(new TitledBorder(Resources.getString("Chat.message"))); // $NON-NLS-1$
     split.add(scroll);
 
     add(split);
@@ -94,9 +95,8 @@ public class MessageViewer extends JPanel {
       final int index = msgTable.getSelectedRow();
       if (index >= 0 && index < msgList.size()) {
         msgText.setText(msgList.get(index).getText());
-      }
-      else {
-        msgText.setText("");  //$NON-NLS-1$
+      } else {
+        msgText.setText(""); // $NON-NLS-1$
       }
     }
   }

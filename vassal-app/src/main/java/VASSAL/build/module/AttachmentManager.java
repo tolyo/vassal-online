@@ -23,25 +23,21 @@ import VASSAL.counters.Decorator;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.Stack;
 import VASSAL.tools.lang.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Maintains a list of pieces with attachment traits
- */
+/** Maintains a list of pieces with attachment traits */
 public class AttachmentManager {
 
-  /**
-   * A Map of the set of Attachment traits that are using the same Attachment name
-   */
+  /** A Map of the set of Attachment traits that are using the same Attachment name */
   private final java.util.Map<String, Set<Attachment>> attachments;
 
   /**
-   * A List of attachments that could not be finalised during game load due to pieces not being loaded yet
+   * A List of attachments that could not be finalised during game load due to pieces not being
+   * loaded yet
    */
   private final List<Pair<Attachment, String>> pendingAttachments;
 
@@ -50,9 +46,7 @@ public class AttachmentManager {
     pendingAttachments = new ArrayList<>();
   }
 
-  /**
-   * New game starting, clean all attachment info
-   */
+  /** New game starting, clean all attachment info */
   public void clearAll() {
     attachments.clear();
     pendingAttachments.clear();
@@ -63,18 +57,17 @@ public class AttachmentManager {
       for (final GamePiece p : ((Stack) piece).asList()) {
         addPiece(p);
       }
-    }
-    else {
+    } else {
       addPiece(piece);
     }
   }
 
   /**
-   * A piece has been added to the game.
-   * 1. If it has as Auto-attach, attach all other Attachments with same name to it.
-   * 2. Tell all other Auto-attach traits with same name to attach to it.
-   * <p>
-   * Create the self attachment if required
+   * A piece has been added to the game. 1. If it has as Auto-attach, attach all other Attachments
+   * with same name to it. 2. Tell all other Auto-attach traits with same name to attach to it.
+   *
+   * <p>Create the self attachment if required
+   *
    * @param piece Piece moved or added
    */
   public void addPiece(GamePiece piece) {
@@ -84,7 +77,8 @@ public class AttachmentManager {
       final String attachName = attach.getAttachName();
 
       // Find all Attachment traits (not pieces) that use that attachment name and loop through them
-      final Set<Attachment> currentAttachments = attachments.computeIfAbsent(attachName, k -> new HashSet<>());
+      final Set<Attachment> currentAttachments =
+          attachments.computeIfAbsent(attachName, k -> new HashSet<>());
 
       if (attach.isAllowSelfAttach()) {
         // Self attach
@@ -92,7 +86,8 @@ public class AttachmentManager {
       }
 
       for (final Attachment targetAttachment : currentAttachments) {
-        // Auto-attach the traits to each other. The traits will do nothing if they are not auto-attach, and will prevent double attaches.
+        // Auto-attach the traits to each other. The traits will do nothing if they are not
+        // auto-attach, and will prevent double attaches.
         if (!targetAttachment.equals(attach)) {
           attach.autoAttach(targetAttachment);
           targetAttachment.autoAttach(attach);
@@ -107,7 +102,8 @@ public class AttachmentManager {
 
   public void pieceRemoved(GamePiece piece) {
     // Ignore Stacks, Stacks can be removed from the GameState leaving their pieces behind.
-    // So do NOT clean up the attachments of the Stack contents. Wait until pieceRemoved is explicitly called with the Stacks children
+    // So do NOT clean up the attachments of the Stack contents. Wait until pieceRemoved is
+    // explicitly called with the Stacks children
     if (!(piece instanceof Stack)) {
       removePiece(piece);
     }
@@ -124,7 +120,8 @@ public class AttachmentManager {
       final String attachName = attach.getAttachName();
 
       // Find all attachments using this Attach name and process each one
-      final Set<Attachment> currentAttachments = attachments.computeIfAbsent(attachName, k -> new HashSet<>());
+      final Set<Attachment> currentAttachments =
+          attachments.computeIfAbsent(attachName, k -> new HashSet<>());
 
       for (final Attachment attachment : currentAttachments) {
         if (attachment.isAutoAttach()) {
@@ -138,12 +135,12 @@ public class AttachmentManager {
   }
 
   /**
-   * A piece is being removed by a Delete or Replace Command.
-   * Undo any attachments to or from any non-auto-attach Attachment traits it has
-   * Auto-attach traits will be cleaned up locally by the client when the piece is removed from the GameState
+   * A piece is being removed by a Delete or Replace Command. Undo any attachments to or from any
+   * non-auto-attach Attachment traits it has Auto-attach traits will be cleaned up locally by the
+   * client when the piece is removed from the GameState
    *
-   * @param   piece Piece to clean up Attachments for.
-   * @return        Command to undo attachments.
+   * @param piece Piece to clean up Attachments for.
+   * @return Command to undo attachments.
    */
   public Command removeAttachments(GamePiece piece) {
     Command command = new NullCommand();
@@ -156,7 +153,8 @@ public class AttachmentManager {
         final String attachName = attach.getAttachName();
 
         // Find all attachments using this Attach name and process each one
-        final Set<Attachment> currentAttachments = attachments.computeIfAbsent(attachName, k -> new HashSet<>());
+        final Set<Attachment> currentAttachments =
+            attachments.computeIfAbsent(attachName, k -> new HashSet<>());
 
         for (final Attachment targetAttachment : currentAttachments) {
           // If the target attachment is not auto-attachable, remove any attachment back to us
@@ -164,14 +162,15 @@ public class AttachmentManager {
             command = command.append(targetAttachment.makeRemoveTargetCommand(piece));
           }
           // Remove any attachment we have to the target piece.
-          command = command.append(attach.makeRemoveTargetCommand(Decorator.getOutermost(targetAttachment)));
+          command =
+              command.append(
+                  attach.makeRemoveTargetCommand(Decorator.getOutermost(targetAttachment)));
         }
 
         // Remove the Attachment trait being processed from the index
         currentAttachments.remove(attach);
         attachments.put(attachName, currentAttachments);
       }
-
     }
 
     return command;
@@ -187,16 +186,17 @@ public class AttachmentManager {
 
   /**
    * Record an Attachment that must be resolved later, the target piece has not been loaded yet.
-   * @param attachnent  Attachment Trait
-   * @param target      Id of target piece
+   *
+   * @param attachnent Attachment Trait
+   * @param target Id of target piece
    */
   public void addPendingAttachment(Attachment attachnent, String target) {
     pendingAttachments.add(Pair.of(attachnent, target));
   }
 
   /**
-   * Callback from AttachmentManager aftet end of game load to add Attachments to pieces
-   * that had not yet been loaded.
+   * Callback from AttachmentManager aftet end of game load to add Attachments to pieces that had
+   * not yet been loaded.
    */
   public void resolvePendingAttachments() {
     for (final Pair<Attachment, String> p : pendingAttachments) {

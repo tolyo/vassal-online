@@ -20,11 +20,9 @@ package VASSAL.chat;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 
-/**
- * Date: Mar 16, 2003
- */
+/** Date: Mar 16, 2003 */
 public class SynchEncoder implements CommandEncoder {
-  public static final String COMMAND_PREFIX = "SYNC"; //$NON-NLS-1$
+  public static final String COMMAND_PREFIX = "SYNC"; // $NON-NLS-1$
   private final PlayerEncoder playerEncoder;
   private final ChatServerConnection client;
 
@@ -50,5 +48,4 @@ public class SynchEncoder implements CommandEncoder {
     final SynchCommand cmd = (SynchCommand) c;
     return COMMAND_PREFIX + playerEncoder.playerToString(cmd.getPlayer());
   }
-
 }

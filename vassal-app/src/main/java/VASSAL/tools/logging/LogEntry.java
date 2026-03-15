@@ -18,13 +18,12 @@
 
 package VASSAL.tools.logging;
 
+import VASSAL.tools.ThrowableUtils;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import VASSAL.tools.ThrowableUtils;
 
 /**
  * @author Joel Uckelman
@@ -51,11 +50,9 @@ public class LogEntry implements Serializable {
     this(System.currentTimeMillis(), type, thrown, message, wait);
   }
 
-  public LogEntry(long timestamp, int type,
-                  Throwable thrown, String message, boolean wait) {
+  public LogEntry(long timestamp, int type, Throwable thrown, String message, boolean wait) {
 
-    if (thrown == null && message == null)
-      throw new IllegalArgumentException();
+    if (thrown == null && message == null) throw new IllegalArgumentException();
 
     this.timestamp = timestamp;
     this.type = type;
@@ -68,8 +65,7 @@ public class LogEntry implements Serializable {
   public String toString() {
     final StringBuilder sb = new StringBuilder();
 
-    final DateFormat dateFormat =
-      new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS", Locale.ENGLISH);
+    final DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS", Locale.ENGLISH);
     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
     sb.append(dateFormat.format(timestamp));
@@ -79,8 +75,7 @@ public class LogEntry implements Serializable {
       if (trace != null) {
         sb.append('\n').append(trace);
       }
-    }
-    else {
+    } else {
       if (trace != null) {
         sb.append(' ').append(trace);
       }

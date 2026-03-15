@@ -17,43 +17,54 @@
  */
 package VASSAL.counters;
 
+import static VASSAL.counters.Decorator.putOldProperties;
+
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.ChangeTracker;
 import VASSAL.command.Command;
 
-import static VASSAL.counters.Decorator.putOldProperties;
-
 /**
- * If class implementing GamePiece also implements the EditablePiece interface, then
- * it can be manipulated from the Editor's Configuration Tree via the {@link PieceDefiner} dialog.
+ * If class implementing GamePiece also implements the EditablePiece interface, then it can be
+ * manipulated from the Editor's Configuration Tree via the {@link PieceDefiner} dialog.
  *
- * All {@link Decorator} (Trait) classes with a no-arg constructor will appear in the
- * Available Traits list even if they don't implement EditablePiece. */
+ * <p>All {@link Decorator} (Trait) classes with a no-arg constructor will appear in the Available
+ * Traits list even if they don't implement EditablePiece.
+ */
 public interface EditablePiece extends GamePiece {
 
-  /** A plain-English description of this type of trait/piece - includes data from fields where appropriate */
+  /**
+   * A plain-English description of this type of trait/piece - includes data from fields where
+   * appropriate
+   */
   String getDescription();
 
-  /** Sets the information for this piece.  See {@link Decorator#myGetType}
-   *  @param type a serialized configuration string to
-   *              set the "type information" of this piece, which is
-   *              information that doesn't change during the course of
-   *              a single game (e.g. Image Files, Context Menu strings,
-   *              etc). Typically ready to be processed e.g. by
-   *              SequenceEncoder.decode() */
+  /**
+   * Sets the information for this piece. See {@link Decorator#myGetType}
+   *
+   * @param type a serialized configuration string to set the "type information" of this piece,
+   *     which is information that doesn't change during the course of a single game (e.g. Image
+   *     Files, Context Menu strings, etc). Typically ready to be processed e.g. by
+   *     SequenceEncoder.decode()
+   */
   void mySetType(String type);
 
-  /** @return the configurer for this trait - the dialog which allows the editing the piece's type information */
+  /**
+   * @return the configurer for this trait - the dialog which allows the editing the piece's type
+   *     information
+   */
   PieceEditor getEditor();
 
-  /** @return the help file for this trait  */
+  /**
+   * @return the help file for this trait
+   */
   HelpFile getHelpFile();
 
   /**
-   * Support for a basic-name-only description introduced later, so this default retrofits it from the full description
-   * if an explicit one is not defined.
+   * Support for a basic-name-only description introduced later, so this default retrofits it from
+   * the full description if an explicit one is not defined.
+   *
    * @return name of trait/piece type, w/o additional data
    */
   default String getBaseDescription() {
@@ -65,15 +76,18 @@ public interface EditablePiece extends GamePiece {
   }
 
   /**
-   * Centralized method for preparing a piece to move. Writes the "Old Map" properties based on its current location,
-   * optionally marks the piece as moved, and tells any deck its in that it is leaving.
+   * Centralized method for preparing a piece to move. Writes the "Old Map" properties based on its
+   * current location, optionally marks the piece as moved, and tells any deck its in that it is
+   * leaving.
+   *
    * @param c Command to which will be appended a command for recreating anything this method does
    * @param mark_moved If true the piece will be mark moved
    * @return A command for recreating anything this method does, appended to the command passed
    */
   @Override
   default Command prepareMove(Command c, boolean mark_moved) {
-    // Make sure we don't send deck-is-empty hotkeys when deck is emptied by another player in an online game or by a log-step
+    // Make sure we don't send deck-is-empty hotkeys when deck is emptied by another player in an
+    // online game or by a log-step
     GameModule.getGameModule().getDeckManager().clearEmptyDecksList();
 
     final GamePiece outer = Decorator.getOutermost(this);
@@ -99,16 +113,16 @@ public interface EditablePiece extends GamePiece {
     return c;
   }
 
-
   /**
-   * Centralized method used when finishing up after a piece moves. Checks if LocationName or CurrentMatID changed
-   * and marks the piece moved if-and-only-if that happened.
+   * Centralized method used when finishing up after a piece moves. Checks if LocationName or
+   * CurrentMatID changed and marks the piece moved if-and-only-if that happened.
+   *
    * @return command to replicate any changes on another Vassal instance
    */
   @Override
   default Command checkTrueMoved() {
-    final String loc = (String)getProperty(BasicPiece.LOCATION_NAME);
-    final String oldLoc = (String)getProperty(BasicPiece.OLD_LOCATION_NAME);
+    final String loc = (String) getProperty(BasicPiece.LOCATION_NAME);
+    final String oldLoc = (String) getProperty(BasicPiece.OLD_LOCATION_NAME);
 
     if ((loc == null) || loc.equals(oldLoc)) {
       if (GameModule.getGameModule().isMatSupport()) {
@@ -117,8 +131,7 @@ public interface EditablePiece extends GamePiece {
         if ((mat == null) || mat.equals(oldMat)) {
           return null;
         }
-      }
-      else {
+      } else {
         return null;
       }
     }
@@ -129,7 +142,6 @@ public interface EditablePiece extends GamePiece {
     return tracker.getChangeCommand();
   }
 
-
   @Override
   default Command finishMove(Command c, boolean afterburner, boolean findmat) {
     return finishMove(c, afterburner, findmat, false);
@@ -139,6 +151,7 @@ public interface EditablePiece extends GamePiece {
    * Centralized method for finishing up after a piece moves. Optionally finds a new mat if needed,
    * and optionally applies any afterburner apply-on-move key for the piece's map. If we emptied any
    * decks, allows them to send their I-am-empty key commands
+   *
    * @param c Command to which will be appended a command for recreating anything this method does
    * @param afterburner if true, apply the afterburner apply-on-move key for the piece's map
    * @param findmat if true, find a new mat for this piece if needed (if this piece is cargo)

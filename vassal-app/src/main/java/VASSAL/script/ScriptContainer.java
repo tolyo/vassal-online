@@ -23,9 +23,7 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.ComponentI18nData;
 
-/**
- * Container for Scripts.
- */
+/** Container for Scripts. */
 public class ScriptContainer extends AbstractConfigurable {
   private static ScriptContainer instance;
 
@@ -57,8 +55,7 @@ public class ScriptContainer extends AbstractConfigurable {
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -66,13 +63,11 @@ public class ScriptContainer extends AbstractConfigurable {
   }
 
   @Override
-  public void addTo(Buildable parent) {
-
-  }
+  public void addTo(Buildable parent) {}
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{ActionScript.class, GeneralScript.class};
+    return new Class<?>[] {ActionScript.class, GeneralScript.class};
   }
 
   public static String getConfigureTypeName() {
@@ -89,12 +84,11 @@ public class ScriptContainer extends AbstractConfigurable {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Script.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("Script.html"); // $NON-NLS-1$
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public ComponentI18nData getI18nData() {

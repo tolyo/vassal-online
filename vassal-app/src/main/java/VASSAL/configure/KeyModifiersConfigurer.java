@@ -21,15 +21,12 @@ import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/**
- * Configurer for specifying key masks (CTRL, SHIFT, CTRL-ALT, etc.)
- */
+/** Configurer for specifying key masks (CTRL, SHIFT, CTRL-ALT, etc.) */
 public class KeyModifiersConfigurer extends Configurer implements KeyListener {
   private JPanel controls;
   private JTextField tf;
@@ -65,8 +62,7 @@ public class KeyModifiersConfigurer extends Configurer implements KeyListener {
     }
     try {
       setValue(Integer.valueOf(s));
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       // Set to null if saved value is not a number
       setValue(null);
     }
@@ -77,8 +73,7 @@ public class KeyModifiersConfigurer extends Configurer implements KeyListener {
     if (!noUpdate && tf != null) {
       if (o instanceof Integer && (Integer) o != 0) {
         tf.setText(InputEvent.getModifiersExText((Integer) o).toUpperCase());
-      }
-      else {
+      } else {
         tf.setText("");
       }
     }
@@ -86,12 +81,10 @@ public class KeyModifiersConfigurer extends Configurer implements KeyListener {
   }
 
   @Override
-  public void keyReleased(KeyEvent e) {
-  }
+  public void keyReleased(KeyEvent e) {}
 
   @Override
-  public void keyTyped(KeyEvent e) {
-  }
+  public void keyTyped(KeyEvent e) {}
 
   @Override
   public void keyPressed(KeyEvent e) {

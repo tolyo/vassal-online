@@ -1,16 +1,15 @@
 package VASSAL.chat;
 
-import VASSAL.command.Command;
-import VASSAL.command.CommandEncoder;
-import org.junit.jupiter.api.Test;
-
-import java.beans.PropertyChangeEvent;
-import java.lang.reflect.Modifier;
-import java.util.concurrent.atomic.AtomicReference;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+
+import VASSAL.command.Command;
+import VASSAL.command.CommandEncoder;
+import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.Test;
 
 class CommandDecoderTest {
   @Test
@@ -23,11 +22,10 @@ class CommandDecoderTest {
     final AtomicReference<Command> executed = new AtomicReference<>();
     final TestCommand decoded = new TestCommand();
     final CommandDecoder commandDecoder =
-      new CommandDecoder(new StubEncoder(decoded), executed::set);
+        new CommandDecoder(new StubEncoder(decoded), executed::set);
 
     commandDecoder.propertyChange(
-      new PropertyChangeEvent(this, ChatServerConnection.INCOMING_MSG, null, "encoded")
-    );
+        new PropertyChangeEvent(this, ChatServerConnection.INCOMING_MSG, null, "encoded"));
 
     assertThat(executed.get(), is(decoded));
   }
@@ -35,12 +33,10 @@ class CommandDecoderTest {
   @Test
   void ignoresMessagesThatDoNotDecode() {
     final AtomicReference<Command> executed = new AtomicReference<>();
-    final CommandDecoder commandDecoder =
-      new CommandDecoder(new StubEncoder(null), executed::set);
+    final CommandDecoder commandDecoder = new CommandDecoder(new StubEncoder(null), executed::set);
 
     commandDecoder.propertyChange(
-      new PropertyChangeEvent(this, ChatServerConnection.INCOMING_MSG, null, "encoded")
-    );
+        new PropertyChangeEvent(this, ChatServerConnection.INCOMING_MSG, null, "encoded"));
 
     assertThat(executed.get(), is(nullValue()));
   }
@@ -65,8 +61,7 @@ class CommandDecoderTest {
 
   private static final class TestCommand extends Command {
     @Override
-    protected void executeCommand() {
-    }
+    protected void executeCommand() {}
 
     @Override
     protected Command myUndoCommand() {

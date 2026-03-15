@@ -17,13 +17,6 @@
  */
 package VASSAL.build.module.properties;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JToolBar;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
@@ -31,11 +24,15 @@ import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.TemporaryToolBar;
 import VASSAL.tools.ToolBarComponent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JToolBar;
 
-/**
- * Dummy component that acts as a simple container for GlobalProperty components
- */
-public class GlobalTranslatableMessages extends AbstractConfigurable implements TranslatableStringContainer, ToolBarComponent, PropertySource {
+/** Dummy component that acts as a simple container for GlobalProperty components */
+public class GlobalTranslatableMessages extends AbstractConfigurable
+    implements TranslatableStringContainer, ToolBarComponent, PropertySource {
   private final TemporaryToolBar tempToolbar = new TemporaryToolBar();
   private PropertySource propertySource;
   private final Map<String, TranslatableString> initialValues = new HashMap<>();
@@ -66,8 +63,7 @@ public class GlobalTranslatableMessages extends AbstractConfigurable implements 
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public String getAttributeValueString(String key) {
@@ -75,17 +71,16 @@ public class GlobalTranslatableMessages extends AbstractConfigurable implements 
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GlobalTranslatableMessages.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("GlobalTranslatableMessages.html"); // NON-NLS
   }
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[] { GlobalTranslatableMessage.class };
+    return new Class<?>[] {GlobalTranslatableMessage.class};
   }
 
   @Override
@@ -104,8 +99,7 @@ public class GlobalTranslatableMessages extends AbstractConfigurable implements 
   public void addTranslatableString(String key, TranslatableString p) {
     if (parent == null) {
       initialValues.put(key, p);
-    }
-    else {
+    } else {
       parent.addTranslatableString(key, p);
     }
   }
@@ -114,8 +108,7 @@ public class GlobalTranslatableMessages extends AbstractConfigurable implements 
   public TranslatableString removeTranslatableString(String key) {
     if (parent == null) {
       return initialValues.remove(key);
-    }
-    else {
+    } else {
       return parent.removeTranslatableString(key);
     }
   }
@@ -157,9 +150,7 @@ public class GlobalTranslatableMessages extends AbstractConfigurable implements 
     return parent;
   }
 
-  /**
-   * Use the identity of the owning container (i.e. Module, map or zone)
-   */
+  /** Use the identity of the owning container (i.e. Module, map or zone) */
   @Override
   public String getTranslatableStringContainerId() {
     return parent.getTranslatableStringContainerId();

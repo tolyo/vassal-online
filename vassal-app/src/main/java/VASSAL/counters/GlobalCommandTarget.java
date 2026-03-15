@@ -27,59 +27,66 @@ import VASSAL.script.expression.FormattedStringExpression;
 import VASSAL.search.SearchTarget;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * GlobalCommandTarget configures and stores the "Fast Match" parameters of Global Key Commands, allowing certain
- * simple filters to be "pre-matched" without having to initiate the (relatively slower) BeanShell filters.
+ * GlobalCommandTarget configures and stores the "Fast Match" parameters of Global Key Commands,
+ * allowing certain simple filters to be "pre-matched" without having to initiate the (relatively
+ * slower) BeanShell filters.
  */
 public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
 
   protected static final char ENCODE_DELIMITER = '|';
 
-  protected GKCtype gkcType = GKCtype.MAP;  // What flavor of GKC (Module, Map, Deck, Piece)
+  protected GKCtype gkcType = GKCtype.MAP; // What flavor of GKC (Module, Map, Deck, Piece)
 
-  protected boolean fastMatchLocation = false; // True if we are doing Fast Match by location (else other values in this block unused)
-  protected Target targetType = Target.MAP;    // Type of location Fast Match we are doing
-  protected FormattedStringExpression targetMap;              // Specified Map (for MAP, ZONE, LOCATION, XY types)
-  protected FormattedStringExpression targetBoard;            // Specified Board (for XY type)
-  protected FormattedStringExpression targetZone;             // Specified Zone (for ZONE type)
-  protected FormattedStringExpression targetLocation;         // Specified Location (for LOCATION type)
-  protected FormattedStringExpression targetDeck;             // Specified Deck (for DECK type)
-  protected FormattedStringExpression targetX;                // Specified X (for XY type)
-  protected FormattedStringExpression targetY;                // Specified Y (for XY type)
-  protected FormattedStringExpression targetAttachment;       // Specified Attachment Name (for CURATTCH type)
-  protected FormattedStringExpression targetAttachmentId;     // Specified Basic Name or Index (for CURATTCH type)
+  protected boolean fastMatchLocation =
+      false; // True if we are doing Fast Match by location (else other values in this block unused)
+  protected Target targetType = Target.MAP; // Type of location Fast Match we are doing
+  protected FormattedStringExpression
+      targetMap; // Specified Map (for MAP, ZONE, LOCATION, XY types)
+  protected FormattedStringExpression targetBoard; // Specified Board (for XY type)
+  protected FormattedStringExpression targetZone; // Specified Zone (for ZONE type)
+  protected FormattedStringExpression targetLocation; // Specified Location (for LOCATION type)
+  protected FormattedStringExpression targetDeck; // Specified Deck (for DECK type)
+  protected FormattedStringExpression targetX; // Specified X (for XY type)
+  protected FormattedStringExpression targetY; // Specified Y (for XY type)
+  protected FormattedStringExpression
+      targetAttachment; // Specified Attachment Name (for CURATTCH type)
+  protected FormattedStringExpression
+      targetAttachmentId; // Specified Basic Name or Index (for CURATTCH type)
 
-  protected boolean fastMatchProperty = false; // True if we're doing a Fast Match by property value (else next two values ignored)
-  protected FormattedStringExpression targetProperty;         // Name/Key of Fast Match property
-  protected FormattedStringExpression targetValue;            // Value to match for that property
-  protected CompareMode targetCompare;         // Comparison mode
+  protected boolean fastMatchProperty =
+      false; // True if we're doing a Fast Match by property value (else next two values ignored)
+  protected FormattedStringExpression targetProperty; // Name/Key of Fast Match property
+  protected FormattedStringExpression targetValue; // Value to match for that property
+  protected CompareMode targetCompare; // Comparison mode
 
-  private GamePiece curPiece; // Reference piece for "current <place>". NOT encoded into the module, only set and used at time of command execution.
+  private GamePiece
+      curPiece; // Reference piece for "current <place>". NOT encoded into the module, only set and
+
+  // used at time of command execution.
 
   @Override
   public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
     return new GlobalCommandTargetConfigurer(key, name, ((MassKeyCommand) c).getTarget());
   }
 
-  /**
-   * Specifies the type of GKC being configured (affects which Target options are allowed)
-   */
+  /** Specifies the type of GKC being configured (affects which Target options are allowed) */
   public enum GKCtype {
-    COUNTER, /** {@link CounterGlobalKeyCommand} */
-    MAP,     /** {@link VASSAL.build.module.map.MassKeyCommand} */
-    MODULE,  /** {@link VASSAL.build.module.GlobalKeyCommand} */
-    DECK     // {@link VASSAL.build.module.map.DeckGlobalKeyCommand}
+    COUNTER,
+    /** {@link CounterGlobalKeyCommand} */
+    MAP,
+    /** {@link VASSAL.build.module.map.MassKeyCommand} */
+    MODULE,
+    /** {@link VASSAL.build.module.GlobalKeyCommand} */
+    DECK // {@link VASSAL.build.module.map.DeckGlobalKeyCommand}
   }
 
-  /**
-   * Comparison Modes for property match
-   */
+  /** Comparison Modes for property match */
   public enum CompareMode {
     EQUALS("=="),
     NOT_EQUALS("!="),
@@ -111,48 +118,50 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
 
     public static String[] getSymbols() {
       return Arrays.stream(values())
-        .map(GlobalCommandTarget.CompareMode::getSymbol)
-        .toArray(String[]::new);
+          .map(GlobalCommandTarget.CompareMode::getSymbol)
+          .toArray(String[]::new);
     }
   }
 
-  /**
-   * Specifies the kind of target matching
-   */
+  /** Specifies the kind of target matching */
   public enum Target {
-    CURSTACK,  // Current stack or deck (of issuing piece or deck)
-    CURMAP,    // Current map           (of issuing piece)
-    CURZONE,   // Current zone          (of issuing piece)
-    CURLOC,    // Current location      (of issuing piece)
-    MAP,       // Specified map
-    ZONE,      // Specified zone
-    LOCATION,  // Specified location name
-    XY,        // Specified X/Y position
-    DECK,      // Specified Deck
-    CURMAT,    // Current mat (either this piece is the mat, or this piece is on the mat: matches mat & all cargo)
+    CURSTACK, // Current stack or deck (of issuing piece or deck)
+    CURMAP, // Current map           (of issuing piece)
+    CURZONE, // Current zone          (of issuing piece)
+    CURLOC, // Current location      (of issuing piece)
+    MAP, // Specified map
+    ZONE, // Specified zone
+    LOCATION, // Specified location name
+    XY, // Specified X/Y position
+    DECK, // Specified Deck
+    CURMAT, // Current mat (either this piece is the mat, or this piece is on the mat: matches mat &
+    // all cargo)
     CURATTACH; // Pieces we are attached to w/ an Attachment trait
 
     /**
      * @return true if our match is relative to an issuing piece or deck
      */
     public boolean isCurrent() {
-      return (this == CURSTACK) || (this == CURMAP) || (this == CURZONE) || (this == CURLOC) || (this == CURMAT) || (this == CURATTACH);
+      return (this == CURSTACK)
+          || (this == CURMAP)
+          || (this == CURZONE)
+          || (this == CURLOC)
+          || (this == CURMAT)
+          || (this == CURATTACH);
     }
 
     /**
      * @return Localizable key corresponding to target value
      */
     public String toTranslatedString() {
-      return "Editor.GlobalKeyCommand.target_" + name().toLowerCase();  //NON-NLS
+      return "Editor.GlobalKeyCommand.target_" + name().toLowerCase(); // NON-NLS
     }
 
     /**
      * @return Internal keys for all target types
      */
     public static String[] getKeys() {
-      return Arrays.stream(values())
-        .map(GlobalCommandTarget.Target::name)
-        .toArray(String[]::new);
+      return Arrays.stream(values()).map(GlobalCommandTarget.Target::name).toArray(String[]::new);
     }
 
     /**
@@ -160,8 +169,8 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
      */
     public static String[] geti18nKeys() {
       return Arrays.stream(values())
-        .map(GlobalCommandTarget.Target::toTranslatedString)
-        .toArray(String[]::new);
+          .map(GlobalCommandTarget.Target::toTranslatedString)
+          .toArray(String[]::new);
     }
   }
 
@@ -173,18 +182,18 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
     setGKCtype(gkc);
 
     // Can't just let this shit be null => ANGRY ENCODER IS ANGRY!!!
-    targetMap          = new FormattedStringExpression("");
-    targetBoard        = new FormattedStringExpression("");
-    targetZone         = new FormattedStringExpression("");
-    targetLocation     = new FormattedStringExpression("");
-    targetDeck         = new FormattedStringExpression("");
-    targetProperty     = new FormattedStringExpression("");
-    targetValue        = new FormattedStringExpression("");
-    targetX            = new FormattedStringExpression("0");
-    targetY            = new FormattedStringExpression("0");
-    targetAttachment   = new FormattedStringExpression("");
+    targetMap = new FormattedStringExpression("");
+    targetBoard = new FormattedStringExpression("");
+    targetZone = new FormattedStringExpression("");
+    targetLocation = new FormattedStringExpression("");
+    targetDeck = new FormattedStringExpression("");
+    targetProperty = new FormattedStringExpression("");
+    targetValue = new FormattedStringExpression("");
+    targetX = new FormattedStringExpression("0");
+    targetY = new FormattedStringExpression("0");
+    targetAttachment = new FormattedStringExpression("");
     targetAttachmentId = new FormattedStringExpression("");
-    targetCompare      = CompareMode.EQUALS;
+    targetCompare = CompareMode.EQUALS;
   }
 
   public GlobalCommandTarget(String s) {
@@ -197,32 +206,34 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
 
   /**
    * Encoder for the part of GlobalCommandTarget that gets stored in the module
+   *
    * @return Fast Match parameters encoded in string form
    */
   public String encode() {
     final SequenceEncoder se = new SequenceEncoder(ENCODE_DELIMITER);
     se.append(gkcType.name())
-      .append(fastMatchLocation)
-      .append(targetType.name())
-      .append(targetMap.getExpression())
-      .append(targetBoard.getExpression())
-      .append(targetZone.getExpression())
-      .append(targetLocation.getExpression())
-      .append(targetX.getExpression())
-      .append(targetY.getExpression())
-      .append(targetDeck.getExpression())
-      .append(fastMatchProperty)
-      .append(targetProperty.getExpression())
-      .append(targetValue.getExpression())
-      .append(targetCompare.name())
-      .append(targetAttachment.getExpression())
-      .append(targetAttachmentId.getExpression());
+        .append(fastMatchLocation)
+        .append(targetType.name())
+        .append(targetMap.getExpression())
+        .append(targetBoard.getExpression())
+        .append(targetZone.getExpression())
+        .append(targetLocation.getExpression())
+        .append(targetX.getExpression())
+        .append(targetY.getExpression())
+        .append(targetDeck.getExpression())
+        .append(fastMatchProperty)
+        .append(targetProperty.getExpression())
+        .append(targetValue.getExpression())
+        .append(targetCompare.name())
+        .append(targetAttachment.getExpression())
+        .append(targetAttachmentId.getExpression());
 
     return se.getValue();
   }
 
   /**
    * Decoder for loading GlobalCommandTarget from the module XML
+   *
    * @param code String to decode into our fields.
    */
   public void decode(String code) {
@@ -250,12 +261,13 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
 
   /**
    * Compares two GlobalCommandTargets
+   *
    * @param o GlobalCommandTarget to compare to this one
    * @return true if their meaningful parts are equal
    */
   @Override
   public boolean equals(Object o) {
-    if (! (o instanceof GlobalCommandTarget)) return false;
+    if (!(o instanceof GlobalCommandTarget)) return false;
     final GlobalCommandTarget t = (GlobalCommandTarget) o;
     return encode().equals(t.encode());
   }
@@ -273,21 +285,21 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
     final List<String> expList = new ArrayList<>();
 
     if (fastMatchLocation) {
-      if ((targetType == Target.MAP) || (targetType == Target.ZONE) || (targetType == Target.LOCATION) || (targetType == Target.XY)) {
+      if ((targetType == Target.MAP)
+          || (targetType == Target.ZONE)
+          || (targetType == Target.LOCATION)
+          || (targetType == Target.XY)) {
         expList.add(targetMap.getExpression());
       }
       if (targetType == Target.XY) {
         expList.add(targetBoard.getExpression());
         expList.add(targetX.getExpression());
         expList.add(targetY.getExpression());
-      }
-      else if (targetType == Target.ZONE) {
+      } else if (targetType == Target.ZONE) {
         expList.add(targetZone.getExpression());
-      }
-      else if (targetType == Target.LOCATION) {
+      } else if (targetType == Target.LOCATION) {
         expList.add(targetLocation.getExpression());
-      }
-      else if (targetType == Target.DECK) {
+      } else if (targetType == Target.DECK) {
         expList.add(targetDeck.getExpression());
       }
       // Target attachment may be blank, indicating all attachments
@@ -314,7 +326,8 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
   }
 
   /**
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the item, if any (for search)
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the item, if any (for
+   *     search)
    */
   @Override
   public List<String> getMenuTextList() {
@@ -427,7 +440,6 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
     this.targetLocation = new FormattedStringExpression(targetLocation);
   }
 
-
   public FormattedStringExpression getTargetDeck() {
     return targetDeck;
   }
@@ -483,9 +495,11 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
   public void setTargetX(FormattedStringExpression targetX) {
     this.targetX = targetX;
   }
+
   public void setTargetX(String targetX) {
     this.targetX = new FormattedStringExpression(targetX);
   }
+
   public void setTargetX(int targetX) {
     this.targetX = new FormattedStringExpression(Integer.toString(targetX));
   }
@@ -497,9 +511,11 @@ public class GlobalCommandTarget implements ConfigurerFactory, SearchTarget {
   public void setTargetY(FormattedStringExpression targetY) {
     this.targetY = targetY;
   }
+
   public void setTargetY(String targetY) {
     this.targetY = new FormattedStringExpression(targetY);
   }
+
   public void setTargetY(int targetY) {
     this.targetY = new FormattedStringExpression(Integer.toString(targetY));
   }

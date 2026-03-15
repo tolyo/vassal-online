@@ -16,23 +16,19 @@
  */
 package VASSAL.build.module.map.boardPicker.board.mapgrid;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.module.map.boardPicker.board.ZonedGrid;
 import VASSAL.i18n.Resources;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
- * @author Brent Easton
- * A Container class for Zone Highlighters.
- *
+ * @author Brent Easton A Container class for Zone Highlighters.
  */
-public class ZonedGridHighlighter extends AbstractConfigurable  {
+public class ZonedGridHighlighter extends AbstractConfigurable {
 
   protected List<ZoneHighlight> highlightList;
   protected String currentColorName;
@@ -94,7 +90,7 @@ public class ZonedGridHighlighter extends AbstractConfigurable  {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ZonedGrid.html", "ZoneHighlighter"); //NON-NLS
+    return HelpFile.getReferenceManualPage("ZonedGrid.html", "ZoneHighlighter"); // NON-NLS
   }
 
   @Override
@@ -103,8 +99,7 @@ public class ZonedGridHighlighter extends AbstractConfigurable  {
   }
 
   @Override
-  public void setAttribute(String key, Object val) {
-  }
+  public void setAttribute(String key, Object val) {}
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {

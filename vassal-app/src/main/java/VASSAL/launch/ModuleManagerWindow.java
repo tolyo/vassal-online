@@ -56,46 +56,6 @@ import VASSAL.tools.swing.SplitPane;
 import VASSAL.tools.swing.SwingUtils;
 import VASSAL.tools.version.UpdateCheckAction;
 import VASSAL.tools.version.VersionUtils;
-import net.miginfocom.swing.MigLayout;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeWillExpandListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -127,17 +87,55 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
+import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModuleManagerWindow extends JFrame {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(ModuleManagerWindow.class);
+  private static final Logger logger = LoggerFactory.getLogger(ModuleManagerWindow.class);
 
-  private static final String SHOW_STATUS_KEY = "showServerStatus"; //NON-NLS
-  private static final String DIVIDER_LOCATION_KEY = "moduleManagerDividerLocation"; //NON-NLS
-  private static final String DEVELOPER_INFO_KEY = "moduleManagerDeveloperInfo"; //NON-NLS
-  private static final String COLUMN_WIDTHS_KEY = "moduleManagerColumnWidths"; //NON-NLS
+  private static final String SHOW_STATUS_KEY = "showServerStatus"; // NON-NLS
+  private static final String DIVIDER_LOCATION_KEY = "moduleManagerDividerLocation"; // NON-NLS
+  private static final String DEVELOPER_INFO_KEY = "moduleManagerDeveloperInfo"; // NON-NLS
+  private static final String COLUMN_WIDTHS_KEY = "moduleManagerColumnWidths"; // NON-NLS
   private static final int COLUMNS = 5;
   private static final int KEY_COLUMN = 0;
   private static final int VERSION_COLUMN = 1;
@@ -173,9 +171,9 @@ public class ModuleManagerWindow extends JFrame {
   private final IntConfigurer dividerLocationConfig;
 
   private static final long doubleClickInterval;
+
   static {
-    final Object dci =
-      Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
+    final Object dci = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
     doubleClickInterval = dci instanceof Integer ? (Integer) dci : 200L;
   }
 
@@ -186,53 +184,52 @@ public class ModuleManagerWindow extends JFrame {
   private static final ModuleManagerWindow instance = new ModuleManagerWindow();
 
   public ModuleManagerWindow() {
-    setTitle("VASSAL " + Info.getVersion()); //NON-NLS
+    setTitle("VASSAL " + Info.getVersion()); // NON-NLS
     setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 
     ApplicationIcons.setFor(this);
 
-    final AbstractAction shutDownAction = new AbstractAction() {
-      private static final long serialVersionUID = 1L;
+    final AbstractAction shutDownAction =
+        new AbstractAction() {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        saveColumnWidths();
-        final Prefs gp = Prefs.getGlobalPrefs();
-        try {
-          gp.close();
-        }
-        catch (IOException ex) {
-          WriteErrorDialog.error(ex, gp.getFile());
-        }
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            saveColumnWidths();
+            final Prefs gp = Prefs.getGlobalPrefs();
+            try {
+              gp.close();
+            } catch (IOException ex) {
+              WriteErrorDialog.error(ex, gp.getFile());
+            }
 
-        try {
-          ModuleManager.getInstance().shutDown();
-        }
-        catch (IOException ex) {
-          ErrorDialog.bug(ex);
-        }
+            try {
+              ModuleManager.getInstance().shutDown();
+            } catch (IOException ex) {
+              ErrorDialog.bug(ex);
+            }
 
-        logger.info("Exiting"); //NON-NLS
-        System.exit(0);
-      }
-    };
+            logger.info("Exiting"); // NON-NLS
+            System.exit(0);
+          }
+        };
     shutDownAction.putValue(Action.NAME, Resources.getString(Resources.QUIT));
 
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      @Override
-       public void windowClosing(WindowEvent e) {
-        shutDownAction.actionPerformed(null);
-      }
-    });
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+            shutDownAction.actionPerformed(null);
+          }
+        });
 
     // setup menubar and actions
     final MenuManager mm = MenuManager.getInstance();
     final MenuBarProxy mb = mm.getMenuBarProxyFor(this);
 
     // file menu
-    final MenuProxy fileMenu =
-      new MenuProxy(Resources.getString("General.file"));
+    final MenuProxy fileMenu = new MenuProxy(Resources.getString("General.file"));
     fileMenu.setMnemonic(Resources.getString("General.file.shortcut").charAt(0));
 
     fileMenu.add(mm.addKey("Main.play_module"));
@@ -247,52 +244,56 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     // tools menu
-    final MenuProxy toolsMenu =
-      new MenuProxy(Resources.getString("General.tools"));
+    final MenuProxy toolsMenu = new MenuProxy(Resources.getString("General.tools"));
 
     // Initialize Global Preferences
     Prefs.getGlobalPrefs().getEditor().initDialog(this);
     Prefs.initSharedGlobalPrefs();
 
     final BooleanConfigurer serverStatusConfig =
-      new BooleanConfigurer(SHOW_STATUS_KEY, null, Boolean.FALSE);
+        new BooleanConfigurer(SHOW_STATUS_KEY, null, Boolean.FALSE);
     Prefs.getGlobalPrefs().addOption(null, serverStatusConfig);
 
     dividerLocationConfig = new IntConfigurer(DIVIDER_LOCATION_KEY, null, -10);
     Prefs.getGlobalPrefs().addOption(null, dividerLocationConfig);
 
-    final BooleanConfigurer developerInfoConfig = new BooleanConfigurer(DEVELOPER_INFO_KEY, Resources.getString("Prefs.developer_info"), false);
+    final BooleanConfigurer developerInfoConfig =
+        new BooleanConfigurer(
+            DEVELOPER_INFO_KEY, Resources.getString("Prefs.developer_info"), false);
     Prefs.getGlobalPrefs().addOption(Resources.getString("Prefs.general_tab"), developerInfoConfig);
     developerInfoConfig.addPropertyChangeListener(e1 -> updateColumnDisplay());
 
-    toolsMenu.add(new CheckBoxMenuItemProxy(new AbstractAction(
-                   Resources.getString("Chat.server_status")) {
-      private static final long serialVersionUID = 1L;
+    toolsMenu.add(
+        new CheckBoxMenuItemProxy(
+            new AbstractAction(Resources.getString("Chat.server_status")) {
+              private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        splitPane.toggleRight();
-        serverStatusConfig.setValue(
-          serverStatusConfig.booleanValue() ? Boolean.FALSE : Boolean.TRUE);
-        if (splitPane.isRightVisible()) {
-          splitPane.setDividerLocation(getPreferredDividerLocation());
-        }
-      }
-    }, serverStatusConfig.booleanValue()));
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                splitPane.toggleRight();
+                serverStatusConfig.setValue(
+                    serverStatusConfig.booleanValue() ? Boolean.FALSE : Boolean.TRUE);
+                if (splitPane.isRightVisible()) {
+                  splitPane.setDividerLocation(getPreferredDividerLocation());
+                }
+              }
+            },
+            serverStatusConfig.booleanValue()));
 
     toolsMenu.add(mm.addKey("Main.import_module"));
 
     final ClearTileCacheAction ctca = new ClearTileCacheAction();
-    AbstractLaunchAction.getUseTracker().addPropertyChangeListener(e -> {
-      if ("open".equals(e.getPropertyName())) {
-        ctca.setEnabled(Boolean.TRUE.equals(e.getNewValue()));
-      }
-    });
+    AbstractLaunchAction.getUseTracker()
+        .addPropertyChangeListener(
+            e -> {
+              if ("open".equals(e.getPropertyName())) {
+                ctca.setEnabled(Boolean.TRUE.equals(e.getNewValue()));
+              }
+            });
     toolsMenu.add(new MenuItemProxy(ctca));
 
     // help menu
-    final MenuProxy helpMenu =
-      new MenuProxy(Resources.getString("General.help"));
+    final MenuProxy helpMenu = new MenuProxy(Resources.getString("General.help"));
     helpMenu.setMnemonic(Resources.getString("General.help.shortcut").charAt(0));
 
     helpMenu.add(mm.addKey("General.help"));
@@ -315,28 +316,25 @@ public class ModuleManagerWindow extends JFrame {
     mm.addAction("Main.play_module", new Player.PromptLaunchAction(this));
     mm.addAction("Main.edit_module", new Editor.PromptLaunchAction(this));
     mm.addAction("Main.new_module", new Editor.NewModuleLaunchAction(this));
-    mm.addAction("Main.import_module",
-      new Editor.PromptImportLaunchAction(this));
-    mm.addAction("Prefs.edit_preferences",
-      Prefs.getGlobalPrefs().getEditor().getEditAction());
+    mm.addAction("Main.import_module", new Editor.PromptImportLaunchAction(this));
+    mm.addAction("Prefs.edit_preferences", Prefs.getGlobalPrefs().getEditor().getEditAction());
     mm.addAction("General.quit", shutDownAction);
 
     try {
-      final URL url = new File(Documentation.getDocumentationBaseDir(),
-                               "README.html").toURI().toURL();
+      final URL url =
+          new File(Documentation.getDocumentationBaseDir(), "README.html").toURI().toURL();
       mm.addAction("General.help", new ShowHelpAction(url, null));
-    }
-    catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {
       ErrorDialog.bug(e);
     }
 
     try {
-      final URL url = new File(Documentation.getDocumentationBaseDir(),
-                               "userguide/userguide.pdf").toURI().toURL();
-      mm.addAction("Help.user_guide",
-        new ShowHelpAction("Help.user_guide", url, null));
-    }
-    catch (MalformedURLException e) {
+      final URL url =
+          new File(Documentation.getDocumentationBaseDir(), "userguide/userguide.pdf")
+              .toURI()
+              .toURL();
+      mm.addAction("Help.user_guide", new ShowHelpAction("Help.user_guide", url, null));
+    } catch (MalformedURLException e) {
       ErrorDialog.bug(e);
     }
 
@@ -348,17 +346,16 @@ public class ModuleManagerWindow extends JFrame {
     setJMenuBar(mm.getMenuBarFor(this));
 
     // Load Icons
-    moduleIcon = new ImageIcon(
-      getClass().getResource("/images/mm-module.png")); //NON-NLS
-    activeExtensionIcon = new ImageIcon(
-      getClass().getResource("/images/mm-extension-active.png")); //NON-NLS
-    inactiveExtensionIcon = new ImageIcon(
-      getClass().getResource("/images/mm-extension-inactive.png")); //NON-NLS
-    openGameFolderIcon = new ImageIcon(
-      getClass().getResource("/images/mm-gamefolder-open.png")); //NON-NLS
-    closedGameFolderIcon = new ImageIcon(
-      getClass().getResource("/images/mm-gamefolder-closed.png")); //NON-NLS
-    fileIcon = new ImageIcon(getClass().getResource("/images/mm-file.png")); //NON-NLS
+    moduleIcon = new ImageIcon(getClass().getResource("/images/mm-module.png")); // NON-NLS
+    activeExtensionIcon =
+        new ImageIcon(getClass().getResource("/images/mm-extension-active.png")); // NON-NLS
+    inactiveExtensionIcon =
+        new ImageIcon(getClass().getResource("/images/mm-extension-inactive.png")); // NON-NLS
+    openGameFolderIcon =
+        new ImageIcon(getClass().getResource("/images/mm-gamefolder-open.png")); // NON-NLS
+    closedGameFolderIcon =
+        new ImageIcon(getClass().getResource("/images/mm-gamefolder-closed.png")); // NON-NLS
+    fileIcon = new ImageIcon(getClass().getResource("/images/mm-file.png")); // NON-NLS
 
     // build module controls
     final JPanel moduleControls = new JPanel(new BorderLayout());
@@ -366,10 +363,10 @@ public class ModuleManagerWindow extends JFrame {
     moduleView = new JPanel(modulePanelLayout);
     buildTree();
     final JScrollPane scroll = new JScrollPane(tree);
-    moduleView.add(scroll, "modules"); //NON-NLS
+    moduleView.add(scroll, "modules"); // NON-NLS
 
-    final JEditorPane l = new JEditorPane("text/html",
-      Resources.getString("ModuleManager.quickstart"));
+    final JEditorPane l =
+        new JEditorPane("text/html", Resources.getString("ModuleManager.quickstart"));
     l.setEditable(false);
 
     // Try to get background color and font from LookAndFeel;
@@ -384,12 +381,13 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     l.setBackground(bg);
-    ((HTMLEditorKit) l.getEditorKit()).getStyleSheet().addRule(
-      "body { font: " + font.getFamily() + " " + font.getSize() + "pt }");
+    ((HTMLEditorKit) l.getEditorKit())
+        .getStyleSheet()
+        .addRule("body { font: " + font.getFamily() + " " + font.getSize() + "pt }");
 
     l.addHyperlinkListener(BrowserSupport.getListener());
 
-// FIXME: use MigLayout for this!
+    // FIXME: use MigLayout for this!
     // this is necessary to get proper vertical alignment
     final JPanel p = new JPanel(new GridBagLayout());
     final GridBagConstraints c = new GridBagConstraints();
@@ -397,25 +395,18 @@ public class ModuleManagerWindow extends JFrame {
     c.anchor = GridBagConstraints.CENTER;
     p.add(l, c);
 
-    moduleView.add(p, "quickStart"); //NON-NLS
-    modulePanelLayout.show(
-      moduleView, getModuleCount() == 0 ? "quickStart" : "modules");
+    moduleView.add(p, "quickStart"); // NON-NLS
+    modulePanelLayout.show(moduleView, getModuleCount() == 0 ? "quickStart" : "modules");
     moduleControls.add(moduleView, BorderLayout.CENTER);
-    moduleControls.setBorder(new TitledBorder(
-      Resources.getString("ModuleManager.recent_modules")));
+    moduleControls.setBorder(new TitledBorder(Resources.getString("ModuleManager.recent_modules")));
 
     add(moduleControls);
 
     // build server status controls
-    final ServerStatusView serverStatusControls =
-      new ServerStatusView(new CgiServerStatus());
-    serverStatusControls.setBorder(
-      new TitledBorder(Resources.getString("Chat.server_status")));
+    final ServerStatusView serverStatusControls = new ServerStatusView(new CgiServerStatus());
+    serverStatusControls.setBorder(new TitledBorder(Resources.getString("Chat.server_status")));
 
-    splitPane = new SplitPane(
-      SplitPane.HORIZONTAL_SPLIT,
-      moduleControls, serverStatusControls
-    );
+    splitPane = new SplitPane(SplitPane.HORIZONTAL_SPLIT, moduleControls, serverStatusControls);
 
     // show the server status controls according to the prefs
     splitPane.setRightVisible(serverStatusConfig.booleanValue());
@@ -423,28 +414,23 @@ public class ModuleManagerWindow extends JFrame {
 
     splitPane.setDividerLocation(getPreferredDividerLocation());
     splitPane.addPropertyChangeListener(
-      "dividerLocation",
-      e -> setPreferredDividerLocation((Integer) e.getNewValue())
-    );
+        "dividerLocation", e -> setPreferredDividerLocation((Integer) e.getNewValue()));
 
     add(splitPane);
 
     final Rectangle r = SwingUtils.getScreenBounds(this);
-    serverStatusControls.setPreferredSize(
-      new Dimension((int) (r.width / 3.5), 0));
+    serverStatusControls.setPreferredSize(new Dimension((int) (r.width / 3.5), 0));
 
     setSize(3 * r.width / 4, 3 * r.height / 4);
 
     // Save/load the window position and size in prefs
     final PositionOption option =
-      new PositionOption(PositionOption.key + "ModuleManager", this); //NON-NLS
+        new PositionOption(PositionOption.key + "ModuleManager", this); // NON-NLS
     Prefs.getGlobalPrefs().addOption(option);
   }
 
   public void setWaitCursor(boolean wait) {
-    setCursor(Cursor.getPredefinedCursor(
-      wait ? Cursor.WAIT_CURSOR : Cursor.DEFAULT_CURSOR
-    ));
+    setCursor(Cursor.getPredefinedCursor(wait ? Cursor.WAIT_CURSOR : Cursor.DEFAULT_CURSOR));
   }
 
   protected void setPreferredDividerLocation(int i) {
@@ -464,56 +450,56 @@ public class ModuleManagerWindow extends JFrame {
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-      final int dialogResult = Dialogs.showConfirmDialog(
-        ModuleManagerWindow.this,
-        Resources.getString("ModuleManager.clear_tilecache_title"),
-        Resources.getString("ModuleManager.clear_tilecache_heading"),
-        Resources.getString("ModuleManager.clear_tilecache_message"),
-        JOptionPane.WARNING_MESSAGE,
-        JOptionPane.OK_CANCEL_OPTION
-      );
+      final int dialogResult =
+          Dialogs.showConfirmDialog(
+              ModuleManagerWindow.this,
+              Resources.getString("ModuleManager.clear_tilecache_title"),
+              Resources.getString("ModuleManager.clear_tilecache_heading"),
+              Resources.getString("ModuleManager.clear_tilecache_message"),
+              JOptionPane.WARNING_MESSAGE,
+              JOptionPane.OK_CANCEL_OPTION);
 
       if (dialogResult != JOptionPane.OK_OPTION) {
         return;
       }
 
-      final ProgressDialog pd = new ProgressDialog(
-        ModuleManagerWindow.this,
-        Resources.getString("ModuleManager.clear_tilecache_progress_title"),
-        Resources.getString("ModuleManager.clear_tilecache_progress_text"),
-        false
-      );
+      final ProgressDialog pd =
+          new ProgressDialog(
+              ModuleManagerWindow.this,
+              Resources.getString("ModuleManager.clear_tilecache_progress_title"),
+              Resources.getString("ModuleManager.clear_tilecache_progress_text"),
+              false);
 
       pd.setIndeterminate(true);
       pd.setStringPainted(false);
       pd.setLocationRelativeTo(ModuleManagerWindow.this);
 
-      final SwingWorker task = new SwingWorker<Void, Void>() {
-        @Override
-        public Void doInBackground() throws InterruptedException, IOException {
-          // clear tiles in both old (conf) and new (cache) locations
-          for (final File d : List.of(Info.getCacheDir(), Info.getConfDir())) {
-            final Path tdir = d.toPath().resolve("tiles");
-            if (Files.exists(tdir)) {
-              try {
-                Files.walkFileTree(tdir, new DirectoryTreeDeleter());
-                Files.createDirectory(tdir);
+      final SwingWorker task =
+          new SwingWorker<Void, Void>() {
+            @Override
+            public Void doInBackground() throws InterruptedException, IOException {
+              // clear tiles in both old (conf) and new (cache) locations
+              for (final File d : List.of(Info.getCacheDir(), Info.getConfDir())) {
+                final Path tdir = d.toPath().resolve("tiles");
+                if (Files.exists(tdir)) {
+                  try {
+                    Files.walkFileTree(tdir, new DirectoryTreeDeleter());
+                    Files.createDirectory(tdir);
+                  } catch (IOException e) {
+                    WriteErrorDialog.error(e, tdir.toFile());
+                  }
+                }
               }
-              catch (IOException e) {
-                WriteErrorDialog.error(e, tdir.toFile());
-              }
+
+              return null;
             }
-          }
 
-          return null;
-        }
-
-        @Override
-        protected void done() {
-          pd.setVisible(false);
-          pd.dispose();
-        }
-      };
+            @Override
+            protected void done() {
+              pd.setVisible(false);
+              pd.dispose();
+            }
+          };
 
       task.execute();
       pd.setVisible(true);
@@ -530,8 +516,7 @@ public class ModuleManagerWindow extends JFrame {
         model.addColumn(columns[VASSAL_COLUMN]);
         model.addColumn(columns[SAVED_COLUMN]);
       }
-    }
-    else {
+    } else {
       model.removeColumn(columns[VASSAL_COLUMN]);
       model.removeColumn(columns[SAVED_COLUMN]);
     }
@@ -555,54 +540,57 @@ public class ModuleManagerWindow extends JFrame {
     // RecentModules key was used through 3.5.1, but 3.2 can't read the
     // buildFile.xml for 3.5+ modules. Hence we've switched to the Modules
     // key, but still collect whatever is in RecentModules for compatibility.
-    recentModuleConfig = new StringArrayConfigurer("RecentModules", null); //NON-NLS
+    recentModuleConfig = new StringArrayConfigurer("RecentModules", null); // NON-NLS
     Prefs.getGlobalPrefs().addOption(null, recentModuleConfig);
 
-    moduleConfig = new StringArrayConfigurer("Modules", null); //NON-NLS
+    moduleConfig = new StringArrayConfigurer("Modules", null); // NON-NLS
     Prefs.getGlobalPrefs().addOption(null, moduleConfig);
 
     Stream.concat(
-      Arrays.stream(recentModuleConfig.getStringArray()),
-      Arrays.stream(moduleConfig.getStringArray())
-    ).sorted().distinct().forEach(s -> {
-      final ModuleInfo module = new ModuleInfo(s);
-      if (module.getFile().isFile() && module.isValid()) {
-        moduleList.add(module);
-      }
-      else {
-        missingModules.add(s);
-      }
-    });
+            Arrays.stream(recentModuleConfig.getStringArray()),
+            Arrays.stream(moduleConfig.getStringArray()))
+        .sorted()
+        .distinct()
+        .forEach(
+            s -> {
+              final ModuleInfo module = new ModuleInfo(s);
+              if (module.getFile().isFile() && module.isValid()) {
+                moduleList.add(module);
+              } else {
+                missingModules.add(s);
+              }
+            });
 
     for (final String s : missingModules) {
       logger.info(Resources.getString("ModuleManager.removing_module", s));
-      final ModuleInfo toRemove = moduleList
-        .stream()
-        .filter(moduleInfo -> moduleInfo.getModuleName().equals(s))
-        .findFirst()
-        .orElse(null);
+      final ModuleInfo toRemove =
+          moduleList.stream()
+              .filter(moduleInfo -> moduleInfo.getModuleName().equals(s))
+              .findFirst()
+              .orElse(null);
       moduleList.remove(toRemove);
       recentModuleConfig.removeValue(s);
       moduleConfig.removeValue(s);
     }
 
-    moduleList.sort((a, b) -> {
-      // sort module names in ascending order
-      int i = a.toString().compareTo(b.toString());
-      if (i == 0) {
-        // module names are the same
-        final Pair<String, String> ap = splitVersion(a.getVersion());
-        final Pair<String, String> bp = splitVersion(b.getVersion());
+    moduleList.sort(
+        (a, b) -> {
+          // sort module names in ascending order
+          int i = a.toString().compareTo(b.toString());
+          if (i == 0) {
+            // module names are the same
+            final Pair<String, String> ap = splitVersion(a.getVersion());
+            final Pair<String, String> bp = splitVersion(b.getVersion());
 
-        i = ap.getLeft().compareTo(bp.getLeft());
-        if (i == 0) {
-          // leading nonnumeric part of versions are the same
-          // sort version numbers in descending order
-          i = -VersionUtils.compareVersions(ap.getRight(), bp.getRight());
-        }
-      }
-      return i;
-    });
+            i = ap.getLeft().compareTo(bp.getLeft());
+            if (i == 0) {
+              // leading nonnumeric part of versions are the same
+              // sort version numbers in descending order
+              i = -VersionUtils.compareVersions(ap.getRight(), bp.getRight());
+            }
+          }
+          return i;
+        });
 
     rootNode = new MyTreeNode(new RootInfo());
 
@@ -639,15 +627,13 @@ public class ModuleManagerWindow extends JFrame {
               folderNode.add(fileNode);
             }
           }
-        }
-        else {
+        } else {
           missingFolders.add(f);
         }
       }
 
       for (final File mf : missingFolders) {
-        logger.info(
-          Resources.getString("ModuleManager.removing_folder", mf.getPath()));
+        logger.info(Resources.getString("ModuleManager.removing_folder", mf.getPath()));
         moduleInfo.removeFolder(mf);
       }
 
@@ -664,85 +650,85 @@ public class ModuleManagerWindow extends JFrame {
 
     tree.setTreeCellRenderer(new MyTreeCellRenderer());
 
-    tree.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2 && SwingUtils.isMainMouseButtonDown(e)) {
-          final TreePath path =
-            tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
+    tree.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2 && SwingUtils.isMainMouseButtonDown(e)) {
+              final TreePath path = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
 
-          // do nothing if not on a node, or if this node was expanded
-          // or collapsed during the past doubleClickInterval milliseconds
-          if (path == null || (lastExpansionPath == path &&
-              e.getWhen() - lastExpansionTime <= doubleClickInterval)) return;
+              // do nothing if not on a node, or if this node was expanded
+              // or collapsed during the past doubleClickInterval milliseconds
+              if (path == null
+                  || (lastExpansionPath == path
+                      && e.getWhen() - lastExpansionTime <= doubleClickInterval)) return;
 
-          tree.activateOrExpandNode(path);
-        }
-      }
-
-      @Override
-      public void mousePressed(MouseEvent e) {
-        maybePopup(e);
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        maybePopup(e);
-      }
-
-      private void maybePopup(MouseEvent e) {
-        if (e.isPopupTrigger()) {
-          final TreePath path =
-            tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
-          if (path == null) return;
-
-          final int row = tree.getRowForPath(path);
-          if (row >= 0) {
-            selectedNode = (MyTreeNode) path.getLastPathComponent();
-            tree.clearSelection();
-            tree.addRowSelectionInterval(row, row);
-            final AbstractInfo target =
-              (AbstractInfo) selectedNode.getUserObject();
-            target.buildPopup(row).show(tree, e.getX(), e.getY());
+              tree.activateOrExpandNode(path);
+            }
           }
-        }
-      }
-    });
+
+          @Override
+          public void mousePressed(MouseEvent e) {
+            maybePopup(e);
+          }
+
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            maybePopup(e);
+          }
+
+          private void maybePopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+              final TreePath path = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
+              if (path == null) return;
+
+              final int row = tree.getRowForPath(path);
+              if (row >= 0) {
+                selectedNode = (MyTreeNode) path.getLastPathComponent();
+                tree.clearSelection();
+                tree.addRowSelectionInterval(row, row);
+                final AbstractInfo target = (AbstractInfo) selectedNode.getUserObject();
+                target.buildPopup(row).show(tree, e.getX(), e.getY());
+              }
+            }
+          }
+        });
 
     // We capture the time and location of clicks which would cause
     // expansion in order to distinguish these from clicks which
     // might launch a module or game.
-    tree.addTreeWillExpandListener(new TreeWillExpandListener() {
-      @Override
-      public void treeWillCollapse(TreeExpansionEvent e) {
-        lastExpansionTime = System.currentTimeMillis();
-        lastExpansionPath = e.getPath();
-      }
+    tree.addTreeWillExpandListener(
+        new TreeWillExpandListener() {
+          @Override
+          public void treeWillCollapse(TreeExpansionEvent e) {
+            lastExpansionTime = System.currentTimeMillis();
+            lastExpansionPath = e.getPath();
+          }
 
-      @Override
-      public void treeWillExpand(TreeExpansionEvent e) {
-        lastExpansionTime = System.currentTimeMillis();
-        lastExpansionPath = e.getPath();
-      }
-    });
+          @Override
+          public void treeWillExpand(TreeExpansionEvent e) {
+            lastExpansionTime = System.currentTimeMillis();
+            lastExpansionPath = e.getPath();
+          }
+        });
 
     // This ensures that double-clicks always start the module but
     // doesn't prevent single-clicks on the handles from working.
     tree.setToggleClickCount(3);
 
     tree.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    tree.addTreeSelectionListener(e -> {
-      final MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
-      final AbstractInfo target = node.getNodeInfo();
-      if (target instanceof ModuleInfo) {
-        setSelectedModule(target.getFile());
-      }
-      else {
-        if (node.getParent() != null) {
-          setSelectedModule(node.getParentModuleFile());
-        }
-      }
-    });
+    tree.addTreeSelectionListener(
+        e -> {
+          final MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
+          final AbstractInfo target = node.getNodeInfo();
+          if (target instanceof ModuleInfo) {
+            setSelectedModule(target.getFile());
+          } else {
+            if (node.getParent() != null) {
+              setSelectedModule(node.getParentModuleFile());
+            }
+          }
+        });
 
     // Pref to hold the column widths.
     final StringConfigurer widthsConfig = new StringConfigurer(COLUMN_WIDTHS_KEY, null, "");
@@ -803,8 +789,8 @@ public class ModuleManagerWindow extends JFrame {
   }
 
   /**
-   * A File has been saved or created by the Player or the Editor. Update
-   * the display as necessary.
+   * A File has been saved or created by the Player or the Editor. Update the display as necessary.
+   *
    * @param f The file
    */
   public void update(File f) {
@@ -816,12 +802,10 @@ public class ModuleManagerWindow extends JFrame {
       final MyTreeNode moduleNode = rootNode.findNode(f);
       if (moduleNode == null) {
         addModule(f);
-      }
-      else {
+      } else {
         moduleNode.refresh();
       }
-    }
-    else if (data instanceof ExtensionMetaData) {
+    } else if (data instanceof ExtensionMetaData) {
       // Extension.
       // Check if it has been saved into one of the extension directories
       // for any module we already know of. Refresh the module
@@ -835,16 +819,14 @@ public class ModuleManagerWindow extends JFrame {
           }
         }
       }
-    }
-    else if (data instanceof SaveMetaData) {
+    } else if (data instanceof SaveMetaData) {
       // Save Game or Log file.
       // If the parent of the save file is already recorded as a Game Folder,
       // pass the file off to the Game Folder to handle. Otherwise, ignore it.
       for (int i = 0; i < rootNode.getChildCount(); i++) {
         final MyTreeNode moduleNode = rootNode.getChild(i);
         final MyTreeNode folderNode = moduleNode.findNode(f.getParentFile());
-        if (folderNode != null &&
-            folderNode.getNodeInfo() instanceof GameFolderInfo) {
+        if (folderNode != null && folderNode.getNodeInfo() instanceof GameFolderInfo) {
           ((GameFolderInfo) folderNode.getNodeInfo()).update(f);
           return;
         }
@@ -876,12 +858,10 @@ public class ModuleManagerWindow extends JFrame {
       final ModuleInfo moduleInfo = new ModuleInfo(f);
       if (moduleInfo.isValid()) {
         final MyTreeNode moduleNode = new MyTreeNode(moduleInfo);
-        treeModel.insertNodeInto(moduleNode, rootNode,
-                                 rootNode.findInsertIndex(moduleInfo));
+        treeModel.insertNodeInto(moduleNode, rootNode, rootNode.findInsertIndex(moduleInfo));
         for (final ExtensionInfo ext : moduleInfo.getExtensions()) {
           final MyTreeNode extensionNode = new MyTreeNode(ext);
-          treeModel.insertNodeInto(extensionNode, moduleNode,
-              moduleNode.findInsertIndex(ext));
+          treeModel.insertNodeInto(extensionNode, moduleNode, moduleNode.findInsertIndex(ext));
         }
         updateModuleList();
       }
@@ -898,8 +878,7 @@ public class ModuleManagerWindow extends JFrame {
     if (name == null) return null;
 
     for (int i = 0; i < rootNode.getChildCount(); i++) {
-      final ModuleInfo module =
-        (ModuleInfo) rootNode.getChild(i).getNodeInfo();
+      final ModuleInfo module = (ModuleInfo) rootNode.getChild(i).getNodeInfo();
 
       if (name.equals(module.getModuleName())) return module.getFile();
     }
@@ -910,20 +889,17 @@ public class ModuleManagerWindow extends JFrame {
   private void updateModuleList() {
     final List<String> l = new ArrayList<>();
     for (int i = 0; i < rootNode.getChildCount(); i++) {
-      final ModuleInfo module =
-        (ModuleInfo) (rootNode.getChild(i)).getNodeInfo();
+      final ModuleInfo module = (ModuleInfo) (rootNode.getChild(i)).getNodeInfo();
       l.add(module.encode());
     }
     recentModuleConfig.setValue(l.toArray(new String[0]));
     moduleConfig.setValue(l.toArray(new String[0]));
-    modulePanelLayout.show(
-      moduleView, getModuleCount() == 0 ? "quickStart" : "modules");
+    modulePanelLayout.show(moduleView, getModuleCount() == 0 ? "quickStart" : "modules");
   }
 
-  /** *************************************************************************
-   * Custom Tree table model:-
-   *  - Return column count
-   *  - Return column headings
+  /**
+   * ************************************************************************* Custom Tree table
+   * model:- - Return column count - Return column headings
    */
   private static class MyTreeTableModel extends DefaultTreeTableModel {
     public MyTreeTableModel(MyTreeNode rootNode) {
@@ -946,15 +922,13 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     @Override
-    public Object getValueAt(Object node, int column)  {
+    public Object getValueAt(Object node, int column) {
       return ((MyTreeNode) node).getValueAt(column);
     }
   }
 
   /**
-   * Custom implementation of JXTreeTable
-   * Fix for bug on startup generating illegal column numbers
-   *
+   * Custom implementation of JXTreeTable Fix for bug on startup generating illegal column numbers
    */
   private static class MyTree extends JXTreeTable {
     private static final long serialVersionUID = 1L;
@@ -968,8 +942,7 @@ public class ModuleManagerWindow extends JFrame {
       final ModuleManagerWindow mmw = getInstance();
       mmw.selectedNode = (MyTreeNode) path.getLastPathComponent();
 
-      final AbstractInfo target =
-        (AbstractInfo) mmw.selectedNode.getUserObject();
+      final AbstractInfo target = (AbstractInfo) mmw.selectedNode.getUserObject();
 
       final int row = mmw.tree.getRowForPath(path);
       if (row < 0) return;
@@ -979,46 +952,47 @@ public class ModuleManagerWindow extends JFrame {
         final ModuleInfo modInfo = (ModuleInfo) target;
         if (modInfo.isModuleTooNew()) {
           ErrorDialog.show(
-            "Error.module_too_new",
-            modInfo.getFile().getPath(),
-            modInfo.getVassalVersion(),
-            Info.getVersion()
-          );
-        }
-        else {
+              "Error.module_too_new",
+              modInfo.getFile().getPath(),
+              modInfo.getVassalVersion(),
+              Info.getVersion());
+        } else {
           ((ModuleInfo) target).play();
         }
-      }
-      else if (target instanceof SaveFileInfo) {
+      } else if (target instanceof SaveFileInfo) {
         ((SaveFileInfo) target).play();
-      }
-      else if (isExpanded(row)) {
+      } else if (isExpanded(row)) {
         collapseRow(row);
-      }
-      else {
+      } else {
         expandRow(row);
       }
     }
 
     private void createKeyBindings(JTable table) {
-      table.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
-      table.getActionMap().put("Enter", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-          //do something meaningful on JTable enter pressed
+      table
+          .getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+          .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
+      table
+          .getActionMap()
+          .put(
+              "Enter",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                  // do something meaningful on JTable enter pressed
 
-          final MyTree tree = getInstance().tree;
-          final int row = tree.getSelectedRow();
+                  final MyTree tree = getInstance().tree;
+                  final int row = tree.getSelectedRow();
 
-          final TreePath path = tree.getPathForRow(row);
-          if (path != null) {
-            tree.activateOrExpandNode(path);
-          }
-        }
-      });
+                  final TreePath path = tree.getPathForRow(row);
+                  if (path != null) {
+                    tree.activateOrExpandNode(path);
+                  }
+                }
+              });
     }
 
-// FIXME: Where's the rest of the comment???
+    // FIXME: Where's the rest of the comment???
     /**
      * There appears to be a bug/strange interaction between JXTreetable and the ComponentSplitter
      * when the Component
@@ -1031,21 +1005,23 @@ public class ModuleManagerWindow extends JFrame {
   }
 
   /**
-   * Custom Tree cell renderer:-
-   *   - Add file name as tooltip
-   *   - Handle expanded display (some nodes use the same icon for expanded/unexpanded)
-   *   - Gray out inactive extensions
-   *   - Gray out Save Games that belong to other modules
+   * Custom Tree cell renderer:- - Add file name as tooltip - Handle expanded display (some nodes
+   * use the same icon for expanded/unexpanded) - Gray out inactive extensions - Gray out Save Games
+   * that belong to other modules
    */
   private static class MyTreeCellRenderer extends DefaultTreeCellRenderer {
     private static final long serialVersionUID = 1L;
 
     @Override
     public Component getTreeCellRendererComponent(
-        JTree tree, Object value, boolean selected, boolean expanded,
-        boolean leaf, int row, boolean hasFocus) {
-      super.getTreeCellRendererComponent(
-        tree, value, selected, expanded, leaf, row, hasFocus);
+        JTree tree,
+        Object value,
+        boolean selected,
+        boolean expanded,
+        boolean leaf,
+        int row,
+        boolean hasFocus) {
+      super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
       final AbstractInfo info = ((MyTreeNode) value).getNodeInfo();
       setText(info.toString());
       setToolTipText(info.getToolTipText());
@@ -1055,9 +1031,9 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /** *************************************************************************
-   * Custom cell render for Version column
-   *   - Center data
+  /**
+   * ************************************************************************* Custom cell render
+   * for Version column - Center data
    */
   private static class CenteringCellRenderer extends DefaultTableCellRenderer {
     private static final long serialVersionUID = 1L;
@@ -1068,14 +1044,15 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(
+        JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       return this;
     }
   }
 
-  /** *************************************************************************
-   * Custom TreeTable Node
+  /**
+   * ************************************************************************* Custom TreeTable Node
    */
   private static class MyTreeNode extends DefaultMutableTreeTableNode {
 
@@ -1097,8 +1074,7 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     @Override
-    public void setValueAt(Object aValue, int column) {
-    }
+    public void setValueAt(Object aValue, int column) {}
 
     @Override
     public Object getValueAt(int column) {
@@ -1117,8 +1093,7 @@ public class ModuleManagerWindow extends JFrame {
         // always return true when one File is a relative path.
         try {
           f = f.getCanonicalFile();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           f = f.getAbsoluteFile();
         }
 
@@ -1152,14 +1127,11 @@ public class ModuleManagerWindow extends JFrame {
       final AbstractInfo info = getNodeInfo();
       if (info instanceof RootInfo) {
         return null;
-      }
-      else if (info instanceof ModuleInfo) {
+      } else if (info instanceof ModuleInfo) {
         return this;
-      }
-      else if (getParent() == null) {
+      } else if (getParent() == null) {
         return null;
-      }
-      else {
+      } else {
         return ((MyTreeNode) getParent()).getParentModuleNode();
       }
     }
@@ -1175,10 +1147,10 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /** *************************************************************************
-   * All tree nodes encapsulate a User-defined object holding the user
-   * data for that node. In the ModuleManager, all user-defined objects
-   * are subclasses of AbstractInfo
+  /**
+   * ************************************************************************* All tree nodes
+   * encapsulate a User-defined object holding the user data for that node. In the ModuleManager,
+   * all user-defined objects are subclasses of AbstractInfo
    */
   private abstract class AbstractInfo implements Comparable<AbstractInfo> {
     protected File file;
@@ -1192,16 +1164,16 @@ public class ModuleManagerWindow extends JFrame {
       setFile(f);
       setIcon(open, closed);
     }
+
     public AbstractInfo(File f, Icon i) {
-      this (f, i, i);
+      this(f, i, i);
     }
 
     public AbstractInfo(File f) {
       this(f, null);
     }
 
-    public AbstractInfo() {
-    }
+    public AbstractInfo() {}
 
     @Override
     public String toString() {
@@ -1217,8 +1189,7 @@ public class ModuleManagerWindow extends JFrame {
 
       try {
         file = f.getCanonicalFile();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         file = f.getAbsoluteFile();
       }
     }
@@ -1226,8 +1197,7 @@ public class ModuleManagerWindow extends JFrame {
     public String getToolTipText() {
       if (file == null) {
         return "";
-      }
-      else {
+      } else {
         return file.getPath();
       }
     }
@@ -1256,16 +1226,16 @@ public class ModuleManagerWindow extends JFrame {
 
     public String getValueAt(int column) {
       switch (column) {
-      case KEY_COLUMN:
-        return toString();
-      case VERSION_COLUMN:
-        return getVersion();
-      case VASSAL_COLUMN:
-        return getVassalVersion();
-      case SAVED_COLUMN:
-        return getLastSaved();
-      default:
-        return null;
+        case KEY_COLUMN:
+          return toString();
+        case VERSION_COLUMN:
+          return getVersion();
+        case VASSAL_COLUMN:
+          return getVassalVersion();
+        case SAVED_COLUMN:
+          return getLastSaved();
+        default:
+          return null;
       }
     }
 
@@ -1310,26 +1280,24 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     /**
-     * Return a String used to sort different types of AbstractInfo's that are
-     * children of the same parent.
+     * Return a String used to sort different types of AbstractInfo's that are children of the same
+     * parent.
      *
      * @return sort key
      */
     public abstract String getSortKey();
 
     /**
-     * Return the color of the text used to display the name in column 1.
-     * Over-ride this to change color depending on item state.
+     * Return the color of the text used to display the name in column 1. Over-ride this to change
+     * color depending on item state.
      *
-     *  @return cell text color
+     * @return cell text color
      */
     public Color getTreeCellFgColor() {
       return Color.black;
     }
 
-    /**
-     * Refresh yourself and any children
-     */
+    /** Refresh yourself and any children */
     public void refresh() {
       refreshChildren();
     }
@@ -1341,8 +1309,9 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /** *************************************************************************
-   * Root Node User Information - Root node is hidden, so not much action here.
+  /**
+   * ************************************************************************* Root Node User
+   * Information - Root node is hidden, so not much action here.
    */
   private class RootInfo extends AbstractInfo {
     public RootInfo() {
@@ -1355,8 +1324,9 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /** *************************************************************************
-   * Module Node User Information
+  /**
+   * ************************************************************************* Module Node User
+   * Information
    */
   public class ModuleInfo extends AbstractInfo {
 
@@ -1365,54 +1335,61 @@ public class ModuleManagerWindow extends JFrame {
     private ModuleMetaData metadata;
 
     private final Action newExtensionAction =
-      new NewExtensionLaunchAction(ModuleManagerWindow.this);
+        new NewExtensionLaunchAction(ModuleManagerWindow.this);
 
-    private final AbstractAction addExtensionAction = new AbstractAction(
-        Resources.getString("ModuleManager.add_extension")) {
+    private final AbstractAction addExtensionAction =
+        new AbstractAction(Resources.getString("ModuleManager.add_extension")) {
 
-      private static final long serialVersionUID = 1L;
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final FileChooser fc = FileChooser.createFileChooser(
-          ModuleManagerWindow.this, (DirectoryConfigurer)
-            Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
-        if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
-          final File selectedFile = fc.getSelectedFile();
-          final ExtensionInfo testExtInfo = new ExtensionInfo(selectedFile, true, null);
-          if (testExtInfo.isValid()) {
-            final File f = getExtensionsManager().setActive(fc.getSelectedFile(), true);
-            final MyTreeNode moduleNode = rootNode.findNode(selectedModule);
-            if (moduleNode.getNodeInfo() instanceof ModuleInfo) {
-              final ExtensionInfo extInfo = new ExtensionInfo(f, true, (ModuleInfo) moduleNode.getNodeInfo());
-              if (extInfo.isValid()) {
-                final MyTreeNode extNode = new MyTreeNode(extInfo);
-                treeModel.insertNodeInto(extNode, moduleNode, moduleNode.findInsertIndex(extInfo));
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            final FileChooser fc =
+                FileChooser.createFileChooser(
+                    ModuleManagerWindow.this,
+                    (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
+            if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
+              final File selectedFile = fc.getSelectedFile();
+              final ExtensionInfo testExtInfo = new ExtensionInfo(selectedFile, true, null);
+              if (testExtInfo.isValid()) {
+                final File f = getExtensionsManager().setActive(fc.getSelectedFile(), true);
+                final MyTreeNode moduleNode = rootNode.findNode(selectedModule);
+                if (moduleNode.getNodeInfo() instanceof ModuleInfo) {
+                  final ExtensionInfo extInfo =
+                      new ExtensionInfo(f, true, (ModuleInfo) moduleNode.getNodeInfo());
+                  if (extInfo.isValid()) {
+                    final MyTreeNode extNode = new MyTreeNode(extInfo);
+                    treeModel.insertNodeInto(
+                        extNode, moduleNode, moduleNode.findInsertIndex(extInfo));
+                  }
+                }
+              } else {
+                JOptionPane.showMessageDialog(
+                    ModuleManagerWindow.this,
+                    testExtInfo.getError(),
+                    null,
+                    JOptionPane.ERROR_MESSAGE);
               }
             }
           }
-          else {
-            JOptionPane.showMessageDialog(ModuleManagerWindow.this, testExtInfo.getError(), null, JOptionPane.ERROR_MESSAGE);
+        };
+
+    private final AbstractAction addFolderAction =
+        new AbstractAction(Resources.getString("ModuleManager.add_save_game_folder")) {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            final FileChooser fc =
+                FileChooser.createFileChooser(
+                    ModuleManagerWindow.this,
+                    (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY),
+                    FileChooser.DIRECTORIES_ONLY);
+            if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
+              addFolder(fc.getSelectedFile());
+            }
           }
-        }
-      }
-    };
-
-    private final AbstractAction addFolderAction = new AbstractAction(
-        Resources.getString("ModuleManager.add_save_game_folder")) {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final FileChooser fc = FileChooser.createFileChooser(
-          ModuleManagerWindow.this, (DirectoryConfigurer)
-            Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY),
-            FileChooser.DIRECTORIES_ONLY);
-        if (fc.showOpenDialog() == FileChooser.APPROVE_OPTION) {
-          addFolder(fc.getSelectedFile());
-        }
-      }
-    };
+        };
 
     public ModuleInfo(File f) {
       super(f, moduleIcon);
@@ -1425,8 +1402,7 @@ public class ModuleManagerWindow extends JFrame {
       if (data instanceof ModuleMetaData) {
         setValid(true);
         metadata = (ModuleMetaData) data;
-      }
-      else {
+      } else {
         setValid(false);
       }
     }
@@ -1446,8 +1422,7 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     /**
-     * Initialise ModuleInfo based on a saved preference string.
-     * See encode().
+     * Initialise ModuleInfo based on a saved preference string. See encode().
      *
      * @param s Preference String
      */
@@ -1462,9 +1437,7 @@ public class ModuleManagerWindow extends JFrame {
       }
     }
 
-    /**
-     * Refresh this module and all children
-     */
+    /** Refresh this module and all children */
     @Override
     public void refresh() {
       loadMetaData();
@@ -1488,19 +1461,17 @@ public class ModuleManagerWindow extends JFrame {
             extNode = new MyTreeNode(ext);
             treeModel.insertNodeInto(extNode, getTreeNode(), getTreeNode().findInsertIndex(ext));
           }
-        }
-        else {
+        } else {
           extNode.refresh();
         }
       }
     }
 
     /**
-     * Encode any information which needs to be recorded in the Preference entry for this module:-
-     *  - Path to Module File
-     *  - Paths to any child Save Game Folders
+     * Encode any information which needs to be recorded in the Preference entry for this module:- -
+     * Path to Module File - Paths to any child Save Game Folders
      *
-     *  @return encoded data
+     * @return encoded data
      */
     public String encode() {
       final SequenceEncoder se = new SequenceEncoder(file.getPath(), ';');
@@ -1517,14 +1488,12 @@ public class ModuleManagerWindow extends JFrame {
     public void addFolder(File f) {
       try {
         f = f.getCanonicalFile();
-      }
-      catch (final IOException e) {
+      } catch (final IOException e) {
         JOptionPane.showMessageDialog(
-          ModuleManagerWindow.this,
-          Resources.getString("Error.file_read_error", f.getPath()),
-          "Error",
-          JOptionPane.ERROR_MESSAGE
-        );
+            ModuleManagerWindow.this,
+            Resources.getString("Error.file_read_error", f.getPath()),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
 
         return;
       }
@@ -1532,11 +1501,10 @@ public class ModuleManagerWindow extends JFrame {
       // try to create the directory if it doesn't exist
       if (!f.exists() && !f.mkdirs()) {
         JOptionPane.showMessageDialog(
-          ModuleManagerWindow.this,
-          Resources.getString("Install.error_unable_to_create", f.getPath()),
-          "Error", //NON-NLS
-          JOptionPane.ERROR_MESSAGE
-        );
+            ModuleManagerWindow.this,
+            Resources.getString("Install.error_unable_to_create", f.getPath()),
+            "Error", // NON-NLS
+            JOptionPane.ERROR_MESSAGE);
 
         return;
       }
@@ -1544,7 +1512,7 @@ public class ModuleManagerWindow extends JFrame {
       gameFolders.add(f);
       final MyTreeNode moduleNode = rootNode.findNode(selectedModule);
       final GameFolderInfo folderInfo =
-        new GameFolderInfo(f, (ModuleInfo) moduleNode.getNodeInfo());
+          new GameFolderInfo(f, (ModuleInfo) moduleNode.getNodeInfo());
       final MyTreeNode folderNode = new MyTreeNode(folderInfo);
       final int idx = moduleNode.findInsertIndex(folderInfo);
       treeModel.insertNodeInto(folderNode, moduleNode, idx);
@@ -1554,8 +1522,7 @@ public class ModuleManagerWindow extends JFrame {
           final SaveFileInfo fileInfo = new SaveFileInfo(file, folderInfo);
           if (fileInfo.isValid() && fileInfo.belongsToModule()) {
             final MyTreeNode fileNode = new MyTreeNode(fileInfo);
-            treeModel.insertNodeInto(fileNode, folderNode,
-                                     folderNode.findInsertIndex(fileInfo));
+            treeModel.insertNodeInto(fileNode, folderNode, folderNode.findInsertIndex(fileInfo));
           }
         }
       }
@@ -1583,8 +1550,7 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     public void play() {
-      new Player.LaunchAction(
-          ModuleManagerWindow.this, file).actionPerformed(null);
+      new Player.LaunchAction(ModuleManagerWindow.this, file).actionPerformed(null);
     }
 
     @Override
@@ -1601,17 +1567,18 @@ public class ModuleManagerWindow extends JFrame {
       editAction.setEnabled(editAction.isEnabled() && !tooNew);
       m.add(editAction);
 
-      m.add(new AbstractAction(Resources.getString("General.remove")) {
-        private static final long serialVersionUID = 1L;
+      m.add(
+          new AbstractAction(Resources.getString("General.remove")) {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          removeModule(file);
-          if (!AbstractLaunchAction.anyInUse()) {
-            cleanupTileCache();
-          }
-        }
-      });
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              removeModule(file);
+              if (!AbstractLaunchAction.anyInUse()) {
+                cleanupTileCache();
+              }
+            }
+          });
 
       m.addSeparator();
 
@@ -1630,16 +1597,13 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     public void cleanupTileCache() {
-      final String hstr = DigestUtils.sha1Hex(
-        metadata.getName() + "_" + metadata.getVersion()
-      );
+      final String hstr = DigestUtils.sha1Hex(metadata.getName() + "_" + metadata.getVersion());
 
       final Path tdir = Info.getCacheDir().toPath().resolve("tiles/" + hstr);
       if (Files.exists(tdir)) {
         try {
           Files.walkFileTree(tdir, new DirectoryTreeDeleter());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           WriteErrorDialog.error(e, tdir.toFile());
         }
       }
@@ -1649,8 +1613,7 @@ public class ModuleManagerWindow extends JFrame {
      * Is the module currently being Played or Edited?
      */
     public boolean isInUse() {
-      return AbstractLaunchAction.isInUse(file) ||
-             AbstractLaunchAction.isEditing(file);
+      return AbstractLaunchAction.isInUse(file) || AbstractLaunchAction.isEditing(file);
     }
 
     @Override
@@ -1661,8 +1624,7 @@ public class ModuleManagerWindow extends JFrame {
       if (!extra1.isEmpty() && (extra1.charAt(0) >= '0') && (extra1.charAt(0) <= '9')) {
         if (!extra2.isEmpty() && (extra2.charAt(0) >= '0') && (extra2.charAt(0) <= '9')) {
           return version + "." + extra1 + "." + extra2;
-        }
-        else {
+        } else {
           return version + "." + extra1;
         }
       }
@@ -1684,8 +1646,7 @@ public class ModuleManagerWindow extends JFrame {
 
     @Override
     public String getValueAt(int column) {
-      return column == SPARE_COLUMN ?
-        getLocalizedDescription() : super.getValueAt(column);
+      return column == SPARE_COLUMN ? getLocalizedDescription() : super.getValueAt(column);
     }
 
     @Override
@@ -1699,8 +1660,9 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /** *************************************************************************
-   * Extension Node User Information
+  /**
+   * ************************************************************************* Extension Node User
+   * Information
    */
   private class ExtensionInfo extends AbstractInfo {
 
@@ -1720,8 +1682,7 @@ public class ModuleManagerWindow extends JFrame {
       if (data instanceof ExtensionMetaData) {
         setValid(true);
         metadata = (ExtensionMetaData) data;
-      }
-      else {
+      } else {
         setError(Resources.getString("ModuleManager.invalid_extension"));
         setValid(false);
       }
@@ -1790,15 +1751,15 @@ public class ModuleManagerWindow extends JFrame {
 
       final boolean tooNew = Info.isModuleTooNew(metadata.getVassalVersion());
 
-      final Action activateAction = new ActivateExtensionAction(
-        Resources.getString(isActive() ?
-        "ModuleManager.deactivate" : "ModuleManager.activate")
-      );
+      final Action activateAction =
+          new ActivateExtensionAction(
+              Resources.getString(
+                  isActive() ? "ModuleManager.deactivate" : "ModuleManager.activate"));
       activateAction.setEnabled(!tooNew);
       m.add(activateAction);
 
-      final Action editAction = new EditExtensionLaunchAction(
-          ModuleManagerWindow.this, getFile(), getSelectedModule());
+      final Action editAction =
+          new EditExtensionLaunchAction(ModuleManagerWindow.this, getFile(), getSelectedModule());
       editAction.setEnabled(editAction.isEnabled() && !tooNew);
       m.add(editAction);
 
@@ -1810,24 +1771,21 @@ public class ModuleManagerWindow extends JFrame {
       // FIXME: should get colors from LAF
       if (isActive()) {
         return metadata == null ? Color.red : Color.black;
-      }
-      else {
+      } else {
         return metadata == null ? Color.pink : Color.gray;
       }
     }
 
     @Override
     public String getValueAt(int column) {
-      return column == SPARE_COLUMN ?
-        getDescription() : super.getValueAt(column);
+      return column == SPARE_COLUMN ? getDescription() : super.getValueAt(column);
     }
 
     /*
      * Is the extension, or its owning module currently being Played or Edited?
      */
     public boolean isInUse() {
-      return AbstractLaunchAction.isInUse(file) ||
-             AbstractLaunchAction.isEditing(file);
+      return AbstractLaunchAction.isInUse(file) || AbstractLaunchAction.isEditing(file);
     }
 
     private class ActivateExtensionAction extends AbstractAction {
@@ -1835,7 +1793,7 @@ public class ModuleManagerWindow extends JFrame {
 
       public ActivateExtensionAction(String s) {
         super(s);
-        setEnabled(!isInUse() && ! moduleInfo.isInUse());
+        setEnabled(!isInUse() && !moduleInfo.isInUse());
       }
 
       @Override
@@ -1848,17 +1806,16 @@ public class ModuleManagerWindow extends JFrame {
       }
     }
 
-    /**
-     * Sort Extensions by File Name
-     */
+    /** Sort Extensions by File Name */
     @Override
     public String getSortKey() {
       return getFile().getName();
     }
   }
 
-  /** *************************************************************************
-   * Saved Game Folder Node User Information
+  /**
+   * ************************************************************************* Saved Game Folder
+   * Node User Information
    */
   private class GameFolderInfo extends AbstractInfo {
     protected String comment;
@@ -1877,31 +1834,33 @@ public class ModuleManagerWindow extends JFrame {
 
       final JPopupMenu m = new JPopupMenu();
 
-      final Action refreshAction = new AbstractAction(Resources.getString("General.refresh")) {
-        private static final long serialVersionUID = 1L;
+      final Action refreshAction =
+          new AbstractAction(Resources.getString("General.refresh")) {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          refresh();
-        }
-      };
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              refresh();
+            }
+          };
 
       refreshAction.setEnabled(!tooNew);
       m.add(refreshAction);
       m.addSeparator();
 
-      final Action removeAction = new AbstractAction(Resources.getString("General.remove")) {
-        private static final long serialVersionUID = 1L;
+      final Action removeAction =
+          new AbstractAction(Resources.getString("General.remove")) {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          final MyTreeNode moduleNode = rootNode.findNode(moduleInfo.getFile());
-          final MyTreeNode folderNode = moduleNode.findNode(getFile());
-          treeModel.removeNodeFromParent(folderNode);
-          moduleInfo.removeFolder(getFile());
-          updateModuleList();
-        }
-      };
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              final MyTreeNode moduleNode = rootNode.findNode(moduleInfo.getFile());
+              final MyTreeNode folderNode = moduleNode.findNode(getFile());
+              treeModel.removeNodeFromParent(folderNode);
+              moduleInfo.removeFolder(getFile());
+              updateModuleList();
+            }
+          };
 
       removeAction.setEnabled(!tooNew);
       m.add(removeAction);
@@ -1934,9 +1893,9 @@ public class ModuleManagerWindow extends JFrame {
         if (fdata != null) {
           if (fdata instanceof SaveMetaData) {
             final String moduleName = ((SaveMetaData) fdata).getModuleName();
-            if (moduleName == null ||
-                moduleName.length() == 0 ||
-                moduleName.equals(getModuleInfo().getModuleName())) {
+            if (moduleName == null
+                || moduleName.length() == 0
+                || moduleName.equals(getModuleInfo().getModuleName())) {
               update(f);
             }
           }
@@ -1945,8 +1904,9 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     /**
-     * Update the display for the specified save File, or add it in if
-     * we don't already know about it.
+     * Update the display for the specified save File, or add it in if we don't already know about
+     * it.
+     *
      * @param f Save File
      */
     public void update(File f) {
@@ -1959,26 +1919,24 @@ public class ModuleManagerWindow extends JFrame {
       }
       final SaveFileInfo fileInfo = new SaveFileInfo(f, this);
       final MyTreeNode fileNode = new MyTreeNode(fileInfo);
-      treeModel.insertNodeInto(fileNode, getTreeNode(),
-          getTreeNode().findInsertIndex(fileInfo));
+      treeModel.insertNodeInto(fileNode, getTreeNode(), getTreeNode().findInsertIndex(fileInfo));
     }
 
-    /**
-     * Force Game Folders to sort after extensions
-     */
+    /** Force Game Folders to sort after extensions */
     @Override
     public String getSortKey() {
       return "~~~" + getFile().getName();
     }
   }
 
-  /** *************************************************************************
-   * Saved Game File Node User Information
+  /**
+   * ************************************************************************* Saved Game File Node
+   * User Information
    */
   private class SaveFileInfo extends AbstractInfo {
 
-    protected final GameFolderInfo folderInfo;  // Owning Folder
-    protected SaveMetaData metadata;      // Save file metadata
+    protected final GameFolderInfo folderInfo; // Owning Folder
+    protected SaveMetaData metadata; // Save file metadata
 
     public SaveFileInfo(File f, GameFolderInfo folder) {
       super(f, fileIcon);
@@ -1991,8 +1949,7 @@ public class ModuleManagerWindow extends JFrame {
       if (data instanceof SaveMetaData) {
         metadata = (SaveMetaData) data;
         setValid(true);
-      }
-      else {
+      } else {
         setValid(false);
       }
     }
@@ -2008,9 +1965,8 @@ public class ModuleManagerWindow extends JFrame {
       final boolean tooNew = Info.isModuleTooNew(metadata.getVassalVersion());
 
       final JPopupMenu m = new JPopupMenu();
-      final Action launchAction = new Player.LaunchAction(
-        ModuleManagerWindow.this, getModuleFile(), file
-      );
+      final Action launchAction =
+          new Player.LaunchAction(ModuleManagerWindow.this, getModuleFile(), file);
       launchAction.setEnabled(!tooNew);
       m.add(launchAction);
       return m;
@@ -2021,21 +1977,20 @@ public class ModuleManagerWindow extends JFrame {
     }
 
     public void play() {
-      new Player.LaunchAction(
-        ModuleManagerWindow.this, getModuleFile(), file).actionPerformed(null);
+      new Player.LaunchAction(ModuleManagerWindow.this, getModuleFile(), file)
+          .actionPerformed(null);
     }
 
     @Override
     public String getValueAt(int column) {
-      return column == SPARE_COLUMN ?
-        buildComments() : super.getValueAt(column);
+      return column == SPARE_COLUMN ? buildComments() : super.getValueAt(column);
     }
 
     private String buildComments() {
       String comments = "";
       if (!belongsToModule()) {
         if (metadata != null && metadata.getModuleName().length() > 0) {
-          comments = "[" + metadata.getModuleName() +  "] ";
+          comments = "[" + metadata.getModuleName() + "] ";
         }
       }
       comments += (metadata == null ? "" : metadata.getDescription());
@@ -2044,9 +1999,8 @@ public class ModuleManagerWindow extends JFrame {
 
     private boolean belongsToModule() {
       return metadata != null
-        && (metadata.getModuleName().length() == 0 ||
-        folderInfo.getModuleInfo().getModuleName().equals(
-          metadata.getModuleName()));
+          && (metadata.getModuleName().length() == 0
+              || folderInfo.getModuleInfo().getModuleName().equals(metadata.getModuleName()));
     }
 
     @Override
@@ -2060,26 +2014,23 @@ public class ModuleManagerWindow extends JFrame {
       return metadata == null ? "" : metadata.getModuleVersion();
     }
 
-    /**
-     * Sort Save Files by file name
-     */
+    /** Sort Save Files by file name */
     @Override
     public String getSortKey() {
       return this.getFile().getName();
     }
   }
 
-  /**
-   * Action to create a New Extension and edit it in another process.
-   */
+  /** Action to create a New Extension and edit it in another process. */
   private class NewExtensionLaunchAction extends AbstractLaunchAction {
     private static final long serialVersionUID = 1L;
 
     public NewExtensionLaunchAction(Frame frame) {
-      super(Resources.getString("ModuleManager.new_extension"), frame,
-        Editor.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.NEW_EXT)
-      );
+      super(
+          Resources.getString("ModuleManager.new_extension"),
+          frame,
+          Editor.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.NEW_EXT));
     }
 
     @Override
@@ -2107,17 +2058,16 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 
-  /**
-   * Action to Edit an Extension in another process
-   */
+  /** Action to Edit an Extension in another process */
   private static class EditExtensionLaunchAction extends AbstractLaunchAction {
     private static final long serialVersionUID = 1L;
 
     public EditExtensionLaunchAction(Frame frame, File extension, File module) {
-      super(Resources.getString("Editor.edit_extension"), frame,
-        Editor.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.EDIT_EXT, module, extension)
-      );
+      super(
+          Resources.getString("Editor.edit_extension"),
+          frame,
+          Editor.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.EDIT_EXT, module, extension));
 
       setEnabled(!isInUse(module) && !isInUse(extension));
     }
@@ -2172,17 +2122,16 @@ public class ModuleManagerWindow extends JFrame {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-// FIXME: don't create a new one each time!
+      // FIXME: don't create a new one each time!
       final File logfile = Info.getErrorLogPath();
       final LogPane lp = new LogPane(logfile);
 
-// FIXME: this should have its own key. Probably keys should be renamed
-// to reflect what they are labeling, e.g., Help.show_error_log_menu_item,
-// Help.error_log_dialog_title.
-      final JDialog d =
-        new JDialog(frame, Resources.getString("Help.error_log"));
-      d.setLayout(new MigLayout("insets 0")); //NON-NLS
-      d.add(new JScrollPane(lp), "grow, push, w 500, h 600"); //NON-NLS
+      // FIXME: this should have its own key. Probably keys should be renamed
+      // to reflect what they are labeling, e.g., Help.show_error_log_menu_item,
+      // Help.error_log_dialog_title.
+      final JDialog d = new JDialog(frame, Resources.getString("Help.error_log"));
+      d.setLayout(new MigLayout("insets 0")); // NON-NLS
+      d.add(new JScrollPane(lp), "grow, push, w 500, h 600"); // NON-NLS
 
       d.setLocationRelativeTo(frame);
       d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -2190,38 +2139,40 @@ public class ModuleManagerWindow extends JFrame {
       final Action copyAction = new DefaultEditorKit.CopyAction();
       copyAction.putValue(NAME, Resources.getString("Errorlog.copy_selection"));
 
-      final Action copyAllAction = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          lp.selectAll();
-          copyAction.actionPerformed(e);
-        }
-      };
+      final Action copyAllAction =
+          new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              lp.selectAll();
+              copyAction.actionPerformed(e);
+            }
+          };
       copyAllAction.putValue(NAME, Resources.getString("Errorlog.copy_all"));
 
       final JPopupMenu pm = new JPopupMenu();
       pm.add(copyAllAction);
       pm.add(copyAction);
 
-      final MouseAdapter adapter = new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-          if (e.isPopupTrigger()) {
-            doPopup(e);
-          }
-        }
+      final MouseAdapter adapter =
+          new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+              if (e.isPopupTrigger()) {
+                doPopup(e);
+              }
+            }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-          if (e.isPopupTrigger()) {
-            doPopup(e);
-          }
-        }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+              if (e.isPopupTrigger()) {
+                doPopup(e);
+              }
+            }
 
-        protected void doPopup(MouseEvent e) {
-          pm.show(e.getComponent(), e.getX(), e.getY());
-        }
-      };
+            protected void doPopup(MouseEvent e) {
+              pm.show(e.getComponent(), e.getX(), e.getY());
+            }
+          };
 
       lp.addMouseListener(adapter);
 
@@ -2230,4 +2181,3 @@ public class ModuleManagerWindow extends JFrame {
     }
   }
 }
-

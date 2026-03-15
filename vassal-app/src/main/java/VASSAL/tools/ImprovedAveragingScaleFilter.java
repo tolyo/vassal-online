@@ -21,9 +21,8 @@ import java.awt.image.AreaAveragingScaleFilter;
 import java.awt.image.ColorModel;
 
 /**
- * Extension of java.awt.image.AreaAveragingScaleFilter.  Uses the
- * same algorithm but makes sure all images are scaled using area
- * averaging.  Ensures there is no fallback to ReplicateScaleFilter.
+ * Extension of java.awt.image.AreaAveragingScaleFilter. Uses the same algorithm but makes sure all
+ * images are scaled using area averaging. Ensures there is no fallback to ReplicateScaleFilter.
  */
 @Deprecated(since = "2020-10-12", forRemoval = true)
 public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
@@ -32,13 +31,14 @@ public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
   private final int[] savedPixels;
   private static final ColorModel defaultCM = ColorModel.getRGBdefault();
 
-  public ImprovedAveragingScaleFilter(int savedWidth, int savedHeight, int destWidth, int destHeight) {
+  public ImprovedAveragingScaleFilter(
+      int savedWidth, int savedHeight, int destWidth, int destHeight) {
     super(destWidth, destHeight);
     this.savedWidth = savedWidth;
     this.savedHeight = savedHeight;
     this.destWidth = destWidth;
     this.destHeight = destHeight;
-    savedPixels = new int [savedWidth * savedHeight];
+    savedPixels = new int[savedWidth * savedHeight];
   }
 
   @Override
@@ -49,24 +49,24 @@ public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
 
   @Override
   public void setHints(int hintflags) {
-    consumer.setHints(TOPDOWNLEFTRIGHT | COMPLETESCANLINES |
-        SINGLEPASS | (hintflags & SINGLEFRAME));
+    consumer.setHints(
+        TOPDOWNLEFTRIGHT | COMPLETESCANLINES | SINGLEPASS | (hintflags & SINGLEFRAME));
   }
 
   @Override
-  public void setPixels(int x, int y, int width, int height,
-                         ColorModel cm, byte[] pixels, int offset, int scansize) {
+  public void setPixels(
+      int x, int y, int width, int height, ColorModel cm, byte[] pixels, int offset, int scansize) {
     setThePixels(x, y, width, height, cm, pixels, offset, scansize);
   }
 
   @Override
-  public void setPixels(int x, int y, int width, int height,
-                         ColorModel cm, int[] pixels, int offset, int scansize) {
+  public void setPixels(
+      int x, int y, int width, int height, ColorModel cm, int[] pixels, int offset, int scansize) {
     setThePixels(x, y, width, height, cm, pixels, offset, scansize);
   }
 
-  private void setThePixels(int x, int y, int width, int height,
-      ColorModel cm, Object pixels, int offset, int scansize) {
+  private void setThePixels(
+      int x, int y, int width, int height, ColorModel cm, Object pixels, int offset, int scansize) {
 
     int sourceOffset = offset;
     int destinationOffset = y * savedWidth + x;
@@ -74,11 +74,8 @@ public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
     for (int yy = 0; yy < height; yy++) {
       for (int xx = 0; xx < width; xx++)
         if (bytearray)
-          savedPixels[destinationOffset++] =
-            cm.getRGB(((byte[])pixels)[sourceOffset++] & 0xff);
-        else
-          savedPixels[destinationOffset++] =
-            cm.getRGB(((int[])pixels)[sourceOffset++]);
+          savedPixels[destinationOffset++] = cm.getRGB(((byte[]) pixels)[sourceOffset++] & 0xff);
+        else savedPixels[destinationOffset++] = cm.getRGB(((int[]) pixels)[sourceOffset++]);
       sourceOffset += (scansize - width);
       destinationOffset += (savedWidth - width);
     }
@@ -88,10 +85,9 @@ public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
   public void imageComplete(int status) {
     if ((status == IMAGEABORTED) || (status == IMAGEERROR)) {
       consumer.imageComplete(status);
-    }
-    else {
+    } else {
       // get orig image width and height
-      final int[] pixels = new int [savedWidth];
+      final int[] pixels = new int[savedWidth];
       int position;
       for (int yy = 0; yy < savedHeight; yy++) {
         position = 0;
@@ -99,8 +95,7 @@ public class ImprovedAveragingScaleFilter extends AreaAveragingScaleFilter {
         for (int xx = 0; xx < savedWidth; xx++) {
           pixels[position++] = savedPixels[start + xx];
         }
-        super.setPixels(0, yy, savedWidth, 1, defaultCM,
-            pixels, 0, savedWidth);
+        super.setPixels(0, yy, savedWidth, 1, defaultCM, pixels, 0, savedWidth);
       }
       consumer.imageComplete(status);
     }

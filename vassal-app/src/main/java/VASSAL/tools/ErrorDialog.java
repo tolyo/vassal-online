@@ -26,11 +26,6 @@ import VASSAL.tools.bug.BugHandler;
 import VASSAL.tools.concurrent.FutureUtils;
 import VASSAL.tools.image.tilecache.TileNotFoundException;
 import VASSAL.tools.version.VersionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Frame;
 import java.io.IOException;
@@ -41,6 +36,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Joel Uckelman
@@ -49,25 +48,23 @@ import java.util.concurrent.Future;
 public class ErrorDialog {
   private ErrorDialog() {}
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(ErrorDialog.class);
+  private static final Logger logger = LoggerFactory.getLogger(ErrorDialog.class);
 
   private static final List<BugHandler> BUG_HANDLERS =
-    Collections.synchronizedList(new ArrayList<>());
+      Collections.synchronizedList(new ArrayList<>());
 
   public static void addBugHandler(BugHandler bh) {
     BUG_HANDLERS.add(bh);
   }
 
-// FIXME: make method which takes Throwable but doesn't use it for details
+  // FIXME: make method which takes Throwable but doesn't use it for details
 
   public static void bug(final Throwable thrown) {
     // determine whether an OutOfMemoryError is in our causal chain
-    final OutOfMemoryError oom =
-      ThrowableUtils.getRecent(OutOfMemoryError.class, thrown);
+    final OutOfMemoryError oom = ThrowableUtils.getRecent(OutOfMemoryError.class, thrown);
     if (oom != null) {
       logger.error("", thrown);
-      show("Error.out_of_memory"); //NON-NLS
+      show("Error.out_of_memory"); // NON-NLS
       return;
     }
 
@@ -85,24 +82,31 @@ public class ErrorDialog {
     if (!DialogUtils.setDisabled(BugDialog.class, true)) {
       logger.error("", thrown);
 
-      final Frame frame = GameModule.getGameModule() == null
-        ? null : GameModule.getGameModule().getPlayerWindow();
+      final Frame frame =
+          GameModule.getGameModule() == null ? null : GameModule.getGameModule().getPlayerWindow();
 
       final String message = thrown.getMessage();
-      if ((message != null) && message.contains("ran out of memory")) { //NON-NLS
-        SwingUtilities.invokeLater(() -> new BugDialog(frame, thrown, "TilingMemoryDialog", "/icons/48x48/ram.png").setVisible(true)); //NON-NLS
-      }
-      else if ((message != null) && message.contains("failed to start child process")) { //NON-NLS
-        SwingUtilities.invokeLater(() -> new BugDialog(frame, thrown, "ChildProcessDialog", "/icons/48x48/VASSAL.png").setVisible(true)); //NON-NLS
+      if ((message != null) && message.contains("ran out of memory")) { // NON-NLS
+        SwingUtilities.invokeLater(
+            () ->
+                new BugDialog(frame, thrown, "TilingMemoryDialog", "/icons/48x48/ram.png")
+                    .setVisible(true)); // NON-NLS
+      } else if ((message != null)
+          && message.contains("failed to start child process")) { // NON-NLS
+        SwingUtilities.invokeLater(
+            () ->
+                new BugDialog(frame, thrown, "ChildProcessDialog", "/icons/48x48/VASSAL.png")
+                    .setVisible(true)); // NON-NLS
       }
       // remove this when the tile cache bug is fixed
       else if (showSpecialTileBugAdmonition(thrown)) {
-        new Thread(() -> {
-          FutureUtils.wait(show("Bug10900.help"));
-          SwingUtilities.invokeLater(() -> new BugDialog(frame, thrown).setVisible(true));
-        }).start();
-      }
-      else {
+        new Thread(
+                () -> {
+                  FutureUtils.wait(show("Bug10900.help"));
+                  SwingUtilities.invokeLater(() -> new BugDialog(frame, thrown).setVisible(true));
+                })
+            .start();
+      } else {
         SwingUtilities.invokeLater(() -> new BugDialog(frame, thrown).setVisible(true));
       }
     }
@@ -112,271 +116,185 @@ public class ErrorDialog {
     if (ThrowableUtils.getRecent(TileNotFoundException.class, t) != null) {
       try {
         return VersionUtils.isCurrent(Info.getVersion());
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         logger.error("", e);
       }
     }
     return false;
   }
 
-
-  public static Future<?> show(
-    String messageKey,
-    Object... args) {
+  public static Future<?> show(String messageKey, Object... args) {
 
     return ProblemDialog.show(JOptionPane.ERROR_MESSAGE, messageKey, args);
   }
 
-  public static Future<?> show(
-    Component parent,
-    String messageKey,
-    Object... args) {
+  public static Future<?> show(Component parent, String messageKey, Object... args) {
 
-    return ProblemDialog.show(
-      JOptionPane.ERROR_MESSAGE, parent, messageKey, args
-    );
+    return ProblemDialog.show(JOptionPane.ERROR_MESSAGE, parent, messageKey, args);
+  }
+
+  public static Future<?> show(Throwable thrown, String messageKey, Object... args) {
+
+    return ProblemDialog.show(JOptionPane.ERROR_MESSAGE, thrown, messageKey, args);
   }
 
   public static Future<?> show(
-    Throwable thrown,
-    String messageKey,
-    Object... args) {
+      final Component parent,
+      final Throwable thrown,
+      final String messageKey,
+      final Object... args) {
 
-    return ProblemDialog.show(
-      JOptionPane.ERROR_MESSAGE, thrown, messageKey, args
-    );
+    return ProblemDialog.show(JOptionPane.ERROR_MESSAGE, parent, thrown, messageKey, args);
   }
 
   public static Future<?> show(
-    final Component parent,
-    final Throwable thrown,
-    final String messageKey,
-    final Object... args) {
+      final Component parent,
+      final Throwable thrown,
+      final String title,
+      final String heading,
+      final String message) {
 
-    return ProblemDialog.show(
-      JOptionPane.ERROR_MESSAGE, parent, thrown, messageKey, args
-    );
+    return ProblemDialog.show(JOptionPane.ERROR_MESSAGE, parent, thrown, title, heading, message);
   }
 
-  public static Future<?> show(
-    final Component parent,
-    final Throwable thrown,
-    final String title,
-    final String heading,
-    final String message) {
+  public static Future<?> showDisableable(Object key, String messageKey, Object... args) {
 
-    return ProblemDialog.show(
-      JOptionPane.ERROR_MESSAGE, parent, thrown, title, heading, message
-    );
+    return ProblemDialog.showDisableable(JOptionPane.ERROR_MESSAGE, key, messageKey, args);
   }
 
   public static Future<?> showDisableable(
-    Object key,
-    String messageKey,
-    Object... args) {
+      Component parent, Object key, String messageKey, Object... args) {
 
-    return ProblemDialog.showDisableable(
-      JOptionPane.ERROR_MESSAGE, key, messageKey, args
-    );
+    return ProblemDialog.showDisableable(JOptionPane.ERROR_MESSAGE, parent, key, messageKey, args);
   }
 
   public static Future<?> showDisableable(
-    Component parent,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Throwable thrown, Object key, String messageKey, Object... args) {
 
-    return ProblemDialog.showDisableable(
-      JOptionPane.ERROR_MESSAGE, parent, key, messageKey, args
-    );
+    return ProblemDialog.showDisableable(JOptionPane.ERROR_MESSAGE, thrown, key, messageKey, args);
   }
 
   public static Future<?> showDisableable(
-    Throwable thrown,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Component parent, Throwable thrown, Object key, String messageKey, Object... args) {
 
     return ProblemDialog.showDisableable(
-      JOptionPane.ERROR_MESSAGE, thrown, key, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, key, messageKey, args);
   }
 
   public static Future<?> showDisableable(
-    Component parent,
-    Throwable thrown,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Component parent,
+      Throwable thrown,
+      Object key,
+      String title,
+      String heading,
+      String message) {
 
     return ProblemDialog.showDisableable(
-      JOptionPane.ERROR_MESSAGE, parent, thrown, key, messageKey, args
-    );
-  }
-
-  public static Future<?> showDisableable(
-    Component parent,
-    Throwable thrown,
-    Object key,
-    String title,
-    String heading,
-    String message) {
-
-    return ProblemDialog.showDisableable(
-      JOptionPane.ERROR_MESSAGE, parent, thrown, key, title, heading, message
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, key, title, heading, message);
   }
 
   public static Future<?> showDisableableNoI18N(
-    Throwable thrown,
-    Object key,
-    String title,
-    String heading,
-    String message) {
+      Throwable thrown, Object key, String title, String heading, String message) {
 
     return ProblemDialog.showDisableableNoI18N(
-      JOptionPane.ERROR_MESSAGE, thrown, key, title, heading, message
-    );
+        JOptionPane.ERROR_MESSAGE, thrown, key, title, heading, message);
+  }
+
+  public static Future<?> showDetails(String details, String messageKey, Object... args) {
+
+    return ProblemDialog.showDetails(JOptionPane.ERROR_MESSAGE, details, messageKey, args);
   }
 
   public static Future<?> showDetails(
-    String details,
-    String messageKey,
-    Object... args) {
+      Component parent, String details, String messageKey, Object... args) {
 
-    return ProblemDialog.showDetails(
-      JOptionPane.ERROR_MESSAGE, details, messageKey, args
-    );
+    return ProblemDialog.showDetails(JOptionPane.ERROR_MESSAGE, parent, details, messageKey, args);
   }
 
   public static Future<?> showDetails(
-    Component parent,
-    String details,
-    String messageKey,
-    Object... args) {
+      Throwable thrown, String details, String messageKey, Object... args) {
 
-    return ProblemDialog.showDetails(
-      JOptionPane.ERROR_MESSAGE, parent, details, messageKey, args
-    );
-  }
-
-  public static Future<?> showDetails(
-    Throwable thrown,
-    String details,
-    String messageKey,
-    Object... args) {
-
-    return ProblemDialog.showDetails(
-      JOptionPane.ERROR_MESSAGE, thrown, details, messageKey, args
-    );
+    return ProblemDialog.showDetails(JOptionPane.ERROR_MESSAGE, thrown, details, messageKey, args);
   }
 
   public static Future<?> showFileOverwriteFailure(
-    FileSystemException thrown,
-    String details,
-    String messageKey,
-    Object... args) {
+      FileSystemException thrown, String details, String messageKey, Object... args) {
 
     return ProblemDialog.showFileOverwriteFailure(
-      JOptionPane.WARNING_MESSAGE, thrown, details, messageKey, args
-    );
+        JOptionPane.WARNING_MESSAGE, thrown, details, messageKey, args);
   }
 
   public static Future<?> showDetails(
-    Component parent,
-    Throwable thrown,
-    String details,
-    String messageKey,
-    Object... args) {
+      Component parent, Throwable thrown, String details, String messageKey, Object... args) {
 
     return ProblemDialog.showDetails(
-      JOptionPane.ERROR_MESSAGE, parent, thrown, details, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, details, messageKey, args);
   }
 
   public static Future<?> showDetails(
-    Component parent,
-    Throwable thrown,
-    String details,
-    String title,
-    String heading,
-    String message) {
+      Component parent,
+      Throwable thrown,
+      String details,
+      String title,
+      String heading,
+      String message) {
 
     return ProblemDialog.showDetails(
-      JOptionPane.ERROR_MESSAGE, parent,
-      thrown, details, title, heading, message
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, details, title, heading, message);
   }
 
   public static Future<?> showDetailsDisableable(
-    String details,
-    Object key,
-    String messageKey,
-    Object... args) {
+      String details, Object key, String messageKey, Object... args) {
 
     return ProblemDialog.showDetailsDisableable(
-      JOptionPane.ERROR_MESSAGE, details, key, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, details, key, messageKey, args);
   }
 
   public static Future<?> showDetailsDisableable(
-    Component parent,
-    String details,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Component parent, String details, Object key, String messageKey, Object... args) {
 
     return ProblemDialog.showDetailsDisableable(
-      JOptionPane.ERROR_MESSAGE, parent, details, key, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, parent, details, key, messageKey, args);
   }
 
   public static Future<?> showDetailsDisableable(
-    Throwable thrown,
-    String details,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Throwable thrown, String details, Object key, String messageKey, Object... args) {
 
     return ProblemDialog.showDetailsDisableable(
-      JOptionPane.ERROR_MESSAGE, thrown, details, key, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, thrown, details, key, messageKey, args);
   }
 
   public static Future<?> showDetailsDisableable(
-    Component parent,
-    Throwable thrown,
-    String details,
-    Object key,
-    String messageKey,
-    Object... args) {
+      Component parent,
+      Throwable thrown,
+      String details,
+      Object key,
+      String messageKey,
+      Object... args) {
 
     return ProblemDialog.showDetailsDisableable(
-      JOptionPane.ERROR_MESSAGE, parent,
-      thrown, details, key, messageKey, args
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, details, key, messageKey, args);
   }
 
   public static Future<?> showDetailsDisableable(
-    Component parent,
-    Throwable thrown,
-    String details,
-    Object key,
-    String title,
-    String heading,
-    String message) {
+      Component parent,
+      Throwable thrown,
+      String details,
+      Object key,
+      String title,
+      String heading,
+      String message) {
 
     return ProblemDialog.showDetailsDisableable(
-      JOptionPane.ERROR_MESSAGE, parent, thrown,
-      details, key, title, heading, message
-    );
+        JOptionPane.ERROR_MESSAGE, parent, thrown, details, key, title, heading, message);
   }
 
   private static final Set<String> reportedDataWarnings =
-    Collections.synchronizedSet(new HashSet<>());
+      Collections.synchronizedSet(new HashSet<>());
 
-  /** @deprecated Use {@link #dataWarning(BadDataReport)} instead. */
+  /**
+   * @deprecated Use {@link #dataWarning(BadDataReport)} instead.
+   */
   @Deprecated(since = "2021-12-01", forRemoval = true)
   public static void dataError(BadDataReport e) {
     dataWarning(e);
@@ -410,14 +328,14 @@ public class ErrorDialog {
     doReportWarning(e, "Error.data_error_message");
   }
 
-///////////////////
-
+  ///////////////////
 
   public static void main(String[] args) throws Exception {
-    final String loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."; //NON-NLS
+    final String loremIpsum =
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."; // NON-NLS
 
     while (!DialogUtils.isDisabled(0)) {
-      showDisableable(null, null, 0, "Oh Shit!", "Oh Shit!", loremIpsum); //NON-NLS
+      showDisableable(null, null, 0, "Oh Shit!", "Oh Shit!", loremIpsum); // NON-NLS
       Thread.sleep(1000);
     }
 

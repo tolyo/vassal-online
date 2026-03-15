@@ -22,9 +22,8 @@ import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 
 /**
- * A {@link Command} that, when executed, sends game synchronization
- * information to a given {@link VASSAL.chat.SimplePlayer}
- *
+ * A {@link Command} that, when executed, sends game synchronization information to a given {@link
+ * VASSAL.chat.SimplePlayer}
  */
 public class SynchCommand extends Command {
   private final Player recipient;
@@ -42,7 +41,9 @@ public class SynchCommand extends Command {
   @Override
   protected void executeCommand() {
     if (recipient != null) {
-      GameModule.getGameModule().warn(Resources.getString("Server.sending_game_info", recipient.getName())); //$NON-NLS-1$
+      GameModule.getGameModule()
+          .warn(
+              Resources.getString("Server.sending_game_info", recipient.getName())); // $NON-NLS-1$
       final Command synch = GameModule.getGameModule().getGameState().getRestoreCommand();
       if (synch != null) {
         client.sendTo(recipient, synch);
@@ -55,8 +56,7 @@ public class SynchCommand extends Command {
     return null;
   }
 
-  /**
-   * Don't log synchronization requests */
+  /** Don't log synchronization requests */
   @Override
   public boolean isLoggable() {
     return false;

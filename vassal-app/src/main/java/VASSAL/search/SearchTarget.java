@@ -21,10 +21,11 @@ import VASSAL.tools.NamedKeyStroke;
 import java.util.List;
 
 /**
- * An interface for "things the editor might search for with its 'Search' function" to ship off convenient packages of
- * searchable strings in various categories.
+ * An interface for "things the editor might search for with its 'Search' function" to ship off
+ * convenient packages of searchable strings in various categories.
  *
- * Implemented by things like {@link VASSAL.build.AbstractConfigurable} (for most module components) and {@link VASSAL.counters.Decorator} (for piece traits)
+ * <p>Implemented by things like {@link VASSAL.build.AbstractConfigurable} (for most module
+ * components) and {@link VASSAL.counters.Decorator} (for piece traits)
  */
 public interface SearchTarget {
   /**
@@ -38,7 +39,8 @@ public interface SearchTarget {
   List<String> getFormattedStringList();
 
   /**
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the item, if any (for search)
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the item, if any (for
+   *     search)
    */
   List<String> getMenuTextList();
 

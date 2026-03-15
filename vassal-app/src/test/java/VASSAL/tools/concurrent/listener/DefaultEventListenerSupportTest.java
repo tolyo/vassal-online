@@ -18,12 +18,11 @@
 
 package VASSAL.tools.concurrent.listener;
 
-import java.util.Collections;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 public class DefaultEventListenerSupportTest {
 
@@ -55,7 +54,6 @@ public class DefaultEventListenerSupportTest {
     assertFalse(lsup.hasEventListeners());
   }
 
-
   @Test
   @SuppressWarnings("unchecked")
   public void testNotify() {
@@ -70,5 +68,4 @@ public class DefaultEventListenerSupportTest {
     verify(listener, times(1)).receive(DefaultEventListenerSupportTest.this, true);
     verify(listener, times(1)).receive(DefaultEventListenerSupportTest.this, false);
   }
-
 }

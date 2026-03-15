@@ -22,9 +22,7 @@ import VASSAL.configure.Configurer;
 import VASSAL.configure.TextConfigurer;
 import VASSAL.i18n.Resources;
 
-/**
- * A multi-line textbox Module Preference.
- */
+/** A multi-line textbox Module Preference. */
 public class TextPreference extends BasicPreference {
 
   protected String defaultValue = "";
@@ -59,5 +57,4 @@ public class TextPreference extends BasicPreference {
     }
     return config;
   }
-
 }

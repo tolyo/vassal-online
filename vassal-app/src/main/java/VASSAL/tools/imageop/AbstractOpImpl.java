@@ -18,6 +18,9 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.opcache.OpCache;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
@@ -27,36 +30,26 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.opcache.OpCache;
-
 /**
- * An abstract representation of an operation which may be applied to an
- * {@link Image}. <code>ImageOp</code> is the base class for all such
- * operations. The results of all operations are memoized (using a
- * memory-sensitive cache), so retrieving results is both fast and
+ * An abstract representation of an operation which may be applied to an {@link Image}. <code>
+ * ImageOp</code> is the base class for all such operations. The results of all operations are
+ * memoized (using a memory-sensitive cache), so retrieving results is both fast and
  * memory-efficient.
  *
- * <p><b>Warning:</b> For efficiency reasons, the methods {@link #getImage}
- * and {@link #getTile} do <em>not</em> return <code>Image</code>s
- * defensively, nor do the {@code Future<Image>}s returned by
- * {@link #getFutureImage} and {@link #getFutureTile}. That is, the
- * <code>Image</code>  returned is possibly the one retained internally by
- * the <code>ImageOp</code>. Therefore, <code>Image</code>s obtained from
- * an <code>ImageOp</code> <em>must not</em> be altered, as this might
- * interfere with image caching. If an <code>Image</code> obtained this way
- * needs to be modified, copy the <code>Image</code> first and alter the
- * copy.</p>
+ * <p><b>Warning:</b> For efficiency reasons, the methods {@link #getImage} and {@link #getTile} do
+ * <em>not</em> return <code>Image</code>s defensively, nor do the {@code Future<Image>}s returned
+ * by {@link #getFutureImage} and {@link #getFutureTile}. That is, the <code>Image</code> returned
+ * is possibly the one retained internally by the <code>ImageOp</code>. Therefore, <code>Image
+ * </code>s obtained from an <code>ImageOp</code> <em>must not</em> be altered, as this might
+ * interfere with image caching. If an <code>Image</code> obtained this way needs to be modified,
+ * copy the <code>Image</code> first and alter the copy.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
 @SuppressFBWarnings(value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
-public abstract class AbstractOpImpl
-  extends VASSAL.tools.opcache.AbstractOpImpl<BufferedImage>
-  implements ImageOp {
+public abstract class AbstractOpImpl extends VASSAL.tools.opcache.AbstractOpImpl<BufferedImage>
+    implements ImageOp {
 
   /** The cached size of this operation's resulting <code>Image</code>. */
   protected Dimension size;
@@ -81,12 +74,10 @@ public abstract class AbstractOpImpl
   public BufferedImage getImage() {
     try {
       return getImage(null);
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       // FIXME: bug until we permit cancellation
       ErrorDialog.bug(e);
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       if (!Op.handleException(e)) ErrorDialog.bug(e);
     }
 
@@ -96,25 +87,23 @@ public abstract class AbstractOpImpl
   /** {@inheritDoc} */
   @Override
   public BufferedImage getImage(ImageOpObserver obs)
-    throws CancellationException, InterruptedException, ExecutionException {
+      throws CancellationException, InterruptedException, ExecutionException {
 
     return get(obs);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Future<BufferedImage> getFutureImage(ImageOpObserver obs)
-                                                    throws ExecutionException {
+  public Future<BufferedImage> getFutureImage(ImageOpObserver obs) throws ExecutionException {
     return getFuture(obs);
   }
 
   /**
-   * A utility method for retrieving the size of the computed
-   * <code>Image</code> from the cache if the <code>Image</code>
-   * is cached.
+   * A utility method for retrieving the size of the computed <code>Image</code> from the cache if
+   * the <code>Image</code> is cached.
    *
-   * @return the size of the cached <code>Image</code>, or
-   * <code>null</code> if the <code>Image</code> isn't cached
+   * @return the size of the cached <code>Image</code>, or <code>null</code> if the <code>Image
+   *     </code> isn't cached
    */
   protected Dimension getSizeFromCache() {
     final BufferedImage im = cache.getIfDone(newKey());
@@ -122,8 +111,8 @@ public abstract class AbstractOpImpl
   }
 
   /**
-   * Sets the <code>size</code> which is used by {@link #getSize},
-   * {@link #getHeight}, and {@link #getWidth}.
+   * Sets the <code>size</code> which is used by {@link #getSize}, {@link #getHeight}, and {@link
+   * #getWidth}.
    */
   protected abstract void fixSize();
 
@@ -171,29 +160,28 @@ public abstract class AbstractOpImpl
   /** {@inheritDoc} */
   @Override
   public BufferedImage getTile(Point p, ImageOpObserver obs)
-    throws CancellationException, InterruptedException, ExecutionException {
+      throws CancellationException, InterruptedException, ExecutionException {
 
     return getTile(p.x, p.y, obs);
   }
 
   /** {@inheritDoc} */
   @Override
-  public abstract BufferedImage getTile(int tileX, int tileY,
-                                        ImageOpObserver obs)
-    throws CancellationException, InterruptedException, ExecutionException;
+  public abstract BufferedImage getTile(int tileX, int tileY, ImageOpObserver obs)
+      throws CancellationException, InterruptedException, ExecutionException;
 
   /** {@inheritDoc} */
   @Override
   public Future<BufferedImage> getFutureTile(Point p, ImageOpObserver obs)
-    throws ExecutionException {
+      throws ExecutionException {
 
     return getFutureTile(p.x, p.y, obs);
   }
 
   /** {@inheritDoc} */
   @Override
-  public abstract Future<BufferedImage> getFutureTile(
-    int tileX, int tileY, ImageOpObserver obs) throws ExecutionException;
+  public abstract Future<BufferedImage> getFutureTile(int tileX, int tileY, ImageOpObserver obs)
+      throws ExecutionException;
 
   /** {@inheritDoc} */
   @Override

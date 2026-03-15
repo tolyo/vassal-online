@@ -21,8 +21,8 @@ import java.util.Date;
 
 /**
  * A message in a message board
- * @author rkinney
  *
+ * @author rkinney
  */
 public class Message {
   private final String sender;

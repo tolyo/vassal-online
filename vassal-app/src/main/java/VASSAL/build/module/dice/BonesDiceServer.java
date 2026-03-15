@@ -18,6 +18,9 @@
 
 package VASSAL.build.module.dice;
 
+import VASSAL.build.module.DieRoll;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.FormattedString;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,10 +33,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import VASSAL.build.module.DieRoll;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.FormattedString;
 
 public class BonesDiceServer extends DieServer {
 
@@ -55,10 +54,7 @@ public class BonesDiceServer extends DieServer {
 
     // format is "{{ xdy + n }}"
     for (final DieRoll roll : rolls) {
-      query.append("{{")
-           .append(roll.getNumDice())
-           .append('D')
-           .append(roll.getNumSides());
+      query.append("{{").append(roll.getNumDice()).append('D').append(roll.getNumSides());
 
       if (roll.getPlus() != 0) {
         query.append('+').append(roll.getPlus());
@@ -68,15 +64,14 @@ public class BonesDiceServer extends DieServer {
     }
 
     try {
-      return new String[] { new URI("http",
-                          "dice.nomic.net",
-                          "/cgi-bin/randroll.pl",
-                          query.toString(),
-                          null).toURL().toString() };
+      return new String[] {
+        new URI("http", "dice.nomic.net", "/cgi-bin/randroll.pl", query.toString(), null)
+            .toURL()
+            .toString()
+      };
 
-//      return new String[] {  URLEncoder.encode(query.toString(), "UTF-8") };
-    }
-    catch (MalformedURLException | URISyntaxException e) {
+      //      return new String[] {  URLEncoder.encode(query.toString(), "UTF-8") };
+    } catch (MalformedURLException | URISyntaxException e) {
       // should never happen
       ErrorDialog.bug(e);
     }
@@ -108,17 +103,16 @@ public class BonesDiceServer extends DieServer {
     final Vector<String> returnString = new Vector<>(); // NOPMD
 
     final URL url = new URL(rollString[0]);
-    final HttpURLConnection connection =
-      (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("GET"); //NON-NLS
+    final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("GET"); // NON-NLS
     connection.connect();
 
-    try (BufferedReader in = new BufferedReader(
-      new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+    try (BufferedReader in =
+        new BufferedReader(
+            new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
 
       String line;
-      while ((line = in.readLine()) != null)
-        returnString.add(line);
+      while ((line = in.readLine()) != null) returnString.add(line);
     }
 
     parseInternetRollString(toss, returnString);

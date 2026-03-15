@@ -19,15 +19,14 @@
 package VASSAL.build;
 
 /**
- * GameModule and ModuleExtension are the top-level components and must
- * provide some Namespace services for generated GamePiece Identifiers.
+ * GameModule and ModuleExtension are the top-level components and must provide some Namespace
+ * services for generated GamePiece Identifiers.
  *
- * Each Extension must have a unique Namespace String. Each PieceSlot is
- * allocated a unique number in a series maintained for each top level
- * component.
+ * <p>Each Extension must have a unique Namespace String. Each PieceSlot is allocated a unique
+ * number in a series maintained for each top level component.
  *
- * Each GamePiece generated is tied to it's originating PieceSlot by the
- * NameSpace Id and the PieceSlot Id.
+ * <p>Each GamePiece generated is tied to it's originating PieceSlot by the NameSpace Id and the
+ * PieceSlot Id.
  */
 public interface GpIdSupport {
 
@@ -38,10 +37,8 @@ public interface GpIdSupport {
    */
   String generateGpId();
 
-  /**
-   * Accessors to check and update the next GpId if necessary.
-   */
+  /** Accessors to check and update the next GpId if necessary. */
   int getNextGpId();
-  void setNextGpId(int id);
 
+  void setNextGpId(int id);
 }

@@ -61,25 +61,6 @@ import VASSAL.tools.ScrollPane;
 import VASSAL.tools.WriteErrorDialog;
 import VASSAL.tools.filechooser.FileChooser;
 import VASSAL.tools.swing.SwingUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -106,111 +87,133 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class Inventory extends AbstractToolbarItem
-                       implements GameComponent,
-                                  PlayerRoster.SideChangeListener {
+    implements GameComponent, PlayerRoster.SideChangeListener {
 
-  /** @deprecated use launch from the superclass */
+  /**
+   * @deprecated use launch from the superclass
+   */
   @Deprecated(since = "2021-04-03", forRemoval = true)
   protected LaunchButton launch;
 
-  public static final String REFRESH_HOTKEY = "refreshHotkey"; //NON-NLS
+  public static final String REFRESH_HOTKEY = "refreshHotkey"; // NON-NLS
   protected NamedKeyStrokeListener refreshListener;
 
   protected CounterInventory results;
   protected JTree tree;
 
-  public static final String VERSION = "2.1"; //$NON-NLS-1$
+  public static final String VERSION = "2.1"; // $NON-NLS-1$
 
   // public static final String DEST = "destination";
 
   /*
    * For use in formatted text output.
    */
-  protected String mapSeparator = "\n"; //$NON-NLS-1$
-  protected String groupSeparator = "   "; //$NON-NLS-1$
+  protected String mapSeparator = "\n"; // $NON-NLS-1$
+  protected String groupSeparator = "   "; // $NON-NLS-1$
 
   /*
    * Options Destination - Chat, Dialog, File.
    */
 
-  public static final String FILTER = "include"; //$NON-NLS-1$
-  protected PropertyExpression piecePropertiesFilter = new PropertyExpression(); //$NON-NLS-1$
+  public static final String FILTER = "include"; // $NON-NLS-1$
+  protected PropertyExpression piecePropertiesFilter = new PropertyExpression(); // $NON-NLS-1$
 
-  public static final String GROUP_BY = "groupBy"; //$NON-NLS-1$
-  protected String[] groupBy = {""}; //$NON-NLS-1$
+  public static final String GROUP_BY = "groupBy"; // $NON-NLS-1$
+  protected String[] groupBy = {""}; // $NON-NLS-1$
 
-  public static final String NON_LEAF_FORMAT = "nonLeafFormat"; //$NON-NLS-1$
-  protected String nonLeafFormat = "$PropertyValue$"; //$NON-NLS-1$
+  public static final String NON_LEAF_FORMAT = "nonLeafFormat"; // $NON-NLS-1$
+  protected String nonLeafFormat = "$PropertyValue$"; // $NON-NLS-1$
 
-  public static final String CENTERONPIECE = "centerOnPiece"; //$NON-NLS-1$
+  public static final String CENTERONPIECE = "centerOnPiece"; // $NON-NLS-1$
   protected boolean centerOnPiece = true;
 
-  public static final String FORWARD_KEYSTROKE = "forwardKeystroke"; //$NON-NLS-1$
+  public static final String FORWARD_KEYSTROKE = "forwardKeystroke"; // $NON-NLS-1$
   protected boolean forwardKeystroke = true;
 
-  public static final String SHOW_MENU = "showMenu"; //$NON-NLS-1$
+  public static final String SHOW_MENU = "showMenu"; // $NON-NLS-1$
   protected boolean showMenu = true;
 
-  public static final String SIDES = "sides"; //$NON-NLS-1$
+  public static final String SIDES = "sides"; // $NON-NLS-1$
   protected String[] sides = null;
 
-  public static final String KEYSTROKE = "keystroke"; //$NON-NLS-1$
+  public static final String KEYSTROKE = "keystroke"; // $NON-NLS-1$
   protected KeyStroke keyStroke = null;
 
-  public static final String CUTBELOWROOT = "cutRoot"; //$NON-NLS-1$
+  public static final String CUTBELOWROOT = "cutRoot"; // $NON-NLS-1$
   protected int cutBelowRoot = 0;
 
-  public static final String CUTABOVELEAVES = "cutLeaves"; //$NON-NLS-1$
+  public static final String CUTABOVELEAVES = "cutLeaves"; // $NON-NLS-1$
   protected int cutAboveLeaves = 0;
 
-  public static final String LEAF_FORMAT = "leafFormat"; //$NON-NLS-1$
-  protected String pieceFormat = "$PieceName$"; //$NON-NLS-1$
+  public static final String LEAF_FORMAT = "leafFormat"; // $NON-NLS-1$
+  protected String pieceFormat = "$PieceName$"; // $NON-NLS-1$
 
-  public static final String PIECE_ZOOM = "pieceZoom"; //$NON-NLS-1$
+  public static final String PIECE_ZOOM = "pieceZoom"; // $NON-NLS-1$
   protected double pieceZoom = .25;
 
-  public static final String ZOOM_2 = "pieceZoom2"; //$NON-NLS-1$
+  public static final String ZOOM_2 = "pieceZoom2"; // $NON-NLS-1$
   protected double pieceZoom2 = .33;
 
-  public static final String ZOOM_3 = "pieceZoom3"; //$NON-NLS-1$
+  public static final String ZOOM_3 = "pieceZoom3"; // $NON-NLS-1$
   protected double pieceZoom3 = .40;
 
-  public static final String DRAW_PIECES = "drawPieces"; //$NON-NLS-1$
+  public static final String DRAW_PIECES = "drawPieces"; // $NON-NLS-1$
   protected boolean drawPieces = true;
 
-  public static final String FOLDERS_ONLY = "foldersOnly"; //$NON-NLS-1$
+  public static final String FOLDERS_ONLY = "foldersOnly"; // $NON-NLS-1$
   protected boolean foldersOnly = false;
 
-  public static final String SORT_PIECES = "sortPieces"; //$NON-NLS-1$
+  public static final String SORT_PIECES = "sortPieces"; // $NON-NLS-1$
   protected boolean sortPieces = true;
 
-  public static final String SORT_FORMAT = "sortFormat"; //$NON-NLS-1$
-  protected String sortFormat = "$PieceName$"; //$NON-NLS-1$
+  public static final String SORT_FORMAT = "sortFormat"; // $NON-NLS-1$
+  protected String sortFormat = "$PieceName$"; // $NON-NLS-1$
 
-  public static final String ALPHA = "alpha"; //$NON-NLS-1$
-  public static final String LENGTHALPHA = "length"; //$NON-NLS-1$
-  public static final String NUMERIC = "numeric"; //$NON-NLS-1$
-  public static final String[] SORT_OPTIONS = { ALPHA, LENGTHALPHA, NUMERIC };
+  public static final String ALPHA = "alpha"; // $NON-NLS-1$
+  public static final String LENGTHALPHA = "length"; // $NON-NLS-1$
+  public static final String NUMERIC = "numeric"; // $NON-NLS-1$
+  public static final String[] SORT_OPTIONS = {ALPHA, LENGTHALPHA, NUMERIC};
 
-  public static final String LAUNCH_FUNCTION  = "launchFunction"; //NON-NLS
-  public static final String FUNCTION_REFRESH = "functionRefresh"; //NON-NLS
-  public static final String FUNCTION_HIDE    = "functionHide"; //NON-NLS
-  public static final String[] FUNCTION_OPTIONS = { FUNCTION_REFRESH, FUNCTION_HIDE };
-  public static final String[] FUNCTION_KEYS    = { "Editor.Inventory.function_refresh", //NON-NLS
-                                                    "Editor.Inventory.function_hide"}; //NON-NLS
-  protected String launchFunction = FUNCTION_HIDE; //BR// This default is "more like how most toolbar buttons work"
+  public static final String LAUNCH_FUNCTION = "launchFunction"; // NON-NLS
+  public static final String FUNCTION_REFRESH = "functionRefresh"; // NON-NLS
+  public static final String FUNCTION_HIDE = "functionHide"; // NON-NLS
+  public static final String[] FUNCTION_OPTIONS = {FUNCTION_REFRESH, FUNCTION_HIDE};
+  public static final String[] FUNCTION_KEYS = {
+    "Editor.Inventory.function_refresh", // NON-NLS
+    "Editor.Inventory.function_hide"
+  }; // NON-NLS
+  protected String launchFunction =
+      FUNCTION_HIDE; // BR// This default is "more like how most toolbar buttons work"
 
   protected String sortStrategy = ALPHA;
 
-  public static final String SORTING = "sorting"; //$NON-NLS-1$
+  public static final String SORTING = "sorting"; // $NON-NLS-1$
 
-  public static final String BUTTON_FUNCTION = "buttonFunction"; //NON-NLS
+  public static final String BUTTON_FUNCTION = "buttonFunction"; // NON-NLS
 
   protected JDialog frame;
 
-  public static final String ZOOM_ON = "zoomOn"; //NON-NLS
+  public static final String ZOOM_ON = "zoomOn"; // NON-NLS
   protected boolean zoomShow = false;
 
   protected int zoomLevel = 0;
@@ -219,20 +222,28 @@ public class Inventory extends AbstractToolbarItem
   private JButton zoomMinusButton;
 
   // These five identical to AbstractToolbarItem, and are only here for "clirr purposes"
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String HOTKEY = "hotkey"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String BUTTON_TEXT = "text"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String NAME = "name"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String ICON = "icon"; //$NON-NLS-1$
-  @Deprecated(since = "2020-10-21", forRemoval = true) public static final String TOOLTIP = "tooltip"; //$NON-NLS-1$
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String HOTKEY = "hotkey"; // $NON-NLS-1$
 
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String BUTTON_TEXT = "text"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String NAME = "name"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String ICON = "icon"; // $NON-NLS-1$
+
+  @Deprecated(since = "2020-10-21", forRemoval = true)
+  public static final String TOOLTIP = "tooltip"; // $NON-NLS-1$
 
   public Inventory() {
-    setLaunchButton(makeLaunchButton(
-      Resources.getString("Inventory.show_inventory"),
-      Resources.getString("Inventory.inventory"),
-      "/images/inventory.gif", //NON-NLS
-      e -> launch()
-    ));
+    setLaunchButton(
+        makeLaunchButton(
+            Resources.getString("Inventory.show_inventory"),
+            Resources.getString("Inventory.inventory"),
+            "/images/inventory.gif", // NON-NLS
+            e -> launch()));
     launch = getLaunchButton(); // for compatibility
 
     refreshListener = new NamedKeyStrokeListener(e -> refresh());
@@ -243,7 +254,7 @@ public class Inventory extends AbstractToolbarItem
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.Inventory.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.Inventory.component_type"); // $NON-NLS-1$
   }
 
   @Override
@@ -255,7 +266,7 @@ public class Inventory extends AbstractToolbarItem
     GameModule.getGameModule().getGameState().addGameComponent(this);
     frame = new JDialog(GameModule.getGameModule().getPlayerWindow());
     frame.setTitle(getConfigureName());
-    final String key = "Inventory." + getConfigureName(); //$NON-NLS-1$
+    final String key = "Inventory." + getConfigureName(); // $NON-NLS-1$
     GameModule.getGameModule().getPrefs().addOption(new PositionOption(key, frame));
     frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
     frame.add(initTree());
@@ -269,9 +280,7 @@ public class Inventory extends AbstractToolbarItem
     zoomMinusButton.repaint();
   }
 
-  /**
-   * Construct an explorer like interface for the selected counters
-   */
+  /** Construct an explorer like interface for the selected counters */
   protected Component initTree() {
     // Initialize the tree to be displayed from the results tree
     tree = new JTree();
@@ -281,59 +290,65 @@ public class Inventory extends AbstractToolbarItem
     tree.setCellRenderer(initTreeCellRenderer());
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     // If wanted center on a selected counter
-    tree.addTreeSelectionListener(e -> {
-      if (centerOnPiece) {
-        final GamePiece piece = getSelectedCounter();
-        if (piece != null && piece.getMap() != null)
-          piece.getMap().centerAt(piece.getPosition());
-      }
-    });
-    tree.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        maybePopup(e);
-      }
+    tree.addTreeSelectionListener(
+        e -> {
+          if (centerOnPiece) {
+            final GamePiece piece = getSelectedCounter();
+            if (piece != null && piece.getMap() != null)
+              piece.getMap().centerAt(piece.getPosition());
+          }
+        });
+    tree.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mousePressed(MouseEvent e) {
+            maybePopup(e);
+          }
 
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        maybePopup(e);
-      }
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            maybePopup(e);
+          }
 
-      private void maybePopup(MouseEvent e) {
-        if (showMenu && e.isPopupTrigger()) {
-          final TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-          if (path != null) {
-            if (path.getLastPathComponent() instanceof CounterNode) {
-              final CounterNode node = (CounterNode) path.getLastPathComponent();
-              final GamePiece piece = node.getCounter().getPiece();
-              if (piece != null) {
+          private void maybePopup(MouseEvent e) {
+            if (showMenu && e.isPopupTrigger()) {
+              final TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+              if (path != null) {
+                if (path.getLastPathComponent() instanceof CounterNode) {
+                  final CounterNode node = (CounterNode) path.getLastPathComponent();
+                  final GamePiece piece = node.getCounter().getPiece();
+                  if (piece != null) {
 
-                // No commands to pieces if we don't have access to their windows
-                if (!isVisibleToMe(piece)) {
-                  return;
-                }
-
-                final JPopupMenu menu = MenuDisplayer.createPopup(piece);
-                if (menu != null) {
-                  //$NON-NLS-1$
-                  menu.addPropertyChangeListener("visible", evt -> { //NON-NLS
-                    if (Boolean.FALSE.equals(evt.getNewValue())) {
-                      SwingUtilities.invokeLater(() -> refresh());
+                    // No commands to pieces if we don't have access to their windows
+                    if (!isVisibleToMe(piece)) {
+                      return;
                     }
-                  });
-                  menu.show(tree, e.getX(), e.getY());
+
+                    final JPopupMenu menu = MenuDisplayer.createPopup(piece);
+                    if (menu != null) {
+                      //$NON-NLS-1$
+                      menu.addPropertyChangeListener(
+                          "visible",
+                          evt -> { // NON-NLS
+                            if (Boolean.FALSE.equals(evt.getNewValue())) {
+                              SwingUtilities.invokeLater(() -> refresh());
+                            }
+                          });
+                      menu.show(tree, e.getX(), e.getY());
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
-    });
+        });
     tree.addKeyListener(new HotKeySender());
 
-    final JScrollPane scrollPane = new ScrollPane(tree,
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    final JScrollPane scrollPane =
+        new ScrollPane(
+            tree,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     refresh();
     return scrollPane;
   }
@@ -342,8 +357,7 @@ public class Inventory extends AbstractToolbarItem
     if (zoomShow) {
       if (zoomLevel == 1) {
         return pieceZoom2;
-      }
-      else if (zoomLevel >= 2) {
+      } else if (zoomLevel >= 2) {
         return pieceZoom3;
       }
     }
@@ -361,15 +375,30 @@ public class Inventory extends AbstractToolbarItem
       private static final long serialVersionUID = -250332615261355856L;
 
       @Override
-      public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+      public Component getTreeCellRendererComponent(
+          JTree tree,
+          Object value,
+          boolean sel,
+          boolean expanded,
+          boolean leaf,
+          int row,
+          boolean hasFocus) {
 
-        //BR// Depending on Global Options setting, maybe don't allow seeing stuff in private windows that current player doesn't have access to.
+        // BR// Depending on Global Options setting, maybe don't allow seeing stuff in private
+        // windows that current player doesn't have access to.
         if (!GlobalOptions.getInstance().isInventoryVisibleToAll()) {
           if (value instanceof CounterNode) {
             final GamePiece piece = ((CounterNode) value).getCounter().getPiece();
             if (piece != null) {
               if (!isVisibleToMe(piece)) {
-                super.getTreeCellRendererComponent(tree, Resources.getString("Inventory.unknown_piece"), sel, expanded, false, row, hasFocus);
+                super.getTreeCellRendererComponent(
+                    tree,
+                    Resources.getString("Inventory.unknown_piece"),
+                    sel,
+                    expanded,
+                    false,
+                    row,
+                    hasFocus);
                 setIcon(null);
                 return this;
               }
@@ -377,7 +406,8 @@ public class Inventory extends AbstractToolbarItem
           }
         }
 
-        super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf && !foldersOnly, row, hasFocus);
+        super.getTreeCellRendererComponent(
+            tree, value, sel, expanded, leaf && !foldersOnly, row, hasFocus);
         if (value instanceof CounterNode) {
           final GamePiece piece = ((CounterNode) value).getCounter().getPiece();
           if (piece != null) {
@@ -388,49 +418,51 @@ public class Inventory extends AbstractToolbarItem
             r.width = (int) Math.round(r.width * zoom);
             r.height = (int) Math.round(r.height * zoom);
 
-            setIcon(drawPieces ? new Icon() {
+            setIcon(
+                drawPieces
+                    ? new Icon() {
 
-              @Override
-              public int getIconHeight() {
-                return r.height;
-              }
+                      @Override
+                      public int getIconHeight() {
+                        return r.height;
+                      }
 
-              @Override
-              public int getIconWidth() {
-                return r.width;
-              }
+                      @Override
+                      public int getIconWidth() {
+                        return r.width;
+                      }
 
-              @Override
-              public void paintIcon(Component c, Graphics g, int x, int y) {
-                final Graphics2D g2d = (Graphics2D) g;
-                final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
-                final AffineTransform orig_t = g2d.getTransform();
-                g2d.setTransform(SwingUtils.descaleTransform(orig_t));
+                      @Override
+                      public void paintIcon(Component c, Graphics g, int x, int y) {
+                        final Graphics2D g2d = (Graphics2D) g;
+                        final double os_scale =
+                            g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
+                        final AffineTransform orig_t = g2d.getTransform();
+                        g2d.setTransform(SwingUtils.descaleTransform(orig_t));
 
-                Object owner = null;
-                final Stack parent = piece.getParent();
-                if (parent instanceof Deck) {
-                  owner = piece.getProperty(Properties.OBSCURED_BY);
-                  final boolean faceDown = ((Deck) parent).isFaceDown();
-                  piece.setProperty(Properties.OBSCURED_BY, faceDown ? Deck.NO_USER : null);
-                }
+                        Object owner = null;
+                        final Stack parent = piece.getParent();
+                        if (parent instanceof Deck) {
+                          owner = piece.getProperty(Properties.OBSCURED_BY);
+                          final boolean faceDown = ((Deck) parent).isFaceDown();
+                          piece.setProperty(Properties.OBSCURED_BY, faceDown ? Deck.NO_USER : null);
+                        }
 
-                piece.draw(
-                  g,
-                  (int)(-r.x * os_scale),
-                  (int)(-r.y * os_scale),
-                  c,
-                  getCurrentZoom() * os_scale
-                );
+                        piece.draw(
+                            g,
+                            (int) (-r.x * os_scale),
+                            (int) (-r.y * os_scale),
+                            c,
+                            getCurrentZoom() * os_scale);
 
-                if (parent instanceof Deck) {
-                  piece.setProperty(Properties.OBSCURED_BY, owner);
-                }
+                        if (parent instanceof Deck) {
+                          piece.setProperty(Properties.OBSCURED_BY, owner);
+                        }
 
-                g2d.setTransform(orig_t);
-              }
-
-            } : null);
+                        g2d.setTransform(orig_t);
+                      }
+                    }
+                    : null);
           }
         }
         return this;
@@ -479,13 +511,10 @@ public class Inventory extends AbstractToolbarItem
   }
 
   /**
-   * Writes the inventory text data to a user selected file.
-   * This allows a module designer to use Inventory to create customized text
-   * reports from the game.
-   * Changed FileChooser to use the new Vassal.tool.FileChooser
-   * Changed Separator before getResultString call
-   * TODO add check for existing file
-   * TODO rework text display of Inventory
+   * Writes the inventory text data to a user selected file. This allows a module designer to use
+   * Inventory to create customized text reports from the game. Changed FileChooser to use the new
+   * Vassal.tool.FileChooser Changed Separator before getResultString call TODO add check for
+   * existing file TODO rework text display of Inventory
    */
   protected void inventoryToText() {
     final FileChooser fc = GameModule.getGameModule().getFileChooser();
@@ -495,25 +524,25 @@ public class Inventory extends AbstractToolbarItem
     final File file = fc.getSelectedFile();
 
     // TODO replace this hack
-    mapSeparator = System.getProperty("line.separator"); //$NON-NLS-1$
+    mapSeparator = System.getProperty("line.separator"); // $NON-NLS-1$
     // groupSeparator = mapSeparator + "  ";
     // groupSeparator = " ";
     output.append(results.getResultString());
     // .substring(1).replaceAll(
-  //      mapSeparator, System.getProperty("line.separator"));
+    //      mapSeparator, System.getProperty("line.separator"));
 
     // Writing out a text file for the user to do whatever with.
     try (Writer bw = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8);
-         PrintWriter p = new PrintWriter(bw)) {
+        PrintWriter p = new PrintWriter(bw)) {
       p.print(output);
 
-      final Command c = new Chatter.DisplayText(
-        GameModule.getGameModule().getChatter(),
-        Resources.getString("Inventory.wrote", file)  //$NON-NLS-1$
-      );
+      final Command c =
+          new Chatter.DisplayText(
+              GameModule.getGameModule().getChatter(),
+              Resources.getString("Inventory.wrote", file) // $NON-NLS-1$
+              );
       c.execute();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       WriteErrorDialog.error(e, file);
     }
   }
@@ -534,18 +563,15 @@ public class Inventory extends AbstractToolbarItem
   }
 
   @Override
-  public void add(Buildable b) {
-  }
+  public void add(Buildable b) {}
 
   @Override
-  public void remove(Buildable b) {
-  }
+  public void remove(Buildable b) {}
 
   protected void launch() {
     if (FUNCTION_HIDE.equals(launchFunction) && frame.isVisible()) {
       frame.setVisible(false);
-    }
-    else {
+    } else {
       refresh();
 
       zoomPlusButton.setVisible(zoomShow && drawPieces);
@@ -565,13 +591,12 @@ public class Inventory extends AbstractToolbarItem
 
     final List<String> path = new ArrayList<>();
     Collections.addAll(path, groupBy);
-    results = new CounterInventory(
-      new Counter(this.getConfigureName()), path, sortPieces);
+    results = new CounterInventory(new Counter(this.getConfigureName()), path, sortPieces);
 
-    final PieceIterator pi = new PieceIterator(
-      GameModule.getGameModule().getGameState().getAllPieces().iterator(),
-      piecePropertiesFilter
-    );
+    final PieceIterator pi =
+        new PieceIterator(
+            GameModule.getGameModule().getGameState().getAllPieces().iterator(),
+            piecePropertiesFilter);
 
     while (pi.hasMoreElements()) {
       final List<String> groups = new ArrayList<>();
@@ -588,8 +613,7 @@ public class Inventory extends AbstractToolbarItem
         }
 
         int count = 1;
-        if (nonLeafFormat.length() > 0)
-          count = getTotalValue(p);
+        if (nonLeafFormat.length() > 0) count = getTotalValue(p);
 
         final Counter c = new Counter(p, groups, count, pieceFormat, sortFormat);
         // Store
@@ -602,8 +626,7 @@ public class Inventory extends AbstractToolbarItem
     final String s = (String) p.getProperty(nonLeafFormat);
     try {
       return Integer.parseInt(s);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       // Count each piece as 1 if the property isn't a number
       return 1;
     }
@@ -611,7 +634,7 @@ public class Inventory extends AbstractToolbarItem
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Inventory.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("Inventory.html"); // $NON-NLS-1$
   }
 
   @Override
@@ -621,88 +644,90 @@ public class Inventory extends AbstractToolbarItem
 
   @Override
   public String[] getAttributeDescriptions() {
-    return ArrayUtils.addAll(super.getAttributeDescriptions(),
-      // "Display",
-      Resources.getString("Editor.Inventory.show_pieces"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.sort_group_properties"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.label_folders"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.show_folders"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.label_pieces"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.sort"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.label_sort"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.sort_method"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.center_piece"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.forward_keystroke"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.rightclick_piece"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.draw_piece"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.zoom_on"),
-      Resources.getString("Editor.Inventory.zoom"),
-      Resources.getString("Editor.Inventory.zoom_2"),
-      Resources.getString("Editor.Inventory.zoom_3"),
-      Resources.getString("Editor.Inventory.available"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.function"), //$NON-NLS-1$
-      Resources.getString("Editor.Inventory.refresh_hotkey")
-    );
+    return ArrayUtils.addAll(
+        super.getAttributeDescriptions(),
+        // "Display",
+        Resources.getString("Editor.Inventory.show_pieces"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.sort_group_properties"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.label_folders"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.show_folders"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.label_pieces"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.sort"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.label_sort"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.sort_method"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.center_piece"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.forward_keystroke"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.rightclick_piece"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.draw_piece"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.zoom_on"),
+        Resources.getString("Editor.Inventory.zoom"),
+        Resources.getString("Editor.Inventory.zoom_2"),
+        Resources.getString("Editor.Inventory.zoom_3"),
+        Resources.getString("Editor.Inventory.available"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.function"), // $NON-NLS-1$
+        Resources.getString("Editor.Inventory.refresh_hotkey"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return ArrayUtils.addAll(super.getAttributeTypes(),
-      // DestConfig.class,
-      PropertyExpression.class,
-      String[].class,
-      String.class,
-      Boolean.class,
-      PieceFormatConfig.class,
-      Boolean.class,
-      PieceFormatConfig.class,
-      SortConfig.class,
-      Boolean.class,
-      Boolean.class,
-      Boolean.class,
-      Boolean.class,
-      Boolean.class,
-      Double.class,
-      Double.class,
-      Double.class,
-      String[].class,
-      FunctionConfig.class,
-      NamedKeyStroke.class
-    );
+    return ArrayUtils.addAll(
+        super.getAttributeTypes(),
+        // DestConfig.class,
+        PropertyExpression.class,
+        String[].class,
+        String.class,
+        Boolean.class,
+        PieceFormatConfig.class,
+        Boolean.class,
+        PieceFormatConfig.class,
+        SortConfig.class,
+        Boolean.class,
+        Boolean.class,
+        Boolean.class,
+        Boolean.class,
+        Boolean.class,
+        Double.class,
+        Double.class,
+        Double.class,
+        String[].class,
+        FunctionConfig.class,
+        NamedKeyStroke.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.addAll(super.getAttributeNames(),
-   // DEST,
-      FILTER,
-      GROUP_BY,
-      NON_LEAF_FORMAT,
-      FOLDERS_ONLY,
-      LEAF_FORMAT,
-      SORT_PIECES,
-      SORT_FORMAT,
-      SORTING,
-      CENTERONPIECE,
-      FORWARD_KEYSTROKE,
-      SHOW_MENU,
-      DRAW_PIECES,
-      ZOOM_ON,
-      PIECE_ZOOM,
-      ZOOM_2,
-      ZOOM_3,
-      SIDES,
-      LAUNCH_FUNCTION,
-      REFRESH_HOTKEY
-    );
+    return ArrayUtils.addAll(
+        super.getAttributeNames(),
+        // DEST,
+        FILTER,
+        GROUP_BY,
+        NON_LEAF_FORMAT,
+        FOLDERS_ONLY,
+        LEAF_FORMAT,
+        SORT_PIECES,
+        SORT_FORMAT,
+        SORTING,
+        CENTERONPIECE,
+        FORWARD_KEYSTROKE,
+        SHOW_MENU,
+        DRAW_PIECES,
+        ZOOM_ON,
+        PIECE_ZOOM,
+        ZOOM_2,
+        ZOOM_3,
+        SIDES,
+        LAUNCH_FUNCTION,
+        REFRESH_HOTKEY);
   }
 
-  /** @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead. */
+  /**
+   * @deprecated Use {@link VASSAL.build.AbstractToolbarItem.IconConfig} instead.
+   */
   @Deprecated(since = "2020-10-01", forRemoval = true)
   public static class IconConfig implements ConfigurerFactory {
     @Override
     public Configurer getConfigurer(AutoConfigurable c, String key, String name) {
-      return new IconConfigurer(key, name, "/images/inventory.gif"); //$NON-NLS-1$
+      return new IconConfigurer(key, name, "/images/inventory.gif"); // $NON-NLS-1$
     }
   }
 
@@ -731,104 +756,80 @@ public class Inventory extends AbstractToolbarItem
   public void setAttribute(String key, Object o) {
     if (FILTER.equals(key)) {
       piecePropertiesFilter.setExpression((String) o);
-    }
-    else if (GROUP_BY.equals(key)) {
+    } else if (GROUP_BY.equals(key)) {
       if (o instanceof String) {
         o = StringArrayConfigurer.stringToArray((String) o);
       }
       groupBy = (String[]) o;
-    }
-    else if (NON_LEAF_FORMAT.equals(key)) {
+    } else if (NON_LEAF_FORMAT.equals(key)) {
       nonLeafFormat = (String) o;
-    }
-    else if (LEAF_FORMAT.equals(key)) {
+    } else if (LEAF_FORMAT.equals(key)) {
       pieceFormat = (String) o;
-    }
-    else if (CENTERONPIECE.equals(key)) {
+    } else if (CENTERONPIECE.equals(key)) {
       centerOnPiece = getBooleanValue(o);
-    }
-    else if (SHOW_MENU.equals(key)) {
+    } else if (SHOW_MENU.equals(key)) {
       showMenu = getBooleanValue(o);
-    }
-    else if (DRAW_PIECES.equals(key)) {
+    } else if (DRAW_PIECES.equals(key)) {
       drawPieces = getBooleanValue(o);
-    }
-    else if (FOLDERS_ONLY.equals(key)) {
+    } else if (FOLDERS_ONLY.equals(key)) {
       foldersOnly = getBooleanValue(o);
       cutAboveLeaves = foldersOnly ? 1 : 0;
-    }
-    else if (ZOOM_ON.equals(key)) {
+    } else if (ZOOM_ON.equals(key)) {
       if (o instanceof String) {
         o = Boolean.valueOf((String) o);
       }
       zoomShow = (Boolean) o;
-    }
-    else if (PIECE_ZOOM.equals(key)) {
+    } else if (PIECE_ZOOM.equals(key)) {
       if (o instanceof String) {
         o = Double.valueOf((String) o);
       }
       pieceZoom = (Double) o;
-    }
-    else if (ZOOM_2.equals(key)) {
+    } else if (ZOOM_2.equals(key)) {
       if (o instanceof String) {
         o = Double.valueOf((String) o);
       }
       pieceZoom2 = (Double) o;
-    }
-    else if (ZOOM_3.equals(key)) {
+    } else if (ZOOM_3.equals(key)) {
       if (o instanceof String) {
         o = Double.valueOf((String) o);
       }
       pieceZoom3 = (Double) o;
-    }
-    else if (FORWARD_KEYSTROKE.equals(key)) {
+    } else if (FORWARD_KEYSTROKE.equals(key)) {
       forwardKeystroke = getBooleanValue(o);
-    }
-    else if (SIDES.equals(key)) {
+    } else if (SIDES.equals(key)) {
       if (o instanceof String) {
         o = StringArrayConfigurer.stringToArray((String) o);
       }
       sides = (String[]) o;
-    }
-    else if (KEYSTROKE.equals(key)) {
+    } else if (KEYSTROKE.equals(key)) {
       if (o instanceof String) {
         o = HotKeyConfigurer.decode((String) o);
       }
       keyStroke = (KeyStroke) o;
-    }
-    else if (CUTBELOWROOT.equals(key)) {
-      if (o instanceof String)
-        cutBelowRoot = Integer.parseInt((String) o);
+    } else if (CUTBELOWROOT.equals(key)) {
+      if (o instanceof String) cutBelowRoot = Integer.parseInt((String) o);
       else {
         cutBelowRoot = (Integer) o;
       }
-    }
-    else if (CUTABOVELEAVES.equals(key)) {
-      if (o instanceof String)
-        cutAboveLeaves = Integer.parseInt((String) o);
+    } else if (CUTABOVELEAVES.equals(key)) {
+      if (o instanceof String) cutAboveLeaves = Integer.parseInt((String) o);
       else {
         cutAboveLeaves = (Integer) o;
       }
-    }
-    else if (SORT_PIECES.equals(key)) {
+    } else if (SORT_PIECES.equals(key)) {
       sortPieces = getBooleanValue(o);
-    }
-    else if (SORT_FORMAT.equals(key)) {
+    } else if (SORT_FORMAT.equals(key)) {
       sortFormat = (String) o;
-    }
-    else if (SORTING.equals(key)) {
+    } else if (SORTING.equals(key)) {
       sortStrategy = (String) o;
-    }
-    else if (LAUNCH_FUNCTION.equals(key)) {
+    } else if (LAUNCH_FUNCTION.equals(key)) {
       launchFunction = (String) o;
-    }
-    else if (REFRESH_HOTKEY.equals(key)) {
+    } else if (REFRESH_HOTKEY.equals(key)) {
       if (o instanceof String) {
         o = NamedHotKeyConfigurer.decode((String) o);
       }
       refreshListener.setKeyStroke((NamedKeyStroke) o);
-    }
-    else {
+    } else {
       super.setAttribute(key, o);
     }
   }
@@ -839,11 +840,10 @@ public class Inventory extends AbstractToolbarItem
   public VisibilityCondition getAttributeVisibility(String name) {
     if (List.of(PIECE_ZOOM, ZOOM_2, ZOOM_3).contains(name)) {
       return () -> drawPieces && !foldersOnly;
-    }
-    else if (List.of(LEAF_FORMAT, CENTERONPIECE, FORWARD_KEYSTROKE, SHOW_MENU, DRAW_PIECES).contains(name)) {
+    } else if (List.of(LEAF_FORMAT, CENTERONPIECE, FORWARD_KEYSTROKE, SHOW_MENU, DRAW_PIECES)
+        .contains(name)) {
       return piecesVisible;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -862,71 +862,49 @@ public class Inventory extends AbstractToolbarItem
   public String getAttributeValueString(String key) {
     if (FILTER.equals(key)) {
       return piecePropertiesFilter.getExpression();
-    }
-    else if (GROUP_BY.equals(key)) {
+    } else if (GROUP_BY.equals(key)) {
       return StringArrayConfigurer.arrayToString(groupBy);
-    }
-    else if (NON_LEAF_FORMAT.equals(key)) {
+    } else if (NON_LEAF_FORMAT.equals(key)) {
       return nonLeafFormat;
-    }
-    else if (LEAF_FORMAT.equals(key)) {
+    } else if (LEAF_FORMAT.equals(key)) {
       return pieceFormat;
-    }
-    else if (CENTERONPIECE.equals(key)) {
+    } else if (CENTERONPIECE.equals(key)) {
       return String.valueOf(centerOnPiece);
-    }
-    else if (FORWARD_KEYSTROKE.equals(key)) {
+    } else if (FORWARD_KEYSTROKE.equals(key)) {
       return String.valueOf(forwardKeystroke);
-    }
-    else if (SHOW_MENU.equals(key)) {
+    } else if (SHOW_MENU.equals(key)) {
       return String.valueOf(showMenu);
-    }
-    else if (DRAW_PIECES.equals(key)) {
+    } else if (DRAW_PIECES.equals(key)) {
       return String.valueOf(drawPieces);
-    }
-    else if (FOLDERS_ONLY.equals(key)) {
+    } else if (FOLDERS_ONLY.equals(key)) {
       return String.valueOf(foldersOnly);
-    }
-    else if (PIECE_ZOOM.equals(key)) {
+    } else if (PIECE_ZOOM.equals(key)) {
       return String.valueOf(pieceZoom);
-    }
-    else if (ZOOM_ON.equals(key)) {
+    } else if (ZOOM_ON.equals(key)) {
       return String.valueOf(zoomShow);
-    }
-    else if (ZOOM_2.equals(key)) {
+    } else if (ZOOM_2.equals(key)) {
       return String.valueOf(pieceZoom2);
-    }
-    else if (ZOOM_3.equals(key)) {
+    } else if (ZOOM_3.equals(key)) {
       return String.valueOf(pieceZoom3);
-    }
-    else if (SIDES.equals(key)) {
+    } else if (SIDES.equals(key)) {
       return StringArrayConfigurer.arrayToString(sides);
-    }
-    else if (KEYSTROKE.equals(key)) {
+    } else if (KEYSTROKE.equals(key)) {
       return HotKeyConfigurer.encode(keyStroke);
-    }
-    else if (CUTBELOWROOT.equals(key)) {
+    } else if (CUTBELOWROOT.equals(key)) {
       return Integer.toString(cutBelowRoot);
-    }
-    else if (CUTABOVELEAVES.equals(key)) {
+    } else if (CUTABOVELEAVES.equals(key)) {
       return Integer.toString(cutAboveLeaves);
-    }
-    else if (SORT_PIECES.equals(key)) {
+    } else if (SORT_PIECES.equals(key)) {
       return Boolean.toString(sortPieces);
-    }
-    else if (SORT_FORMAT.equals(key)) {
+    } else if (SORT_FORMAT.equals(key)) {
       return sortFormat;
-    }
-    else if (SORTING.equals(key)) {
+    } else if (SORTING.equals(key)) {
       return sortStrategy;
-    }
-    else if (LAUNCH_FUNCTION.equals(key)) {
+    } else if (LAUNCH_FUNCTION.equals(key)) {
       return launchFunction;
-    }
-    else if (REFRESH_HOTKEY.equals(key)) {
+    } else if (REFRESH_HOTKEY.equals(key)) {
       return NamedHotKeyConfigurer.encode(refreshListener.getNamedKeyStroke());
-    }
-    else {
+    } else {
       return super.getAttributeValueString(key);
     }
   }
@@ -940,8 +918,7 @@ public class Inventory extends AbstractToolbarItem
   public void checkDisabled() {
     if (enabledForPlayersSide()) {
       super.checkDisabled();
-    }
-    else {
+    } else {
       getLaunchButton().setEnabled(false);
     }
   }
@@ -953,8 +930,7 @@ public class Inventory extends AbstractToolbarItem
   public void disableIfTrue(boolean disable) {
     if (enabledForPlayersSide()) {
       super.disableIfTrue(disable);
-    }
-    else {
+    } else {
       getLaunchButton().setEnabled(false);
     }
   }
@@ -965,15 +941,13 @@ public class Inventory extends AbstractToolbarItem
 
     if (!gameStarting) {
       getLaunchButton().setEnabled(false);
-    }
-    else {
+    } else {
       checkDisabled();
     }
 
     if (gameStarting) {
       setupLaunch();
-    }
-    else {
+    } else {
       if (!GameModule.getGameModule().isLoadOverSemaphore()) {
         frame.setVisible(false);
       }
@@ -989,27 +963,22 @@ public class Inventory extends AbstractToolbarItem
     }
   }
 
-  /**
-   * Update inventory according to change of side.
-   */
+  /** Update inventory according to change of side. */
   @Override
   public void sideChanged(String oldSide, String newSide) {
     setupLaunch();
   }
 
   protected boolean enabledForPlayersSide() {
-    if (sides == null || sides.length == 0)
-      return true;
+    if (sides == null || sides.length == 0) return true;
     for (final String side : sides) {
-      if (side.equalsIgnoreCase(PlayerRoster.getMySide()))
-        return true;
+      if (side.equalsIgnoreCase(PlayerRoster.getMySide())) return true;
     }
     return false;
   }
 
   /**
-   * @return Command which only has some text in. The actual processing is done
-   *         within the pieces.
+   * @return Command which only has some text in. The actual processing is done within the pieces.
    */
   protected Command sendHotKeyToPieces(final KeyStroke keyStroke) {
     final Command c = new NullCommand();
@@ -1024,12 +993,10 @@ public class Inventory extends AbstractToolbarItem
       final CounterNode node = (CounterNode) treePath.getLastPathComponent();
       if (node.isLeaf()) {
         pieces.add(node.getCounter().getPiece());
-      }
-      else {
-        for (final Iterator<CounterNode> j = node.iterator(); j.hasNext();) {
+      } else {
+        for (final Iterator<CounterNode> j = node.iterator(); j.hasNext(); ) {
           final CounterNode childNode = j.next();
-          if (childNode.isLeaf())
-            pieces.add(childNode.getCounter().getPiece());
+          if (childNode.isLeaf()) pieces.add(childNode.getCounter().getPiece());
         }
       }
     }
@@ -1117,8 +1084,7 @@ public class Inventory extends AbstractToolbarItem
           tracker.addPiece(p);
         }
         comm = p.keyEvent(stroke);
-      }
-      else {
+      } else {
         comm = new NullCommand();
         final int n = node.getChildCount();
         for (int i = 0; i < n; ++i) {
@@ -1144,24 +1110,22 @@ public class Inventory extends AbstractToolbarItem
     }
   }
 
-//  public static class Dest extends StringEnum {
-//    public String[] getValidValues(AutoConfigurable target) {
-//      return new String[] {DEST_CHAT, DEST_DIALOG, DEST_TREE};
-//    }
-//  }
-//  public static class SortStrategy extends StringEnum {
-//    public String[] getValidValues(AutoConfigurable target) {
-//      return new String[] {ALPHA, LENGTHALPHA, NUMERIC};
-//    }
-//  }
+  //  public static class Dest extends StringEnum {
+  //    public String[] getValidValues(AutoConfigurable target) {
+  //      return new String[] {DEST_CHAT, DEST_DIALOG, DEST_TREE};
+  //    }
+  //  }
+  //  public static class SortStrategy extends StringEnum {
+  //    public String[] getValidValues(AutoConfigurable target) {
+  //      return new String[] {ALPHA, LENGTHALPHA, NUMERIC};
+  //    }
+  //  }
 
   /**
-   * Holds static information of and a reference to a gamepiece. Pay attention
-   * to the equals method. It checks if two pieces can be found under the same
-   * path!
+   * Holds static information of and a reference to a gamepiece. Pay attention to the equals method.
+   * It checks if two pieces can be found under the same path!
    *
    * @author Brent Easton and Torsten Spindler
-   *
    */
   public class Counter implements PropertySource {
     // The gamepiece is stored here to allow dynamic changes of name, location
@@ -1186,8 +1150,8 @@ public class Inventory extends AbstractToolbarItem
       this.source = p;
     }
 
-    public Counter(GamePiece piece, List<String> groups, int value,
-                   String format, String sortFormat) {
+    public Counter(
+        GamePiece piece, List<String> groups, int value, String format, String sortFormat) {
       this.piece = piece;
       this.value = value;
       this.groups = groups;
@@ -1197,8 +1161,7 @@ public class Inventory extends AbstractToolbarItem
 
     // piece can be null, so provide a alternate name
     public String getName() {
-      if (piece != null)
-        return piece.getName();
+      if (piece != null) return piece.getName();
       return localName;
     }
 
@@ -1211,6 +1174,7 @@ public class Inventory extends AbstractToolbarItem
     public String toString() {
       return format.getLocalizedText(this, this, "Editor.Inventory.label_pieces");
     }
+
     public String toSortKey() {
       return sortingFormat.getLocalizedText(this, this, "Editor.Inventory.label_sort");
     }
@@ -1248,11 +1212,10 @@ public class Inventory extends AbstractToolbarItem
     public Object getProperty(Object key) {
       Object value = null;
       final String s = (String) key;
-      if (s.startsWith("sum_")) { //$NON-NLS-1$
+      if (s.startsWith("sum_")) { // $NON-NLS-1$
         if (piece != null) {
           value = piece.getProperty(s.substring(4));
-        }
-        else {
+        } else {
           int sum = 0;
           final int n = results.getChildCount(node);
           for (int i = 0; i < n; ++i) {
@@ -1262,20 +1225,17 @@ public class Inventory extends AbstractToolbarItem
               if (prop != null) { // Don't want to end up adding 1 if property isn't even defined
                 sum += Integer.parseInt((String) prop);
               }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
               // Count each piece as 1 if property isn't a number
               sum++;
             }
           }
           value = String.valueOf(sum);
         }
-      }
-      else if (s.startsWith("count_")) { //$NON-NLS-1$
+      } else if (s.startsWith("count_")) { // $NON-NLS-1$
         if (piece != null) {
           value = piece.getProperty(s.substring(6));
-        }
-        else {
+        } else {
           int count = 0;
           final int n = results.getChildCount(node);
           for (int i = 0; i < n; ++i) {
@@ -1287,14 +1247,11 @@ public class Inventory extends AbstractToolbarItem
           }
           value = String.valueOf(count);
         }
-      }
-      else if ("PropertyValue".equals(s)) { //$NON-NLS-1$
+      } else if ("PropertyValue".equals(s)) { // $NON-NLS-1$
         return localName;
-      }
-      else if (piece != null) {
+      } else if (piece != null) {
         value = piece.getProperty(key);
-      }
-      else if (source != null) {
+      } else if (source != null) {
         value = source.getProperty(key);
       }
       return value;
@@ -1329,16 +1286,13 @@ public class Inventory extends AbstractToolbarItem
     public boolean accept(GamePiece piece) {
       // Honor visibility
 
-      if (Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME)))
-        return false;
+      if (Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME))) return false;
 
       // Ignore Stacks, pieces are reported individually from GameState
-      if (piece instanceof Stack)
-        return false;
+      if (piece instanceof Stack) return false;
 
       // Don't report pieces with no map
-      if (piece.getMap() == null)
-        return false;
+      if (piece.getMap() == null) return false;
 
       // Accept on no filter or check for marker
       return filter == null || filter.accept(piece);
@@ -1349,7 +1303,6 @@ public class Inventory extends AbstractToolbarItem
    * CounterNode for the result tree.
    *
    * @author spindler
-   *
    */
   public class CounterNode implements Comparable<CounterNode> {
     protected final String entry;
@@ -1359,9 +1312,7 @@ public class Inventory extends AbstractToolbarItem
 
     // protected int depth;
 
-    public CounterNode(final String entry,
-                       final Counter counter,
-                       final int level) {
+    public CounterNode(final String entry, final Counter counter, final int level) {
       this(entry, counter);
       this.level = level;
     }
@@ -1377,31 +1328,27 @@ public class Inventory extends AbstractToolbarItem
 
     @Override
     public String toString() {
-      if (counter != null)
-        return counter.toString();
+      if (counter != null) return counter.toString();
       return getEntry();
     }
 
     /**
-     * Places a separator between elements.
-     * The separator consists of an indent and a linebreak.
+     * Places a separator between elements. The separator consists of an indent and a linebreak.
+     *
      * @return
      */
     protected String separator() {
       final StringBuilder sep = new StringBuilder();
 
-      if (getLevel() > 0)
-        sep.append(mapSeparator);
-      for (int i = 0; i < getLevel(); i++)
-        sep.append(groupSeparator);
+      if (getLevel() > 0) sep.append(mapSeparator);
+      for (int i = 0; i < getLevel(); i++) sep.append(groupSeparator);
       return sep.toString();
     }
 
     public String toResultString() {
       final StringBuilder name = new StringBuilder();
 
-      name.append(separator())
-          .append(counter != null ? counter : getEntry());
+      name.append(separator()).append(counter != null ? counter : getEntry());
 
       for (final CounterNode child : children) {
         name.append(child.toResultString());
@@ -1419,26 +1366,19 @@ public class Inventory extends AbstractToolbarItem
 
     public void addChild(final CounterNode counterNode, boolean sort) {
       children.add(counterNode);
-      if (sort)
-        sortChildren();
+      if (sort) sortChildren();
     }
 
-    public void addChild(final int i,
-                         final CounterNode counterNode, boolean sort) {
+    public void addChild(final int i, final CounterNode counterNode, boolean sort) {
       children.add(i, counterNode);
-      if (sort)
-        sortChildren();
+      if (sort) sortChildren();
     }
 
     protected void sortChildren() {
-      if (sortStrategy.equals(ALPHA))
-        Collections.sort(children);
-      else if (sortStrategy.equals(LENGTHALPHA))
-        children.sort(new LengthAlpha());
-      else if (sortStrategy.equals(NUMERIC))
-        children.sort(new Numerical());
-      else
-        Collections.sort(children);
+      if (sortStrategy.equals(ALPHA)) Collections.sort(children);
+      else if (sortStrategy.equals(LENGTHALPHA)) children.sort(new LengthAlpha());
+      else if (sortStrategy.equals(NUMERIC)) children.sort(new Numerical());
+      else Collections.sort(children);
     }
 
     public void removeChild(CounterNode child) {
@@ -1471,8 +1411,7 @@ public class Inventory extends AbstractToolbarItem
 
     public int updateValues() {
       int value = 0;
-      if (counter != null)
-        value = counter.getValue();
+      if (counter != null) value = counter.getValue();
 
       // inform children about update
       for (final CounterNode child : children) {
@@ -1502,111 +1441,91 @@ public class Inventory extends AbstractToolbarItem
     public void cutLeaves() {
       final List<CounterNode> toBeRemoved = new ArrayList<>();
       for (final CounterNode child : children) {
-        if (child.isLeaf())
-          toBeRemoved.add(child);
-        else
-          child.cutLeaves();
+        if (child.isLeaf()) toBeRemoved.add(child);
+        else child.cutLeaves();
       }
       children.removeAll(toBeRemoved);
     }
 
-    /**
-     * Compare this CounterNode to another one based on the respective SortKeys.
-     */
+    /** Compare this CounterNode to another one based on the respective SortKeys. */
     @Override
     public int compareTo(CounterNode node) {
       return this.toSortKey().compareTo(node.toSortKey());
     }
 
     /**
-     * Sort this CounterNode by the counters key, if no counter use the label.
-     * If no children, use the name of the counterNode, probably could be
-     * $PropertyValue$ as well?
+     * Sort this CounterNode by the counters key, if no counter use the label. If no children, use
+     * the name of the counterNode, probably could be $PropertyValue$ as well?
      *
      * @return key as String
      */
     protected String toSortKey() {
       String sortKey = getEntry();
-      if (counter != null)
-        sortKey = counter.toSortKey();
-      if (!children.isEmpty())
-        sortKey = toString();
+      if (counter != null) sortKey = counter.toSortKey();
+      if (!children.isEmpty()) sortKey = toString();
       return sortKey;
     }
 
     /**
-     * Base class for comparing two CounterNodes. Contains methods for
-     * sanity checking of arguments and comparing non-sane arguments.
+     * Base class for comparing two CounterNodes. Contains methods for sanity checking of arguments
+     * and comparing non-sane arguments.
      *
      * @author spindler
      */
     protected class CompareCounterNodes {
       /**
        * Sanity check for arguments.
+       *
        * @return true if arguments looks processable, false else
        */
       protected boolean argsOK(Object arg0, Object arg1) {
-        return
-          arg0 instanceof CounterNode &&
-          arg1 instanceof CounterNode;
+        return arg0 instanceof CounterNode && arg1 instanceof CounterNode;
       }
 
       protected int compareStrangeArgs(Object arg0, Object arg1) {
-        if (arg0 == null)
-          return 1;
+        if (arg0 == null) return 1;
 
-        if (arg0.equals(arg1))
-          return 0;
+        if (arg0.equals(arg1)) return 0;
 
-        if (arg1 == null)
-          return -1;
-        if (arg0 instanceof CounterNode && !(arg1 instanceof CounterNode))
-          return -1;
-        if (arg1 instanceof CounterNode && !(arg0 instanceof CounterNode))
-          return 1;
+        if (arg1 == null) return -1;
+        if (arg0 instanceof CounterNode && !(arg1 instanceof CounterNode)) return -1;
+        if (arg1 instanceof CounterNode && !(arg0 instanceof CounterNode)) return 1;
 
-        throw new IllegalArgumentException(
-          "These CounterNodes are not strange!"); //$NON-NLS-1$
+        throw new IllegalArgumentException("These CounterNodes are not strange!"); // $NON-NLS-1$
       }
     }
 
     /**
-     * Compare two CounterNodes based on the alphanumerical order of their
-     * SortKeys.
+     * Compare two CounterNodes based on the alphanumerical order of their SortKeys.
      *
      * @author spindler
      */
-    protected class Alpha extends CompareCounterNodes
-                          implements Comparator<CounterNode> {
+    protected class Alpha extends CompareCounterNodes implements Comparator<CounterNode> {
 
       @Override
       public int compare(CounterNode left, CounterNode right) {
-        if (!argsOK(left, right))
-          return compareStrangeArgs(left, right);
+        if (!argsOK(left, right)) return compareStrangeArgs(left, right);
 
         return left.compareTo(right);
       }
     }
 
     /**
-     * Compare two CounterNodes based on the first integer value found in
-     * their SortKeys. If a CounterNodes SortKey does not contain an integer
-     * at all it is assigned the lowest available integer.
+     * Compare two CounterNodes based on the first integer value found in their SortKeys. If a
+     * CounterNodes SortKey does not contain an integer at all it is assigned the lowest available
+     * integer.
      *
      * @author spindler
      */
-    protected class Numerical extends CompareCounterNodes
-                              implements Comparator<CounterNode> {
-      protected final String regex =  "\\d+"; //$NON-NLS-1$ //NOPMD
+    protected class Numerical extends CompareCounterNodes implements Comparator<CounterNode> {
+      protected final String regex = "\\d+"; // $NON-NLS-1$ //NOPMD
       protected final Pattern p = Pattern.compile(regex);
 
       /**
-       * Get first integer in key, if any. Otherwise return lowest possible
-       * integer.
+       * Get first integer in key, if any. Otherwise return lowest possible integer.
        *
        * @param key is a string that may or may not contain an integer value
        * @return the value of the integer found, min(Integer) otherwise
-       *
        */
       protected int getInt(String key) {
         int found = Integer.MIN_VALUE;
@@ -1629,46 +1548,35 @@ public class Inventory extends AbstractToolbarItem
         return found;
       }
 
-      /**
-       * Compare two CounterNodes based on the first integer found in their
-       * SortKeys.
-       */
+      /** Compare two CounterNodes based on the first integer found in their SortKeys. */
       @Override
       public int compare(CounterNode left, CounterNode right) {
-        if (!argsOK(left, right))
-          return compareStrangeArgs(left, right);
+        if (!argsOK(left, right)) return compareStrangeArgs(left, right);
 
         final int l = getInt(left.toSortKey());
         final int r = getInt(right.toSortKey());
 
-        if (l < r)
-          return -1;
-        if (l > r)
-          return 1;
+        if (l < r) return -1;
+        if (l > r) return 1;
 
         return 0;
       }
     }
 
     /**
-     * Compare two CounterNodes based on the length of their SortKeys and
-     * alphanumerical sorting.
+     * Compare two CounterNodes based on the length of their SortKeys and alphanumerical sorting.
      *
      * @author spindler
      */
-    protected class LengthAlpha extends CompareCounterNodes
-                                implements Comparator<CounterNode> {
+    protected class LengthAlpha extends CompareCounterNodes implements Comparator<CounterNode> {
       @Override
       public int compare(CounterNode left, CounterNode right) {
-        if (!argsOK(left, right))
-          return compareStrangeArgs(left, right);
+        if (!argsOK(left, right)) return compareStrangeArgs(left, right);
 
         final int leftLength = left.toSortKey().length();
         final int rightLength = right.toSortKey().length();
-        if (leftLength < rightLength)
-          return -1;
-        if (leftLength > rightLength)
-          return 1;
+        if (leftLength < rightLength) return -1;
+        if (leftLength > rightLength) return 1;
         // Native comparison
         return (left.compareTo(right));
       }
@@ -1677,8 +1585,7 @@ public class Inventory extends AbstractToolbarItem
 
   public class CounterInventory implements TreeModel {
     // Needed for TreeModel
-    protected List<TreeModelListener> treeModelListeners =
-      new ArrayList<>();
+    protected List<TreeModelListener> treeModelListeners = new ArrayList<>();
     // This contains shortcuts to the nodes of the tree
     protected Map<String, CounterNode> inventory;
     // The start of the tree
@@ -1714,15 +1621,15 @@ public class Inventory extends AbstractToolbarItem
       for (int j = 0; path != null && j < path.length; j++) {
         hash.append(path[j]);
         if (inventory.get(hash.toString()) == null) {
-          newNode = new CounterNode(
-            path[j], new Counter(path[j], counter.getPiece()), insertNode.getLevel() + 1);
+          newNode =
+              new CounterNode(
+                  path[j], new Counter(path[j], counter.getPiece()), insertNode.getLevel() + 1);
           inventory.put(hash.toString(), newNode);
           insertNode.addChild(newNode, sort);
         }
         insertNode = inventory.get(hash.toString());
       }
-      newNode = new CounterNode(
-        counter.toString(), counter, insertNode.getLevel() + 1);
+      newNode = new CounterNode(counter.toString(), counter, insertNode.getLevel() + 1);
       insertNode.addChild(newNode, sort);
       changed = true;
     }
@@ -1737,8 +1644,7 @@ public class Inventory extends AbstractToolbarItem
      * @return String
      */
     public String getResultString() {
-      if (changed)
-        updateTree();
+      if (changed) updateTree();
       changed = false;
       return root.toResultString();
     }
@@ -1754,17 +1660,14 @@ public class Inventory extends AbstractToolbarItem
 
     @Override
     public Object getRoot() {
-      if (changed)
-        updateTree();
+      if (changed) updateTree();
       return root;
     }
 
     private void updateTree() {
       updateEntries();
-      if (cutBelowRoot > 0)
-        root.cutLevel(cutBelowRoot);
-      for (int i = cutAboveLeaves; i > 0; i--)
-        root.cutLeaves();
+      if (cutBelowRoot > 0) root.cutLevel(cutBelowRoot);
+      for (int i = cutAboveLeaves; i > 0; i--) root.cutLeaves();
       changed = false;
     }
 
@@ -1790,8 +1693,7 @@ public class Inventory extends AbstractToolbarItem
       treeModelListeners.remove(l);
     }
 
-    public void fireNodesRemoved(Object[] path, int[] childIndices,
-                                 Object[] children) {
+    public void fireNodesRemoved(Object[] path, int[] childIndices, Object[] children) {
       final TreeModelEvent e = new TreeModelEvent(this, path, childIndices, children);
       for (final TreeModelListener l : treeModelListeners) {
         l.treeNodesRemoved(e);
@@ -1818,6 +1720,7 @@ public class Inventory extends AbstractToolbarItem
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -1827,7 +1730,9 @@ public class Inventory extends AbstractToolbarItem
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {

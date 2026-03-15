@@ -21,18 +21,15 @@
  */
 package VASSAL.chat.node;
 
-import java.util.Properties;
-import java.util.Objects;
-
 import VASSAL.build.module.Chatter;
 import VASSAL.chat.SimplePlayer;
 import VASSAL.chat.SimpleStatus;
+import java.util.Objects;
+import java.util.Properties;
 
-/**
- * A {@link SimplePlayer} subclass used in clients of the hierarchical server
- */
+/** A {@link SimplePlayer} subclass used in clients of the hierarchical server */
 public class NodePlayer extends SimplePlayer {
-  public static final String ID = "id"; //$NON-NLS-1$
+  public static final String ID = "id"; // $NON-NLS-1$
 
   public NodePlayer(String id) {
     this.id = id;
@@ -58,20 +55,21 @@ public class NodePlayer extends SimplePlayer {
   }
 
   public void setInfo(Properties p) {
-    name = p.getProperty(SimpleStatus.NAME, "???"); //$NON-NLS-1$
-    if (name == null || name.isBlank() || name.equals("[nobody]")) { //NON-NLS
+    name = p.getProperty(SimpleStatus.NAME, "???"); // $NON-NLS-1$
+    if (name == null || name.isBlank() || name.equals("[nobody]")) { // NON-NLS
       name = "(" + Chatter.getAnonymousUserName() + ")";
     }
     id = p.getProperty(ID, id);
-    setStatus(new SimpleStatus(
-                    "true".equals(p.getProperty(SimpleStatus.LOOKING)), //$NON-NLS-1$
-                    "true".equals(p.getProperty(SimpleStatus.AWAY)), //$NON-NLS-1$
-                    p.getProperty(SimpleStatus.PROFILE, ""), //$NON-NLS-1$
-                    p.getProperty(SimpleStatus.CLIENT, ""), //$NON-NLS-1$
-                    p.getProperty(SimpleStatus.IP, ""), //$NON-NLS-1$
-                    p.getProperty(SimpleStatus.MODULE_VERSION, ""), //$NON-NLS-1$
-                    p.getProperty(SimpleStatus.CRC, ""),
-                    p.getProperty(SimpleStatus.COMBINED_CRC, ""))); //$NON-NLS-1$
+    setStatus(
+        new SimpleStatus(
+            "true".equals(p.getProperty(SimpleStatus.LOOKING)), // $NON-NLS-1$
+            "true".equals(p.getProperty(SimpleStatus.AWAY)), // $NON-NLS-1$
+            p.getProperty(SimpleStatus.PROFILE, ""), // $NON-NLS-1$
+            p.getProperty(SimpleStatus.CLIENT, ""), // $NON-NLS-1$
+            p.getProperty(SimpleStatus.IP, ""), // $NON-NLS-1$
+            p.getProperty(SimpleStatus.MODULE_VERSION, ""), // $NON-NLS-1$
+            p.getProperty(SimpleStatus.CRC, ""),
+            p.getProperty(SimpleStatus.COMBINED_CRC, ""))); // $NON-NLS-1$
   }
 
   public Properties toProperties() {
@@ -79,7 +77,7 @@ public class NodePlayer extends SimplePlayer {
     if (name != null) {
       p1.put(SimpleStatus.NAME, name);
     }
-    final SimpleStatus status = (SimpleStatus)getStatus();
+    final SimpleStatus status = (SimpleStatus) getStatus();
     p1.put(SimpleStatus.LOOKING, String.valueOf(status.isLooking()));
     p1.put(SimpleStatus.AWAY, String.valueOf(status.isAway()));
     final String profile = status.getProfile();

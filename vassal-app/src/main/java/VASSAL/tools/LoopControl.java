@@ -20,31 +20,29 @@ package VASSAL.tools;
 
 import VASSAL.i18n.Resources;
 
-/**
- * Code for controlling looping common to both TriggerAction and DoActionButton
- */
+/** Code for controlling looping common to both TriggerAction and DoActionButton */
 public class LoopControl {
 
   // Limit number of loops before throwing a RecursionLimitException
   public static final int LOOP_LIMIT = 500;
 
   // Loop Types - saved in buildfile
-  public static final String LOOP_COUNTED = "counted"; //$NON-NLS-1$
-  public static final String LOOP_WHILE = "while"; //$NON-NLS-1$
-  public static final String LOOP_UNTIL = "until"; //$NON-NLS-1$
-  public static final String[] LOOP_TYPES = { LOOP_COUNTED, LOOP_UNTIL, LOOP_WHILE };
+  public static final String LOOP_COUNTED = "counted"; // $NON-NLS-1$
+  public static final String LOOP_WHILE = "while"; // $NON-NLS-1$
+  public static final String LOOP_UNTIL = "until"; // $NON-NLS-1$
+  public static final String[] LOOP_TYPES = {LOOP_COUNTED, LOOP_UNTIL, LOOP_WHILE};
 
   // Localized description of loop types
   public static final String[] LOOP_TYPE_DESCS = {
-      Resources.getString("Editor.LoopControl.repeat_fixed"), //$NON-NLS-1$
-      Resources.getString("Editor.LoopControl.repeat_until"), //$NON-NLS-1$
-      Resources.getString("Editor.LoopControl.repeat_while") }; //$NON-NLS-1$
+    Resources.getString("Editor.LoopControl.repeat_fixed"), // $NON-NLS-1$
+    Resources.getString("Editor.LoopControl.repeat_until"), // $NON-NLS-1$
+    Resources.getString("Editor.LoopControl.repeat_while")
+  }; //$NON-NLS-1$
 
   /**
    * Convert a Loop Type to a localized description
    *
-   * @param type
-   *          loop type
+   * @param type loop type
    * @return localized description
    */
   public static String loopTypeToDesc(String type) {
@@ -59,8 +57,7 @@ public class LoopControl {
   /**
    * Convert a localized description of a loop type back to a raw type
    *
-   * @param desc
-   *          localized description of loop type
+   * @param desc localized description of loop type
    * @return loop type
    */
   public static String loopDescToType(String desc) {
@@ -74,5 +71,4 @@ public class LoopControl {
     }
     return LOOP_TYPES[0];
   }
-
 }

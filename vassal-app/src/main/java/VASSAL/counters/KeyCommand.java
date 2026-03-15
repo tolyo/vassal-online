@@ -17,15 +17,13 @@
  */
 package VASSAL.counters;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
-
 import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 
 public class KeyCommand extends AbstractAction {
   private static final long serialVersionUID = 1L;
@@ -59,7 +57,8 @@ public class KeyCommand extends AbstractAction {
     this.i18nPiece = i18nPiece;
   }
 
-  public KeyCommand(String name, NamedKeyStroke key, GamePiece target, TranslatablePiece i18nPiece) {
+  public KeyCommand(
+      String name, NamedKeyStroke key, GamePiece target, TranslatablePiece i18nPiece) {
     this(name, key == null ? null : key.getKeyStroke(), target, i18nPiece);
     namedKeyStroke = key == null ? NamedKeyStroke.NULL_KEYSTROKE : key;
   }
@@ -68,7 +67,12 @@ public class KeyCommand extends AbstractAction {
     this(name, key, target, null, enabled);
   }
 
-  public KeyCommand(String name, NamedKeyStroke key, GamePiece target, TranslatablePiece i18nPiece, boolean enabled) {
+  public KeyCommand(
+      String name,
+      NamedKeyStroke key,
+      GamePiece target,
+      TranslatablePiece i18nPiece,
+      boolean enabled) {
     this(name, key == null ? null : key.getKeyStroke(), target, i18nPiece, enabled);
     namedKeyStroke = key == null ? NamedKeyStroke.NULL_KEYSTROKE : key;
   }
@@ -77,7 +81,8 @@ public class KeyCommand extends AbstractAction {
     this(name, key, target, null, enabled);
   }
 
-  public KeyCommand(String name, KeyStroke key, GamePiece target, TranslatablePiece i18nPiece, boolean enabled) {
+  public KeyCommand(
+      String name, KeyStroke key, GamePiece target, TranslatablePiece i18nPiece, boolean enabled) {
     this(name, key, target, i18nPiece);
     setEnabled(enabled);
   }
@@ -118,6 +123,7 @@ public class KeyCommand extends AbstractAction {
 
   /**
    * If true, then this action will apply to all selected pieces
+   *
    * @return global
    */
   public boolean isGlobal() {
@@ -126,6 +132,7 @@ public class KeyCommand extends AbstractAction {
 
   /**
    * If true, then this action will apply to all selected pieces
+   *
    * @param global value to set
    */
   public void setGlobal(boolean global) {
@@ -137,12 +144,13 @@ public class KeyCommand extends AbstractAction {
     if (stroke != null) {
       if (global) {
         GameModule.getGameModule().sendAndLog(KeyBuffer.getBuffer().keyCommand(stroke));
-      }
-      else {
+      } else {
         final BoundsTracker t = new BoundsTracker();
         final GamePiece outer = Decorator.getOutermost(target);
         t.addPiece(outer);
-        outer.setProperty(Properties.SNAPSHOT, ((PropertyExporter) outer).getProperties()); // save state prior to command
+        outer.setProperty(
+            Properties.SNAPSHOT,
+            ((PropertyExporter) outer).getProperties()); // save state prior to command
         final Command c = outer.keyEvent(stroke);
         if (target.getId() != null) {
           GameModule.getGameModule().sendAndLog(c);
@@ -152,14 +160,16 @@ public class KeyCommand extends AbstractAction {
       }
     }
   }
-  
+
   // Returns true if this command exists simply to produce a menu separator
   public boolean isMenuSeparator() {
     return MenuSeparator.SEPARATOR_NAME.equals(name);
   }
 
   /**
-   * The human-readable text that will appear in the right-click menu, translated to the user's Locale
+   * The human-readable text that will appear in the right-click menu, translated to the user's
+   * Locale
+   *
    * @return Localized text
    */
   public String getLocalizedMenuText() {

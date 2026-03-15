@@ -1,8 +1,8 @@
 package VASSAL.script.expression;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import VASSAL.build.module.properties.PropertySource;
 import java.util.HashMap;
@@ -31,7 +31,8 @@ public class FormattedStringExpressionTest implements Auditable {
   public static final String TEST4_RESULT = "abc " + PROP1_VALUE + " def " + PROP2_VALUE + " ghi";
 
   public static final String TEST5_EXPR = "abc $" + PROP1_KEY + "$ def $" + PROP2_KEY + "$ ghi";
-  public static final String TEST5_RESULT = "abc " + PROP1_LOCALISED_VALUE + " def " + PROP2_VALUE + " ghi";
+  public static final String TEST5_RESULT =
+      "abc " + PROP1_LOCALISED_VALUE + " def " + PROP2_VALUE + " ghi";
 
   @Test
   public void constructor() {
@@ -46,19 +47,18 @@ public class FormattedStringExpressionTest implements Auditable {
     Map<String, String> props = new HashMap<>();
     props.put(PROP2_KEY, PROP2_VALUE);
 
-
     // Test 1 - Fallback behaviour Evaluation with no Property source should just strip the $'s.
     Expression e = new FormattedStringExpression(TEST1_EXPR);
     AuditTrail audit = new AuditTrail(this, e.getExpression());
     String s = e.evaluate(this, audit);
 
-    assertThat ("Fallback behaviour failing", TEST1_RESULT, is(equalTo(s)));
+    assertThat("Fallback behaviour failing", TEST1_RESULT, is(equalTo(s)));
 
     // Test 1B - Property source supplied, Property not found
     e = new FormattedStringExpression(TEST1_EXPR);
     audit = new AuditTrail(this, e.getExpression());
     s = e.evaluate(source, this, audit);
-    assertThat ("Fallback behaviour failing with Property Source", TEST1_RESULT, is(equalTo(s)));
+    assertThat("Fallback behaviour failing with Property Source", TEST1_RESULT, is(equalTo(s)));
 
     // Test 2 - Property Source, not localised.
     e = new FormattedStringExpression(TEST2_EXPR);
@@ -83,7 +83,6 @@ public class FormattedStringExpressionTest implements Auditable {
     audit = new AuditTrail(this, e.getExpression());
     s = e.evaluate(source, props, true, this, audit);
     assertThat("Localised Property Source plus Map lookup failed", TEST5_RESULT, is(equalTo(s)));
-
   }
 
   static class Source implements PropertySource {

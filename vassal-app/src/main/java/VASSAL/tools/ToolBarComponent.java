@@ -1,12 +1,12 @@
 package VASSAL.tools;
 
-import javax.swing.JToolBar;
 import java.awt.Component;
+import javax.swing.JToolBar;
 
 /**
  * Indicates a component with a toolbar
- * @author rkinney
  *
+ * @author rkinney
  */
 @FunctionalInterface
 public interface ToolBarComponent {
@@ -23,7 +23,7 @@ public interface ToolBarComponent {
     for (int t = 0; t < tools; t++) {
       final Component tool = toolbar.getComponentAtIndex(t);
       if (tool instanceof LaunchButton) {
-        ((LaunchButton)tool).updateText();
+        ((LaunchButton) tool).updateText();
       }
     }
   }

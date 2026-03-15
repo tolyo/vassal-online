@@ -18,21 +18,20 @@
 
 package VASSAL.build.module.turn;
 
-import java.awt.Component;
-import VASSAL.i18n.Resources;
-import org.apache.commons.lang3.ArrayUtils;
-
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.IntConfigurer;
 import VASSAL.configure.VisibilityCondition;
+import VASSAL.i18n.Resources;
 import VASSAL.tools.SequenceEncoder;
+import java.awt.Component;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class CounterTurnLevel extends TurnLevel {
 
-  protected static final String START = "start"; //$NON-NLS-1$
-  protected static final String INCR = "incr"; //$NON-NLS-1$
-  protected static final String LOOP = "loop"; //$NON-NLS-1$
-  protected static final String LOOP_LIMIT = "loopLimit"; //$NON-NLS-1$
+  protected static final String START = "start"; // $NON-NLS-1$
+  protected static final String INCR = "incr"; // $NON-NLS-1$
+  protected static final String LOOP = "loop"; // $NON-NLS-1$
+  protected static final String LOOP_LIMIT = "loopLimit"; // $NON-NLS-1$
 
   protected int incr = 1;
   protected boolean loop = false;
@@ -62,6 +61,7 @@ public class CounterTurnLevel extends TurnLevel {
     rolledOver = false;
     super.setHigh();
   }
+
   /*
    * Generate the state of the level
    */
@@ -85,11 +85,11 @@ public class CounterTurnLevel extends TurnLevel {
   protected void setState(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
     current = sd.nextInt(start);
-    currentSubLevel = sd.nextInt(0);  // Change to 0 as default due to issue 3500
+    currentSubLevel = sd.nextInt(0); // Change to 0 as default due to issue 3500
     loop = sd.nextBoolean(false);
     loopLimit = sd.nextInt(-1);
     for (int i = 0; i < getTurnLevelCount(); i++) {
-      getTurnLevel(i).setState(sd.nextToken("")); //$NON-NLS-1$
+      getTurnLevel(i).setState(sd.nextToken("")); // $NON-NLS-1$
     }
     myValue.setPropertyValue(getValueString());
   }
@@ -104,7 +104,7 @@ public class CounterTurnLevel extends TurnLevel {
    */
   @Override
   protected String getLongestValueName() {
-    return start < 10000 ? "9999" : String.valueOf(start); //$NON-NLS-1$
+    return start < 10000 ? "9999" : String.valueOf(start); // $NON-NLS-1$
   }
 
   /*
@@ -149,11 +149,16 @@ public class CounterTurnLevel extends TurnLevel {
   @Override
   protected Component getSetControl() {
 
-    final IntConfigurer config = new IntConfigurer("", " " + getConfigureName() + ":  ", current); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    config.addPropertyChangeListener(e -> {
-      current = (Integer) ((IntConfigurer) e.getSource()).getValue();
-      myValue.setPropertyValue(getValueString());
-    });
+    final IntConfigurer config =
+        new IntConfigurer(
+            "",
+            " " + getConfigureName() + ":  ",
+            current); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    config.addPropertyChangeListener(
+        e -> {
+          current = (Integer) ((IntConfigurer) e.getSource()).getValue();
+          myValue.setPropertyValue(getValueString());
+        });
 
     return config.getControls();
   }
@@ -161,34 +166,22 @@ public class CounterTurnLevel extends TurnLevel {
   @Override
   public String[] getAttributeDescriptions() {
     return ArrayUtils.addAll(
-      super.getAttributeDescriptions(),
+        super.getAttributeDescriptions(),
         Resources.getString("Editor.CounterTurnLevel.start_value"),
         Resources.getString("Editor.CounterTurnLevel.increment_by"),
         Resources.getString("Editor.CounterTurnLevel.loop"),
-        Resources.getString("Editor.CounterTurnLevel.maximum_value")
-    );
+        Resources.getString("Editor.CounterTurnLevel.maximum_value"));
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
     return ArrayUtils.addAll(
-      super.getAttributeTypes(),
-      Integer.class,
-      Integer.class,
-      Boolean.class,
-      Integer.class
-    );
+        super.getAttributeTypes(), Integer.class, Integer.class, Boolean.class, Integer.class);
   }
 
   @Override
   public String[] getAttributeNames() {
-    return ArrayUtils.addAll(
-      super.getAttributeNames(),
-      START,
-      INCR,
-      LOOP,
-      LOOP_LIMIT
-    );
+    return ArrayUtils.addAll(super.getAttributeNames(), START, INCR, LOOP, LOOP_LIMIT);
   }
 
   @Override
@@ -201,47 +194,37 @@ public class CounterTurnLevel extends TurnLevel {
       start = (Integer) value;
       current = start;
       myValue.setPropertyValue(getValueString());
-    }
-    else if (INCR.equals(key)) {
+    } else if (INCR.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       incr = (Integer) value;
-    }
-    else if (LOOP.equals(key)) {
+    } else if (LOOP.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
       loop = (Boolean) value;
-    }
-    else if (LOOP_LIMIT.equals(key)) {
+    } else if (LOOP_LIMIT.equals(key)) {
       if (value instanceof String) {
         value = Integer.valueOf((String) value);
       }
       loopLimit = (Integer) value;
-    }
-    else {
+    } else {
       super.setAttribute(key, value);
     }
-
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (START.equals(key)) {
       return Integer.toString(start);
-    }
-    else if (INCR.equals(key)) {
+    } else if (INCR.equals(key)) {
       return Integer.toString(incr);
-    }
-    else if (LOOP.equals(key)) {
+    } else if (LOOP.equals(key)) {
       return Boolean.toString(loop);
-    }
-    else if (LOOP_LIMIT.equals(key)) {
+    } else if (LOOP_LIMIT.equals(key)) {
       return Integer.toString(loopLimit);
-    }
-    else
-      return super.getAttributeValueString(key);
+    } else return super.getAttributeValueString(key);
   }
 
   public static String getConfigureTypeName() {
@@ -250,15 +233,15 @@ public class CounterTurnLevel extends TurnLevel {
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("TurnTracker.html", "Counter"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "TurnTracker.html", "Counter"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override
   public VisibilityCondition getAttributeVisibility(String name) {
     if (LOOP_LIMIT.equals(name)) {
       return loopCond;
-    }
-    else {
+    } else {
       return null;
     }
   }

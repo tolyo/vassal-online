@@ -24,14 +24,11 @@ import VASSAL.command.RemovePiece;
 import VASSAL.configure.BooleanConfigurer;
 import VASSAL.i18n.PieceI18nData;
 import VASSAL.i18n.Resources;
-
-import javax.swing.KeyStroke;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.KeyStroke;
 
-/**
- * GamePiece trait that replaces a GamePiece with another one
- */
+/** GamePiece trait that replaces a GamePiece with another one */
 public class Replace extends PlaceMarker {
   public static final String ID = "replace;"; // NON-NLS
 
@@ -57,13 +54,12 @@ public class Replace extends PlaceMarker {
     c = placeMarker(true);
     if (c == null) {
       reportDataError(this, Resources.getString("Error.bad_replace"));
-    }
-    else {
+    } else {
       if (GameModule.getGameModule().isMatSupport()) {
         final GamePiece outer = getOutermost(this);
 
         // If a cargo piece has been deleted remove it from any mat
-        if (Boolean.TRUE.equals(outer.getProperty(MatCargo.IS_CARGO))) { //NON-NLS
+        if (Boolean.TRUE.equals(outer.getProperty(MatCargo.IS_CARGO))) { // NON-NLS
           final MatCargo cargo = (MatCargo) getDecorator(outer, MatCargo.class);
           if (cargo != null) {
             c = c.append(cargo.makeClearMatCommand());
@@ -71,7 +67,7 @@ public class Replace extends PlaceMarker {
         }
 
         // If a mat has been deleted remove any cargo from it
-        final String matName = (String)outer.getProperty(Mat.MAT_NAME);
+        final String matName = (String) outer.getProperty(Mat.MAT_NAME);
         if (matName != null && !"".equals(matName)) {
           final Mat mat = (Mat) getDecorator(outer, Mat.class);
           if (mat != null) {
@@ -80,7 +76,8 @@ public class Replace extends PlaceMarker {
         }
       }
 
-      Command remove = GameModule.getGameModule().getGameState().getAttachmentManager().removeAttachments(this);
+      Command remove =
+          GameModule.getGameModule().getGameState().getAttachmentManager().removeAttachments(this);
       remove = remove.append(new RemovePiece(getOutermost(this)));
       remove.execute();
       c.append(remove);
@@ -138,8 +135,7 @@ public class Replace extends PlaceMarker {
     if (marker != null && matchRotation) {
       if (above) {
         matchTraits(this, marker);
-      }
-      else {
+      } else {
         matchTraits(getOutermost(this), marker);
       }
     }
@@ -147,14 +143,11 @@ public class Replace extends PlaceMarker {
   }
 
   /**
-   * Match trait states from the supplied base Decorator to the marker
-   *  - Markers are never matched
-   *  - Dynamic Properties are matched on Name only
-   *  - All other traits matched on full Type
+   * Match trait states from the supplied base Decorator to the marker - Markers are never matched -
+   * Dynamic Properties are matched on Name only - All other traits matched on full Type
    *
-   * @param base    Decorator in Base marker to start matching
-   * @param marker  Marker to set matched values into
-   *
+   * @param base Decorator in Base marker to start matching
+   * @param marker Marker to set matched values into
    */
   protected void matchTraits(GamePiece base, GamePiece marker) {
     if (!(base instanceof Decorator) || !(marker instanceof Decorator)) {
@@ -166,7 +159,7 @@ public class Replace extends PlaceMarker {
     while (currentMarker != null) {
 
       // Markers are never state matched
-      if (! (currentMarker instanceof Marker)) {
+      if (!(currentMarker instanceof Marker)) {
 
         // Search for matching traits in the source piece, starting at the supplied trait
         Decorator candidate = (Decorator) base;
@@ -178,13 +171,17 @@ public class Replace extends PlaceMarker {
 
             // Match DP's on property name only if Copy by name option is selected
             if (candidate instanceof DynamicProperty && copyDPsByName) {
-              if (((DynamicProperty) candidate).getKey().equals(((DynamicProperty) currentMarker).getKey())) {
+              if (((DynamicProperty) candidate)
+                  .getKey()
+                  .equals(((DynamicProperty) currentMarker).getKey())) {
                 currentMarker.mySetState(candidate.myGetState());
                 candidate = null;
               }
             }
-            // Labels are only state matched if they are adjustable. Note this matches the behaviour of the Game Refresher
-            else if (currentMarker instanceof Labeler && candidate.myGetType().equals(currentMarker.myGetType())) {
+            // Labels are only state matched if they are adjustable. Note this matches the behaviour
+            // of the Game Refresher
+            else if (currentMarker instanceof Labeler
+                && candidate.myGetType().equals(currentMarker.myGetType())) {
               if (((Labeler) currentMarker).canChange()) {
                 currentMarker.mySetState(candidate.myGetState());
                 candidate = null;
@@ -201,8 +198,7 @@ public class Replace extends PlaceMarker {
             // Repeat from next inner Decorator in the base
             if (candidate != null && candidate.getInner() instanceof Decorator) {
               candidate = (Decorator) candidate.getInner();
-            }
-            else {
+            } else {
               candidate = null;
             }
           }
@@ -212,8 +208,7 @@ public class Replace extends PlaceMarker {
       // Process the next inner Decorator of the target marker
       if (currentMarker.getInner() instanceof Decorator) {
         currentMarker = (Decorator) currentMarker.getInner();
-      }
-      else {
+      } else {
         currentMarker = null;
       }
     }
@@ -226,7 +221,9 @@ public class Replace extends PlaceMarker {
 
   @Override
   public PieceI18nData getI18nData() {
-    return getI18nData(command.getName(), getCommandDescription(description, Resources.getString("Editor.Replace.replace_command")));
+    return getI18nData(
+        command.getName(),
+        getCommandDescription(description, Resources.getString("Editor.Replace.replace_command")));
   }
 
   protected static class Ed extends PlaceMarker.Ed {

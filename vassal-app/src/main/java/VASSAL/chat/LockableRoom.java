@@ -19,12 +19,15 @@ package VASSAL.chat;
 
 /**
  * A room that may be locked
- * @author rkinney
  *
+ * @author rkinney
  */
 public interface LockableRoom {
   boolean isLocked();
+
   boolean isOwner(String jid);
+
   Player getOwningPlayer();
+
   String getName();
 }

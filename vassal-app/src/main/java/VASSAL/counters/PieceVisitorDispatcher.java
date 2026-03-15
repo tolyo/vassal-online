@@ -18,15 +18,14 @@
 package VASSAL.counters;
 
 /**
- * For implementing a modified Visitor pattern on {@link GamePiece}s.
- * Rather than defining accept() methods in the GamePiece subclasses,
- * this class performs the dispatching of visitors.  This allows for easier
- * implementation of custom GamePiece subclasses outside the core engine.
+ * For implementing a modified Visitor pattern on {@link GamePiece}s. Rather than defining accept()
+ * methods in the GamePiece subclasses, this class performs the dispatching of visitors. This allows
+ * for easier implementation of custom GamePiece subclasses outside the core engine.
  *
- * A class that wishes to recognize custom GamePiece classes and treat
- * them specially should do so by implementing a sub-interface of
- * PieceVisitor and using a subclass of PieceVisitorDispatcher
+ * <p>A class that wishes to recognize custom GamePiece classes and treat them specially should do
+ * so by implementing a sub-interface of PieceVisitor and using a subclass of PieceVisitorDispatcher
  * that recognizes the custom type.
+ *
  * @see DeckVisitor
  * @see DeckVisitorDispatcher
  */
@@ -41,8 +40,7 @@ public class PieceVisitorDispatcher {
     Object value = null;
     if (piece instanceof Stack) {
       value = visitor.visitStack((Stack) piece);
-    }
-    else {
+    } else {
       value = visitor.visitDefault(piece);
     }
     return value;

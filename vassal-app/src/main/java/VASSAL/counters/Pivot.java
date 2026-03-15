@@ -33,11 +33,6 @@ import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatablePiece;
 import VASSAL.tools.NamedKeyStroke;
 import VASSAL.tools.SequenceEncoder;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -47,11 +42,15 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * d/b/a "Can Pivot"
  *
- * Provides commands to pivot a Game Piece around a given point
+ * <p>Provides commands to pivot a Game Piece around a given point
  */
 public class Pivot extends Decorator implements TranslatablePiece {
   public static final String ID = "pivot;"; // NON-NLS
@@ -127,16 +126,13 @@ public class Pivot extends Decorator implements TranslatablePiece {
 
       if (command.length() > 0 && key != null && !key.isNull()) {
         if (command2.length() > 0 && key2 != null && !key2.isNull()) {
-          commands = new KeyCommand[]{pivotCommand, pivot2Command};
+          commands = new KeyCommand[] {pivotCommand, pivot2Command};
+        } else {
+          commands = new KeyCommand[] {pivotCommand};
         }
-        else {
-          commands = new KeyCommand[]{pivotCommand};
-        }
-      }
-      else if (command2.length() > 0 && key2 != null && !key2.isNull()) {
-        commands = new KeyCommand[]{pivot2Command};
-      }
-      else {
+      } else if (command2.length() > 0 && key2 != null && !key2.isNull()) {
+        commands = new KeyCommand[] {pivot2Command};
+      } else {
         commands = KeyCommand.NONE;
       }
       rotator = (FreeRotator) getDecorator(this, FreeRotator.class);
@@ -155,15 +151,15 @@ public class Pivot extends Decorator implements TranslatablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(command)
-      .append(key)
-      .append(pivotX)
-      .append(pivotY)
-      .append(fixedAngle)
-      .append(angle)
-      .append(description)
-      .append(command2)
-      .append(key2)
-      .append(angle2);
+        .append(key)
+        .append(pivotX)
+        .append(pivotY)
+        .append(fixedAngle)
+        .append(angle)
+        .append(description)
+        .append(command2)
+        .append(key2)
+        .append(angle2);
     return ID + se.getValue();
   }
 
@@ -174,8 +170,9 @@ public class Pivot extends Decorator implements TranslatablePiece {
     final AffineTransform t = AffineTransform.getRotateInstance(oldAngle);
     t.transform(pivot2D, pivot2D);
     rotator.beginInteractiveRotate();
-    rotator.setPivot(getPosition().x + (int) Math.round(pivot2D.getX()),
-      getPosition().y + (int) Math.round(pivot2D.getY()));
+    rotator.setPivot(
+        getPosition().x + (int) Math.round(pivot2D.getX()),
+        getPosition().y + (int) Math.round(pivot2D.getY()));
     return c;
   }
 
@@ -218,14 +215,12 @@ public class Pivot extends Decorator implements TranslatablePiece {
       c = rotator.rotateCargo(c, piv, newAngle - oldAngle);
 
       getMap().ensureVisible(getMap().selectionBoundsOf(outer));
-    }
-    else {
+    } else {
       c = t.getChangeCommand();
     }
 
     return c;
   }
-
 
   @Override
   public Command myKeyEvent(KeyStroke stroke) {
@@ -235,12 +230,10 @@ public class Pivot extends Decorator implements TranslatablePiece {
     if (pivotCommand.matches(stroke)) {
       if (fixedAngle) {
         c = doFixedAngle(c, angle);
-      }
-      else if (getMap() != null) {
+      } else if (getMap() != null) {
         c = doInteractive(c);
       }
-    }
-    else if (fixedAngle && pivot2Command.matches(stroke)) {
+    } else if (fixedAngle && pivot2Command.matches(stroke)) {
       c = doFixedAngle(c, angle2);
     }
 
@@ -253,6 +246,7 @@ public class Pivot extends Decorator implements TranslatablePiece {
 
   /**
    * Pivot the given point around the pivot point from oldAngle to newAngle
+   *
    * @param oldAngle Old Angle
    * @param newAngle New Angle
    */
@@ -268,8 +262,7 @@ public class Pivot extends Decorator implements TranslatablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public Rectangle boundingBox() {
@@ -304,18 +297,18 @@ public class Pivot extends Decorator implements TranslatablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Pivot)) return false;
+    if (!(o instanceof Pivot)) return false;
     final Pivot c = (Pivot) o;
 
-    if (! Objects.equals(command, c.command)) return false;
-    if (! Objects.equals(key, c.key)) return false;
-    if (! Objects.equals(pivotX, c.pivotX)) return false;
-    if (! Objects.equals(pivotY, c.pivotY)) return false;
-    if (! Objects.equals(fixedAngle, c.fixedAngle)) return false;
-    if (! Objects.equals(description, c.description)) return false;
-    if (! Objects.equals(angle, c.angle)) return false;
-    if (! Objects.equals(command2, c.command2)) return false;
-    if (! Objects.equals(key2, c.key2)) return false;
+    if (!Objects.equals(command, c.command)) return false;
+    if (!Objects.equals(key, c.key)) return false;
+    if (!Objects.equals(pivotX, c.pivotX)) return false;
+    if (!Objects.equals(pivotY, c.pivotY)) return false;
+    if (!Objects.equals(fixedAngle, c.fixedAngle)) return false;
+    if (!Objects.equals(description, c.description)) return false;
+    if (!Objects.equals(angle, c.angle)) return false;
+    if (!Objects.equals(command2, c.command2)) return false;
+    if (!Objects.equals(key2, c.key2)) return false;
     return Objects.equals(angle2, c.angle2);
   }
 
@@ -392,16 +385,17 @@ public class Pivot extends Decorator implements TranslatablePiece {
       key2Label.setVisible(p.fixedAngle);
       angle2.getControls().setVisible(p.fixedAngle);
       angle2Label.setVisible(p.fixedAngle);
-      fixedAngle.addPropertyChangeListener(evt -> {
-        angle.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        angle2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        angleLabel.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        angle2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        command2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        command2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        key2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-        key2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
-      });
+      fixedAngle.addPropertyChangeListener(
+          evt -> {
+            angle.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            angle2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            angleLabel.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            angle2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            command2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            command2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            key2.getControls().setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+            key2Label.setVisible(Boolean.TRUE.equals(fixedAngle.getValue()));
+          });
     }
 
     @Override
@@ -418,15 +412,15 @@ public class Pivot extends Decorator implements TranslatablePiece {
     public String getType() {
       final SequenceEncoder se = new SequenceEncoder(';');
       se.append(command.getValueString())
-        .append(key.getValueString())
-        .append(xOff.getValueString())
-        .append(yOff.getValueString())
-        .append(Boolean.TRUE.equals(fixedAngle.getValue()))
-        .append(angle.getValueString())
-        .append(desc.getValueString())
-        .append(command2.getValueString())
-        .append(key2.getValueString())
-        .append(angle2.getValueString());
+          .append(key.getValueString())
+          .append(xOff.getValueString())
+          .append(yOff.getValueString())
+          .append(Boolean.TRUE.equals(fixedAngle.getValue()))
+          .append(angle.getValueString())
+          .append(desc.getValueString())
+          .append(command2.getValueString())
+          .append(key2.getValueString())
+          .append(angle2.getValueString());
       return ID + se.getValue();
     }
   }

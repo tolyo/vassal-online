@@ -24,9 +24,12 @@ import org.junit.jupiter.api.Test;
 
 public class CloneTest extends DecoratorTest {
 
-
   @Test
-  public void serialize() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+  public void serialize()
+      throws NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException {
 
     // Default piece
     Clone trait = new Clone();

@@ -18,6 +18,11 @@
 package VASSAL.build.module.metadata;
 
 import VASSAL.build.GameModule;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -27,28 +32,19 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 /**
- *
- * Class representing the metadata for a Module or an Extension. Modules
- * and extensions can't be differentiated until either the metadata or the
- * buildfile is parsed, so they share the same metadata structure.
+ * Class representing the metadata for a Module or an Extension. Modules and extensions can't be
+ * differentiated until either the metadata or the buildfile is parsed, so they share the same
+ * metadata structure.
  *
  * @author Brent Easton
  * @since 3.1.0
- *
  */
 public class ModuleMetaData extends AbstractMetaData {
 
-  private static final Logger logger =
-    LoggerFactory.getLogger(ModuleMetaData.class);
+  private static final Logger logger = LoggerFactory.getLogger(ModuleMetaData.class);
 
-  public static final String ZIP_ENTRY_NAME = "moduledata"; //NON-NLS
+  public static final String ZIP_ENTRY_NAME = "moduledata"; // NON-NLS
   public static final String DATA_VERSION = "1";
 
   protected Attribute nameAttr;
@@ -102,11 +98,10 @@ public class ModuleMetaData extends AbstractMetaData {
   }
 
   /**
-   * Read and validate a Module file.
-   *  - Check it has a Zip Entry named buildfile
-   *  - If it has a metadata file, read and parse it.
+   * Read and validate a Module file. - Check it has a Zip Entry named buildfile - If it has a
+   * metadata file, read and parse it.
    *
-   * Closes the {@link ZipFile}.
+   * <p>Closes the {@link ZipFile}.
    *
    * @param zip Module File
    */
@@ -125,13 +120,12 @@ public class ModuleMetaData extends AbstractMetaData {
         if (data == null) return;
 
         handler = new ModuleBuildFileXMLHandler();
-      }
-      else {
+      } else {
         handler = new MetadataXMLHandler();
       }
 
       try (InputStream zin = zip.getInputStream(data);
-           BufferedInputStream in = new BufferedInputStream(zin)) {
+          BufferedInputStream in = new BufferedInputStream(zin)) {
         synchronized (parser) {
           parser.setContentHandler(handler);
           parser.setDTDHandler(handler);
@@ -140,18 +134,14 @@ public class ModuleMetaData extends AbstractMetaData {
           parser.parse(new InputSource(in));
         }
       }
-    }
-    catch (final SAXEndException e) {
+    } catch (final SAXEndException e) {
       // Indicates End of module/extension parsing. not an error.
-    }
-    catch (final IOException | SAXException e) {
+    } catch (final IOException | SAXException e) {
       logger.error("", e);
     }
   }
 
-  /**
-   * XML Handler for parsing a Module/Extension metadata file
-   */
+  /** XML Handler for parsing a Module/Extension metadata file */
   private class MetadataXMLHandler extends XMLHandler {
 
     @Override
@@ -160,38 +150,33 @@ public class ModuleMetaData extends AbstractMetaData {
       if (NAME_ELEMENT.equals(qName)) {
         if (nameAttr == null) {
           nameAttr = new Attribute(NAME_ELEMENT, accumulator.toString().trim());
-        }
-        else {
+        } else {
           // Modules saved prior to 3.6.11 have the language and the translation reversed
           if (isPreBug11929(getVassalVersion())) {
             nameAttr.addTranslation(accumulator.toString().trim(), language);
-          }
-          else {
+          } else {
             nameAttr.addTranslation(language, accumulator.toString().trim());
           }
         }
-      }
-      else {
+      } else {
         super.endElement(uri, localName, qName);
       }
     }
   }
 
   /**
-   * XML Handle for parsing a Module buildFile. Used to read minimal data from
-   * modules saved prior to 3.1.0.
+   * XML Handle for parsing a Module buildFile. Used to read minimal data from modules saved prior
+   * to 3.1.0.
    */
   private class ModuleBuildFileXMLHandler extends BuildFileXMLHandler {
 
     @Override
-    public void startElement(String uri, String localName,
-                             String qName, Attributes attrs)
+    public void startElement(String uri, String localName, String qName, Attributes attrs)
         throws SAXEndException {
       super.startElement(uri, localName, qName, attrs);
 
       // handle element attributes we care about
-      if (BUILDFILE_MODULE_ELEMENT1.equals(qName) ||
-          BUILDFILE_MODULE_ELEMENT2.equals(qName)) {
+      if (BUILDFILE_MODULE_ELEMENT1.equals(qName) || BUILDFILE_MODULE_ELEMENT2.equals(qName)) {
         nameAttr = new Attribute(NAME_ELEMENT, getAttr(attrs, NAME_ATTR));
         setVersion(getAttr(attrs, VERSION_ATTR));
         setVassalVersion(getAttr(attrs, VASSAL_VERSION_ATTR));

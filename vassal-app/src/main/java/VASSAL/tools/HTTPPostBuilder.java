@@ -20,8 +20,8 @@ package VASSAL.tools;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -35,18 +35,16 @@ import java.util.Random;
  *
  * @author Joel Uckelman
  * @since 3.1.0
- *
- * @deprecated Use Apache HttpComponents instead. See {@link BugUtils} for an
- * example.
+ * @deprecated Use Apache HttpComponents instead. See {@link BugUtils} for an example.
  */
 @Deprecated(since = "2021-06-28", forRemoval = true)
 public class HTTPPostBuilder {
   private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
   private final BufferedWriter bw =
-    new BufferedWriter(new OutputStreamWriter(bytes, StandardCharsets.UTF_8));
+      new BufferedWriter(new OutputStreamWriter(bytes, StandardCharsets.UTF_8));
 
-  private final String boundary = "---------------------------" +
-    randomString() + randomString() + randomString();
+  private final String boundary =
+      "---------------------------" + randomString() + randomString() + randomString();
 
   private static final String endl = "\r\n";
 
@@ -65,15 +63,15 @@ public class HTTPPostBuilder {
    */
   public void setParameter(String name, String value) throws IOException {
     bw.append("--")
-      .append(boundary)
-      .append(endl)
-      .append("Content-Disposition: form-data; name=\"") //NON-NLS
-      .append(name)
-      .append('"')
-      .append(endl)
-      .append(endl)
-      .append(value)
-      .append(endl);
+        .append(boundary)
+        .append(endl)
+        .append("Content-Disposition: form-data; name=\"") // NON-NLS
+        .append(name)
+        .append('"')
+        .append(endl)
+        .append(endl)
+        .append(value)
+        .append(endl);
   }
 
   /**
@@ -97,15 +95,14 @@ public class HTTPPostBuilder {
    * @param in an <code>InputStream</code> from which to read the file
    * @throws IOException in case of failure
    */
-  public void setParameter(String name, String filename, InputStream in)
-                                                          throws IOException {
+  public void setParameter(String name, String filename, InputStream in) throws IOException {
     // write out the headers
     writeCommonFileHeaders(name, filename);
 
     final String type = HttpURLConnection.guessContentTypeFromName(filename);
-    bw.append(type == null ? "application/octet-stream" : type) //NON-NLS
-      .append(endl)
-      .append(endl);
+    bw.append(type == null ? "application/octet-stream" : type) // NON-NLS
+        .append(endl)
+        .append(endl);
 
     // flush before we switch to writing bytes
     bw.flush();
@@ -124,30 +121,28 @@ public class HTTPPostBuilder {
    * @param contents a <code>String</code> containing the file
    * @throws IOException in case of failure
    */
-  public void setParameter(String name, String filename, String contents)
-                                                          throws IOException {
+  public void setParameter(String name, String filename, String contents) throws IOException {
     // write out the headers
     writeCommonFileHeaders(name, filename);
 
     // write out the contents at UTF-8
-    bw.append("text/plain; charset=\"UTF-8\"") //NON-NLS
-      .append(endl)
-      .append(endl)
-      .append(contents)
-      .append(endl);
+    bw.append("text/plain; charset=\"UTF-8\"") // NON-NLS
+        .append(endl)
+        .append(endl)
+        .append(contents)
+        .append(endl);
   }
 
-  private void writeCommonFileHeaders(String name, String filename)
-                                                          throws IOException {
+  private void writeCommonFileHeaders(String name, String filename) throws IOException {
     bw.append("--")
-      .append(boundary)
-      .append(endl)
-      .append("Content-Disposition: form-data; name=\"") //NON-NLS
-      .append(name)
-      .append("\"; filename=\"") //NON-NLS
-      .append(filename)
-      .append(endl)
-      .append("Content-Type: "); //NON-NLS
+        .append(boundary)
+        .append(endl)
+        .append("Content-Disposition: form-data; name=\"") // NON-NLS
+        .append(name)
+        .append("\"; filename=\"") // NON-NLS
+        .append(filename)
+        .append(endl)
+        .append("Content-Type: "); // NON-NLS
   }
 
   private void writeEnd() throws IOException {
@@ -156,9 +151,8 @@ public class HTTPPostBuilder {
   }
 
   /**
-   * Submits an HTTP POST request to the given URL.
-   * This convenience method is equivalent to
-   * <code>HTTPPostBuilder.post(new URL(url))</code>.
+   * Submits an HTTP POST request to the given URL. This convenience method is equivalent to <code>
+   * HTTPPostBuilder.post(new URL(url))</code>.
    *
    * @param url the URL to receive the POST request
    * @return the reply
@@ -180,14 +174,13 @@ public class HTTPPostBuilder {
 
     final HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
-    http.setRequestMethod("POST"); //NON-NLS
+    http.setRequestMethod("POST"); // NON-NLS
     http.setDoInput(true);
     http.setDoOutput(true);
     http.setUseCaches(false);
     http.setAllowUserInteraction(false);
 
-    http.setRequestProperty("Content-Type",
-      "multipart/form-data; boundary=" + boundary);
+    http.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
     http.setRequestProperty("Content-Length", String.valueOf(bytes.size()));
 
     try (OutputStream out = http.getOutputStream()) {

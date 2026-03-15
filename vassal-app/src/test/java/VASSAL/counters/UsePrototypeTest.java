@@ -26,9 +26,12 @@ import org.junit.jupiter.api.Test;
 
 public class UsePrototypeTest extends DecoratorTest {
 
-
   @Test
-  public void serializeTests() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+  public void serializeTests()
+      throws NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException {
 
     // Default piece
     UsePrototype trait = new UsePrototype();
@@ -38,6 +41,5 @@ public class UsePrototypeTest extends DecoratorTest {
     trait = new UsePrototype("prototype;abc", null); // NON-NLS
     assertThat(trait.getPrototypeName(), is(equalTo("abc"))); // NON-NLS
     serializeTest("Named prototype", trait); // NON-NLS
-
   }
 }

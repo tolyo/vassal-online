@@ -29,12 +29,20 @@ public class OfficialNodeClient extends NodeClient {
   private final MessageBoardControlsInitializer messageBoardControls;
   private final ServerStatusControlsInitializer serverStatusControls;
 
-  public OfficialNodeClient(String moduleName, String playerId, CommandEncoder encoder, String host, int port, MessageBoard msgSvr, WelcomeMessageServer welcomer) {
+  public OfficialNodeClient(
+      String moduleName,
+      String playerId,
+      CommandEncoder encoder,
+      String host,
+      int port,
+      MessageBoard msgSvr,
+      WelcomeMessageServer welcomer) {
     super(moduleName, playerId, encoder, host, port, welcomer);
 
-    messageBoardControls = new MessageBoardControlsInitializer(
-      Resources.getString("Chat.messages"), msgSvr //$NON-NLS-1$
-    );
+    messageBoardControls =
+        new MessageBoardControlsInitializer(
+            Resources.getString("Chat.messages"), msgSvr // $NON-NLS-1$
+            );
     serverStatusControls = new ServerStatusControlsInitializer(new CgiServerStatus());
   }
 

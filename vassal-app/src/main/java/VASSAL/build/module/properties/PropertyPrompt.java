@@ -18,11 +18,11 @@
 package VASSAL.build.module.properties;
 
 import java.awt.Component;
-
 import javax.swing.JOptionPane;
 
 /**
  * Prompts user for a new value
+ *
  * @author rkinney
  */
 public class PropertyPrompt implements PropertyChanger {
@@ -38,10 +38,24 @@ public class PropertyPrompt implements PropertyChanger {
   public String getNewValue(String oldValue) {
     final String newValue;
     if (constraints != null && constraints.isNumeric()) {
-      newValue = new NumericPropertyPrompt(constraints.getComponent(), promptText, constraints.getMinimumValue(), constraints.getMaximumValue()).getNewValue(oldValue);
-    }
-    else {
-      newValue = (String) JOptionPane.showInputDialog(constraints.getComponent(), promptText, null, JOptionPane.QUESTION_MESSAGE, null, null, oldValue);
+      newValue =
+          new NumericPropertyPrompt(
+                  constraints.getComponent(),
+                  promptText,
+                  constraints.getMinimumValue(),
+                  constraints.getMaximumValue())
+              .getNewValue(oldValue);
+    } else {
+      newValue =
+          (String)
+              JOptionPane.showInputDialog(
+                  constraints.getComponent(),
+                  promptText,
+                  null,
+                  JOptionPane.QUESTION_MESSAGE,
+                  null,
+                  null,
+                  oldValue);
     }
 
     // Null indicates cancel button hit on dialog, handle them at the level above
@@ -66,5 +80,4 @@ public class PropertyPrompt implements PropertyChanger {
 
     PropertySource getPropertySource();
   }
-
 }

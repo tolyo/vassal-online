@@ -17,15 +17,12 @@
  */
 package VASSAL.configure;
 
-import java.io.File;
-
 import VASSAL.build.GameModule;
 import VASSAL.preferences.Prefs;
 import VASSAL.tools.filechooser.FileChooser;
+import java.io.File;
 
-/**
- * A Configurer for picking file directories
- */
+/** A Configurer for picking file directories */
 public class DirectoryConfigurer extends FileConfigurer {
 
   public DirectoryConfigurer(String key, String name) {
@@ -34,7 +31,8 @@ public class DirectoryConfigurer extends FileConfigurer {
 
   @Override
   protected FileChooser initFileChooser() {
-    final FileChooser fc = FileChooser.createFileChooser(null, startingDirectory, FileChooser.DIRECTORIES_ONLY);
+    final FileChooser fc =
+        FileChooser.createFileChooser(null, startingDirectory, FileChooser.DIRECTORIES_ONLY);
     if (startingDirectory == null && GameModule.getGameModule() != null) {
       fc.setCurrentDirectory((File) Prefs.getGlobalPrefs().getValue(Prefs.MODULES_DIR_KEY));
     }
@@ -51,8 +49,7 @@ public class DirectoryConfigurer extends FileConfigurer {
   }
 
   @Override
-  protected void addToArchive(File f) {
-  }
+  protected void addToArchive(File f) {}
 
   @Override
   public void chooseNewValue() {

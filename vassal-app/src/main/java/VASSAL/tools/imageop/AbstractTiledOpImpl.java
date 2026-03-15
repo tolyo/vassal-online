@@ -48,9 +48,9 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
   protected ImageOp[] tiles;
 
   /**
-   * Sets the <code>tileSize</code> which is used by {@link #getTileSize},
-   * {@link #getTileHeight}, {@link #getTileWidth}, {@link #getNumXTiles},
-   * {@link #getNumYTiles}, and all other tile methods.
+   * Sets the <code>tileSize</code> which is used by {@link #getTileSize}, {@link #getTileHeight},
+   * {@link #getTileWidth}, {@link #getNumXTiles}, {@link #getNumYTiles}, and all other tile
+   * methods.
    */
   protected void fixTileSize() {
     synchronized (this) {
@@ -59,8 +59,8 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
       if (tileSize == null) {
         // We do not touch tileSize until last here, as the check for
         // whether fileTileSize() will run is on the nullity of tileSize.
-        numXTiles = (int) Math.ceil((double)size.width / DEFAULT_TILE_SIZE.width);
-        numYTiles = (int) Math.ceil((double)size.height / DEFAULT_TILE_SIZE.height);
+        numXTiles = (int) Math.ceil((double) size.width / DEFAULT_TILE_SIZE.width);
+        numYTiles = (int) Math.ceil((double) size.height / DEFAULT_TILE_SIZE.height);
         tiles = new ImageOp[numXTiles * numYTiles];
         tileSize = DEFAULT_TILE_SIZE;
       }
@@ -103,8 +103,8 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
   }
 
   /**
-   * Returns the <code>ImageOp</code> which produces tile
-   * <code>(tileX,tileY)</code>, creating it if necessary.
+   * Returns the <code>ImageOp</code> which produces tile <code>(tileX,tileY)</code>, creating it if
+   * necessary.
    *
    * @return the <code>ImageOp</code> for tile <code>(tileX,tileY)</code>
    */
@@ -123,15 +123,14 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
   /**
    * {@inheritDoc}
    *
-   * @throws IndexOutOfBoundsException unless {@code 0 <= tileX < numXTiles}
-   * and {@code 0 <= tileY < numYTiles}.
+   * @throws IndexOutOfBoundsException unless {@code 0 <= tileX < numXTiles} and {@code 0 <= tileY <
+   *     numYTiles}.
    */
   @Override
   public BufferedImage getTile(int tileX, int tileY, ImageOpObserver obs)
-    throws CancellationException, InterruptedException, ExecutionException {
+      throws CancellationException, InterruptedException, ExecutionException {
 
-    if (tileX < 0 || tileX >= numXTiles ||
-        tileY < 0 || tileY >= numYTiles)
+    if (tileX < 0 || tileX >= numXTiles || tileY < 0 || tileY >= numYTiles)
       throw new IndexOutOfBoundsException();
 
     return getTileOp(tileX, tileY).getImage(obs);
@@ -140,15 +139,14 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
   /**
    * {@inheritDoc}
    *
-   * @throws IndexOutOfBoundsException unless {@code 0 <= tileX < numXTiles}
-   * and {@code 0 <= tileY < numYTiles}.
+   * @throws IndexOutOfBoundsException unless {@code 0 <= tileX < numXTiles} and {@code 0 <= tileY <
+   *     numYTiles}.
    */
   @Override
-  public Future<BufferedImage> getFutureTile(
-    int tileX, int tileY, ImageOpObserver obs) throws ExecutionException {
+  public Future<BufferedImage> getFutureTile(int tileX, int tileY, ImageOpObserver obs)
+      throws ExecutionException {
 
-    if (tileX < 0 || tileX >= numXTiles ||
-        tileY < 0 || tileY >= numYTiles)
+    if (tileX < 0 || tileX >= numXTiles || tileY < 0 || tileY >= numYTiles)
       throw new IndexOutOfBoundsException();
 
     return getTileOp(tileX, tileY).getFutureImage(obs);
@@ -165,7 +163,7 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
 
     if (size == null || tileSize == null) fixTileSize();
 
-// FIXME: maybe do this without creating new Rectangles
+    // FIXME: maybe do this without creating new Rectangles
     rect = rect.intersection(new Rectangle(size));
     if (rect.isEmpty()) {
       return new Point[0];
@@ -176,11 +174,10 @@ public abstract class AbstractTiledOpImpl extends AbstractOpImpl {
     final int maxTileX = (rect.x + rect.width - 1) / tileSize.width;
     final int maxTileY = (rect.y + rect.height - 1) / tileSize.height;
 
-    final Point[] tilesInRect =
-      new Point[(maxTileX - minTileX + 1) * (maxTileY - minTileY + 1)];
+    final Point[] tilesInRect = new Point[(maxTileX - minTileX + 1) * (maxTileY - minTileY + 1)];
 
-// FIXME: Maybe do this by keeping a MRU cache of Points.
-// Maybe not, profiling shows that this isn't causing the gc to run much.
+    // FIXME: Maybe do this by keeping a MRU cache of Points.
+    // Maybe not, profiling shows that this isn't causing the gc to run much.
     int offset = 0;
     for (int ty = minTileY; ty <= maxTileY; ++ty) {
       for (int tx = minTileX; tx <= maxTileX; ++tx) {

@@ -22,33 +22,28 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.widget.PieceSlot;
 import VASSAL.configure.ComponentDescription;
 import VASSAL.i18n.Localization;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
 /**
- * A general-purpose configurable GUI container
- * Widgets are {@link Configurable} objects that represent
- * AWT components.  Adding a Widget to another Widget during
- * a {@link Buildable#build} operation will add the corresponding
- * AWT component of the child to the component of the parent
+ * A general-purpose configurable GUI container Widgets are {@link Configurable} objects that
+ * represent AWT components. Adding a Widget to another Widget during a {@link Buildable#build}
+ * operation will add the corresponding AWT component of the child to the component of the parent
  */
 public abstract class Widget extends AbstractConfigurable implements ComponentDescription {
-  public static final String DESCRIPTION = "description"; //NON-NLS
-  public static final String NAME = "entryName"; //NON-NLS
-  public static final String WIDTH = "width";    //NON-NLS
-  public static final String HEIGHT = "height";  //NON-NLS
+  public static final String DESCRIPTION = "description"; // NON-NLS
+  public static final String NAME = "entryName"; // NON-NLS
+  public static final String WIDTH = "width"; // NON-NLS
+  public static final String HEIGHT = "height"; // NON-NLS
   protected Element buildElement;
 
   protected Widget parent;
 
   protected String description;
 
-  protected Widget() {
-  }
-
+  protected Widget() {}
 
   public boolean hasScale() {
     return false;
@@ -67,7 +62,6 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
     return true;
   }
 
-
   public double getScale() {
     return 1.0;
   }
@@ -78,10 +72,10 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   /**
-   * For memory efficiency reasons, a Widget is initialized lazily.
-   * This method only stores the element from which the build the Widget.
-   * The Widget is built from the stored element by invoking {@link #rebuild}.
-   * Subclasses should invoke {@link #rebuild} before invoking {@link #getComponent}
+   * For memory efficiency reasons, a Widget is initialized lazily. This method only stores the
+   * element from which the build the Widget. The Widget is built from the stored element by
+   * invoking {@link #rebuild}. Subclasses should invoke {@link #rebuild} before invoking {@link
+   * #getComponent}
    */
   @Override
   public void build(Element el) {
@@ -97,8 +91,8 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   /**
-   * Perform the build of this {@link Buildable} component using the element
-   * stored from when the the {@link #build} method was invoked
+   * Perform the build of this {@link Buildable} component using the element stored from when the
+   * the {@link #build} method was invoked
    */
   protected void rebuild() {
     if (buildElement != null) {
@@ -114,9 +108,8 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   /**
-   * Allowable components for a CHILD of this class - default is to
-   * ask our parent for this list. Top-level parents must override
-   * this with the proper child list for their trees.
+   * Allowable components for a CHILD of this class - default is to ask our parent for this list.
+   * Top-level parents must override this with the proper child list for their trees.
    *
    * @return configure components allowed for children of this class
    */
@@ -125,8 +118,8 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   /**
-   * The allowable Configurable components of a Widget determined by
-   * its parent's Child-Allowable method.
+   * The allowable Configurable components of a Widget determined by its parent's Child-Allowable
+   * method.
    */
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
@@ -139,8 +132,7 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   @Override
-  public void removeFrom(Buildable b) {
-  }
+  public void removeFrom(Buildable b) {}
 
   public Widget getParent() {
     return parent;
@@ -153,9 +145,8 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
   }
 
   /**
-   * @return the Component for this widget.  For efficiency, the
-   * Component may be initialized lazily instead of being created
-   * in the {@link Buildable#build} method
+   * @return the Component for this widget. For efficiency, the Component may be initialized lazily
+   *     instead of being created in the {@link Buildable#build} method
    */
   public abstract java.awt.Component getComponent();
 
@@ -169,24 +160,26 @@ public abstract class Widget extends AbstractConfigurable implements ComponentDe
 
     @Override
     public java.awt.Component getListCellRendererComponent(
-      javax.swing.JList list,
-      Object value,
-      int index,
-      boolean isSelected,
-      boolean cellHasFocus) {
+        javax.swing.JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
       super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       if (value instanceof PieceSlot) {
         // PieceSlot names are exposed in the Player in Scrollable Lists.
-        // PieceSlot names are not translated as such, they are based on the translation of the contained piece
+        // PieceSlot names are not translated as such, they are based on the translation of the
+        // contained piece
         final PieceSlot slot = (PieceSlot) value;
         final String localizedName = slot.getLocalizedConfigureName();
-        setText((localizedName == null || localizedName.isBlank()) ? slot.getConfigureName() : localizedName);
-      }
-      else if (value instanceof AbstractConfigurable) {
+        setText(
+            (localizedName == null || localizedName.isBlank())
+                ? slot.getConfigureName()
+                : localizedName);
+      } else if (value instanceof AbstractConfigurable) {
         final AbstractConfigurable c = (AbstractConfigurable) value;
         final String localizedName = c.getLocalizedConfigureName();
-        setText((localizedName == null || localizedName.isBlank()) ? c.getConfigureName() : localizedName);
+        setText(
+            (localizedName == null || localizedName.isBlank())
+                ? c.getConfigureName()
+                : localizedName);
       }
       return this;
     }

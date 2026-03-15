@@ -3,16 +3,14 @@ package VASSAL.chat;
 import java.awt.Frame;
 import java.awt.TextField;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-
 import org.apache.commons.io.IOUtils;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -31,28 +29,35 @@ public class CompressorTest {
       f.add(tf);
       f.pack();
       f.setVisible(true);
-      tf.addActionListener(evt -> {
-        try {
-          final String s = evt.getActionCommand();
-          System.err.println("Input (" + s.length() + ") = " + s); //$NON-NLS-1$ //$NON-NLS-2$
-          final String comp = new String(Compressor.compress(s.getBytes()));
-          System.err.println("Compressed (" + comp.length() + ") = " + comp); //$NON-NLS-1$ //$NON-NLS-2$
-          final String decomp = new String(Compressor.decompress(comp.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-          System.err.println("Decompressed (" + decomp.length() + ") = " + decomp); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        // FIXME: review error message
-        catch (IOException ex) {
-          ex.printStackTrace();
-        }
-      });
-    }
-    else {
+      tf.addActionListener(
+          evt -> {
+            try {
+              final String s = evt.getActionCommand();
+              System.err.println("Input (" + s.length() + ") = " + s); // $NON-NLS-1$ //$NON-NLS-2$
+              final String comp = new String(Compressor.compress(s.getBytes()));
+              System.err.println(
+                  "Compressed (" + comp.length() + ") = " + comp); // $NON-NLS-1$ //$NON-NLS-2$
+              final String decomp =
+                  new String(
+                      Compressor.decompress(comp.getBytes(StandardCharsets.UTF_8)),
+                      StandardCharsets.UTF_8);
+              System.err.println(
+                  "Decompressed ("
+                      + decomp.length()
+                      + ") = "
+                      + decomp); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            // FIXME: review error message
+            catch (IOException ex) {
+              ex.printStackTrace();
+            }
+          });
+    } else {
       final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
       final InputStream file = Files.newInputStream(Path.of(args[0]));
       try {
         IOUtils.copy(file, byteOut);
-      }
-      finally {
+      } finally {
         try {
           file.close();
         }
@@ -65,11 +70,11 @@ public class CompressorTest {
       final byte[] contents = byteOut.toByteArray();
       if (contents[0] == 'P' && contents[1] == 'K') {
         final byte[] uncompressed = Compressor.decompress(contents);
-        final OutputStream out = Files.newOutputStream(Path.of(args[0] + ".uncompressed")); //$NON-NLS-1$
+        final OutputStream out =
+            Files.newOutputStream(Path.of(args[0] + ".uncompressed")); // $NON-NLS-1$
         try {
           out.write(uncompressed);
-        }
-        finally {
+        } finally {
           try {
             out.close();
           }
@@ -81,18 +86,16 @@ public class CompressorTest {
 
         final byte[] recompressed = Compressor.compress(uncompressed);
         if (!Arrays.equals(recompressed, contents)) {
-// FIXME: don't throw unchecked exception
-          throw new RuntimeException("Compression failed"); //$NON-NLS-1$
+          // FIXME: don't throw unchecked exception
+          throw new RuntimeException("Compression failed"); // $NON-NLS-1$
         }
-      }
-      else {
+      } else {
         final byte[] compressed = Compressor.compress(contents);
         final OutputStream out =
-          Files.newOutputStream(Path.of(args[0] + ".compressed")); //$NON-NLS-1$
+            Files.newOutputStream(Path.of(args[0] + ".compressed")); // $NON-NLS-1$
         try {
           out.write(compressed);
-        }
-        finally {
+        } finally {
           try {
             out.close();
           }
@@ -103,11 +106,10 @@ public class CompressorTest {
         }
 
         if (!Arrays.equals(Compressor.decompress(compressed), contents)) {
-// FIXME: don't throw unchecked exception
-          throw new RuntimeException("Compression failed"); //$NON-NLS-1$
+          // FIXME: don't throw unchecked exception
+          throw new RuntimeException("Compression failed"); // $NON-NLS-1$
         }
       }
     }
   }
-
 }

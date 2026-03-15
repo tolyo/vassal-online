@@ -44,18 +44,6 @@ import VASSAL.tools.icon.IconFactory;
 import VASSAL.tools.icon.IconFamily;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.imageop.ScaledImagePainter;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -71,25 +59,34 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.KeyStroke;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * d/b/a "Layer"
  *
- * The "Layer" trait. Contains a list of images that the user may cycle through.
- * The current image is superimposed over the inner piece. The entire layer may
- * be activated or deactivated.
+ * <p>The "Layer" trait. Contains a list of images that the user may cycle through. The current
+ * image is superimposed over the inner piece. The entire layer may be activated or deactivated.
  *
- * Changes to support NamedKeyStrokes:
- *  - Random and reset command changed directly to Name Key Strokes.
- *  - Disentangle alwaysActive flag from length of activateKey field. Make a
- *    separate field and save in type
- *  - Add a Version field to type to enable conversion of Activate/Increase/Decrease
- *    commands. Note commands with more than 1 target keycode cannot be converted
- *  - Simplify code. Removed Version 0 (3.1) code to a separate class Embellishment0. The BasicCommandEncoder
- *    replaces this class with an Embellishment0 if Embellishment(type, inner) returns
- *    a version 0 Embellishment trait.
+ * <p>Changes to support NamedKeyStrokes: - Random and reset command changed directly to Name Key
+ * Strokes. - Disentangle alwaysActive flag from length of activateKey field. Make a separate field
+ * and save in type - Add a Version field to type to enable conversion of Activate/Increase/Decrease
+ * commands. Note commands with more than 1 target keycode cannot be converted - Simplify code.
+ * Removed Version 0 (3.1) code to a separate class Embellishment0. The BasicCommandEncoder replaces
+ * this class with an Embellishment0 if Embellishment(type, inner) returns a version 0 Embellishment
+ * trait.
  */
-public class Embellishment extends Decorator implements TranslatablePiece, RecursionLimiter.Loopable {
+public class Embellishment extends Decorator
+    implements TranslatablePiece, RecursionLimiter.Loopable {
   public static final String OLD_ID = "emb;"; // NON-NLS
   public static final String ID = "emb2;"; // New type encoding // NON-NLS
 
@@ -113,7 +110,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   protected int firstLevelValue;
 
   protected String onlyPropertyName = "";
-  protected String onlyPropertyState = "true"; //NON-NLS
+  protected String onlyPropertyState = "true"; // NON-NLS
 
   // random layers
   // protected KeyCommand rndCommand;
@@ -141,6 +138,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   // Shape cache
   @Deprecated(since = "2021-03-14", forRemoval = true)
   protected Rectangle lastBounds = null;
+
   @Deprecated(since = "2021-03-14", forRemoval = true)
   protected Area lastShape = null;
 
@@ -191,8 +189,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     if (level < 0) {
       reportDataError(this, Resources.getString("Error.bad_layer"), "Layer=" + level); // NON-NLS
       level = 0;
-    }
-    else if (level >= nValues) {
+    } else if (level >= nValues) {
       reportDataError(this, Resources.getString("Error.bad_layer"), "Layer=" + level); // NON-NLS
       level = nValues - 1;
     }
@@ -204,8 +201,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   public void mySetType(String s) {
     if (!s.startsWith(ID)) {
       originalSetType(s);
-    }
-    else {
+    } else {
       s = s.substring(ID.length());
 
       final boolean brandNew = Resources.getString("Editor.Embellishment.activate").equals(s);
@@ -257,7 +253,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       scale = st.nextDouble(1.0);
 
       onlyPropertyName = st.nextToken("");
-      onlyPropertyState = st.nextToken("true"); //NON-NLS;
+      onlyPropertyState = st.nextToken("true"); // NON-NLS;
 
       // Conversion?
       if (version == BASE_VERSION) {
@@ -265,17 +261,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
         // Cannot convert if activate, up or down has more than 1 char specified
         if (activateKey.length() <= 1 && upKey.length() <= 1 && downKey.length() <= 1) {
-          activateKeyStroke = activateKey.length() == 0 ?
-            NamedKeyStroke.NULL_KEYSTROKE :
-            NamedKeyStroke.of(activateKey.charAt(0), activateModifiers);
+          activateKeyStroke =
+              activateKey.length() == 0
+                  ? NamedKeyStroke.NULL_KEYSTROKE
+                  : NamedKeyStroke.of(activateKey.charAt(0), activateModifiers);
 
-          increaseKeyStroke = upKey.length() == 0 ?
-            NamedKeyStroke.NULL_KEYSTROKE :
-            NamedKeyStroke.of(upKey.charAt(0), upModifiers);
+          increaseKeyStroke =
+              upKey.length() == 0
+                  ? NamedKeyStroke.NULL_KEYSTROKE
+                  : NamedKeyStroke.of(upKey.charAt(0), upModifiers);
 
-          decreaseKeyStroke = downKey.length() == 0 ?
-            NamedKeyStroke.NULL_KEYSTROKE :
-            NamedKeyStroke.of(downKey.charAt(0), downModifiers);
+          decreaseKeyStroke =
+              downKey.length() == 0
+                  ? NamedKeyStroke.NULL_KEYSTROKE
+                  : NamedKeyStroke.of(downKey.charAt(0), downModifiers);
 
           version = CURRENT_VERSION;
         }
@@ -296,9 +295,8 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   }
 
   /**
-   * Can this Layer be Activated?
-   * Old-style depended on checking if any activation keys where specified.
-   * New-stule maintains a separate alwaysActive variable
+   * Can this Layer be Activated? Old-style depended on checking if any activation keys where
+   * specified. New-stule maintains a separate alwaysActive variable
    *
    * @return true if this layer trait has an activate command
    */
@@ -307,8 +305,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   }
 
   /**
-   * This original way of representing the type causes problems because it's not
-   * extensible
+   * This original way of representing the type causes problems because it's not extensible
    *
    * @param s Original type
    */
@@ -316,8 +313,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(s, ';');
 
     st.nextToken();
-    final SequenceEncoder.Decoder st2 =
-      new SequenceEncoder.Decoder(st.nextToken(), ';');
+    final SequenceEncoder.Decoder st2 = new SequenceEncoder.Decoder(st.nextToken(), ';');
     activateKey = st2.nextToken().toUpperCase();
     if (activateKey.length() > 0) {
       activateKeyStroke = NamedKeyStroke.of(KeyStroke.getKeyStroke(activateKey));
@@ -327,8 +323,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       resetCommand = st2.nextToken();
       resetKey = st2.nextNamedKeyStroke(null);
       resetLevel.setFormat(st2.nextToken("0"));
-    }
-    else {
+    } else {
       resetKey = null;
       resetCommand = "";
       resetLevel.setFormat("0");
@@ -366,8 +361,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
     for (int i = 0; i < imageName.length; ++i) {
       final String sub = l.get(i);
-      final SequenceEncoder.Decoder subSt =
-        new SequenceEncoder.Decoder(sub, ',');
+      final SequenceEncoder.Decoder subSt = new SequenceEncoder.Decoder(sub, ',');
       imageName[i] = subSt.nextToken();
       imagePainter[i] = new ScaledImagePainter();
       imagePainter[i].setImageName(imageName[i]);
@@ -379,17 +373,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
     alwaysActive = activateKey.length() == 0;
 
-    activateKeyStroke = activateKey.length() == 0 ?
-      NamedKeyStroke.NULL_KEYSTROKE :
-      NamedKeyStroke.of(activateKey.charAt(0), activateModifiers);
+    activateKeyStroke =
+        activateKey.length() == 0
+            ? NamedKeyStroke.NULL_KEYSTROKE
+            : NamedKeyStroke.of(activateKey.charAt(0), activateModifiers);
 
-    increaseKeyStroke = upKey.length() == 0 ?
-      NamedKeyStroke.NULL_KEYSTROKE :
-      NamedKeyStroke.of(upKey.charAt(0), upModifiers);
+    increaseKeyStroke =
+        upKey.length() == 0
+            ? NamedKeyStroke.NULL_KEYSTROKE
+            : NamedKeyStroke.of(upKey.charAt(0), upModifiers);
 
-    decreaseKeyStroke = downKey.length() == 0 ?
-      NamedKeyStroke.NULL_KEYSTROKE :
-      NamedKeyStroke.of(downKey.charAt(0), downModifiers);
+    decreaseKeyStroke =
+        downKey.length() == 0
+            ? NamedKeyStroke.NULL_KEYSTROKE
+            : NamedKeyStroke.of(downKey.charAt(0), downModifiers);
 
     version = CURRENT_VERSION;
 
@@ -410,27 +407,23 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     checkPropertyLevel(); // Name Change?
     final String ret;
 
-    final String cname = 0 < value && value - 1 < commonName.length ?
-                         getCommonName(localized, value - 1) : null;
+    final String cname =
+        0 < value && value - 1 < commonName.length ? getCommonName(localized, value - 1) : null;
 
     if (cname != null && cname.length() > 0) {
-      final SequenceEncoder.Decoder st =
-        new SequenceEncoder.Decoder(cname, '+');
+      final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(cname, '+');
       final String first = st.nextToken();
       if (st.hasMoreTokens()) {
         final String second = st.nextToken();
         if (first.length() == 0) {
           ret = (localized ? piece.getLocalizedName() : piece.getName()) + second;
-        }
-        else {
+        } else {
           ret = first + (localized ? piece.getLocalizedName() : piece.getName());
         }
-      }
-      else {
+      } else {
         ret = first;
       }
-    }
-    else {
+    } else {
       ret = (localized ? piece.getLocalizedName() : piece.getName());
     }
 
@@ -439,6 +432,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
   /**
    * Return raw Embellishment name
+   *
    * @return Embellishment name
    */
   public String getLayerName() {
@@ -457,38 +451,38 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
     se.append(activateCommand)
-      .append(activateModifiers)
-      .append(activateKey)
-      .append(upCommand)
-      .append(upModifiers)
-      .append(upKey)
-      .append(downCommand)
-      .append(downModifiers)
-      .append(downKey)
-      .append(resetCommand)
-      .append(resetKey)
-      .append(resetLevel.getFormat())
-      .append(drawUnderneathWhenSelected)
-      .append(xOff)
-      .append(yOff)
-      .append(imageName)
-      .append(commonName)
-      .append(loopLevels)
-      .append(name)
-      .append(rndKey)   // random layers
-      .append(rndText)  // random layers
-      .append(followProperty)
-      .append(propertyName)
-      .append(firstLevelValue)
-      .append(version)
-      .append(alwaysActive)
-      .append(activateKeyStroke)
-      .append(increaseKeyStroke)
-      .append(decreaseKeyStroke)
-      .append(description)
-      .append(scale)
-      .append(onlyPropertyName)
-      .append(onlyPropertyState);
+        .append(activateModifiers)
+        .append(activateKey)
+        .append(upCommand)
+        .append(upModifiers)
+        .append(upKey)
+        .append(downCommand)
+        .append(downModifiers)
+        .append(downKey)
+        .append(resetCommand)
+        .append(resetKey)
+        .append(resetLevel.getFormat())
+        .append(drawUnderneathWhenSelected)
+        .append(xOff)
+        .append(yOff)
+        .append(imageName)
+        .append(commonName)
+        .append(loopLevels)
+        .append(name)
+        .append(rndKey) // random layers
+        .append(rndText) // random layers
+        .append(followProperty)
+        .append(propertyName)
+        .append(firstLevelValue)
+        .append(version)
+        .append(alwaysActive)
+        .append(activateKeyStroke)
+        .append(increaseKeyStroke)
+        .append(decreaseKeyStroke)
+        .append(description)
+        .append(scale)
+        .append(onlyPropertyName)
+        .append(onlyPropertyState);
 
     return ID + se.getValue();
   }
@@ -506,22 +500,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
   /**
    * @param name Property name
-   * @return false only if property name is non-blank/non-null, and property itself is false/0/null (return true otherwise)
+   * @return false only if property name is non-blank/non-null, and property itself is false/0/null
+   *     (return true otherwise)
    */
   protected boolean checkProperty(String name) {
     if ((name != null) && !name.isEmpty()) {
       final Object propValue = getOutermost(this).getProperty(name);
       if (propValue == null) {
         return false;
-      }
-      else if (propValue instanceof String) {
-        final String string = (String)propValue;
-        return !"".equals(string) && !"false".equals(string) && !"0".equals(string); //NON-NLS
-      }
-      else if (propValue instanceof Boolean) {
+      } else if (propValue instanceof String) {
+        final String string = (String) propValue;
+        return !"".equals(string) && !"false".equals(string) && !"0".equals(string); // NON-NLS
+      } else if (propValue instanceof Boolean) {
         return (Boolean) propValue;
-      }
-      else if (propValue instanceof Integer) {
+      } else if (propValue instanceof Integer) {
         return ((Integer) propValue) != 0;
       }
     }
@@ -530,7 +522,8 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
   @Override
   public void draw(Graphics g, int x, int y, Component obs, double zoom) {
-    final boolean drawUnder = drawUnderneathWhenSelected && Boolean.TRUE.equals(getProperty(Properties.SELECTED));
+    final boolean drawUnder =
+        drawUnderneathWhenSelected && Boolean.TRUE.equals(getProperty(Properties.SELECTED));
 
     if (!drawUnder) {
       piece.draw(g, x, y, obs, zoom);
@@ -541,7 +534,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     if (followProperty && !onlyPropertyName.isEmpty()) {
       final boolean check = checkProperty(onlyPropertyName);
 
-      if (check != ("true".equals(onlyPropertyState))) { //NON-NLS
+      if (check != ("true".equals(onlyPropertyState))) { // NON-NLS
         if (drawUnder) {
           piece.draw(g, x, y, obs, zoom);
         }
@@ -560,8 +553,11 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
     if (i < imagePainter.length && imagePainter[i] != null) {
       final Rectangle r = getCurrentImageBounds();
-      final double myzoom = (scale == 1.0) ? zoom : zoom * scale; //BR// If we have our own personal scale factor, apply it
-      imagePainter[i].draw(g, x + (int)(zoom * r.x), y + (int)(zoom * r.y), myzoom, obs);
+      final double myzoom =
+          (scale == 1.0)
+              ? zoom
+              : zoom * scale; // BR// If we have our own personal scale factor, apply it
+      imagePainter[i].draw(g, x + (int) (zoom * r.x), y + (int) (zoom * r.y), myzoom, obs);
     }
 
     if (drawUnder) {
@@ -575,8 +571,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   protected void checkPropertyLevel() {
     try {
       RecursionLimiter.startExecution(this);
-      if (!followProperty || propertyName.length() == 0)
-        return;
+      if (!followProperty || propertyName.length() == 0) return;
 
       if (followPropertyExpression == null) {
         followPropertyExpression = Expression.createSimplePropertyExpression(propertyName);
@@ -584,33 +579,35 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
       String val = "";
       try {
-        // Suppress any error messages generated by the expression when if the piece is in a Game Piece Palette.
+        // Suppress any error messages generated by the expression when if the piece is in a Game
+        // Piece Palette.
         if (getMap() == null) {
-          val = followPropertyExpression.quietEvaluate(getOutermost(this), this, "Editor.Embellishment.follow_expression");
+          val =
+              followPropertyExpression.quietEvaluate(
+                  getOutermost(this), this, "Editor.Embellishment.follow_expression");
+        } else {
+          val =
+              followPropertyExpression.tryEvaluate(
+                  getOutermost(this), this, "Editor.Embellishment.follow_expression");
         }
-        else {
-          val = followPropertyExpression.tryEvaluate(getOutermost(this), this, "Editor.Embellishment.follow_expression");
-        }
-        if (val == null || val.isEmpty())
-          val = String.valueOf(firstLevelValue);
+        if (val == null || val.isEmpty()) val = String.valueOf(firstLevelValue);
 
         int v = Integer.parseInt(val) - firstLevelValue + 1;
-        if (v <= 0)
-          v = 1;
-        if (v > nValues)
-          v = nValues;
+        if (v <= 0) v = 1;
+        if (v > nValues) v = nValues;
 
         value = isActive() ? v : -v;
+      } catch (NumberFormatException e) {
+        reportDataError(
+            this,
+            Resources.getString("Error.non_number_error"),
+            "followProperty[" + propertyName + "]=" + val,
+            e); // NON-NLS
       }
-      catch (NumberFormatException e) {
-        reportDataError(this, Resources.getString("Error.non_number_error"), "followProperty[" + propertyName + "]=" + val, e); // NON-NLS
-      }
-    }
-    catch (RecursionLimitException e) {
+    } catch (RecursionLimitException e) {
       e.setAdditionalErrorMessage(Resources.getString("Error.infinite_loop_layer"));
       RecursionLimiter.infiniteLoop(e);
-    }
-    finally {
+    } finally {
       RecursionLimiter.endExecution();
     }
   }
@@ -621,8 +618,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       final List<KeyCommand> l = new ArrayList<>();
       final GamePiece outer = getOutermost(this);
 
-      if (activateCommand != null && activateCommand.length() > 0 &&
-          !alwaysActive) {
+      if (activateCommand != null && activateCommand.length() > 0 && !alwaysActive) {
 
         final KeyCommand k;
         k = new KeyCommand(activateCommand, activateKeyStroke, outer, this);
@@ -632,21 +628,24 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
       if (!followProperty) {
         if (nValues > 1) {
-          if (upCommand != null && upCommand.length() > 0 &&
-              increaseKeyStroke != null && !increaseKeyStroke.isNull()) {
+          if (upCommand != null
+              && upCommand.length() > 0
+              && increaseKeyStroke != null
+              && !increaseKeyStroke.isNull()) {
             up = new KeyCommand(upCommand, increaseKeyStroke, outer, this);
             l.add(up);
           }
 
-          if (downCommand != null && downCommand.length() > 0 &&
-              decreaseKeyStroke != null && !decreaseKeyStroke.isNull()) {
+          if (downCommand != null
+              && downCommand.length() > 0
+              && decreaseKeyStroke != null
+              && !decreaseKeyStroke.isNull()) {
             down = new KeyCommand(downCommand, decreaseKeyStroke, outer, this);
             l.add(down);
           }
         }
 
-        if (resetKey != null && !resetKey.isNull() &&
-            resetCommand.length() > 0) {
+        if (resetKey != null && !resetKey.isNull() && resetCommand.length() > 0) {
           l.add(new KeyCommand(resetCommand, resetKey, outer, this));
         }
 
@@ -691,15 +690,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
       if (resetKey != null && resetKey.equals(stroke)) {
         final GamePiece outer = getOutermost(this);
-        final AuditTrail audit = AuditTrail.create(this, resetLevel, Resources.getString("Editor.Embellishment.reset_to_level"));
+        final AuditTrail audit =
+            AuditTrail.create(
+                this, resetLevel, Resources.getString("Editor.Embellishment.reset_to_level"));
         final String levelText = resetLevel.getText(outer, this, audit);
         try {
           final int level = Integer.parseInt(levelText);
           setValue(Math.abs(level) - 1);
           setActive(level > 0);
-        }
-        catch (NumberFormatException e) {
-          reportDataError(this, Resources.getString("Error.non_number_error"), resetLevel.debugInfo(levelText, "resetLevel"), new AuditableException(this, audit)); // NON-NLS
+        } catch (NumberFormatException e) {
+          reportDataError(
+              this,
+              Resources.getString("Error.non_number_error"),
+              resetLevel.debugInfo(levelText, "resetLevel"),
+              new AuditableException(this, audit)); // NON-NLS
         }
       }
       // random layers
@@ -748,53 +752,52 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
         if (imagePainter[i] != null) {
           size[i] = ImageUtils.getBounds(imagePainter[i].getImageSize());
 
-          //BR// If we have our own personal scale factor, apply it.
+          // BR// If we have our own personal scale factor, apply it.
           if (scale != 1.0) {
-            size[i].x = (int)(scale * size[i].x);
-            size[i].y = (int)(scale * size[i].y);
-            size[i].width = (int)(scale * size[i].width);
-            size[i].height = (int)(scale * size[i].height);
+            size[i].x = (int) (scale * size[i].x);
+            size[i].y = (int) (scale * size[i].y);
+            size[i].width = (int) (scale * size[i].width);
+            size[i].height = (int) (scale * size[i].height);
           }
 
           size[i].translate(xOff, yOff);
-        }
-        else {
+        } else {
           size[i] = new Rectangle();
         }
       }
 
       return size[i];
-    }
-    else {
+    } else {
       return new Rectangle();
     }
   }
 
   /**
-   * Return the Shape of the counter by adding the shape of this layer to the shape of all inner traits.
-   * Minimize generation of new Area objects.
+   * Return the Shape of the counter by adding the shape of this layer to the shape of all inner
+   * traits. Minimize generation of new Area objects.
    */
   @Override
   public Shape getShape() {
     final Shape innerShape = piece.getShape();
 
-    checkPropertyLevel(); //BR// Layer might have changed
+    checkPropertyLevel(); // BR// Layer might have changed
 
-    if (value > 0 && !drawUnderneathWhenSelected && ((!followProperty || onlyPropertyName.isEmpty()) || (checkProperty(onlyPropertyName) == "true".equals(onlyPropertyState)))) { //NON-NLS
+    if (value > 0
+        && !drawUnderneathWhenSelected
+        && ((!followProperty || onlyPropertyName.isEmpty())
+            || (checkProperty(onlyPropertyName) == "true".equals(onlyPropertyState)))) { // NON-NLS
       final Rectangle r = getCurrentImageBounds();
 
       // If the label is completely enclosed in the current counter shape, then we can just return
       // the current shape
       if (innerShape.contains(r.x, r.y, r.width, r.height)) {
         return innerShape;
-      }
-      else {
+      } else {
         final Area a = new Area(innerShape);
         a.add(AreaCache.get(r));
         return a;
       }
-    }
-    else {
+    } else {
       return innerShape;
     }
   }
@@ -803,9 +806,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   public String getDescription() {
     String displayName = name;
     if (name == null || name.length() == 0) {
-      if (imageName.length > 0 &&
-          imageName[0] != null &&
-          imageName[0].length() > 0) {
+      if (imageName.length > 0 && imageName[0] != null && imageName[0].length() > 0) {
         displayName = imageName[0];
       }
     }
@@ -831,19 +832,15 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     if (key.equals(name + IMAGE)) {
       checkPropertyLevel();
       return value > 0 ? imageName[value - 1] : "";
-    }
-    else if (key.equals(name + NAME)) {
+    } else if (key.equals(name + NAME)) {
       checkPropertyLevel();
       return value > 0 ? strip(commonName[value - 1]) : "";
-    }
-    else if (key.equals(name + LEVEL)) {
+    } else if (key.equals(name + LEVEL)) {
       checkPropertyLevel();
       return String.valueOf(value);
-    }
-    else if (key.equals(name + ACTIVE)) {
+    } else if (key.equals(name + ACTIVE)) {
       return String.valueOf(isActive());
-    }
-    else if (key.equals(Properties.VISIBLE_STATE)) {
+    } else if (key.equals(Properties.VISIBLE_STATE)) {
       checkPropertyLevel();
       String s = String.valueOf(super.getProperty(key));
       s += value;
@@ -851,7 +848,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
         s += getProperty(Properties.SELECTED);
       }
       if (followProperty && !onlyPropertyName.isEmpty()) {
-        s += (checkProperty(onlyPropertyName) == "true".equals(onlyPropertyState)); //NON-NLS
+        s += (checkProperty(onlyPropertyName) == "true".equals(onlyPropertyState)); // NON-NLS
       }
       return s;
     }
@@ -860,13 +857,12 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
   @Override
   public Object getLocalizedProperty(Object key) {
-    if (key.equals(name + IMAGE) ||
-        key.equals(name + LEVEL) ||
-        key.equals(name + ACTIVE) ||
-        key.equals(Properties.VISIBLE_STATE)) {
+    if (key.equals(name + IMAGE)
+        || key.equals(name + LEVEL)
+        || key.equals(name + ACTIVE)
+        || key.equals(Properties.VISIBLE_STATE)) {
       return getProperty(key);
-    }
-    else if (key.equals(name + NAME)) {
+    } else if (key.equals(name + NAME)) {
       checkPropertyLevel();
       return value > 0 ? strip(getLocalizedCommonName(value - 1)) : "";
     }
@@ -980,18 +976,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   }
 
   /**
-   * If the argument GamePiece contains a Layer whose "activate" command matches
-   * the given keystroke, and whose active status matches the boolean argument,
-   * return that Layer
+   * If the argument GamePiece contains a Layer whose "activate" command matches the given
+   * keystroke, and whose active status matches the boolean argument, return that Layer
    */
-  public static Embellishment getLayerWithMatchingActivateCommand(GamePiece piece, KeyStroke stroke, boolean active) {
-    for (Embellishment layer = (Embellishment) getDecorator(piece, Embellishment.class); layer != null; layer = (Embellishment) getDecorator(layer.piece, Embellishment.class)) {
+  public static Embellishment getLayerWithMatchingActivateCommand(
+      GamePiece piece, KeyStroke stroke, boolean active) {
+    for (Embellishment layer = (Embellishment) getDecorator(piece, Embellishment.class);
+        layer != null;
+        layer = (Embellishment) getDecorator(layer.piece, Embellishment.class)) {
       for (int i = 0; i < layer.activateKey.length(); ++i) {
-        if (stroke.equals(KeyStroke.getKeyStroke(layer.activateKey.charAt(i), layer.activateModifiers))) {
+        if (stroke.equals(
+            KeyStroke.getKeyStroke(layer.activateKey.charAt(i), layer.activateModifiers))) {
           if (active && layer.isActive()) {
             return layer;
-          }
-          else if (!active && !layer.isActive()) {
+          } else if (!active && !layer.isActive()) {
             return layer;
           }
           break;
@@ -1001,7 +999,8 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     return null;
   }
 
-  public static Embellishment getLayerWithMatchingActivateCommand(GamePiece piece, NamedKeyStroke stroke, boolean active) {
+  public static Embellishment getLayerWithMatchingActivateCommand(
+      GamePiece piece, NamedKeyStroke stroke, boolean active) {
     return getLayerWithMatchingActivateCommand(piece, stroke.getKeyStroke(), active);
   }
 
@@ -1027,44 +1026,42 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof Embellishment)) return false;
+    if (!(o instanceof Embellishment)) return false;
     final Embellishment c = (Embellishment) o;
-    if (! Objects.equals(value, c.value)) return false;
-    if (! Objects.equals(activateCommand, c.activateCommand)) return false;
-    if (! Objects.equals(activateModifiers, c.activateModifiers)) return false;
-    if (! Objects.equals(activateKey, c.activateKey)) return false;
-    if (! Objects.equals(upCommand, c.upCommand)) return false;
-    if (! Objects.equals(upModifiers, c.upModifiers)) return false;
-    if (! Objects.equals(upKey, c.upKey)) return false;
-    if (! Objects.equals(downCommand, c.downCommand)) return false;
-    if (! Objects.equals(downModifiers, c.downModifiers)) return false;
-    if (! Objects.equals(downKey, c.downKey)) return false;
-    if (! Objects.equals(resetCommand, c.resetCommand)) return false;
-    if (! Objects.equals(resetKey, c.resetKey)) return false;
-    if (! Objects.equals(resetLevel.getFormat(), c.resetLevel.getFormat())) return false;
-    if (! Objects.equals(drawUnderneathWhenSelected, c.drawUnderneathWhenSelected)) return false;
-    if (! Objects.equals(xOff, c.xOff)) return false;
-    if (! Objects.equals(yOff, c.yOff)) return false;
-    if (! Arrays.equals(imageName, c.imageName)) return false;
-    if (! Arrays.equals(commonName, c.commonName)) return false;
-    if (! Objects.equals(loopLevels, c.loopLevels)) return false;
-    if (! Objects.equals(name, c.name)) return false;
-    if (! Objects.equals(rndKey, c.rndKey)) return false;
-    if (! Objects.equals(rndText, c.rndText)) return false;
-    if (! Objects.equals(followProperty, c.followProperty)) return false;
-    if (! Objects.equals(propertyName, c.propertyName)) return false;
-    if (! Objects.equals(firstLevelValue, c.firstLevelValue)) return false;
-    if (! Objects.equals(version, c.version)) return false;
-    if (! Objects.equals(alwaysActive, c.alwaysActive)) return false;
-    if (! Objects.equals(activateKeyStroke, c.activateKeyStroke)) return false;
-    if (! Objects.equals(increaseKeyStroke, c.increaseKeyStroke)) return false;
-    if (! Objects.equals(scale, c.scale)) return false;
+    if (!Objects.equals(value, c.value)) return false;
+    if (!Objects.equals(activateCommand, c.activateCommand)) return false;
+    if (!Objects.equals(activateModifiers, c.activateModifiers)) return false;
+    if (!Objects.equals(activateKey, c.activateKey)) return false;
+    if (!Objects.equals(upCommand, c.upCommand)) return false;
+    if (!Objects.equals(upModifiers, c.upModifiers)) return false;
+    if (!Objects.equals(upKey, c.upKey)) return false;
+    if (!Objects.equals(downCommand, c.downCommand)) return false;
+    if (!Objects.equals(downModifiers, c.downModifiers)) return false;
+    if (!Objects.equals(downKey, c.downKey)) return false;
+    if (!Objects.equals(resetCommand, c.resetCommand)) return false;
+    if (!Objects.equals(resetKey, c.resetKey)) return false;
+    if (!Objects.equals(resetLevel.getFormat(), c.resetLevel.getFormat())) return false;
+    if (!Objects.equals(drawUnderneathWhenSelected, c.drawUnderneathWhenSelected)) return false;
+    if (!Objects.equals(xOff, c.xOff)) return false;
+    if (!Objects.equals(yOff, c.yOff)) return false;
+    if (!Arrays.equals(imageName, c.imageName)) return false;
+    if (!Arrays.equals(commonName, c.commonName)) return false;
+    if (!Objects.equals(loopLevels, c.loopLevels)) return false;
+    if (!Objects.equals(name, c.name)) return false;
+    if (!Objects.equals(rndKey, c.rndKey)) return false;
+    if (!Objects.equals(rndText, c.rndText)) return false;
+    if (!Objects.equals(followProperty, c.followProperty)) return false;
+    if (!Objects.equals(propertyName, c.propertyName)) return false;
+    if (!Objects.equals(firstLevelValue, c.firstLevelValue)) return false;
+    if (!Objects.equals(version, c.version)) return false;
+    if (!Objects.equals(alwaysActive, c.alwaysActive)) return false;
+    if (!Objects.equals(activateKeyStroke, c.activateKeyStroke)) return false;
+    if (!Objects.equals(increaseKeyStroke, c.increaseKeyStroke)) return false;
+    if (!Objects.equals(scale, c.scale)) return false;
     return Objects.equals(decreaseKeyStroke, c.decreaseKeyStroke);
   }
 
-  /**
-   * Return Property names exposed by this trait
-   */
+  /** Return Property names exposed by this trait */
   protected static class Ed implements PieceEditor {
     private final MultiImagePicker images;
     private final StringConfigurer activateCommand;
@@ -1075,10 +1072,13 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     private final IntConfigurer xOffInput = new IntConfigurer(0);
     private final IntConfigurer yOffInput = new IntConfigurer(0);
     private final StringConfigurer levelNameInput = new StringConfigurer("");
-    private final JRadioButton prefix = new JRadioButton(Resources.getString("Editor.Embellishment.is_prefix"));
-    private final JRadioButton suffix = new JRadioButton(Resources.getString("Editor.Embellishment.is_suffix"));
+    private final JRadioButton prefix =
+        new JRadioButton(Resources.getString("Editor.Embellishment.is_prefix"));
+    private final JRadioButton suffix =
+        new JRadioButton(Resources.getString("Editor.Embellishment.is_suffix"));
     private final JCheckBox drawUnderneath = new JCheckBox();
-    private final JLabel resetLevelLabel = new JLabel(Resources.getString("Editor.Embellishment.level_number"));
+    private final JLabel resetLevelLabel =
+        new JLabel(Resources.getString("Editor.Embellishment.level_number"));
     private final FormattedExpressionConfigurer resetLevel;
     private final StringConfigurer resetCommand;
     private final JCheckBox loop = new JCheckBox();
@@ -1126,15 +1126,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     private final JButton addLevel;
     private final JButton removeLevel;
 
-    private static final String[] STATE_OPTIONS = { "true", "false" }; //NON-NLS
-    private static final String[] STATE_KEYS = { "Editor.Embellishment.true_or_non_zero", "Editor.Embellishment.false_zero_or_blank" };
+    private static final String[] STATE_OPTIONS = {"true", "false"}; // NON-NLS
+    private static final String[] STATE_KEYS = {
+      "Editor.Embellishment.true_or_non_zero", "Editor.Embellishment.false_zero_or_blank"
+    };
 
     public Ed(Embellishment e) {
       final Box box;
       version = e.version;
 
       controls = new JPanel();
-      controls.setLayout(new MigLayout("hidemode 2,fillx," + ConfigurerLayout.STANDARD_GAPY, "[grow 0]rel[]rel[]rel[grow 0]")); // NON-NLS
+      controls.setLayout(
+          new MigLayout(
+              "hidemode 2,fillx," + ConfigurerLayout.STANDARD_GAPY,
+              "[grow 0]rel[]rel[]rel[grow 0]")); // NON-NLS
 
       descConfig = new StringConfigurer(e.description);
       descConfig.setHintKey("Editor.description_hint");
@@ -1152,7 +1157,8 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       controls.add(new JLabel(Resources.getString("Editor.Embellishment.always_active")));
       controls.add(alwaysActiveConfig.getControls(), "wrap"); // NON-NLS
 
-      controls.add(new JLabel(Resources.getString("Editor.Embellishment.underneath_when_highlighted")));
+      controls.add(
+          new JLabel(Resources.getString("Editor.Embellishment.underneath_when_highlighted")));
       controls.add(drawUnderneath, "wrap"); // NON-NLS
 
       controls.add(new JLabel(Resources.getString("Editor.Embellishment.loop_through_levels")));
@@ -1167,13 +1173,15 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
       controls.add(new JLabel(Resources.getString("Editor.Embellishment.scale")));
       scaleConfig = new DoubleConfigurer(e.scale);
-      controls.add(scaleConfig.getControls(), "wrap"); //NON-NLS
+      controls.add(scaleConfig.getControls(), "wrap"); // NON-NLS
 
       followConfig = new BooleanConfigurer(e.followProperty);
-      controls.add(new JLabel(Resources.getString("Editor.Embellishment.levels_follow_expression_value")));
+      controls.add(
+          new JLabel(Resources.getString("Editor.Embellishment.levels_follow_expression_value")));
       controls.add(followConfig.getControls(), "span 2,split 3"); // NON-NLS
 
-      final JPanel levelBox = new JPanel(new MigLayout("ins 0", "[grow,fill]rel[]rel[]")); // NON-NLS
+      final JPanel levelBox =
+          new JPanel(new MigLayout("ins 0", "[grow,fill]rel[]rel[]")); // NON-NLS
       propertyLabel = new JLabel(Resources.getString("Editor.Embellishment.follow_expression"));
       propertyConfig = new PropertyNameExpressionConfigurer("", "", "", getOutermost(e));
       levelBox.add(propertyConfig.getControls(), "growx"); // NON-NLS
@@ -1187,19 +1195,20 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       final JPanel onlyBox = new JPanel(new MigLayout("ins 0", "[grow,fill]rel[]rel[]")); // NON-NLS
       onlyLabel = new JLabel(Resources.getString("Editor.Embellishment.only_property"));
       onlyConfig = new StringConfigurer("");
-      onlyBox.add(onlyConfig.getControls(), "growx"); //NON-NLS
+      onlyBox.add(onlyConfig.getControls(), "growx"); // NON-NLS
       onlyStateLabel = new JLabel(Resources.getString("Editor.Embellishment.only_state"));
       onlyStateConfig = new TranslatingStringEnumConfigurer(STATE_OPTIONS, STATE_KEYS);
-      onlyStateConfig.setValue(STATE_OPTIONS[0].equals(e.onlyPropertyState) ? STATE_OPTIONS[0] : STATE_OPTIONS[1]);
+      onlyStateConfig.setValue(
+          STATE_OPTIONS[0].equals(e.onlyPropertyState) ? STATE_OPTIONS[0] : STATE_OPTIONS[1]);
 
       onlyBox.add(onlyStateLabel);
       onlyBox.add(onlyStateConfig.getControls());
       controls.add(onlyLabel, "gapleft 10"); // NON-NLS
-      controls.add(onlyBox, "grow,wrap"); //NON-NLS
+      controls.add(onlyBox, "grow,wrap"); // NON-NLS
 
       followConfig.addPropertyChangeListener(e1 -> showHideFields());
 
-      actionLabel =  new JLabel(Resources.getString("Editor.Embellishment.action"));
+      actionLabel = new JLabel(Resources.getString("Editor.Embellishment.action"));
       final Font defaultFont = actionLabel.getFont();
       final Font boldFont = new Font(defaultFont.getFamily(), Font.BOLD, defaultFont.getSize());
       actionLabel.setFont(boldFont);
@@ -1280,40 +1289,45 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       controls.add(levelNameInput.getControls(), "growx"); // NON-NLS
 
       box = Box.createHorizontalBox();
-      prefix.addActionListener(evt -> {
-        if (prefix.isSelected()) {
-          suffix.setSelected(false);
-        }
-        changeLevelName();
-      });
-      suffix.addActionListener(evt -> {
-        if (suffix.isSelected()) {
-          prefix.setSelected(false);
-        }
-        changeLevelName();
-      });
+      prefix.addActionListener(
+          evt -> {
+            if (prefix.isSelected()) {
+              suffix.setSelected(false);
+            }
+            changeLevelName();
+          });
+      suffix.addActionListener(
+          evt -> {
+            if (suffix.isSelected()) {
+              prefix.setSelected(false);
+            }
+            changeLevelName();
+          });
       box.add(prefix);
       box.add(suffix);
       controls.add(box, "wrap"); // NON-NLS
 
-      final JPanel buttonPanel = new JPanel(new MigLayout("ins 0", "[grow 1]rel[grow 1]")); // NON-NLS
+      final JPanel buttonPanel =
+          new JPanel(new MigLayout("ins 0", "[grow 1]rel[grow 1]")); // NON-NLS
       JButton b = addLevel = new JButton(Resources.getString("Editor.Embellishment.add_level"));
-      b.addActionListener(evt -> {
-        names.add(null);
-        isPrefix.add(null);
-        images.addEntry();
-      });
+      b.addActionListener(
+          evt -> {
+            names.add(null);
+            isPrefix.add(null);
+            images.addEntry();
+          });
       buttonPanel.add(b, "growx"); // NON-NLS
 
       b = removeLevel = new JButton(Resources.getString("Editor.Embellishment.remove_level"));
-      b.addActionListener(evt -> {
-        final int index = images.getList().getSelectedIndex();
-        if (index >= 0) {
-          names.remove(index);
-          isPrefix.remove(index);
-          images.removeEntryAt(index);
-        }
-      });
+      b.addActionListener(
+          evt -> {
+            final int index = images.getList().getSelectedIndex();
+            if (index >= 0) {
+              names.remove(index);
+              isPrefix.remove(index);
+              images.removeEntryAt(index);
+            }
+          });
       buttonPanel.add(b, "growx"); // NON-NLS
       controls.add(buttonPanel, "span 4,center,growx,wrap"); // NON-NLS
 
@@ -1326,96 +1340,154 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
     @Override
     public void initCustomControls(JDialog d) {
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK), "AltUp"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK),
+              "AltUp"); //$NON-NLS-1$
 
-      d.getRootPane().getActionMap().put("AltUp", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          up.doClick();
-        }
-      });
-
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK), "AltDown"); //$NON-NLS-1$
-
-      d.getRootPane().getActionMap().put("AltDown", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          down.doClick();
-        }
-      });
-
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.ALT_DOWN_MASK), "Images"); //$NON-NLS-1$
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK), "Images"); //$NON-NLS-1$
-
-      d.getRootPane().getActionMap().put("Images", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          images.imageList.requestFocus();
-        }
-      });
-
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), "ChangeImage"); //$NON-NLS-1$
-
-      d.getRootPane().getActionMap().put("ChangeImage", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          // Finds the currently active/visible image picker (for the currently active/visible image) and tells it we want to pick a new image
-          for (final Component comp : images.getComponents()) {
-            if (comp instanceof JPanel) {
-              for (final Component comp2 : ((JPanel) comp).getComponents()) {
-                if (comp2.isVisible() && comp2 instanceof ImagePicker) {
-                  ((ImagePicker)(comp2)).pickImage();
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "AltUp",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  up.doClick();
                 }
-              }
-            }
-          }
-        }
-      });
+              });
 
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_DOWN_MASK), "AltL"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK),
+              "AltDown"); //$NON-NLS-1$
 
-      d.getRootPane().getActionMap().put("AltL", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          levelNameInput.requestFocus();
-        }
-      });
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "AltDown",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  down.doClick();
+                }
+              });
 
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), "AltN"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.ALT_DOWN_MASK),
+              "Images"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK),
+              "Images"); //$NON-NLS-1$
 
-      d.getRootPane().getActionMap().put("AltN", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          nameConfig.requestFocus();
-        }
-      });
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "Images",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  images.imageList.requestFocus();
+                }
+              });
 
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.ALT_DOWN_MASK), "Insert"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
+              "ChangeImage"); //$NON-NLS-1$
 
-      d.getRootPane().getActionMap().put("Insert", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          addLevel.doClick();
-        }
-      });
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "ChangeImage",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  // Finds the currently active/visible image picker (for the currently
+                  // active/visible image) and tells it we want to pick a new image
+                  for (final Component comp : images.getComponents()) {
+                    if (comp instanceof JPanel) {
+                      for (final Component comp2 : ((JPanel) comp).getComponents()) {
+                        if (comp2.isVisible() && comp2 instanceof ImagePicker) {
+                          ((ImagePicker) (comp2)).pickImage();
+                        }
+                      }
+                    }
+                  }
+                }
+              });
 
-      d.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.ALT_DOWN_MASK), "Delete"); //$NON-NLS-1$
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_DOWN_MASK), "AltL"); // $NON-NLS-1$
 
-      d.getRootPane().getActionMap().put("Delete", new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          removeLevel.doClick();
-        }
-      });
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "AltL",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  levelNameInput.requestFocus();
+                }
+              });
+
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), "AltN"); // $NON-NLS-1$
+
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "AltN",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  nameConfig.requestFocus();
+                }
+              });
+
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.ALT_DOWN_MASK),
+              "Insert"); //$NON-NLS-1$
+
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "Insert",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  addLevel.doClick();
+                }
+              });
+
+      d.getRootPane()
+          .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+          .put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.ALT_DOWN_MASK),
+              "Delete"); //$NON-NLS-1$
+
+      d.getRootPane()
+          .getActionMap()
+          .put(
+              "Delete",
+              new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  removeLevel.doClick();
+                }
+              });
     }
 
     protected void moveSelectedUp() {
@@ -1447,7 +1519,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       images.swap(index1, index2);
     }
 
-    protected void  setUpDownEnabled() {
+    protected void setUpDownEnabled() {
       final int selected = images.getList().getSelectedIndex();
       final int count = images.getList().getModel().getSize();
       up.setEnabled(count > 1 && selected > 0);
@@ -1463,8 +1535,7 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
         activateLabel.setVisible(false);
         activateCommand.getControls().setVisible(false);
         activateConfig.getControls().setVisible(false);
-      }
-      else {
+      } else {
         activateLabel.setVisible(true);
         activateCommand.getControls().setVisible(true);
         activateConfig.getControls().setVisible(true);
@@ -1512,11 +1583,11 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
       final int index = images.getList().getSelectedIndex();
       if (index < 0) {
         levelNameInput.setValue(null);
-      }
-      else {
+      } else {
         prefix.setSelected(PREFIX.equals(isPrefix.get(index)));
         suffix.setSelected(SUFFIX.equals(isPrefix.get(index)));
-        // Update level name configurer with name for current level without initiating another property change event
+        // Update level name configurer with name for current level without initiating another
+        // property change event
         levelNameInput.setFrozen(true);
         levelNameInput.setValue(names.get(index));
         levelNameInput.setFrozen(false);
@@ -1530,11 +1601,9 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
         names.set(index, s);
         if (prefix.isSelected()) {
           isPrefix.set(index, PREFIX);
-        }
-        else if (suffix.isSelected()) {
+        } else if (suffix.isSelected()) {
           isPrefix.set(index, SUFFIX);
-        }
-        else {
+        } else {
           isPrefix.set(index, NEITHER);
         }
       }
@@ -1560,14 +1629,10 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
         String commonName = names.get(i);
         if (commonName != null && commonName.length() > 0) {
           if (PREFIX.equals(isPrefix.get(i))) {
-            commonName =
-              new SequenceEncoder(commonName, '+').append("").getValue();
-          }
-          else if (SUFFIX.equals(isPrefix.get(i))) {
-            commonName =
-              new SequenceEncoder("", '+').append(commonName).getValue();
-          }
-          else {
+            commonName = new SequenceEncoder(commonName, '+').append("").getValue();
+          } else if (SUFFIX.equals(isPrefix.get(i))) {
+            commonName = new SequenceEncoder("", '+').append(commonName).getValue();
+          } else {
             commonName = new SequenceEncoder(commonName, '+').getValue();
           }
         }
@@ -1577,55 +1642,58 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
 
       try {
         Integer.parseInt(xOffInput.getValueString());
-      }
-      catch (NumberFormatException xNAN) {
+      } catch (NumberFormatException xNAN) {
         xOffInput.setValue(0);
       }
 
       try {
         Integer.parseInt(yOffInput.getValueString());
-      }
-      catch (NumberFormatException yNAN) {
+      } catch (NumberFormatException yNAN) {
         yOffInput.setValue(0);
       }
 
       se.append(activateCommand.getValueString())
-        .append(InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with mySetType()
-        .append("A")                       // Historical default for unused field to keep in sync with mySetType() NON-NLS
-        .append(upCommand.getValueString())
-        .append(InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with mySetType()
-        .append("")
-        .append(downCommand.getValueString())
-        .append(InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with mySetType()
-        .append("")
-        .append(resetCommand.getValueString())
-        .append(resetConfig.getValueString())
-        .append(resetLevel.getValueString())
-        .append(drawUnderneath.isSelected())
-        .append(xOffInput.getValueString())
-        .append(yOffInput.getValueString())
-        .append(imageNames.toArray(new String[0]))
-        .append(commonNames.toArray(new String[0]))
-        .append(loop.isSelected())
-        .append(nameConfig.getValueString())
-        .append(rndKeyConfig.getValueString())
-        .append(rndCommand.getValueString() == null ? "" :
-                rndCommand.getValueString().trim())
-        .append(followConfig.getValueString())
-        .append(propertyConfig.getValueString())
-        .append(firstLevelConfig.getValueString())
-        .append(version)
-        .append(alwaysActiveConfig.getValueString())
-        .append(activateConfig.getValueString())
-        .append(increaseConfig.getValueString())
-        .append(decreaseConfig.getValueString())
-        .append(descConfig.getValueString())
-        .append(scaleConfig.getValueString())
-        .append(onlyConfig.getValueString())
-        .append(onlyStateConfig.getValueString());
+          .append(
+              InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with
+          // mySetType()
+          .append(
+              "A") // Historical default for unused field to keep in sync with mySetType() NON-NLS
+          .append(upCommand.getValueString())
+          .append(
+              InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with
+          // mySetType()
+          .append("")
+          .append(downCommand.getValueString())
+          .append(
+              InputEvent.CTRL_DOWN_MASK) // Historical default for unused field to keep in sync with
+          // mySetType()
+          .append("")
+          .append(resetCommand.getValueString())
+          .append(resetConfig.getValueString())
+          .append(resetLevel.getValueString())
+          .append(drawUnderneath.isSelected())
+          .append(xOffInput.getValueString())
+          .append(yOffInput.getValueString())
+          .append(imageNames.toArray(new String[0]))
+          .append(commonNames.toArray(new String[0]))
+          .append(loop.isSelected())
+          .append(nameConfig.getValueString())
+          .append(rndKeyConfig.getValueString())
+          .append(rndCommand.getValueString() == null ? "" : rndCommand.getValueString().trim())
+          .append(followConfig.getValueString())
+          .append(propertyConfig.getValueString())
+          .append(firstLevelConfig.getValueString())
+          .append(version)
+          .append(alwaysActiveConfig.getValueString())
+          .append(activateConfig.getValueString())
+          .append(increaseConfig.getValueString())
+          .append(decreaseConfig.getValueString())
+          .append(descConfig.getValueString())
+          .append(scaleConfig.getValueString())
+          .append(onlyConfig.getValueString())
+          .append(onlyStateConfig.getValueString());
 
       return ID + se.getValue();
-
     }
 
     @Override
@@ -1648,13 +1716,11 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
             if (first.length() == 0) {
               s = second;
               is = SUFFIX;
-            }
-            else {
+            } else {
               s = first;
               is = PREFIX;
             }
-          }
-          else {
+          } else {
             s = first;
           }
         }
@@ -1704,7 +1770,8 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     final PieceI18nData data = new PieceI18nData(this);
     final String prefix = name.length() > 0 ? name + ": " : "";
     if (canBeActivated()) {
-      data.add(activateCommand, prefix + Resources.getString("Editor.Embellishment.activate_command"));
+      data.add(
+          activateCommand, prefix + Resources.getString("Editor.Embellishment.activate_command"));
     }
     if (!followProperty) {
       data.add(upCommand, prefix + Resources.getString("Editor.Embellishment.increase_command"));
@@ -1714,7 +1781,9 @@ public class Embellishment extends Decorator implements TranslatablePiece, Recur
     }
     // Strip off prefix/suffix marker
     for (int i = 0; i < commonName.length; i++) {
-      data.add(strip(commonName[i]), prefix + Resources.getString("Editor.Embellishment.level_name_description",  (i + 1)));
+      data.add(
+          strip(commonName[i]),
+          prefix + Resources.getString("Editor.Embellishment.level_name_description", (i + 1)));
     }
     return data;
   }

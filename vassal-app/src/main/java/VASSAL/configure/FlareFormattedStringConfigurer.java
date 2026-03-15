@@ -21,25 +21,26 @@ import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.map.Flare;
 import org.apache.commons.lang3.ArrayUtils;
 
-/** Utility subclass of {@link FormattedStringConfigurer} which includes variable
- * keys for player name, side, and id
+/**
+ * Utility subclass of {@link FormattedStringConfigurer} which includes variable keys for player
+ * name, side, and id
  */
 public class FlareFormattedStringConfigurer extends FormattedExpressionConfigurer {
   public FlareFormattedStringConfigurer(String key, String name, String[] options) {
     super(key, name);
 
-    final String[] allOptions = ArrayUtils.addAll(
-      new String[]{
-        GlobalOptions.PLAYER_NAME,
-        GlobalOptions.PLAYER_SIDE,
-        GlobalOptions.PLAYER_ID,
-        Flare.FLARE_NAME,
-        Flare.FLARE_LOCATION,
-        Flare.FLARE_ZONE,
-        Flare.FLARE_MAP
-      },
-      options
-    );
+    final String[] allOptions =
+        ArrayUtils.addAll(
+            new String[] {
+              GlobalOptions.PLAYER_NAME,
+              GlobalOptions.PLAYER_SIDE,
+              GlobalOptions.PLAYER_ID,
+              Flare.FLARE_NAME,
+              Flare.FLARE_LOCATION,
+              Flare.FLARE_ZONE,
+              Flare.FLARE_MAP
+            },
+            options);
 
     setOptions(allOptions);
   }

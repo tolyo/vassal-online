@@ -23,53 +23,47 @@ import VASSAL.configure.ComponentDescription;
 import VASSAL.i18n.Resources;
 
 /**
- * Abstract class for a Folder component that can contain/organize a particular type of configurable(s).
+ * Abstract class for a Folder component that can contain/organize a particular type of
+ * configurable(s).
  *
- * Classes extending AbstractFolder should implement getAllowableConfigureComponents() to include the allowable
- * contained components (and include itself so that folders can be nested).
+ * <p>Classes extending AbstractFolder should implement getAllowableConfigureComponents() to include
+ * the allowable contained components (and include itself so that folders can be nested).
  *
- * Components that can be *contained* in folders will need to be call AbstractBuildable#getNonFolderAncestor() to
- * find their "functional parent".
+ * <p>Components that can be *contained* in folders will need to be call
+ * AbstractBuildable#getNonFolderAncestor() to find their "functional parent".
  */
 public abstract class AbstractFolder extends AbstractConfigurable implements ComponentDescription {
-  public static final String NAME        = "name"; //NON-NLS
-  public static final String DESCRIPTION = "desc"; //NON-NLS
+  public static final String NAME = "name"; // NON-NLS
+  public static final String DESCRIPTION = "desc"; // NON-NLS
 
   String description = "";
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
-      Resources.getString(Resources.NAME_LABEL),
-      Resources.getString(Resources.DESCRIPTION)
+    return new String[] {
+      Resources.getString(Resources.NAME_LABEL), Resources.getString(Resources.DESCRIPTION)
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
-      String.class,
-      String.class,
+    return new Class<?>[] {
+      String.class, String.class,
     };
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      DESCRIPTION
-    };
+    return new String[] {NAME, DESCRIPTION};
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -78,8 +72,7 @@ public abstract class AbstractFolder extends AbstractConfigurable implements Com
   public void setAttribute(String key, Object value) {
     if (NAME.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       description = (String) value;
     }
   }
@@ -91,12 +84,11 @@ public abstract class AbstractFolder extends AbstractConfigurable implements Com
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Folder.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("Folder.html"); // NON-NLS
   }
 
   @Override

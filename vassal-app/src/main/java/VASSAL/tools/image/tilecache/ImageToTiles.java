@@ -18,6 +18,13 @@
 
 package VASSAL.tools.image.tilecache;
 
+import VASSAL.tools.concurrent.DaemonThreadFactory;
+import VASSAL.tools.image.FallbackImageTypeConverter;
+import VASSAL.tools.image.ImageIOImageLoader;
+import VASSAL.tools.image.ImageLoader;
+import VASSAL.tools.image.ImageTypeConverter;
+import VASSAL.tools.io.TemporaryFileFactory;
+import VASSAL.tools.lang.Callback;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -29,14 +36,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import VASSAL.tools.concurrent.DaemonThreadFactory;
-import VASSAL.tools.image.FallbackImageTypeConverter;
-import VASSAL.tools.image.ImageIOImageLoader;
-import VASSAL.tools.image.ImageLoader;
-import VASSAL.tools.image.ImageTypeConverter;
-import VASSAL.tools.io.TemporaryFileFactory;
-import VASSAL.tools.lang.Callback;
-
 /**
  * Converts an image file to tile files.
  *
@@ -47,10 +46,9 @@ public class ImageToTiles {
   /**
    * Converts an image file to tile files.
    *
-   * @param args the first argument is the path of the source image file,
-   * the second argument is the destination path for the tile files, the
-   * third and fourth arguments are the tile width and height
-   *
+   * @param args the first argument is the path of the source image file, the second argument is the
+   *     destination path for the tile files, the third and fourth arguments are the tile width and
+   *     height
    * @throws IOException if something goes wrong
    */
   public static void main(String[] args) throws IOException {
@@ -64,25 +62,26 @@ public class ImageToTiles {
 
     // TODO: Determine what the optimal number of threads is.
     final Runtime runtime = Runtime.getRuntime();
-    final ExecutorService exec = new ThreadPoolExecutor(
-      runtime.availableProcessors(),
-      runtime.availableProcessors() + 1,
-      60, TimeUnit.SECONDS,
-      new LinkedBlockingQueue<>(),
-      new DaemonThreadFactory(ImageToTiles.class.getSimpleName())
-    );
+    final ExecutorService exec =
+        new ThreadPoolExecutor(
+            runtime.availableProcessors(),
+            runtime.availableProcessors() + 1,
+            60,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new DaemonThreadFactory(ImageToTiles.class.getSimpleName()));
 
-    final TemporaryFileFactory tfac = () -> Files.createTempFile(Path.of(tpath), "img_", "").toFile();  //NON-NLS
+    final TemporaryFileFactory tfac =
+        () -> Files.createTempFile(Path.of(tpath), "img_", "").toFile(); // NON-NLS
 
     final ImageTypeConverter itc = new FallbackImageTypeConverter(tfac);
     final ImageLoader loader = new ImageIOImageLoader(itc);
 
     BufferedImage src = null;
     try (InputStream in = Files.newInputStream(Path.of(ipath))) {
-      src = loader.load(
-        ipath, in, BufferedImage.TYPE_INT_RGB,
-        BufferedImage.TYPE_INT_ARGB_PRE, false
-      );
+      src =
+          loader.load(
+              ipath, in, BufferedImage.TYPE_INT_RGB, BufferedImage.TYPE_INT_ARGB_PRE, false);
     }
 
     final String iname = new File(ipath).getName();

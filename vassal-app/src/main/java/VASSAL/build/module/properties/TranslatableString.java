@@ -22,9 +22,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A container for a String property that can be translated
- */
+/** A container for a String property that can be translated */
 public interface TranslatableString {
   String getPropertyValue();
 
@@ -32,16 +30,17 @@ public interface TranslatableString {
 
   void setPropertyValue(String newValue);
 
-
   class Util {
     /**
-     * Look for a {@link TranslatableString} in the list of {@link TranslatableStringContainer}. Return the first one
-     * found, searching the lists in order. The list may contain null references, which are skipped
+     * Look for a {@link TranslatableString} in the list of {@link TranslatableStringContainer}.
+     * Return the first one found, searching the lists in order. The list may contain null
+     * references, which are skipped
      *
      * @param propertyContainers list of containers
      * @return first property found
      */
-    public static TranslatableString findTranslatableString(String propertyName, List<TranslatableStringContainer> propertyContainers) {
+    public static TranslatableString findTranslatableString(
+        String propertyName, List<TranslatableStringContainer> propertyContainers) {
       TranslatableString p = null;
       for (final TranslatableStringContainer c : propertyContainers) {
         p = (c == null ? null : c.getTranslatableString(propertyName));
@@ -54,9 +53,9 @@ public interface TranslatableString {
   }
 
   /**
-   * Simple implementation of {@link TranslatableString} Support dynamic changing of the property name, provided that
-   * the {@link #addTo(TranslatableStringContainer)} method is used to register this property with a properties
-   * container.
+   * Simple implementation of {@link TranslatableString} Support dynamic changing of the property
+   * name, provided that the {@link #addTo(TranslatableStringContainer)} method is used to register
+   * this property with a properties container.
    */
   class Impl implements TranslatableString {
     private final PropertyChangeSupport propSupport;
@@ -66,6 +65,7 @@ public interface TranslatableString {
 
     // Maintain a static list of all Translatable Strings known to module
     private static final List<Impl> allProperties = new ArrayList<>();
+
     public static List<Impl> getAllProperties() {
       return allProperties;
     }
@@ -73,7 +73,7 @@ public interface TranslatableString {
     /**
      * @param source will be the source of any {@link PropertyChangeEvent} fired by this object
      */
-    public Impl(String propertyName, Object source) { //NOPMD
+    public Impl(String propertyName, Object source) { // NOPMD
       this.propertyName = propertyName;
       propSupport = new PropertyChangeSupport(this);
     }

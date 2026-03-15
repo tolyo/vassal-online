@@ -26,7 +26,7 @@ import VASSAL.tools.SequenceEncoder;
 
 public class ShapeItemInstance extends ItemInstance {
 
-  public static final String BORDER_COLOR = "borderColor"; //$NON-NLS-1$
+  public static final String BORDER_COLOR = "borderColor"; // $NON-NLS-1$
 
   private ColorSwatch borderColor = ColorSwatch.getBlack();
 
@@ -58,11 +58,11 @@ public class ShapeItemInstance extends ItemInstance {
 
   public void decode(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
-    setType(sd.nextToken("")); //$NON-NLS-1$
-    setName(sd.nextToken("")); //$NON-NLS-1$
-    setLocation(sd.nextToken("")); //$NON-NLS-1$
-    setFgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setBorderColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
+    setType(sd.nextToken("")); // $NON-NLS-1$
+    setName(sd.nextToken("")); // $NON-NLS-1$
+    setLocation(sd.nextToken("")); // $NON-NLS-1$
+    setFgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setBorderColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
   }
 
   protected void setBorderColor(ColorSwatch borderColor) {
@@ -76,25 +76,18 @@ public class ShapeItemInstance extends ItemInstance {
   @Override
   public String[] getAttributeDescriptions() {
     return new String[] {
-      Resources.getString("Editor.foreground_color"),
-      Resources.getString("Editor.border_color")
+      Resources.getString("Editor.foreground_color"), Resources.getString("Editor.border_color")
     };
   }
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] {
-      FgColorSwatchConfig.class,
-      BorderColorSwatchConfig.class
-    };
+    return new Class<?>[] {FgColorSwatchConfig.class, BorderColorSwatchConfig.class};
   }
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      FG_COLOR,
-      BORDER_COLOR
-    };
+    return new String[] {FG_COLOR, BORDER_COLOR};
   }
 
   @Override
@@ -105,8 +98,7 @@ public class ShapeItemInstance extends ItemInstance {
         o = new ColorSwatch((String) o);
       }
       fgColor = (ColorSwatch) o;
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       if (o instanceof String) {
         o = new ColorSwatch((String) o);
       }
@@ -115,19 +107,15 @@ public class ShapeItemInstance extends ItemInstance {
     if (myConfig != null) {
       myConfig.rebuildViz();
     }
-
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (FG_COLOR.equals(key)) {
       return fgColor.encode();
-    }
-    else if (BORDER_COLOR.equals(key)) {
+    } else if (BORDER_COLOR.equals(key)) {
       return getBorderColor().encode();
-    }
-    else
-      return null;
+    } else return null;
   }
 
   public static class BorderColorSwatchConfig implements ConfigurerFactory {

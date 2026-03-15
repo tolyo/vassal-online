@@ -18,6 +18,7 @@
 
 package VASSAL.tools.swing;
 
+import VASSAL.i18n.Resources;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -27,16 +28,13 @@ import java.awt.event.WindowEvent;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.event.EventListenerList;
-
 import net.miginfocom.swing.MigLayout;
-import VASSAL.i18n.Resources;
 
 /**
  * A cancellable progress dialog.
@@ -75,35 +73,38 @@ public class ProgressDialog extends JDialog {
       cancel = new JButton(Resources.getString(Resources.CANCEL));
 
       // forward clicks on the close decoration to cancellation listeners
-      addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent e) {
-          fireCancelledEvent(new ActionEvent(
-            ProgressDialog.this, ActionEvent.ACTION_PERFORMED, "cancel" //NON-NLS
-          ));
-        }
-      });
+      addWindowListener(
+          new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+              fireCancelledEvent(
+                  new ActionEvent(
+                      ProgressDialog.this, ActionEvent.ACTION_PERFORMED, "cancel" // NON-NLS
+                      ));
+            }
+          });
 
       // forward clicks on the close button to the cancellation listeners
       cancel.addActionListener(this::fireCancelledEvent);
-    }
-    else {
+    } else {
       cancel = null;
       setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
     // create the layout
-    final JPanel panel = new JPanel(new MigLayout(
-      "insets dialog, fill", "", "unrelated:push[]related[]unrelated:push[]")); //NON-NLS
+    final JPanel panel =
+        new JPanel(
+            new MigLayout(
+                "insets dialog, fill", "", "unrelated:push[]related[]unrelated:push[]")); // NON-NLS
 
     // NB: It's necessary to set the minimum width for the label,
     // otherwise if the label text is set to a string which is too long,
     // the label will overflow the container instead of showing ellipses.
-    panel.add(progbar, "growx, wrap"); //NON-NLS
-    panel.add(label,   "wmin 0, pad 0 0 2pt 0, wrap unrel:push"); //NON-NLS
+    panel.add(progbar, "growx, wrap"); // NON-NLS
+    panel.add(label, "wmin 0, pad 0 0 2pt 0, wrap unrel:push"); // NON-NLS
 
     if (cancellable) {
-      panel.add(cancel,  "tag cancel"); //NON-NLS
+      panel.add(cancel, "tag cancel"); // NON-NLS
     }
 
     add(panel);
@@ -243,26 +244,23 @@ public class ProgressDialog extends JDialog {
   /**
    * Creates a progress dialog on the EDT.
    *
-   * This is a convenience method to be used when a non-EDT thread needs to
-   * create a progress dialog in order to attach listeners to it.
+   * <p>This is a convenience method to be used when a non-EDT thread needs to create a progress
+   * dialog in order to attach listeners to it.
    *
    * @param parent the parent frame
    * @param title the dialog title
    * @param text the text beneath the progress bar
    */
-  public static ProgressDialog createOnEDT(final Frame parent,
-                                           final String title,
-                                           final String text) {
+  public static ProgressDialog createOnEDT(
+      final Frame parent, final String title, final String text) {
     final Future<ProgressDialog> f = EDT.submit(() -> new ProgressDialog(parent, title, text));
 
     try {
       return f.get();
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       // this should never happen
       throw new IllegalStateException(e);
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       throw new RuntimeException(e);
     }
   }

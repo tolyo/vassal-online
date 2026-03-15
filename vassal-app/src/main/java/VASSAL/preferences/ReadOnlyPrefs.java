@@ -18,16 +18,15 @@
 
 package VASSAL.preferences;
 
+import VASSAL.Info;
+import VASSAL.tools.ReadErrorDialog;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Properties;
-
-import VASSAL.Info;
-import VASSAL.tools.ReadErrorDialog;
 
 /**
  * A simple preferences class which permits reading stored values.
@@ -47,13 +46,11 @@ public class ReadOnlyPrefs {
 
   protected ReadOnlyPrefs(File file) {
     try (InputStream fin = Files.newInputStream(file.toPath());
-         BufferedInputStream in = new BufferedInputStream(fin)) {
+        BufferedInputStream in = new BufferedInputStream(fin)) {
       storedValues.load(in);
-    }
-    catch (NoSuchFileException e) {
+    } catch (NoSuchFileException e) {
       // First time for this module, not an error.
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, file);
     }
   }
@@ -62,8 +59,7 @@ public class ReadOnlyPrefs {
    * Return the value of a given preference.
    *
    * @param key the name of the preference to retrieve
-   * @return the value of this option in the Preferences file, or
-   * <code>null</code> if undefined
+   * @return the value of this option in the Preferences file, or <code>null</code> if undefined
    */
   public String getStoredValue(String key) {
     return storedValues.getProperty(key);

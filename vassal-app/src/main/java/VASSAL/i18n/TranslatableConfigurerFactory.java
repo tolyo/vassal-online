@@ -24,6 +24,4 @@ import VASSAL.configure.ConfigurerFactory;
  * will
  */
 @FunctionalInterface
-public interface TranslatableConfigurerFactory extends ConfigurerFactory {
-
-}
+public interface TranslatableConfigurerFactory extends ConfigurerFactory {}

@@ -25,11 +25,10 @@ import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.FormattedString;
 
 /**
- * Increments a property by a given value.
- * The value can be specified as a FormattedString property and evaluated at runtime
+ * Increments a property by a given value. The value can be specified as a FormattedString property
+ * and evaluated at runtime
  *
  * @author rkinney
- *
  */
 public class IncrementProperty implements PropertyChanger {
   protected Constraints constraints;
@@ -61,13 +60,15 @@ public class IncrementProperty implements PropertyChanger {
     try {
       if (oldValue == null || oldValue.length() == 0) {
         value = 0;
-      }
-      else {
+      } else {
         value = Integer.parseInt(oldValue);
       }
-    }
-    catch (final NumberFormatException e) {
-      ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Error.non_number_error"), "Increment " + prop.getName() + ": oldValue " + "=" + oldValue, e)); //NON-NLS
+    } catch (final NumberFormatException e) {
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              Resources.getString("Error.non_number_error"),
+              "Increment " + prop.getName() + ": oldValue " + "=" + oldValue,
+              e)); // NON-NLS
       return oldValue;
     }
 
@@ -76,10 +77,11 @@ public class IncrementProperty implements PropertyChanger {
     try {
       final String s = format.getText(getTargetPropertySource(), constraints, audit);
       final int incr = Integer.parseInt(s);
-      if (!constraints.isNumeric()) { // Don't apply hidden constraints that have been "turned off" by module designer unchecking the numeric box
+      if (!constraints
+          .isNumeric()) { // Don't apply hidden constraints that have been "turned off" by module
+        // designer unchecking the numeric box
         value += incr;
-      }
-      else if (constraints.isWrap()) {
+      } else if (constraints.isWrap()) {
         final int min = constraints.getMinimumValue();
         final int max = constraints.getMaximumValue();
         final int range = max - min + 1;
@@ -87,17 +89,25 @@ public class IncrementProperty implements PropertyChanger {
         // why we add range and mod a second time to ensure that the
         // result is in [0,range).
         value = min + ((value - min + incr) % range + range) % range;
-      }
-      else {
+      } else {
         value += incr;
         value = Math.min(constraints.getMaximumValue(), value);
         value = Math.max(constraints.getMinimumValue(), value);
       }
       return String.valueOf(value);
-    }
-    catch (final NumberFormatException e) {
-      ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Error.non_number_error"),
-        "Increment " + prop.getName() + ": format=" + format.getFormat() + ", value=" + format.getText(constraints, constraints, audit), e, constraints, audit)); //NON-NLS
+    } catch (final NumberFormatException e) {
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              Resources.getString("Error.non_number_error"),
+              "Increment "
+                  + prop.getName()
+                  + ": format="
+                  + format.getFormat()
+                  + ", value="
+                  + format.getText(constraints, constraints, audit),
+              e,
+              constraints,
+              audit)); // NON-NLS
       return oldValue;
     }
   }
@@ -112,9 +122,13 @@ public class IncrementProperty implements PropertyChanger {
 
   public interface Constraints extends PropertySource {
     int getMinimumValue();
+
     int getMaximumValue();
+
     boolean isNumeric();
+
     boolean isWrap();
+
     PropertySource getPropertySource();
   }
 }

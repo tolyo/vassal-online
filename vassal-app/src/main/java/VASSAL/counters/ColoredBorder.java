@@ -54,8 +54,7 @@ public class ColoredBorder implements Highlighter {
   }
 
   @Override
-  public void draw(GamePiece p, Graphics g, int x, int y,
-                   Component obs, double zoom) {
+  public void draw(GamePiece p, Graphics g, int x, int y, Component obs, double zoom) {
     if (thickness > 0) {
       if (c != null) {
         // Find the border by outsetting the bounding box, and then scaling
@@ -72,14 +71,12 @@ public class ColoredBorder implements Highlighter {
 
           final Graphics2D g2d = (Graphics2D) g;
           final Stroke str = g2d.getStroke();
-          g2d.setStroke(
-            new BasicStroke(Math.max(1, Math.round(zoom * thickness))));
+          g2d.setStroke(new BasicStroke(Math.max(1, Math.round(zoom * thickness))));
           g2d.setColor(c);
           g2d.draw(t.createTransformedShape(s));
           g2d.setStroke(str);
         }
-      }
-      else {
+      } else {
         highlightSelectionBounds(p, g, x, y, obs, zoom);
       }
     }
@@ -90,14 +87,16 @@ public class ColoredBorder implements Highlighter {
     }
   }
 
-  protected void highlightSelectionBounds(GamePiece p, Graphics g, int x, int y, Component obs, double zoom) {
+  protected void highlightSelectionBounds(
+      GamePiece p, Graphics g, int x, int y, Component obs, double zoom) {
     final Rectangle r = p.getShape().getBounds();
     g.setColor(c);
     for (int i = 1; i < thickness; ++i)
-      g.drawRect(x + (int) (zoom * r.x) - i,
-                 y + (int) (zoom * r.y) - i,
-                 (int) (zoom * r.width) + 2 * i - 1,
-                 (int) (zoom * r.height) + 2 * i - 1);
+      g.drawRect(
+          x + (int) (zoom * r.x) - i,
+          y + (int) (zoom * r.y) - i,
+          (int) (zoom * r.width) + 2 * i - 1,
+          (int) (zoom * r.height) + 2 * i - 1);
   }
 
   @Override

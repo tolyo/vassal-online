@@ -20,16 +20,13 @@ package VASSAL.configure;
 import VASSAL.build.BadDataReport;
 import VASSAL.tools.ColorButton;
 import VASSAL.tools.ErrorDialog;
-
-import javax.swing.JColorChooser;
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import javax.swing.JColorChooser;
+import javax.swing.JPanel;
 
-/**
- * Configurer for {@link Color} values.
- */
+/** Configurer for {@link Color} values. */
 public class ColorConfigurer extends Configurer {
   private JPanel p;
   private ColorButton cb;
@@ -84,49 +81,40 @@ public class ColorConfigurer extends Configurer {
   public static String colorToString(Color c) {
     if (c == null) {
       return "";
-    }
-    else if (c.getTransparency() == c.OPAQUE) {
-      return c.getRed() + ","
-        + c.getGreen() + ","
-        + c.getBlue();
-    }
-    else {
-      return c.getRed() + ","
-        + c.getGreen() + ","
-        + c.getBlue() + ","
-        + c.getAlpha();
+    } else if (c.getTransparency() == c.OPAQUE) {
+      return c.getRed() + "," + c.getGreen() + "," + c.getBlue();
+    } else {
+      return c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "," + c.getAlpha();
     }
   }
 
   public static Color stringToColor(String s) {
-    if (s == null || s.length() == 0 || "null".equals(s)) { //NON-NLS
+    if (s == null || s.length() == 0 || "null".equals(s)) { // NON-NLS
       return null;
     }
 
     try {
-      if (s.startsWith("0X") || s.startsWith("0x")) {  //NON-NLS
+      if (s.startsWith("0X") || s.startsWith("0x")) { // NON-NLS
         return Color.decode(s);
-      }
-      else {
+      } else {
         final StringTokenizer st = new StringTokenizer(s, ",");
         if (st.countTokens() > 3) { // has alpha value
-          return new Color(Integer.parseInt(st.nextToken()),
-                           Integer.parseInt(st.nextToken()),
-                           Integer.parseInt(st.nextToken()),
-                           Integer.parseInt(st.nextToken()));
-        }
-        else { // no alpha
-          return new Color(Integer.parseInt(st.nextToken()),
-                           Integer.parseInt(st.nextToken()),
-                           Integer.parseInt(st.nextToken()));
+          return new Color(
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()));
+        } else { // no alpha
+          return new Color(
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()),
+              Integer.parseInt(st.nextToken()));
         }
       }
-    }
-    catch (NumberFormatException e) {
-      ErrorDialog.dataWarning(new BadDataReport("not an integer", s, e)); //NON-NLS
-    }
-    catch (IllegalArgumentException | NoSuchElementException e) {
-      ErrorDialog.dataWarning(new BadDataReport("bad color", s, e)); //NON-NLS
+    } catch (NumberFormatException e) {
+      ErrorDialog.dataWarning(new BadDataReport("not an integer", s, e)); // NON-NLS
+    } catch (IllegalArgumentException | NoSuchElementException e) {
+      ErrorDialog.dataWarning(new BadDataReport("bad color", s, e)); // NON-NLS
     }
 
     // default to black in case of bad data

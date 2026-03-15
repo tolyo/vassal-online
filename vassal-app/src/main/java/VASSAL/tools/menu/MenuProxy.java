@@ -18,9 +18,9 @@
 
 package VASSAL.tools.menu;
 
+import java.lang.ref.WeakReference;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
-import java.lang.ref.WeakReference;
 
 /**
  * @author Joel Uckelman
@@ -31,8 +31,7 @@ public class MenuProxy extends AbstractParent<JMenu> {
   private char mnemonic = 0;
   private boolean hideIfBlank = false;
 
-  public MenuProxy() {
-  }
+  public MenuProxy() {}
 
   public MenuProxy(boolean hideIfBlank) {
     this.hideIfBlank = hideIfBlank;
@@ -96,7 +95,6 @@ public class MenuProxy extends AbstractParent<JMenu> {
 
     return menu;
   }
-
 
   public void setMnemonic(final char mnemonic) {
     this.mnemonic = mnemonic;

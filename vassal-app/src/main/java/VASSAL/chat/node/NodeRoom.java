@@ -17,29 +17,26 @@
  */
 package VASSAL.chat.node;
 
-import java.util.List;
-import java.util.Properties;
-
 import VASSAL.chat.LockableRoom;
 import VASSAL.chat.Player;
 import VASSAL.chat.SimpleRoom;
 import VASSAL.configure.StringArrayConfigurer;
+import java.util.List;
+import java.util.Properties;
 
-/**
- * Subclass of {@link SimpleRoom} for use on the client side of a hierarchical server
- */
+/** Subclass of {@link SimpleRoom} for use on the client side of a hierarchical server */
 public class NodeRoom extends SimpleRoom implements LockableRoom {
-  public static final String OWNER = "owner"; //$NON-NLS-1$
-  public static final String MEMBERS = "members"; //$NON-NLS-1$
-  public static final String STATUS = "status"; //$NON-NLS-1$
-  public static final String LOCKED = "locked"; //$NON-NLS-1$
+  public static final String OWNER = "owner"; // $NON-NLS-1$
+  public static final String MEMBERS = "members"; // $NON-NLS-1$
+  public static final String STATUS = "status"; // $NON-NLS-1$
+  public static final String LOCKED = "locked"; // $NON-NLS-1$
 
-  private String owner; // The userId (as in GameModule.getUserId() of the player who created the room
+  private String
+      owner; // The userId (as in GameModule.getUserId() of the player who created the room
   private String[] members; // The players who were in the room at the time it was closed;
   private boolean locked; // If locked, no new players may join
 
-  public NodeRoom() {
-  }
+  public NodeRoom() {}
 
   public void setOwner(String owner) {
     this.owner = owner;
@@ -55,8 +52,10 @@ public class NodeRoom extends SimpleRoom implements LockableRoom {
 
   public void setInfo(Properties p) {
     owner = p.getProperty(OWNER, owner);
-    members = StringArrayConfigurer.stringToArray(p.getProperty(MEMBERS, StringArrayConfigurer.arrayToString(members)));
-    locked = "true".equals(p.getProperty(LOCKED)); //$NON-NLS-1$
+    members =
+        StringArrayConfigurer.stringToArray(
+            p.getProperty(MEMBERS, StringArrayConfigurer.arrayToString(members)));
+    locked = "true".equals(p.getProperty(LOCKED)); // $NON-NLS-1$
   }
 
   public Properties getInfo() {
@@ -65,7 +64,7 @@ public class NodeRoom extends SimpleRoom implements LockableRoom {
       p.setProperty(OWNER, owner);
     }
     if (locked) {
-      p.setProperty(LOCKED, "true"); //$NON-NLS-1$
+      p.setProperty(LOCKED, "true"); // $NON-NLS-1$
     }
     if (members != null) {
       p.setProperty(MEMBERS, StringArrayConfigurer.arrayToString(members));
@@ -73,9 +72,7 @@ public class NodeRoom extends SimpleRoom implements LockableRoom {
     return p;
   }
 
-  /**
-   * Set the members to be the list of players currently in the room
-   */
+  /** Set the members to be the list of players currently in the room */
   public void setMembersToCurrentPlayers() {
     final List<Player> l = getPlayerList();
     final NodePlayer[] p = l.toArray(new NodePlayer[0]);

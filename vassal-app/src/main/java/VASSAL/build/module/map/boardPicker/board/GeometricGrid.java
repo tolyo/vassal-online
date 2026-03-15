@@ -21,12 +21,11 @@ import java.awt.geom.Area;
  * at http://www.opensource.org.
  */
 
-/**
- * A Map grid that consists of a regular tiling of shapes
- */
+/** A Map grid that consists of a regular tiling of shapes */
 public interface GeometricGrid extends MapGrid {
   /**
    * Return the Area representing a set of tiles on the grid
+   *
    * @param center the center of the tiles
    * @param range the number of tiles outward from the center to include
    * @return

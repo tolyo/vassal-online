@@ -16,26 +16,23 @@
  */
 package VASSAL.chat.node;
 
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.ChatServerFactory;
 import VASSAL.chat.CommandDecoder;
+import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author rkinney
  */
 public abstract class NodeClientFactory extends ChatServerFactory {
-  private static final Logger logger =
-    LoggerFactory.getLogger(NodeClientFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(NodeClientFactory.class);
 
-  public static final String NODE_TYPE = "node";  //$NON-NLS-1$
-  public static final String NODE_HOST = "nodeHost";  //$NON-NLS-1$
-  public static final String NODE_PORT = "nodePort";  //$NON-NLS-1$
+  public static final String NODE_TYPE = "node"; // $NON-NLS-1$
+  public static final String NODE_HOST = "nodeHost"; // $NON-NLS-1$
+  public static final String NODE_PORT = "nodePort"; // $NON-NLS-1$
 
   protected abstract ChatServerConnection buildServerImpl(Properties param);
 
@@ -48,15 +45,16 @@ public abstract class NodeClientFactory extends ChatServerFactory {
     g.getPrefs().getOption(GameModule.REAL_NAME).fireUpdate();
     g.getPrefs().getOption(GameModule.PERSONAL_INFO).fireUpdate();
 
-    server.addPropertyChangeListener(ChatServerConnection.STATUS, e -> {
-      final String mess = (String) e.getNewValue();
-      GameModule.getGameModule().warn("!<b>" + mess);
-      logger.error(mess);
-    });
+    server.addPropertyChangeListener(
+        ChatServerConnection.STATUS,
+        e -> {
+          final String mess = (String) e.getNewValue();
+          GameModule.getGameModule().warn("!<b>" + mess);
+          logger.error(mess);
+        });
 
     server.addPropertyChangeListener(
-      ChatServerConnection.INCOMING_MSG, new CommandDecoder(g, g::executeIncomingCommand)
-    );
+        ChatServerConnection.INCOMING_MSG, new CommandDecoder(g, g::executeIncomingCommand));
 
     return server;
   }

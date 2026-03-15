@@ -22,11 +22,11 @@ import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
-
 import javax.swing.KeyStroke;
 
 /**
- * Variant on GlobalCommand for use with SetPieceProperty -- instead of sending a key, finds pieces and sets their properties
+ * Variant on GlobalCommand for use with SetPieceProperty -- instead of sending a key, finds pieces
+ * and sets their properties
  */
 public class GlobalSetter extends GlobalCommand {
   private final SetPieceProperty setTrait;
@@ -43,26 +43,39 @@ public class GlobalSetter extends GlobalCommand {
 
   @Override
   public boolean isAbortIfNoCommand() {
-    return false; // Unlike a normal GKC, we aren't actually sending a key, so it's okay if the key command doesn't exist
+    return false; // Unlike a normal GKC, we aren't actually sending a key, so it's okay if the key
+    // command doesn't exist
   }
 
   @Override
-  public GlobalCommandVisitor getVisitor(Command command, PieceFilter filter, KeyStroke keyStroke, AuditTrail audit, Auditable owner, int selectFromDeck) {
+  public GlobalCommandVisitor getVisitor(
+      Command command,
+      PieceFilter filter,
+      KeyStroke keyStroke,
+      AuditTrail audit,
+      Auditable owner,
+      int selectFromDeck) {
     return new SetVisitor(command, filter, keyStroke, audit, owner, selectFromDeck);
   }
 
   protected class SetVisitor extends GlobalCommandVisitor {
-    public SetVisitor(Command command, PieceFilter filter, KeyStroke stroke, AuditTrail audit, Auditable owner, int selectFromDeck) {
+    public SetVisitor(
+        Command command,
+        PieceFilter filter,
+        KeyStroke stroke,
+        AuditTrail audit,
+        Auditable owner,
+        int selectFromDeck) {
       super(command, filter, stroke, audit, owner, selectFromDeck);
     }
 
     @Override
     protected void apply(GamePiece p, boolean visitingDeck) {
 
-    /*
-      If an AuditTrail has been supplied for the evaluation history of the filter up to this point,
-      then clone it for applying to each individual piece.
-     */
+      /*
+       If an AuditTrail has been supplied for the evaluation history of the filter up to this point,
+       then clone it for applying to each individual piece.
+      */
       AuditTrail audit = null;
       if (auditSoFar != null) {
         audit = new AuditTrail(auditSoFar);
@@ -73,14 +86,20 @@ public class GlobalSetter extends GlobalCommand {
         selectedCount++;
 
         if (visitingDeck) {
-          p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY after checking filter
+          p.setProperty(
+              Properties.OBSCURED_BY,
+              p.getProperty(
+                  Properties.OBSCURED_BY_PRE_DRAW)); // Bug 13433 restore correct OBSCURED_BY after
+          // checking filter
         }
 
         command.append(setTrait.makeSetTargetCommand(p));
-      }
-      else {
+      } else {
         if (visitingDeck) {
-          p.setProperty(Properties.OBSCURED_BY, p.getProperty(Properties.OBSCURED_BY_PRE_DRAW));  // Bug 13433 restore correct OBSCURED_BY
+          p.setProperty(
+              Properties.OBSCURED_BY,
+              p.getProperty(
+                  Properties.OBSCURED_BY_PRE_DRAW)); // Bug 13433 restore correct OBSCURED_BY
         }
       }
     }

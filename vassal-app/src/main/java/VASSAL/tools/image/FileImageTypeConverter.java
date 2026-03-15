@@ -18,24 +18,22 @@
 
 package VASSAL.tools.image;
 
+import VASSAL.tools.io.TemporaryFileFactory;
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import VASSAL.tools.io.TemporaryFileFactory;
-import VASSAL.tools.lang.Reference;
-
 /**
- * Convert a {@link BufferedImage} to a different type by caching image
- * data on disk.
+ * Convert a {@link BufferedImage} to a different type by caching image data on disk.
  *
  * @since 3.2.0
  * @author Joel Uckelman
@@ -57,13 +55,12 @@ public class FileImageTypeConverter implements ImageTypeConverter {
   /**
    * {@inheritDoc}
    *
-   * <b>WARNING: When this method is called, the sole reference to the image
-   * must be the one held by <code>ref</code> in order to allow the source
-   * image to be garbage collected after the image data is written to disk.</b>
+   * <p><b>WARNING: When this method is called, the sole reference to the image must be the one held
+   * by <code>ref</code> in order to allow the source image to be garbage collected after the image
+   * data is written to disk.</b>
    */
   @Override
-  public BufferedImage convert(Reference<BufferedImage> ref, int type)
-                                                      throws ImageIOException {
+  public BufferedImage convert(Reference<BufferedImage> ref, int type) throws ImageIOException {
     if (ref == null) throw new IllegalArgumentException();
 
     // This is why we pass the image via a Reference:
@@ -88,19 +85,17 @@ public class FileImageTypeConverter implements ImageTypeConverter {
     final File tmp;
     try {
       tmp = tfactory.create();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ImageIOException("", e);
     }
 
     try {
       // write the converted image data to a file
       try (OutputStream fout = Files.newOutputStream(tmp.toPath());
-           OutputStream gzout = new GZIPOutputStream(fout);
-           OutputStream out = new BufferedOutputStream(gzout)) {
+          OutputStream gzout = new GZIPOutputStream(fout);
+          OutputStream out = new BufferedOutputStream(gzout)) {
         write(src, out);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         throw new ImageIOException(tmp, e);
       }
 
@@ -114,16 +109,14 @@ public class FileImageTypeConverter implements ImageTypeConverter {
 
       // read the converted image data back
       try (InputStream fin = Files.newInputStream(tmp.toPath());
-           InputStream gzin = new GZIPInputStream(fin);
-           InputStream in = new BufferedInputStream(gzin)) {
+          InputStream gzin = new GZIPInputStream(fin);
+          InputStream in = new BufferedInputStream(gzin)) {
         read(in, dst);
         return dst;
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         throw new ImageIOException(tmp, e);
       }
-    }
-    finally {
+    } finally {
       // clean up the temporary file
       if (!tmp.delete()) {
         throw new ImageIOException(tmp, "failed to delete");
@@ -131,8 +124,7 @@ public class FileImageTypeConverter implements ImageTypeConverter {
     }
   }
 
-  protected void write(BufferedImage src, OutputStream out)
-                                                           throws IOException {
+  protected void write(BufferedImage src, OutputStream out) throws IOException {
     final int w = src.getWidth();
     final int h = src.getHeight();
 

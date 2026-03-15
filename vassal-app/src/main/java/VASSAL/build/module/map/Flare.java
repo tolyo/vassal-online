@@ -48,7 +48,6 @@ import VASSAL.tools.FormattedString;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.UniqueIdManager;
 import VASSAL.tools.swing.SwingUtils;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -59,89 +58,125 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
 /**
- * Allows a player to ping a location ("send up a flare") by clicking on a map with the correct modifier key
- * combination held down (default: Alt+LeftClick). Can be shown as an animated colored circle, or a plain one.
- * If reportFormat field is provided, a message is also displayed in the chat log.
+ * Allows a player to ping a location ("send up a flare") by clicking on a map with the correct
+ * modifier key combination held down (default: Alt+LeftClick). Can be shown as an animated colored
+ * circle, or a plain one. If reportFormat field is provided, a message is also displayed in the
+ * chat log.
  *
- * Flare will work with both online play and PBEM play.
+ * <p>Flare will work with both online play and PBEM play.
  */
 public class Flare extends AbstractConfigurable
-        implements CommandEncoder, GameComponent, Drawable, MouseListener, UniqueIdManager.Identifyable, ComponentDescription {
-  private static final char DELIMITER = '\t'; //$NON-NLS-1$
-  public  static final String COMMAND_PREFIX = "FLARE" + DELIMITER; //$NON-NLS-1$
+    implements CommandEncoder,
+        GameComponent,
+        Drawable,
+        MouseListener,
+        UniqueIdManager.Identifyable,
+        ComponentDescription {
+  private static final char DELIMITER = '\t'; // $NON-NLS-1$
+  public static final String COMMAND_PREFIX = "FLARE" + DELIMITER; // $NON-NLS-1$
 
-  protected static final UniqueIdManager idMgr = new UniqueIdManager("Flare"); //$NON-NLS-1$
-  protected String id = "";     // Our unique ID
+  protected static final UniqueIdManager idMgr = new UniqueIdManager("Flare"); // $NON-NLS-1$
+  protected String id = ""; // Our unique ID
 
   // Attributes
-  private int circleSize;       // Maximum circle size in pixels
-  private boolean circleScale;  // If true, scale circle to map zoom
-  private int pulses;           // How many total "pulses" to animate, or 0 for steady w/o animation
-  private int pulsesPerSec;     // How many pulses per second, or 0 for steady w/o animation
-  private String flareKey;      // Configures which set of modifier keys and click will produce the flare
-  private Color color;          // Color for the flare circle
-  private FormattedString reportFormat = new FormattedString(); // Report format for reporting the flare to the chat log
-  private String description;   // Description
+  private int circleSize; // Maximum circle size in pixels
+  private boolean circleScale; // If true, scale circle to map zoom
+  private int pulses; // How many total "pulses" to animate, or 0 for steady w/o animation
+  private int pulsesPerSec; // How many pulses per second, or 0 for steady w/o animation
+  private String flareKey; // Configures which set of modifier keys and click will produce the flare
+  private Color color; // Color for the flare circle
+  private FormattedString reportFormat =
+      new FormattedString(); // Report format for reporting the flare to the chat log
+  private String description; // Description
 
   // Internal properties
-  private Map map;                  // The map for this Flare
-  private Point clickPoint;         // Clicked point where this Flare is to appear
-  private boolean animate;          // Internal flag if we should be animating
-  private volatile boolean active;  // Internal flag if we're currently active
+  private Map map; // The map for this Flare
+  private Point clickPoint; // Clicked point where this Flare is to appear
+  private boolean animate; // Internal flag if we should be animating
+  private volatile boolean active; // Internal flag if we're currently active
 
   // Attribute names
-  public static final String CIRCLE_SIZE    = "circleSize";         //$NON-NLS-1$
-  public static final String CIRCLE_SCALE   = "circleScale";        //$NON-NLS-1$
-  public static final String CIRCLE_COLOR   = "circleColor";        //$NON-NLS-1$
-  public static final String FLARE_KEY      = "flareKey";           //$NON-NLS-1$
-  public static final String PULSES         = "flarePulses";        //$NON-NLS-1$
-  public static final String PULSES_PER_SEC = "flarePulsesPerSec";  //$NON-NLS-1$
-  public static final String REPORT_FORMAT  = "reportFormat";       //$NON-NLS-1$
-  public static final String NAME           = "flareName";          //$NON-NLS-1$
-  public static final String NO_ANIMATION = "noFlareAnimation";     //$NON-NLS-1$
-  public static final String DESCRIPTION    = "description";        //NON-NLS
+  public static final String CIRCLE_SIZE = "circleSize"; // $NON-NLS-1$
+  public static final String CIRCLE_SCALE = "circleScale"; // $NON-NLS-1$
+  public static final String CIRCLE_COLOR = "circleColor"; // $NON-NLS-1$
+  public static final String FLARE_KEY = "flareKey"; // $NON-NLS-1$
+  public static final String PULSES = "flarePulses"; // $NON-NLS-1$
+  public static final String PULSES_PER_SEC = "flarePulsesPerSec"; // $NON-NLS-1$
+  public static final String REPORT_FORMAT = "reportFormat"; // $NON-NLS-1$
+  public static final String NAME = "flareName"; // $NON-NLS-1$
+  public static final String NO_ANIMATION = "noFlareAnimation"; // $NON-NLS-1$
+  public static final String DESCRIPTION = "description"; // NON-NLS
 
   // Friendly (localizable) names for modifier key combinations
-  public static final String FLARE_ALT_LOCAL       = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.alt"));                       //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_CTRL_LOCAL      = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.ctrl"));                      //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_COMMAND_LOCAL   = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.meta"));                      //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_ALT_SHIFT_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.alt_shift"));                 //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_SHIFT_COMMAND_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.shift_command"));         //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_CTRL_SHIFT_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.ctrl_shift"));               //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_ALT_COMMAND_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.alt_command"));             //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_CTRL_ALT_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.ctrl_alt"));                   //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_ALT_SHIFT_COMMAND_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.alt_shift_command")); //$NON-NLS-1$ //$NON-NLS-2$
-  public static final String FLARE_CTRL_ALT_SHIFT_LOCAL = Resources.getString("Editor.Flare.flare_key_desc", Resources.getString("Keys.ctrl_alt_shift"));       //$NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_ALT_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.alt")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_CTRL_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.ctrl")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_COMMAND_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.meta")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_ALT_SHIFT_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.alt_shift")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_SHIFT_COMMAND_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.shift_command")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_CTRL_SHIFT_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.ctrl_shift")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_ALT_COMMAND_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.alt_command")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_CTRL_ALT_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.ctrl_alt")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_ALT_SHIFT_COMMAND_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.alt_shift_command")); // $NON-NLS-1$ //$NON-NLS-2$
+  public static final String FLARE_CTRL_ALT_SHIFT_LOCAL =
+      Resources.getString(
+          "Editor.Flare.flare_key_desc",
+          Resources.getString("Keys.ctrl_alt_shift")); // $NON-NLS-1$ //$NON-NLS-2$
 
   // The modifier key codes we actually store
-  public static final String FLARE_ALT            = "keyAlt";          //$NON-NLS-1$
-  public static final String FLARE_CTRL           = "keyCtrl";         //$NON-NLS-1$
-  public static final String FLARE_ALT_SHIFT      = "keyAltShift";     //$NON-NLS-1$
-  public static final String FLARE_CTRL_SHIFT     = "keyCtrlShift";    //$NON-NLS-1$
-  public static final String FLARE_CTRL_ALT       = "keyCtrlAlt";      //$NON-NLS-1$
-  public static final String FLARE_CTRL_ALT_SHIFT = "keyCtrlAltShift"; //$NON-NLS-1$
+  public static final String FLARE_ALT = "keyAlt"; // $NON-NLS-1$
+  public static final String FLARE_CTRL = "keyCtrl"; // $NON-NLS-1$
+  public static final String FLARE_ALT_SHIFT = "keyAltShift"; // $NON-NLS-1$
+  public static final String FLARE_CTRL_SHIFT = "keyCtrlShift"; // $NON-NLS-1$
+  public static final String FLARE_CTRL_ALT = "keyCtrlAlt"; // $NON-NLS-1$
+  public static final String FLARE_CTRL_ALT_SHIFT = "keyCtrlAltShift"; // $NON-NLS-1$
 
   // Special properties for our FormattedString reportFormat
-  public static final String FLARE_NAME           = "FlareName";       //$NON-NLS-1$
-  public static final String FLARE_LOCATION       = "FlareLocation";   //$NON-NLS-1$
-  public static final String FLARE_ZONE           = "FlareZone";       //$NON-NLS-1$
-  public static final String FLARE_MAP            = "FlareMap";        //$NON-NLS-1$
+  public static final String FLARE_NAME = "FlareName"; // $NON-NLS-1$
+  public static final String FLARE_LOCATION = "FlareLocation"; // $NON-NLS-1$
+  public static final String FLARE_ZONE = "FlareZone"; // $NON-NLS-1$
+  public static final String FLARE_MAP = "FlareMap"; // $NON-NLS-1$
 
   private static final int STROKE = 3;
 
   public Flare() {
-    circleSize   = 100;
-    circleScale  = true;
-    color        = Color.RED;
-    active       = false;
-    flareKey     = FLARE_ALT;
-    pulses       = 6;
+    circleSize = 100;
+    circleScale = true;
+    color = Color.RED;
+    active = false;
+    flareKey = FLARE_ALT;
+    pulses = 6;
     pulsesPerSec = 3;
     setConfigureName(Resources.getString("Editor.Flare.desc"));
   }
@@ -158,7 +193,7 @@ public class Flare extends AbstractConfigurable
    * @return String name of component class. The part in [..] in the Editor.
    */
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.Flare.configure"); //$NON-NLS-1$
+    return Resources.getString("Editor.Flare.configure"); // $NON-NLS-1$
   }
 
   /**
@@ -169,7 +204,9 @@ public class Flare extends AbstractConfigurable
   }
 
   /**
-   * Attribute types for this component's buildFile (xml) entry. These launch the proper configurers when the component is edited in the Editor.
+   * Attribute types for this component's buildFile (xml) entry. These launch the proper configurers
+   * when the component is edited in the Editor.
+   *
    * @return list of classes for attributes
    */
   @Override
@@ -189,6 +226,7 @@ public class Flare extends AbstractConfigurable
 
   /**
    * Attribute names for this component's buildFile (xml) entry.
+   *
    * @return list of names for attributes
    */
   @Override
@@ -207,21 +245,23 @@ public class Flare extends AbstractConfigurable
   }
 
   /**
-   * Attribute names for this component's buildFile (xml) entry. These show up in the Editor next to the configurers for each attribute.
+   * Attribute names for this component's buildFile (xml) entry. These show up in the Editor next to
+   * the configurers for each attribute.
+   *
    * @return list of names for attributes
    */
   @Override
   public String[] getAttributeDescriptions() {
     return new String[] {
-      Resources.getString("Editor.name_label"), //$NON-NLS-1$
+      Resources.getString("Editor.name_label"), // $NON-NLS-1$
       Resources.getString(Resources.DESCRIPTION),
-      Resources.getString("Editor.Flare.flare_key"), //$NON-NLS-1$
-      Resources.getString("Editor.Flare.circle_size"), //$NON-NLS-1$
-      Resources.getString("Editor.Flare.circle_color"), //$NON-NLS-1$
-      Resources.getString("Editor.Flare.circle_scale"), //$NON-NLS-1$
-      Resources.getString("Editor.Flare.pulses"), //$NON-NLS-1$
-      Resources.getString("Editor.Flare.pulses_per_sec"), //$NON-NLS-1$
-      Resources.getString("Editor.report_format") //$NON-NLS-1$
+      Resources.getString("Editor.Flare.flare_key"), // $NON-NLS-1$
+      Resources.getString("Editor.Flare.circle_size"), // $NON-NLS-1$
+      Resources.getString("Editor.Flare.circle_color"), // $NON-NLS-1$
+      Resources.getString("Editor.Flare.circle_scale"), // $NON-NLS-1$
+      Resources.getString("Editor.Flare.pulses"), // $NON-NLS-1$
+      Resources.getString("Editor.Flare.pulses_per_sec"), // $NON-NLS-1$
+      Resources.getString("Editor.report_format") // $NON-NLS-1$
     };
   }
 
@@ -229,36 +269,27 @@ public class Flare extends AbstractConfigurable
    * Gets current attribute value in string form.
    *
    * @param key - attribute name
-   *
    * @return current the value of one of this component's attributes, in string form.
    */
   @Override
   public String getAttributeValueString(final String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (FLARE_KEY.equals(key)) {
+    } else if (FLARE_KEY.equals(key)) {
       return flareKey;
-    }
-    else if (CIRCLE_SIZE.equals(key)) {
+    } else if (CIRCLE_SIZE.equals(key)) {
       return String.valueOf(circleSize);
-    }
-    else if (CIRCLE_COLOR.equals(key)) {
+    } else if (CIRCLE_COLOR.equals(key)) {
       return ColorConfigurer.colorToString(color);
-    }
-    else if (CIRCLE_SCALE.equals(key)) {
+    } else if (CIRCLE_SCALE.equals(key)) {
       return String.valueOf(circleScale);
-    }
-    else if (PULSES.equals(key)) {
+    } else if (PULSES.equals(key)) {
       return String.valueOf(pulses);
-    }
-    else if (PULSES_PER_SEC.equals(key)) {
+    } else if (PULSES_PER_SEC.equals(key)) {
       return String.valueOf(pulsesPerSec);
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       return reportFormat.getFormat();
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
     }
     return null;
@@ -268,96 +299,80 @@ public class Flare extends AbstractConfigurable
    * Sets the value of one of this component's attributes.
    *
    * @param key the name of the attribute
-   *
    * @param value new value for attribute. Can pass either the Object itself or the String version.
    */
   @Override
   public void setAttribute(String key, Object value) {
     if (NAME.equals(key)) {
       setConfigureName((String) value);
-    }
-    else if (FLARE_KEY.equals(key)) {
+    } else if (FLARE_KEY.equals(key)) {
       if (FLARE_ALT_LOCAL.equals(value)) {
         flareKey = FLARE_ALT;
-      }
-      else if (FLARE_COMMAND_LOCAL.equals(value) || FLARE_CTRL_LOCAL.equals(value)) {
+      } else if (FLARE_COMMAND_LOCAL.equals(value) || FLARE_CTRL_LOCAL.equals(value)) {
         flareKey = FLARE_CTRL;
-      }
-      else if (FLARE_ALT_SHIFT_LOCAL.equals(value)) {
+      } else if (FLARE_ALT_SHIFT_LOCAL.equals(value)) {
         flareKey = FLARE_ALT_SHIFT;
-      }
-      else if (FLARE_SHIFT_COMMAND_LOCAL.equals(value) || FLARE_CTRL_SHIFT_LOCAL.equals(value)) {
+      } else if (FLARE_SHIFT_COMMAND_LOCAL.equals(value) || FLARE_CTRL_SHIFT_LOCAL.equals(value)) {
         flareKey = FLARE_CTRL_SHIFT;
-      }
-      else if (FLARE_ALT_COMMAND_LOCAL.equals(value) || FLARE_CTRL_ALT_LOCAL.equals(value)) {
+      } else if (FLARE_ALT_COMMAND_LOCAL.equals(value) || FLARE_CTRL_ALT_LOCAL.equals(value)) {
         flareKey = FLARE_CTRL_ALT;
-      }
-      else if (FLARE_ALT_SHIFT_COMMAND_LOCAL.equals(value) || FLARE_CTRL_ALT_SHIFT_LOCAL.equals(value)) {
+      } else if (FLARE_ALT_SHIFT_COMMAND_LOCAL.equals(value)
+          || FLARE_CTRL_ALT_SHIFT_LOCAL.equals(value)) {
         flareKey = FLARE_CTRL_ALT_SHIFT;
-      }
-      else {
+      } else {
         flareKey = (String) value;
       }
-    }
-    else if (CIRCLE_SIZE.equals(key)) {
+    } else if (CIRCLE_SIZE.equals(key)) {
       if (value instanceof String) {
         circleSize = Integer.parseInt((String) value);
-      }
-      else if (value instanceof Integer) {
+      } else if (value instanceof Integer) {
         circleSize = (Integer) value;
       }
-    }
-    else if (CIRCLE_COLOR.equals(key)) {
+    } else if (CIRCLE_COLOR.equals(key)) {
       if (value instanceof String) {
         value = ColorConfigurer.stringToColor((String) value);
       }
-      color = (Color)value;
-    }
-    else if (CIRCLE_SCALE.equals(key)) {
+      color = (Color) value;
+    } else if (CIRCLE_SCALE.equals(key)) {
       if (value instanceof String) {
         value = Boolean.valueOf((String) value);
       }
-      circleScale = (Boolean)value;
-    }
-    else if (PULSES.equals(key)) {
+      circleScale = (Boolean) value;
+    } else if (PULSES.equals(key)) {
       if (value instanceof String) {
         pulses = Integer.parseInt((String) value);
-      }
-      else {
+      } else {
         pulses = (Integer) value;
       }
-    }
-    else if (PULSES_PER_SEC.equals(key)) {
+    } else if (PULSES_PER_SEC.equals(key)) {
       if (value instanceof String) {
         pulsesPerSec = Integer.parseInt((String) value);
-      }
-      else {
+      } else {
         pulsesPerSec = (Integer) value;
       }
-    }
-    else if (REPORT_FORMAT.equals(key)) {
+    } else if (REPORT_FORMAT.equals(key)) {
       if (value instanceof String) {
-        reportFormat.setFormat((String)value);
+        reportFormat.setFormat((String) value);
+      } else {
+        reportFormat = (FormattedString) value;
       }
-      else {
-        reportFormat = (FormattedString)value;
-      }
-    }
-    else if (DESCRIPTION.equals(key)) {
-      description = (String)value;
+    } else if (DESCRIPTION.equals(key)) {
+      description = (String) value;
     }
   }
 
   /**
-   * @return Help file for this component, accessed when "Help" button in Editor is clicked while configuring component.
+   * @return Help file for this component, accessed when "Help" button in Editor is clicked while
+   *     configuring component.
    */
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("Flare.html");  //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("Flare.html"); // $NON-NLS-1$
   }
 
   /**
    * Adds this component to a Buildable component. In this case, a Map.
+   *
    * @param parent - the Map to add the Flare to.
    */
   @Override
@@ -365,7 +380,7 @@ public class Flare extends AbstractConfigurable
     idMgr.add(this);
 
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
 
     if (parent instanceof Map) {
@@ -376,29 +391,30 @@ public class Flare extends AbstractConfigurable
       map.addDrawComponent(this);
       map.addLocalMouseListener(this);
 
-      g.getPrefs().addOption(
-        Resources.getString("Prefs.general_tab"), // $NON-NLS-1$
-        new BooleanConfigurer(
-          NO_ANIMATION,
-          Resources.getString("Flare.no_animation"), // $NON-NLS-1$
-          Boolean.FALSE
-        )
-      );
-    }
-    else {
-      ErrorDialog.dataWarning(new BadDataReport("Flare - can only be added to a Map. ", //NON-NLS
-                                                 reportFormat.getFormat()));
+      g.getPrefs()
+          .addOption(
+              Resources.getString("Prefs.general_tab"), // $NON-NLS-1$
+              new BooleanConfigurer(
+                  NO_ANIMATION,
+                  Resources.getString("Flare.no_animation"), // $NON-NLS-1$
+                  Boolean.FALSE));
+    } else {
+      ErrorDialog.dataWarning(
+          new BadDataReport(
+              "Flare - can only be added to a Map. ", // NON-NLS
+              reportFormat.getFormat()));
     }
   }
 
   /**
    * Removes this component from a Buildable parent.
+   *
    * @param parent - the Map to remove the Flare from.
    */
   @Override
   public void removeFrom(Buildable parent) {
     if (parent instanceof AbstractFolder) {
-      parent = ((AbstractFolder)parent).getNonFolderAncestor();
+      parent = ((AbstractFolder) parent).getNonFolderAncestor();
     }
     if (parent instanceof Map) {
       GameModule.getGameModule().removeCommandEncoder(this);
@@ -410,53 +426,58 @@ public class Flare extends AbstractConfigurable
 
   private volatile float animfrac;
 
-  /**
-   * Repaint only the necessary area
-   */
+  /** Repaint only the necessary area */
   private void repaintArea() {
-    map.repaint(new Rectangle(
-      (int)(clickPoint.x - circleSize / 2.0 - 2 * STROKE * os_scale),
-      (int)(clickPoint.y - circleSize / 2.0 - 2 * STROKE * os_scale),
-      (int)(circleSize + 4 * STROKE * os_scale + 0.5),
-      (int)(circleSize + 4 * STROKE * os_scale + 0.5)
-    ));
+    map.repaint(
+        new Rectangle(
+            (int) (clickPoint.x - circleSize / 2.0 - 2 * STROKE * os_scale),
+            (int) (clickPoint.y - circleSize / 2.0 - 2 * STROKE * os_scale),
+            (int) (circleSize + 4 * STROKE * os_scale + 0.5),
+            (int) (circleSize + 4 * STROKE * os_scale + 0.5)));
   }
 
   /**
-   * Animator to loop the Flare animation. Use the LOOP behavior so that it's always shrinking bullseye rings.
+   * Animator to loop the Flare animation. Use the LOOP behavior so that it's always shrinking
+   * bullseye rings.
    */
-  private final Animator animator = new Animator(0, 1, Animator.RepeatBehavior.LOOP, new TimingTargetAdapter() {
-    @Override
-    public void begin() {
-      active = true;
-      animfrac = 0.0f;
-      repaintArea();
-    }
+  private final Animator animator =
+      new Animator(
+          0,
+          1,
+          Animator.RepeatBehavior.LOOP,
+          new TimingTargetAdapter() {
+            @Override
+            public void begin() {
+              active = true;
+              animfrac = 0.0f;
+              repaintArea();
+            }
 
-    /**
-     * Animator tells us when to update the image.
-     * @param fraction Animator lets us know how far we are through our cycle
-     */
-    @Override
-    public void timingEvent(float fraction) {
-      animfrac = fraction;
-      repaintArea();
-    }
+            /**
+             * Animator tells us when to update the image.
+             *
+             * @param fraction Animator lets us know how far we are through our cycle
+             */
+            @Override
+            public void timingEvent(float fraction) {
+              animfrac = fraction;
+              repaintArea();
+            }
 
-    /**
-     * Animator tells us we're done.
-     */
-    @Override
-    public void end() {
-      active = false;
-      repaintArea();
-    }
-  });
+            /** Animator tells us we're done. */
+            @Override
+            public void end() {
+              active = false;
+              repaintArea();
+            }
+          });
 
   /**
    * Start the Flare animation.
-   * @param isLocal - true if this Flare was launched on this client (i.e. by this player). Otherwise, center on
-   *                  the ping location if user preferences are set for centering on opponent moves.
+   *
+   * @param isLocal - true if this Flare was launched on this client (i.e. by this player).
+   *     Otherwise, center on the ping location if user preferences are set for centering on
+   *     opponent moves.
    */
   public void startAnimation(final boolean isLocal) {
     if (map == null) {
@@ -478,6 +499,7 @@ public class Flare extends AbstractConfigurable
 
   /**
    * Draw the Flare at current animation frame
+   *
    * @param g - Graphics
    * @param map - Map component
    */
@@ -504,17 +526,17 @@ public class Flare extends AbstractConfigurable
 
     // draw a circle around the selected point
     g2d.setColor(color);
-    g2d.setStroke(new BasicStroke((float)(STROKE * os_scale)));
+    g2d.setStroke(new BasicStroke((float) (STROKE * os_scale)));
     g2d.drawOval(
-      (int)(p.x - diameter / 2.0),
-      (int)(p.y - diameter / 2.0),
-      (int)(diameter + 0.5),
-      (int)(diameter + 0.5)
-    );
+        (int) (p.x - diameter / 2.0),
+        (int) (p.y - diameter / 2.0),
+        (int) (diameter + 0.5),
+        (int) (diameter + 0.5));
   }
 
   /**
    * Flare is always drawn above counters
+   *
    * @return true
    */
   @Override
@@ -524,6 +546,7 @@ public class Flare extends AbstractConfigurable
 
   /**
    * Serializes Flare commands into string form.
+   *
    * @param c Command
    * @return String version of Flare Command, or null if not a Flare Command.
    */
@@ -532,9 +555,7 @@ public class Flare extends AbstractConfigurable
     if (c instanceof FlareCommand) {
       final FlareCommand fc = (FlareCommand) c;
       final SequenceEncoder se = new SequenceEncoder(DELIMITER);
-      se.append(fc.getId())
-        .append(fc.getClickPoint().x)
-        .append(fc.getClickPoint().y);
+      se.append(fc.getId()).append(fc.getClickPoint().x).append(fc.getClickPoint().y);
       return COMMAND_PREFIX + se.getValue();
     }
     return null;
@@ -542,12 +563,14 @@ public class Flare extends AbstractConfigurable
 
   /**
    * Deserializes string command info into a Flare Command.
+   *
    * @param s String for a Flare Command
    * @return Flare Command object
    */
   @Override
   public Command decode(final String s) {
-    if (s.startsWith(COMMAND_PREFIX + getId() + DELIMITER)) { // Make sure this command is for this flare
+    if (s.startsWith(
+        COMMAND_PREFIX + getId() + DELIMITER)) { // Make sure this command is for this flare
       final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s, DELIMITER);
       sd.nextToken(); // Skip over the Command Prefix
       sd.nextToken(); // Skip over the Id
@@ -568,12 +591,13 @@ public class Flare extends AbstractConfigurable
    * @param e MouseEvent
    */
   @Override
-  public void mouseClicked(final MouseEvent e) {
-  }
+  public void mouseClicked(final MouseEvent e) {}
 
   /**
-   * Check for our modifier key, and if so launch a Flare sequence on our map, and send a command to other players' along
-   * with a Chat Log message if a Report Format has been specified in the component.
+   * Check for our modifier key, and if so launch a Flare sequence on our map, and send a command to
+   * other players' along with a Chat Log message if a Report Format has been specified in the
+   * component.
+   *
    * @param e - a MouseEvent
    */
   @Override
@@ -585,28 +609,23 @@ public class Flare extends AbstractConfigurable
       if (!SwingUtils.isSelectionToggle(e) || e.isAltDown() || e.isShiftDown()) {
         return;
       }
-    }
-    else if (FLARE_ALT.equals(flareKey)) {
+    } else if (FLARE_ALT.equals(flareKey)) {
       if (!e.isAltDown() || e.isShiftDown() || SwingUtils.isSelectionToggle(e)) {
         return;
       }
-    }
-    else if (FLARE_ALT_SHIFT.equals(flareKey)) {
+    } else if (FLARE_ALT_SHIFT.equals(flareKey)) {
       if (!e.isAltDown() || !e.isShiftDown() || SwingUtils.isSelectionToggle(e)) {
         return;
       }
-    }
-    else if (FLARE_CTRL_SHIFT.equals(flareKey)) {
+    } else if (FLARE_CTRL_SHIFT.equals(flareKey)) {
       if (!e.isShiftDown() || !SwingUtils.isSelectionToggle(e) || e.isAltDown()) {
         return;
       }
-    }
-    else if (FLARE_CTRL_ALT.equals(flareKey)) {
+    } else if (FLARE_CTRL_ALT.equals(flareKey)) {
       if (!e.isAltDown() || !SwingUtils.isSelectionToggle(e) || e.isShiftDown()) {
         return;
       }
-    }
-    else if (FLARE_CTRL_ALT_SHIFT.equals(flareKey)) {
+    } else if (FLARE_CTRL_ALT_SHIFT.equals(flareKey)) {
       if (!e.isAltDown() || !e.isShiftDown() || !SwingUtils.isSelectionToggle(e)) {
         return;
       }
@@ -623,7 +642,12 @@ public class Flare extends AbstractConfigurable
     final Zone z = map.findZone(clickPoint);
     reportFormat.setProperty(FLARE_ZONE, (z != null) ? z.getName() : "");
     reportFormat.setProperty(FLARE_MAP, map.getMapName());
-    final String reportText = reportFormat.getLocalizedText(map, this, "Editor.report_format"); // Map and global properties also available (e.g. PlayerName, PlayerSide)
+    final String reportText =
+        reportFormat.getLocalizedText(
+            map,
+            this,
+            "Editor.report_format"); // Map and global properties also available (e.g. PlayerName,
+    // PlayerSide)
     if (!reportText.isBlank()) {
       c = new Chatter.DisplayText(mod.getChatter(), "* " + reportText);
       c.execute();
@@ -641,33 +665,29 @@ public class Flare extends AbstractConfigurable
    * @param e MouseEvent
    */
   @Override
-  public void mouseReleased(final MouseEvent e) {
-  }
+  public void mouseReleased(final MouseEvent e) {}
 
   /**
    * @param e MouseEvent
    */
   @Override
-  public void mouseEntered(final MouseEvent e) {
-  }
+  public void mouseEntered(final MouseEvent e) {}
 
   /**
    * @param e MouseEvent
    */
   @Override
-  public void mouseExited(final MouseEvent e) {
-  }
+  public void mouseExited(final MouseEvent e) {}
 
   /**
    * @param gameStarting true if starting a game, false if ending one
    */
   @Override
-  public void setup(final boolean gameStarting) {
-  }
+  public void setup(final boolean gameStarting) {}
 
   /**
-   * @return Theoretically returns the command to "restore" this from a saved game or when adding a new player, but of
-   * course Flare doesn't need to be "restored", so null.
+   * @return Theoretically returns the command to "restore" this from a saved game or when adding a
+   *     new player, but of course Flare doesn't need to be "restored", so null.
    */
   @Override
   public Command getRestoreCommand() {
@@ -676,6 +696,7 @@ public class Flare extends AbstractConfigurable
 
   /**
    * Record our clicked point on the map
+   *
    * @param p - point where player clicked and where flare should be shown
    */
   public void setClickPoint(final Point p) {
@@ -690,8 +711,9 @@ public class Flare extends AbstractConfigurable
   }
 
   /**
-   * Sets our unique ID (among Flares), so that multiple Flares don't inadvertently start each other when we
-   * send commands to other clients.
+   * Sets our unique ID (among Flares), so that multiple Flares don't inadvertently start each other
+   * when we send commands to other clients.
+   *
    * @param id Sets our unique ID
    */
   @Override
@@ -707,9 +729,7 @@ public class Flare extends AbstractConfigurable
     return id;
   }
 
-  /**
-   * A configurer for different combinations of modifier key
-   */
+  /** A configurer for different combinations of modifier key */
   public static class FlareKeyConfig extends TranslatableStringEnum {
     @Override
     public String[] getValidValues(AutoConfigurable target) {
@@ -725,7 +745,7 @@ public class Flare extends AbstractConfigurable
 
     @Override
     public String[] getI18nKeys(AutoConfigurable target) {
-      //final boolean macLegacy = GlobalOptions.getInstance().getPrefMacLegacy();
+      // final boolean macLegacy = GlobalOptions.getInstance().getPrefMacLegacy();
       return new String[] {
         FLARE_ALT_LOCAL,
         SystemUtils.IS_OS_MAC ? FLARE_COMMAND_LOCAL : FLARE_CTRL_LOCAL,
@@ -743,8 +763,8 @@ public class Flare extends AbstractConfigurable
   }
 
   /**
-   * A configurer for our reportFormat, which includes the unique $FlareLocation$, $FlareZone$, $FlareMap$ properties as
-   * well as $PlayerName$ and $PlayerSide$ in the "Insert" pulldown.
+   * A configurer for our reportFormat, which includes the unique $FlareLocation$, $FlareZone$,
+   * $FlareMap$ properties as well as $PlayerName$ and $PlayerSide$ in the "Insert" pulldown.
    */
   public static class ReportFormatConfig implements TranslatableConfigurerFactory {
     @Override
@@ -755,7 +775,9 @@ public class Flare extends AbstractConfigurable
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Message Format strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Message Format strings referenced in the Configurable, if any (for
+   *     search)
    */
   @Override
   public List<String> getFormattedStringList() {
@@ -763,7 +785,8 @@ public class Flare extends AbstractConfigurable
   }
 
   /**
-   * In case reports use HTML and  refer to any image files
+   * In case reports use HTML and refer to any image files
+   *
    * @param s Collection to add image names to
    */
   @Override

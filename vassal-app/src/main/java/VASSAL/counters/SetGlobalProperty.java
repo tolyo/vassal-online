@@ -36,24 +36,20 @@ import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.SequenceEncoder;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.JLabel;
-import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JLabel;
+import javax.swing.KeyStroke;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- *
  * @author Brent Easton
- *
- * A trait that allows counters to manipulate the value of Global properties.
- * Uses the Property manipulation functionality of DynamicPropert, but
- * applies them to Global Properties.
+ *     <p>A trait that allows counters to manipulate the value of Global properties. Uses the
+ *     Property manipulation functionality of DynamicPropert, but applies them to Global Properties.
  */
 public class SetGlobalProperty extends DynamicProperty {
   protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -76,7 +72,8 @@ public class SetGlobalProperty extends DynamicProperty {
 
   @Override
   public String getDescription() {
-    return buildDescription("Editor.SetGlobalProperty.trait_description", key, description) + getCommandsList();
+    return buildDescription("Editor.SetGlobalProperty.trait_description", key, description)
+        + getCommandsList();
   }
 
   @Override
@@ -98,9 +95,10 @@ public class SetGlobalProperty extends DynamicProperty {
     keyCommandListConfig.setValue(sd.nextToken(""));
     keyCommands = keyCommandListConfig.getListValue().toArray(new DynamicKeyCommand[0]);
 
-    menuCommands = Arrays.stream(keyCommands).filter(
-      kc -> !StringUtils.isEmpty(kc.getName())
-    ).toArray(KeyCommand[]::new);
+    menuCommands =
+        Arrays.stream(keyCommands)
+            .filter(kc -> !StringUtils.isEmpty(kc.getName()))
+            .toArray(KeyCommand[]::new);
 
     description = sd.nextToken("");
     propertyLevel = sd.nextToken(CURRENT_ZONE);
@@ -125,8 +123,7 @@ public class SetGlobalProperty extends DynamicProperty {
   }
 
   @Override
-  public void mySetState(String state) {
-  }
+  public void mySetState(String state) {}
 
   /*
    * Duplicate code from Decorator for setProperty(), getProperty() Do not call super.xxxProperty() as we no longer
@@ -136,17 +133,13 @@ public class SetGlobalProperty extends DynamicProperty {
   public Object getProperty(Object key) {
     if (Properties.KEY_COMMANDS.equals(key)) {
       return getKeyCommands();
-    }
-    else if (Properties.INNER.equals(key)) {
+    } else if (Properties.INNER.equals(key)) {
       return piece;
-    }
-    else if (Properties.OUTER.equals(key)) {
+    } else if (Properties.OUTER.equals(key)) {
       return dec;
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return myGetState() + piece.getProperty(key);
-    }
-    else {
+    } else {
       return piece.getProperty(key);
     }
   }
@@ -155,17 +148,13 @@ public class SetGlobalProperty extends DynamicProperty {
   public Object getLocalizedProperty(Object key) {
     if (Properties.KEY_COMMANDS.equals(key)) {
       return getProperty(key);
-    }
-    else if (Properties.INNER.equals(key)) {
+    } else if (Properties.INNER.equals(key)) {
       return getProperty(key);
-    }
-    else if (Properties.OUTER.equals(key)) {
+    } else if (Properties.OUTER.equals(key)) {
       return getProperty(key);
-    }
-    else if (Properties.VISIBLE_STATE.equals(key)) {
+    } else if (Properties.VISIBLE_STATE.equals(key)) {
       return getProperty(key);
-    }
-    else {
+    } else {
       return piece.getLocalizedProperty(key);
     }
   }
@@ -174,11 +163,9 @@ public class SetGlobalProperty extends DynamicProperty {
   public void setProperty(Object key, Object val) {
     if (Properties.INNER.equals(key)) {
       setInner((GamePiece) val);
-    }
-    else if (Properties.OUTER.equals(key)) {
+    } else if (Properties.OUTER.equals(key)) {
       dec = (Decorator) val;
-    }
-    else {
+    } else {
       piece.setProperty(key, val);
     }
   }
@@ -198,14 +185,17 @@ public class SetGlobalProperty extends DynamicProperty {
     Command comm = new NullCommand();
     for (final DynamicKeyCommand keyCommand : keyCommands) {
       if (keyCommand.matches(stroke)) {
-        final String propertyName = (new FormattedString(key)).getText(getOutermost(this), this, "Editor.DynamicProperty.property_name");
+        final String propertyName =
+            (new FormattedString(key))
+                .getText(getOutermost(this), this, "Editor.DynamicProperty.property_name");
 
-        final List<MutablePropertiesContainer> propertyContainers =
-          new ArrayList<>();
+        final List<MutablePropertiesContainer> propertyContainers = new ArrayList<>();
         propertyContainers.add(0, GameModule.getGameModule());
         Map map = getMap();
         if (NAMED_MAP.equals(propertyLevel)) {
-          final String mapName = (new FormattedString(searchName)).getText(getOutermost(this), this, "Editor.SetGlobalProperty.name_of_map");
+          final String mapName =
+              (new FormattedString(searchName))
+                  .getText(getOutermost(this), this, "Editor.SetGlobalProperty.name_of_map");
           map = Map.getMapById(mapName);
         }
         if (map != null) {
@@ -214,35 +204,41 @@ public class SetGlobalProperty extends DynamicProperty {
         Zone z = null;
         if (CURRENT_ZONE.equals(propertyLevel) && getMap() != null) {
           z = getMap().findZone(getPosition());
-        }
-        else if (NAMED_ZONE.equals(propertyLevel) && getMap() != null) {
-          final String zoneName = (new FormattedString(searchName)).getText(getOutermost(this), this, "Editor.SetGlobalProperty.name_of_zone");
+        } else if (NAMED_ZONE.equals(propertyLevel) && getMap() != null) {
+          final String zoneName =
+              (new FormattedString(searchName))
+                  .getText(getOutermost(this), this, "Editor.SetGlobalProperty.name_of_zone");
           z = getMap().findZone(zoneName);
         }
         if (z != null) {
           propertyContainers.add(0, z);
         }
 
-        final MutableProperty prop = MutableProperty.Util.findMutableProperty(propertyName, propertyContainers);
+        final MutableProperty prop =
+            MutableProperty.Util.findMutableProperty(propertyName, propertyContainers);
 
         /*
          * Debugging could be painful, so print a useful message in the
          * Chat Window if no property can be found to update.
          */
         if (prop == null) {
-          final String message = "Unable to locate Global Property in " + propertyLevel + "."; // NON-NLS
-          final String data = "Property Expression=[" + key + "], Property Name=" + propertyName + "]."; // NON-NLS
+          final String message =
+              "Unable to locate Global Property in " + propertyLevel + "."; // NON-NLS
+          final String data =
+              "Property Expression=[" + key + "], Property Name=" + propertyName + "]."; // NON-NLS
           ErrorDialog.dataWarning(new BadDataReport(this, message, data));
-        }
-        else {
+        } else {
           final String oldValue = prop.getPropertyValue();
           String newValue = keyCommand.propChanger.getNewValue(oldValue);
           // Null indicates user cancelled a prompt dialog during chamnge
           if (newValue != null) {
-            // The PropertyChanger has already evaluated any Beanshell, only need to handle any remaining $$variables.
+            // The PropertyChanger has already evaluated any Beanshell, only need to handle any
+            // remaining $$variables.
             if (newValue.indexOf('$') >= 0) {
               format.setFormat(newValue);
-              newValue = format.getText(getOutermost(this), this, "Editor.PropertyChangeConfigurer.new_value");
+              newValue =
+                  format.getText(
+                      getOutermost(this), this, "Editor.PropertyChangeConfigurer.new_value");
             }
             comm = comm.append(prop.setPropertyValue(newValue));
           }
@@ -260,14 +256,16 @@ public class SetGlobalProperty extends DynamicProperty {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof SetGlobalProperty)) return false;
+    if (!(o instanceof SetGlobalProperty)) return false;
     final SetGlobalProperty c = (SetGlobalProperty) o;
 
-    if (! Objects.equals(key, c.key)) return false;
-    if (! Objects.equals(encodeConstraints(), c.encodeConstraints())) return false;
-    if (! Objects.equals(keyCommandListConfig.getValueString(), c.keyCommandListConfig.getValueString())) return false;
-    if (! Objects.equals(description, c.description)) return false;
-    if (! Objects.equals(propertyLevel, c.propertyLevel)) return false;
+    if (!Objects.equals(key, c.key)) return false;
+    if (!Objects.equals(encodeConstraints(), c.encodeConstraints())) return false;
+    if (!Objects.equals(
+        keyCommandListConfig.getValueString(), c.keyCommandListConfig.getValueString()))
+      return false;
+    if (!Objects.equals(description, c.description)) return false;
+    if (!Objects.equals(propertyLevel, c.propertyLevel)) return false;
     return Objects.equals(searchName, c.searchName);
   }
 
@@ -292,7 +290,9 @@ public class SetGlobalProperty extends DynamicProperty {
     protected TraitConfigPanel controls;
 
     public Ed(final SetGlobalProperty m) {
-      keyCommandListConfig = new DynamicKeyCommandListConfigurer(null, Resources.getString("Editor.DynamicProperty.commands"), m);
+      keyCommandListConfig =
+          new DynamicKeyCommandListConfigurer(
+              null, Resources.getString("Editor.DynamicProperty.commands"), m);
       keyCommandListConfig.setValue(new ArrayList<>(Arrays.asList(m.keyCommands)));
 
       controls = new TraitConfigPanel();
@@ -310,10 +310,9 @@ public class SetGlobalProperty extends DynamicProperty {
         "Editor.SetGlobalProperty.named_zone",
         "Editor.SetGlobalProperty.named_map"
       };
-      levelConfig = new TranslatingStringEnumConfigurer(
-        new String[] { CURRENT_ZONE, NAMED_ZONE, NAMED_MAP },
-        levelKeys,
-        m.propertyLevel);
+      levelConfig =
+          new TranslatingStringEnumConfigurer(
+              new String[] {CURRENT_ZONE, NAMED_ZONE, NAMED_MAP}, levelKeys, m.propertyLevel);
       levelConfig.addPropertyChangeListener(e -> updateVisibility());
       controls.add("Editor.SetGlobalProperty.locate_property", levelConfig);
 
@@ -332,22 +331,23 @@ public class SetGlobalProperty extends DynamicProperty {
       maxConfig = new IntConfigurer(m.getMaximumValue());
       controls.add(maxLabel, maxConfig);
 
-      wrapLabel  = new JLabel(Resources.getString("Editor.DynamicProperty.wrap"));
+      wrapLabel = new JLabel(Resources.getString("Editor.DynamicProperty.wrap"));
       wrapConfig = new BooleanConfigurer(m.isWrap());
       controls.add(wrapLabel, wrapConfig);
 
       controls.add("Editor.DynamicProperty.key_commands", keyCommandListConfig);
 
-      numericConfig.addPropertyChangeListener(evt -> {
-        final boolean isNumeric = numericConfig.booleanValue();
-        minConfig.getControls().setVisible(isNumeric);
-        minLabel.setVisible(isNumeric);
-        maxConfig.getControls().setVisible(isNumeric);
-        maxLabel.setVisible(isNumeric);
-        wrapConfig.getControls().setVisible(isNumeric);
-        wrapLabel.setVisible(isNumeric);
-        keyCommandListConfig.repack();
-      });
+      numericConfig.addPropertyChangeListener(
+          evt -> {
+            final boolean isNumeric = numericConfig.booleanValue();
+            minConfig.getControls().setVisible(isNumeric);
+            minLabel.setVisible(isNumeric);
+            maxConfig.getControls().setVisible(isNumeric);
+            maxLabel.setVisible(isNumeric);
+            wrapConfig.getControls().setVisible(isNumeric);
+            wrapLabel.setVisible(isNumeric);
+            keyCommandListConfig.repack();
+          });
 
       numericConfig.fireUpdate();
       updateVisibility();
@@ -355,14 +355,14 @@ public class SetGlobalProperty extends DynamicProperty {
 
     protected void updateVisibility() {
       switch (levelConfig.getValueString()) {
-      case NAMED_MAP :
-        searchLabel.setText(mapText);
-        searchNameConfig.updateHint(mapHint);
-        break;
-      case NAMED_ZONE :
-        searchLabel.setText(zoneText);
-        searchNameConfig.updateHint(zoneHint);
-        break;
+        case NAMED_MAP:
+          searchLabel.setText(mapText);
+          searchNameConfig.updateHint(mapHint);
+          break;
+        case NAMED_ZONE:
+          searchLabel.setText(zoneText);
+          searchNameConfig.updateHint(zoneHint);
+          break;
       }
       searchLabel.setVisible(!levelConfig.getValueString().equals(CURRENT_ZONE));
       searchNameConfig.getControls().setVisible(!levelConfig.getValueString().equals(CURRENT_ZONE));
@@ -377,11 +377,11 @@ public class SetGlobalProperty extends DynamicProperty {
 
     protected String encodeConstraints() {
       return new SequenceEncoder(',')
-        .append(numericConfig.getValueString())
-        .append(minConfig.getValueString())
-        .append(maxConfig.getValueString())
-        .append(wrapConfig.getValueString())
-        .getValue();
+          .append(numericConfig.getValueString())
+          .append(minConfig.getValueString())
+          .append(maxConfig.getValueString())
+          .append(wrapConfig.getValueString())
+          .getValue();
     }
 
     @Override

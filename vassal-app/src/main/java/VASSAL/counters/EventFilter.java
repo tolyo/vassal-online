@@ -22,6 +22,7 @@ import java.awt.event.InputEvent;
 
 /**
  * Gives information about what kinds of events a {@link GamePiece} will respond to
+ *
  * @see Properties#SELECT_EVENT_FILTER
  */
 @FunctionalInterface

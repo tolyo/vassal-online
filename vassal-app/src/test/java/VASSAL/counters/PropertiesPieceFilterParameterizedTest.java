@@ -8,9 +8,7 @@ import static org.mockito.Mockito.when;
 import VASSAL.build.GameModule;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
-
 import java.util.stream.Stream;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,10 +17,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 /**
- * Test basic Legacy Property Match functionality.
- * All operators are explicitly codes in VASSAL, so need to check them thoroughly.
- * NOTE: Only need to test that =~ and !~ work, no need to test Regexp functionality
- *       as this is provided by Java libraries.
+ * Test basic Legacy Property Match functionality. All operators are explicitly codes in VASSAL, so
+ * need to check them thoroughly. NOTE: Only need to test that =~ and !~ work, no need to test
+ * Regexp functionality as this is provided by Java libraries.
  */
 public class PropertiesPieceFilterParameterizedTest implements Auditable {
 
@@ -51,237 +48,232 @@ public class PropertiesPieceFilterParameterizedTest implements Auditable {
     }
   }
 
-  /**
-   * The first element is an array of test inputs, the second is the expected result
-   */
+  /** The first element is an array of test inputs, the second is the expected result */
   private static Stream<Arguments> testData() {
     return Stream.of(
         // ----------------------------------
         // = Operator
         // = Integer
-        Arguments.of(new String[] { "8", "=", "12" }, false),
-        Arguments.of(new String[] { "12", "=", "8" }, false),
-        Arguments.of(new String[] { "8", "=", "8" }, true),
-        Arguments.of(new String[] { null, "=", "8" }, false),
-        Arguments.of(new String[] { "8", "=", "" }, false),
-        Arguments.of(new String[] { "abc", "=", "8" }, false),
-        Arguments.of(new String[] { "8", "=", "abc" }, false),
-        Arguments.of(new String[] { "true", "=", "8" }, false),
-        Arguments.of(new String[] { "8", "=", "true" }, false),
+        Arguments.of(new String[] {"8", "=", "12"}, false),
+        Arguments.of(new String[] {"12", "=", "8"}, false),
+        Arguments.of(new String[] {"8", "=", "8"}, true),
+        Arguments.of(new String[] {null, "=", "8"}, false),
+        Arguments.of(new String[] {"8", "=", ""}, false),
+        Arguments.of(new String[] {"abc", "=", "8"}, false),
+        Arguments.of(new String[] {"8", "=", "abc"}, false),
+        Arguments.of(new String[] {"true", "=", "8"}, false),
+        Arguments.of(new String[] {"8", "=", "true"}, false),
 
         // = Float
-        Arguments.of(new String[] { ".8", "=", ".12" }, false),
-        Arguments.of(new String[] { ".12", "=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "=", ".8" }, true),
-        Arguments.of(new String[] { null, "=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "=", "" }, false),
-        Arguments.of(new String[] { "abc", "=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "=", "abc" }, false),
-        Arguments.of(new String[] { "true", "=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "=", "true" }, false),
+        Arguments.of(new String[] {".8", "=", ".12"}, false),
+        Arguments.of(new String[] {".12", "=", ".8"}, false),
+        Arguments.of(new String[] {".8", "=", ".8"}, true),
+        Arguments.of(new String[] {null, "=", ".8"}, false),
+        Arguments.of(new String[] {".8", "=", ""}, false),
+        Arguments.of(new String[] {"abc", "=", ".8"}, false),
+        Arguments.of(new String[] {".8", "=", "abc"}, false),
+        Arguments.of(new String[] {"true", "=", ".8"}, false),
+        Arguments.of(new String[] {".8", "=", "true"}, false),
 
         // = Boolean
-        Arguments.of(new String[] { "true", "=", "true" }, true),
-        Arguments.of(new String[] { "true", "=", "false" }, false),
-        Arguments.of(new String[] { "false", "=", "true" }, false),
-        Arguments.of(new String[] { "false", "=", "false" }, true),
-
-        Arguments.of(new String[] { null, "=", "false" }, false),
-        Arguments.of(new String[] { null, "=", "true" }, false),
-        Arguments.of(new String[] { "true", "=", "" }, false),
-        Arguments.of(new String[] { "false", "=", "" }, false),
+        Arguments.of(new String[] {"true", "=", "true"}, true),
+        Arguments.of(new String[] {"true", "=", "false"}, false),
+        Arguments.of(new String[] {"false", "=", "true"}, false),
+        Arguments.of(new String[] {"false", "=", "false"}, true),
+        Arguments.of(new String[] {null, "=", "false"}, false),
+        Arguments.of(new String[] {null, "=", "true"}, false),
+        Arguments.of(new String[] {"true", "=", ""}, false),
+        Arguments.of(new String[] {"false", "=", ""}, false),
 
         // = Strings
-        Arguments.of(new String[] { "ab", "=", "a" }, false),
-        Arguments.of(new String[] { "ab", "=", "ab" }, true),
-        Arguments.of(new String[] { null, "=", "ab" }, false),
-        Arguments.of(new String[] { "ab", "=", "" }, false),
-        Arguments.of(new String[] { "ab", "=", "true" }, false),
+        Arguments.of(new String[] {"ab", "=", "a"}, false),
+        Arguments.of(new String[] {"ab", "=", "ab"}, true),
+        Arguments.of(new String[] {null, "=", "ab"}, false),
+        Arguments.of(new String[] {"ab", "=", ""}, false),
+        Arguments.of(new String[] {"ab", "=", "true"}, false),
 
         // ----------------------------------
         // != Operator
         // = Integer
-        Arguments.of(new String[] { "8", "!=", "12" }, true),
-        Arguments.of(new String[] { "12", "!=", "8" }, true),
-        Arguments.of(new String[] { "8", "!=", "8" }, false),
-        Arguments.of(new String[] { null, "!=", "8" }, true),
-        Arguments.of(new String[] { "8", "!=", "" }, true),
-        Arguments.of(new String[] { "abc", "!=", "8" }, true),
-        Arguments.of(new String[] { "8", "!=", "abc" }, true),
-        Arguments.of(new String[] { "true", "!=", "8" }, true),
-        Arguments.of(new String[] { "8", "!=", "true" }, true),
+        Arguments.of(new String[] {"8", "!=", "12"}, true),
+        Arguments.of(new String[] {"12", "!=", "8"}, true),
+        Arguments.of(new String[] {"8", "!=", "8"}, false),
+        Arguments.of(new String[] {null, "!=", "8"}, true),
+        Arguments.of(new String[] {"8", "!=", ""}, true),
+        Arguments.of(new String[] {"abc", "!=", "8"}, true),
+        Arguments.of(new String[] {"8", "!=", "abc"}, true),
+        Arguments.of(new String[] {"true", "!=", "8"}, true),
+        Arguments.of(new String[] {"8", "!=", "true"}, true),
 
         // = Float
-        Arguments.of(new String[] { ".8", "!=", ".12" }, true),
-        Arguments.of(new String[] { ".12", "!=", ".8" }, true),
-        Arguments.of(new String[] { ".8", "!=", ".8" }, false),
-        Arguments.of(new String[] { null, "!=", ".8" }, true),
-        Arguments.of(new String[] { ".8", "!=", "" }, true),
-        Arguments.of(new String[] { "abc", "!=", ".8" }, true),
-        Arguments.of(new String[] { ".8", "!=", "abc" }, true),
-        Arguments.of(new String[] { "true", "!=", ".8" }, true),
-        Arguments.of(new String[] { ".8", "!=", "true" }, true),
+        Arguments.of(new String[] {".8", "!=", ".12"}, true),
+        Arguments.of(new String[] {".12", "!=", ".8"}, true),
+        Arguments.of(new String[] {".8", "!=", ".8"}, false),
+        Arguments.of(new String[] {null, "!=", ".8"}, true),
+        Arguments.of(new String[] {".8", "!=", ""}, true),
+        Arguments.of(new String[] {"abc", "!=", ".8"}, true),
+        Arguments.of(new String[] {".8", "!=", "abc"}, true),
+        Arguments.of(new String[] {"true", "!=", ".8"}, true),
+        Arguments.of(new String[] {".8", "!=", "true"}, true),
 
         // != Boolean
         // next case is a regression for Bug 13425:
-        Arguments.of(new String[] { "true", "!=", "true" }, false),
-        Arguments.of(new String[] { "true", "!=", "false" }, true),
-        Arguments.of(new String[] { "false", "!=", "true" }, true),
-        Arguments.of(new String[] { "false", "!=", "false" }, false),
-
-        Arguments.of(new String[] { null, "!=", "false" }, true),
-        Arguments.of(new String[] { null, "!=", "true" }, true),
-        Arguments.of(new String[] { "true", "!=", "" }, true),
-        Arguments.of(new String[] { "false", "!=", "" }, true),
+        Arguments.of(new String[] {"true", "!=", "true"}, false),
+        Arguments.of(new String[] {"true", "!=", "false"}, true),
+        Arguments.of(new String[] {"false", "!=", "true"}, true),
+        Arguments.of(new String[] {"false", "!=", "false"}, false),
+        Arguments.of(new String[] {null, "!=", "false"}, true),
+        Arguments.of(new String[] {null, "!=", "true"}, true),
+        Arguments.of(new String[] {"true", "!=", ""}, true),
+        Arguments.of(new String[] {"false", "!=", ""}, true),
 
         // = Strings
-        Arguments.of(new String[] { "ab", "!=", "a" }, true),
-        Arguments.of(new String[] { "ab", "!=", "ab" }, false),
-        Arguments.of(new String[] { null, "!=", "ab" }, true),
-        Arguments.of(new String[] { "ab", "!=", "" }, true),
-        Arguments.of(new String[] { "ab", "!=", "true" }, true),
+        Arguments.of(new String[] {"ab", "!=", "a"}, true),
+        Arguments.of(new String[] {"ab", "!=", "ab"}, false),
+        Arguments.of(new String[] {null, "!=", "ab"}, true),
+        Arguments.of(new String[] {"ab", "!=", ""}, true),
+        Arguments.of(new String[] {"ab", "!=", "true"}, true),
 
         // ----------------------------------
         // <= Operator
         // <= Integer
-        Arguments.of(new String[] { "8", "<=", "12" }, true),
-        Arguments.of(new String[] { "12", "<=", "8" }, false),
-        Arguments.of(new String[] { "8", "<=", "8" }, true),
-        Arguments.of(new String[] { null, "<=", "8" }, false),
-        Arguments.of(new String[] { "8", "<=", "" }, false),
-        Arguments.of(new String[] { "abc", "<=", "8" }, false),
-        Arguments.of(new String[] { "8", "<=", "abc" }, true),
-        Arguments.of(new String[] { "true", "<=", "8" }, false),
-        Arguments.of(new String[] { "8", "<=", "true" }, true),
+        Arguments.of(new String[] {"8", "<=", "12"}, true),
+        Arguments.of(new String[] {"12", "<=", "8"}, false),
+        Arguments.of(new String[] {"8", "<=", "8"}, true),
+        Arguments.of(new String[] {null, "<=", "8"}, false),
+        Arguments.of(new String[] {"8", "<=", ""}, false),
+        Arguments.of(new String[] {"abc", "<=", "8"}, false),
+        Arguments.of(new String[] {"8", "<=", "abc"}, true),
+        Arguments.of(new String[] {"true", "<=", "8"}, false),
+        Arguments.of(new String[] {"8", "<=", "true"}, true),
 
         // <= Float
-        Arguments.of(new String[] { ".8", "<=", ".12" }, false),
-        Arguments.of(new String[] { ".12", "<=", ".8" }, true),
-        Arguments.of(new String[] { ".8", "<=", ".8" }, true),
-        Arguments.of(new String[] { null, "<=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<=", "" }, false),
-        Arguments.of(new String[] { "abc", "<=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<=", "abc" }, true),
-        Arguments.of(new String[] { "true", "<=", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<=", "true" }, true),
+        Arguments.of(new String[] {".8", "<=", ".12"}, false),
+        Arguments.of(new String[] {".12", "<=", ".8"}, true),
+        Arguments.of(new String[] {".8", "<=", ".8"}, true),
+        Arguments.of(new String[] {null, "<=", ".8"}, false),
+        Arguments.of(new String[] {".8", "<=", ""}, false),
+        Arguments.of(new String[] {"abc", "<=", ".8"}, false),
+        Arguments.of(new String[] {".8", "<=", "abc"}, true),
+        Arguments.of(new String[] {"true", "<=", ".8"}, false),
+        Arguments.of(new String[] {".8", "<=", "true"}, true),
 
         // <= Strings
-        Arguments.of(new String[] { "ab", "<=", "ac" }, true),
-        Arguments.of(new String[] { "ab", "<=", "ab" }, true),
-        Arguments.of(new String[] { "ac", "<=", "ab" }, false),
-        Arguments.of(new String[] { "ab", "<=", "abc" }, true),
-        Arguments.of(new String[] { "abc", "<=", "ab" }, false),
-        Arguments.of(new String[] { null, "<=", "ac" }, false),
-        Arguments.of(new String[] { "ab", "<=", "" }, false),
+        Arguments.of(new String[] {"ab", "<=", "ac"}, true),
+        Arguments.of(new String[] {"ab", "<=", "ab"}, true),
+        Arguments.of(new String[] {"ac", "<=", "ab"}, false),
+        Arguments.of(new String[] {"ab", "<=", "abc"}, true),
+        Arguments.of(new String[] {"abc", "<=", "ab"}, false),
+        Arguments.of(new String[] {null, "<=", "ac"}, false),
+        Arguments.of(new String[] {"ab", "<=", ""}, false),
 
         // ----------------------------------
         // < Operator
         // < Integer
-        Arguments.of(new String[] { "8", "<", "12" }, true),
-        Arguments.of(new String[] { "12", "<", "8" }, false),
-        Arguments.of(new String[] { "8", "<", "8" }, false),
-        Arguments.of(new String[] { null, "<", "8" }, false),
-        Arguments.of(new String[] { "8", "<", "" }, false),
-        Arguments.of(new String[] { "abc", "<", "8" }, false),
-        Arguments.of(new String[] { "8", "<", "abc" }, true),
-        Arguments.of(new String[] { "true", "<", "8" }, false),
-        Arguments.of(new String[] { "8", "<", "true" }, true),
+        Arguments.of(new String[] {"8", "<", "12"}, true),
+        Arguments.of(new String[] {"12", "<", "8"}, false),
+        Arguments.of(new String[] {"8", "<", "8"}, false),
+        Arguments.of(new String[] {null, "<", "8"}, false),
+        Arguments.of(new String[] {"8", "<", ""}, false),
+        Arguments.of(new String[] {"abc", "<", "8"}, false),
+        Arguments.of(new String[] {"8", "<", "abc"}, true),
+        Arguments.of(new String[] {"true", "<", "8"}, false),
+        Arguments.of(new String[] {"8", "<", "true"}, true),
 
         // < Float
-        Arguments.of(new String[] { ".8", "<", ".12" }, false),
-        Arguments.of(new String[] { ".12", "<", ".8" }, true),
-        Arguments.of(new String[] { ".8", "<", ".8" }, false),
-        Arguments.of(new String[] { null, "<", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<", "" }, false),
-        Arguments.of(new String[] { "abc", "<", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<", "abc" }, true),
-        Arguments.of(new String[] { "true", "<", ".8" }, false),
-        Arguments.of(new String[] { ".8", "<", "true" }, true),
+        Arguments.of(new String[] {".8", "<", ".12"}, false),
+        Arguments.of(new String[] {".12", "<", ".8"}, true),
+        Arguments.of(new String[] {".8", "<", ".8"}, false),
+        Arguments.of(new String[] {null, "<", ".8"}, false),
+        Arguments.of(new String[] {".8", "<", ""}, false),
+        Arguments.of(new String[] {"abc", "<", ".8"}, false),
+        Arguments.of(new String[] {".8", "<", "abc"}, true),
+        Arguments.of(new String[] {"true", "<", ".8"}, false),
+        Arguments.of(new String[] {".8", "<", "true"}, true),
 
         // < Strings
-        Arguments.of(new String[] { "ab", "<", "ac" }, true),
-        Arguments.of(new String[] { "ab", "<", "ab" }, false),
-        Arguments.of(new String[] { "ac", "<", "ab" }, false),
-        Arguments.of(new String[] { "ab", "<", "abc" }, true),
-        Arguments.of(new String[] { "abc", "<", "ab" }, false),
-        Arguments.of(new String[] { null, "<", "ac" }, false),
-        Arguments.of(new String[] { "ab", "<", "" }, false),
+        Arguments.of(new String[] {"ab", "<", "ac"}, true),
+        Arguments.of(new String[] {"ab", "<", "ab"}, false),
+        Arguments.of(new String[] {"ac", "<", "ab"}, false),
+        Arguments.of(new String[] {"ab", "<", "abc"}, true),
+        Arguments.of(new String[] {"abc", "<", "ab"}, false),
+        Arguments.of(new String[] {null, "<", "ac"}, false),
+        Arguments.of(new String[] {"ab", "<", ""}, false),
 
         // ----------------------------------
         // >= Operator
         // >= Integer
-        Arguments.of(new String[] { "8", ">=", "12" }, false),
-        Arguments.of(new String[] { "12", ">=", "8" }, true),
-        Arguments.of(new String[] { "8", ">=", "8" }, true),
-        Arguments.of(new String[] { null, ">=", "8" }, true),
-        Arguments.of(new String[] { "8", ">=", "" }, true),
-        Arguments.of(new String[] { "abc", ">=", "8" }, true),
-        Arguments.of(new String[] { "8", ">=", "abc" }, false),
-        Arguments.of(new String[] { "true", ">=", "8" }, true),
-        Arguments.of(new String[] { "8", ">=", "true" }, false),
+        Arguments.of(new String[] {"8", ">=", "12"}, false),
+        Arguments.of(new String[] {"12", ">=", "8"}, true),
+        Arguments.of(new String[] {"8", ">=", "8"}, true),
+        Arguments.of(new String[] {null, ">=", "8"}, true),
+        Arguments.of(new String[] {"8", ">=", ""}, true),
+        Arguments.of(new String[] {"abc", ">=", "8"}, true),
+        Arguments.of(new String[] {"8", ">=", "abc"}, false),
+        Arguments.of(new String[] {"true", ">=", "8"}, true),
+        Arguments.of(new String[] {"8", ">=", "true"}, false),
 
         // >= Float
-        Arguments.of(new String[] { ".8", ">=", ".12" }, true),
-        Arguments.of(new String[] { ".12", ">=", ".8" }, false),
-        Arguments.of(new String[] { ".8", ">=", ".8" }, true),
-        Arguments.of(new String[] { null, ">=", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">=", "" }, true),
-        Arguments.of(new String[] { "abc", ">=", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">=", "abc" }, false),
-        Arguments.of(new String[] { "true", ">=", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">=", "true" }, false),
+        Arguments.of(new String[] {".8", ">=", ".12"}, true),
+        Arguments.of(new String[] {".12", ">=", ".8"}, false),
+        Arguments.of(new String[] {".8", ">=", ".8"}, true),
+        Arguments.of(new String[] {null, ">=", ".8"}, true),
+        Arguments.of(new String[] {".8", ">=", ""}, true),
+        Arguments.of(new String[] {"abc", ">=", ".8"}, true),
+        Arguments.of(new String[] {".8", ">=", "abc"}, false),
+        Arguments.of(new String[] {"true", ">=", ".8"}, true),
+        Arguments.of(new String[] {".8", ">=", "true"}, false),
 
         // >= Strings
-        Arguments.of(new String[] { "ab", ">=", "ac" }, false),
-        Arguments.of(new String[] { "ab", ">=", "ab" }, true),
-        Arguments.of(new String[] { "ac", ">=", "ab" }, true),
-        Arguments.of(new String[] { "ab", ">=", "abc" }, false),
-        Arguments.of(new String[] { "abc", ">=", "ab" }, true),
-        Arguments.of(new String[] { null, ">=", "ac" }, true),
-        Arguments.of(new String[] { "ab", ">=", "" }, true),
+        Arguments.of(new String[] {"ab", ">=", "ac"}, false),
+        Arguments.of(new String[] {"ab", ">=", "ab"}, true),
+        Arguments.of(new String[] {"ac", ">=", "ab"}, true),
+        Arguments.of(new String[] {"ab", ">=", "abc"}, false),
+        Arguments.of(new String[] {"abc", ">=", "ab"}, true),
+        Arguments.of(new String[] {null, ">=", "ac"}, true),
+        Arguments.of(new String[] {"ab", ">=", ""}, true),
 
         // ----------------------------------
         // > Operator
         // > Integer
-        Arguments.of(new String[] { "8", ">", "12" }, false),
-        Arguments.of(new String[] { "12", ">", "8" }, true),
-        Arguments.of(new String[] { "8", ">", "8" }, false),
-        Arguments.of(new String[] { null, ">", "8" }, true),
-        Arguments.of(new String[] { "8", ">", "" }, true),
-        Arguments.of(new String[] { "abc", ">", "8" }, true),
-        Arguments.of(new String[] { "8", ">", "abc" }, false),
-        Arguments.of(new String[] { "true", ">", "8" }, true),
-        Arguments.of(new String[] { "8", ">", "true" }, false),
+        Arguments.of(new String[] {"8", ">", "12"}, false),
+        Arguments.of(new String[] {"12", ">", "8"}, true),
+        Arguments.of(new String[] {"8", ">", "8"}, false),
+        Arguments.of(new String[] {null, ">", "8"}, true),
+        Arguments.of(new String[] {"8", ">", ""}, true),
+        Arguments.of(new String[] {"abc", ">", "8"}, true),
+        Arguments.of(new String[] {"8", ">", "abc"}, false),
+        Arguments.of(new String[] {"true", ">", "8"}, true),
+        Arguments.of(new String[] {"8", ">", "true"}, false),
 
         // > Float
-        Arguments.of(new String[] { ".8", ">", ".12" }, true),
-        Arguments.of(new String[] { ".12", ">", ".8" }, false),
-        Arguments.of(new String[] { ".8", ">", ".8" }, false),
-        Arguments.of(new String[] { null, ">", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">", "" }, true),
-        Arguments.of(new String[] { "abc", ">", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">", "abc" }, false),
-        Arguments.of(new String[] { "true", ">", ".8" }, true),
-        Arguments.of(new String[] { ".8", ">", "true" }, false),
+        Arguments.of(new String[] {".8", ">", ".12"}, true),
+        Arguments.of(new String[] {".12", ">", ".8"}, false),
+        Arguments.of(new String[] {".8", ">", ".8"}, false),
+        Arguments.of(new String[] {null, ">", ".8"}, true),
+        Arguments.of(new String[] {".8", ">", ""}, true),
+        Arguments.of(new String[] {"abc", ">", ".8"}, true),
+        Arguments.of(new String[] {".8", ">", "abc"}, false),
+        Arguments.of(new String[] {"true", ">", ".8"}, true),
+        Arguments.of(new String[] {".8", ">", "true"}, false),
 
         // > Strings
-        Arguments.of(new String[] { "ab", ">", "ac" }, false),
-        Arguments.of(new String[] { "ab", ">", "ab" }, false),
-        Arguments.of(new String[] { "ac", ">", "ab" }, true),
-        Arguments.of(new String[] { "ab", ">", "abc" }, false),
-        Arguments.of(new String[] { "abc", ">", "ab" }, true),
-        Arguments.of(new String[] { null, ">", "ac" }, true),
-        Arguments.of(new String[] { "ab", ">", "" }, true),
+        Arguments.of(new String[] {"ab", ">", "ac"}, false),
+        Arguments.of(new String[] {"ab", ">", "ab"}, false),
+        Arguments.of(new String[] {"ac", ">", "ab"}, true),
+        Arguments.of(new String[] {"ab", ">", "abc"}, false),
+        Arguments.of(new String[] {"abc", ">", "ab"}, true),
+        Arguments.of(new String[] {null, ">", "ac"}, true),
+        Arguments.of(new String[] {"ab", ">", ""}, true),
 
         // ----------------------------------
         // =~ Operator
-        Arguments.of(new String[] { "abc", "=~", "a|x|abc|d" }, true),
-        Arguments.of(new String[] { "ac", "=~", "a|x|abc|d" }, false),
+        Arguments.of(new String[] {"abc", "=~", "a|x|abc|d"}, true),
+        Arguments.of(new String[] {"ac", "=~", "a|x|abc|d"}, false),
 
         // ----------------------------------
         // =! Operator
-        Arguments.of(new String[] { "abc", "!~", "a|x|abc|d" }, false),
-        Arguments.of(new String[] { "ac", "!~", "a|x|abc|d" }, true));
+        Arguments.of(new String[] {"abc", "!~", "a|x|abc|d"}, false),
+        Arguments.of(new String[] {"ac", "!~", "a|x|abc|d"}, true));
   }
-
 }

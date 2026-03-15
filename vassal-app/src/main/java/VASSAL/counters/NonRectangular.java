@@ -30,7 +30,6 @@ import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.image.ImageUtils;
 import VASSAL.tools.image.svg.SVGImageUtils;
 import VASSAL.tools.imageop.Op;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -45,30 +44,25 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-
 import net.miginfocom.swing.MigLayout;
-
-import org.w3c.dom.svg.SVGDocument;
-
-import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.GVTTreeWalker;
-import org.apache.batik.swing.svg.JSVGComponent;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.swing.svg.GVTTreeBuilderAdapter;
 import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
-
+import org.apache.batik.swing.svg.JSVGComponent;
 import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  * A trait for assigning an arbitrary shape to a {@link GamePiece}
@@ -76,7 +70,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * @see GamePiece#getShape
  */
 public class NonRectangular extends Decorator implements EditablePiece {
-  public static final String ID = "nonRect2;"; //NON-NLS
+  public static final String ID = "nonRect2;"; // NON-NLS
   public static final String OLD_ID = "nonRect;"; // NON-NLS
   private static final Map<String, Pair<String, Shape>> cache = new HashMap<>();
 
@@ -96,8 +90,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
   }
 
   @Override
-  public void mySetState(String newState) {
-  }
+  public void mySetState(String newState) {}
 
   @Override
   public String myGetState() {
@@ -108,8 +101,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
   public String myGetType() {
     final SequenceEncoder se = new SequenceEncoder(';');
 
-    se.append(scale)
-      .append(shapeSpec);
+    se.append(scale).append(shapeSpec);
 
     return ID + se.getValue();
   }
@@ -142,7 +134,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
       return shape;
     }
 
-    //BR// Scale the shape based on our designated scale factor
+    // BR// Scale the shape based on our designated scale factor
     if (scaledShape == null) {
       final AffineTransform tx = new AffineTransform();
       tx.scale(scale, scale);
@@ -154,7 +146,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
 
   public void setScale(double scale) {
     this.scale = scale;
-    scaledShape = null; //BR// Clear cached scaled-shape
+    scaledShape = null; // BR// Clear cached scaled-shape
   }
 
   @Override
@@ -177,12 +169,11 @@ public class NonRectangular extends Decorator implements EditablePiece {
     if (type.startsWith(OLD_ID)) {
       setScale(1.0);
       shapeSpec = type.substring(OLD_ID.length());
-    }
-    else {
+    } else {
       type = type.substring(ID.length());
       final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type, ';');
       setScale(st.nextDouble(1.0));
-      shapeSpec = st.getRemaining(); //BR// Everything else is our shape spec
+      shapeSpec = st.getRemaining(); // BR// Everything else is our shape spec
     }
     shape = getPath(shapeSpec);
   }
@@ -192,8 +183,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
     if (p == null) {
       imageName = "";
       return null;
-    }
-    else {
+    } else {
       imageName = p.getLeft();
       return p.getRight();
     }
@@ -212,39 +202,26 @@ public class NonRectangular extends Decorator implements EditablePiece {
       final String tok = st.nextToken();
 
       if ("M".equals(tok)) {
-        path.moveTo(
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken())
-        );
-      }
-      else if ("L".equals(tok)) {
-        path.lineTo(
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken())
-        );
-      }
-      else if ("Q".equals(tok)) {
+        path.moveTo(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken()));
+      } else if ("L".equals(tok)) {
+        path.lineTo(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken()));
+      } else if ("Q".equals(tok)) {
         path.quadTo(
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken())
-        );
-      }
-      else if ("C".equals(tok)) {
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()));
+      } else if ("C".equals(tok)) {
         path.curveTo(
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken()),
-          Double.parseDouble(st.nextToken())
-        );
-      }
-      else if ("Z".equals(tok)) {
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()),
+            Double.parseDouble(st.nextToken()));
+      } else if ("Z".equals(tok)) {
         path.closePath();
-      }
-      else if ("N".equals(tok)) {
+      } else if ("N".equals(tok)) {
         // The filename is separated from the N by a space, then runs to the
         // end of the string. There cannot be a newline in the filename, so
         // switching the delimiter to a newline will make the remaining part
@@ -266,26 +243,20 @@ public class NonRectangular extends Decorator implements EditablePiece {
       while (st.hasMoreTokens()) {
         final String token = st.nextToken();
         switch (token.charAt(0)) {
-        case 'c':
-          path.closePath();
-          break;
-        case 'm':
-          path.moveTo(
-            Integer.parseInt(st.nextToken()),
-            Integer.parseInt(st.nextToken())
-          );
-          break;
-        case 'l':
-          path.lineTo(
-            Integer.parseInt(st.nextToken()),
-            Integer.parseInt(st.nextToken())
-          );
-          break;
-        // Note the image name is stored as a single token so older clients
-        // will ignore it.
-        case 'n':
-          iname = token.length() > 1 ? token.substring(1) : "";
-          break;
+          case 'c':
+            path.closePath();
+            break;
+          case 'm':
+            path.moveTo(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+            break;
+          case 'l':
+            path.lineTo(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+            break;
+          // Note the image name is stored as a single token so older clients
+          // will ignore it.
+          case 'n':
+            iname = token.length() > 1 ? token.substring(1) : "";
+            break;
         }
       }
 
@@ -308,7 +279,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
   @Override
   @SuppressWarnings("PMD.SimplifyBooleanReturns")
   public boolean testEquals(Object o) {
-    if (! (o instanceof NonRectangular)) return false;
+    if (!(o instanceof NonRectangular)) return false;
     final NonRectangular c = (NonRectangular) o;
     if (!Objects.equals(scale, c.scale)) return false;
     return Objects.equals(shapeSpec, c.shapeSpec);
@@ -331,98 +302,100 @@ public class NonRectangular extends Decorator implements EditablePiece {
 
       controls.add(new JLabel(Resources.getString("Editor.NonRectangular.scale")));
       scaleConfig = new DoubleConfigurer(p.scale);
-      controls.add(scaleConfig.getControls(), "wrap"); //NON-NLS
+      controls.add(scaleConfig.getControls(), "wrap"); // NON-NLS
 
-      final JPanel shapePanel = new JPanel() {
-        private static final long serialVersionUID = 1L;
+      final JPanel shapePanel =
+          new JPanel() {
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public void paint(Graphics g) {
-          final Graphics2D g2d = (Graphics2D) g;
-          g2d.setColor(Color.white);
-          g2d.fillRect(0, 0, getWidth(), getHeight());
-          if (shape != null) {
-            g2d.translate(getWidth() / 2, getHeight() / 2);
-            g2d.setColor(Color.black);
-            g2d.fill(shape);
-          }
-        }
+            @Override
+            public void paint(Graphics g) {
+              final Graphics2D g2d = (Graphics2D) g;
+              g2d.setColor(Color.white);
+              g2d.fillRect(0, 0, getWidth(), getHeight());
+              if (shape != null) {
+                g2d.translate(getWidth() / 2, getHeight() / 2);
+                g2d.setColor(Color.black);
+                g2d.fill(shape);
+              }
+            }
 
-        @Override
-        public Dimension getPreferredSize() {
-          final Dimension d = shape == null
-            ? new Dimension(60, 60) : shape.getBounds().getSize();
-          d.width = Math.max(d.width, 60);
-          d.height = Math.max(d.height, 60);
-          return d;
-        }
-      };
+            @Override
+            public Dimension getPreferredSize() {
+              final Dimension d =
+                  shape == null ? new Dimension(60, 60) : shape.getBounds().getSize();
+              d.width = Math.max(d.width, 60);
+              d.height = Math.max(d.height, 60);
+              return d;
+            }
+          };
       controls.add(shapePanel, "grow"); // NON-NLS
 
       picker = new ImageSelector(p.imageName);
-      picker.addPropertyChangeListener(e -> {
-        final String imageName = picker.getImageName();
-        if (imageName == null || imageName.isEmpty()) {
-          shape = null;
-          controls.revalidate();
-          repack(controls);
-        }
-        else if (imageName.endsWith(".svg")) {
-          try (InputStream in = GameModule.getGameModule().getDataArchive().getInputStream(DataArchive.IMAGE_DIR + imageName)) {
-            final SVGDocument doc = SVGImageUtils.getDocument(imageName, in);
-            final AffineTransform vbm = SVGImageUtils.getViewBoxTransform(doc);
+      picker.addPropertyChangeListener(
+          e -> {
+            final String imageName = picker.getImageName();
+            if (imageName == null || imageName.isEmpty()) {
+              shape = null;
+              controls.revalidate();
+              repack(controls);
+            } else if (imageName.endsWith(".svg")) {
+              try (InputStream in =
+                  GameModule.getGameModule()
+                      .getDataArchive()
+                      .getInputStream(DataArchive.IMAGE_DIR + imageName)) {
+                final SVGDocument doc = SVGImageUtils.getDocument(imageName, in);
+                final AffineTransform vbm = SVGImageUtils.getViewBoxTransform(doc);
 
-            final JSVGComponent c = new JSVGComponent();
-            c.addGVTTreeBuilderListener(new GVTTreeBuilderAdapter() {
-              @Override
-              public void gvtBuildCompleted(GVTTreeBuilderEvent e) {
-                final GVTTreeWalker tw = new GVTTreeWalker(e.getGVTRoot());
-                final GraphicsNode node = tw.firstChild();
-                shape = node.getOutline();
+                final JSVGComponent c = new JSVGComponent();
+                c.addGVTTreeBuilderListener(
+                    new GVTTreeBuilderAdapter() {
+                      @Override
+                      public void gvtBuildCompleted(GVTTreeBuilderEvent e) {
+                        final GVTTreeWalker tw = new GVTTreeWalker(e.getGVTRoot());
+                        final GraphicsNode node = tw.firstChild();
+                        shape = node.getOutline();
 
-                // scale the shape against the viewBox, if any
-                shape = vbm.createTransformedShape(shape);
+                        // scale the shape against the viewBox, if any
+                        shape = vbm.createTransformedShape(shape);
 
-                // put the origin at the center of the shape
-                final Rectangle b = shape.getBounds();
-                shape = AffineTransform.getTranslateInstance(
-                  -b.x - b.width / 2.0,
-                  - b.y - b.height / 2.0
-                ).createTransformedShape(shape);
+                        // put the origin at the center of the shape
+                        final Rectangle b = shape.getBounds();
+                        shape =
+                            AffineTransform.getTranslateInstance(
+                                    -b.x - b.width / 2.0, -b.y - b.height / 2.0)
+                                .createTransformedShape(shape);
+
+                        controls.revalidate();
+                        repack(controls);
+                      }
+                    });
+
+                c.setSVGDocument(doc);
+              } catch (IOException ex) {
+                shape = null;
+                ErrorDialog.dataWarning(
+                    new BadDataReport(
+                        "Error reading image", // NON-NLS
+                        imageName,
+                        ex));
+              }
+            } else {
+              final Image img = Op.load(imageName).getImage();
+              if (img != null) {
+                setShapeFromImage(img);
 
                 controls.revalidate();
                 repack(controls);
               }
-            });
-
-            c.setSVGDocument(doc);
-          }
-          catch (IOException ex) {
-            shape = null;
-            ErrorDialog.dataWarning(new BadDataReport(
-              "Error reading image", //NON-NLS
-              imageName,
-              ex
-            ));
-          }
-        }
-        else {
-          final Image img = Op.load(imageName).getImage();
-          if (img != null) {
-            setShapeFromImage(img);
-
-            controls.revalidate();
-            repack(controls);
-          }
-        }
-      });
+            }
+          });
 
       controls.add(picker.getControls());
     }
 
     public void setShapeFromImage(Image im) {
-      controls.getTopLevelAncestor()
-              .setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      controls.getTopLevelAncestor().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
       final BufferedImage bi = ImageUtils.toBufferedImage(im);
       final int w = bi.getWidth();
@@ -438,8 +411,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
             if (left < 0) {
               left = x;
             }
-          }
-          else if (left > -1) {
+          } else if (left > -1) {
             outline.add(new Area(new Rectangle(left, y, x - left, 1)));
             left = -1;
           }
@@ -450,8 +422,8 @@ public class NonRectangular extends Decorator implements EditablePiece {
         }
       }
 
-      shape = AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0)
-                             .createTransformedShape(outline);
+      shape =
+          AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0).createTransformedShape(outline);
 
       controls.getTopLevelAncestor().setCursor(null);
     }
@@ -474,26 +446,26 @@ public class NonRectangular extends Decorator implements EditablePiece {
 
         while (!it.isDone()) {
           switch (it.currentSegment(pts)) {
-          case PathIterator.SEG_MOVETO:
-            buffer.append('M');
-            pcount = 2;
-            break;
-          case PathIterator.SEG_LINETO:
-            buffer.append('L');
-            pcount = 2;
-            break;
-          case PathIterator.SEG_CUBICTO:
-            buffer.append('C');
-            pcount = 6;
-            break;
-          case PathIterator.SEG_QUADTO:
-            buffer.append('Q');
-            pcount = 4;
-            break;
-          case PathIterator.SEG_CLOSE:
-            buffer.append('Z');
-            pcount = 0;
-            break;
+            case PathIterator.SEG_MOVETO:
+              buffer.append('M');
+              pcount = 2;
+              break;
+            case PathIterator.SEG_LINETO:
+              buffer.append('L');
+              pcount = 2;
+              break;
+            case PathIterator.SEG_CUBICTO:
+              buffer.append('C');
+              pcount = 6;
+              break;
+            case PathIterator.SEG_QUADTO:
+              buffer.append('Q');
+              pcount = 4;
+              break;
+            case PathIterator.SEG_CLOSE:
+              buffer.append('Z');
+              pcount = 0;
+              break;
           }
 
           for (int i = 0; i < pcount; ++i) {
@@ -510,8 +482,7 @@ public class NonRectangular extends Decorator implements EditablePiece {
       }
 
       final SequenceEncoder se = new SequenceEncoder(';');
-      se.append(scaleConfig.getValueString())
-        .append(buffer.toString());
+      se.append(scaleConfig.getValueString()).append(buffer.toString());
 
       return ID + se.getValue();
     }

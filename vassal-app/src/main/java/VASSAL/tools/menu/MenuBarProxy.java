@@ -19,7 +19,6 @@
 package VASSAL.tools.menu;
 
 import java.lang.ref.WeakReference;
-
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
@@ -29,26 +28,26 @@ import javax.swing.JMenuBar;
  */
 public class MenuBarProxy extends AbstractParent<JMenuBar> {
 
-/*
-  private final List<ButtonGroupProxy> groups =
-    new ArrayList<ButtonGroupProxy>();
+  /*
+    private final List<ButtonGroupProxy> groups =
+      new ArrayList<ButtonGroupProxy>();
 
-  public ButtonGroupProxy addButtonGroup(final ButtonGroupProxy group) {
-    groups.add(group);
+    public ButtonGroupProxy addButtonGroup(final ButtonGroupProxy group) {
+      groups.add(group);
 
-    forEachPeer(new Functor<JMenuBar>() {
-      public void apply(JMenuBar mb) {
-        group.createPeer().setOwner(mb);
-      }
-    });
+      forEachPeer(new Functor<JMenuBar>() {
+        public void apply(JMenuBar mb) {
+          group.createPeer().setOwner(mb);
+        }
+      });
 
-    return group;
-  }
+      return group;
+    }
 
-  public void removeButtonGroup(final ButtonGroupProxy group) {
-    groups.remove(group);
-  }
-*/
+    public void removeButtonGroup(final ButtonGroupProxy group) {
+      groups.remove(group);
+    }
+  */
 
   @Override
   public JMenuBar createPeer() {
@@ -59,11 +58,11 @@ public class MenuBarProxy extends AbstractParent<JMenuBar> {
       if (peer != null) mb.add(peer);
     }
 
-/*
-    for (ButtonGroupProxy group : groups) {
-      group.createPeer().setOwner(mb);
-    }
-*/
+    /*
+        for (ButtonGroupProxy group : groups) {
+          group.createPeer().setOwner(mb);
+        }
+    */
 
     peers.add(new WeakReference<>(mb, queue));
     return mb;

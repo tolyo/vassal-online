@@ -17,12 +17,11 @@
 
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-
 import VASSAL.build.GameModule;
 import VASSAL.configure.SaveAction;
 import VASSAL.configure.ValidationReport;
 import VASSAL.configure.ValidationReportDialog;
+import java.awt.event.ActionEvent;
 
 public class SaveModuleAction extends SaveAction {
   private static final long serialVersionUID = 1L;
@@ -33,20 +32,19 @@ public class SaveModuleAction extends SaveAction {
     GameModule.getGameModule().validate(GameModule.getGameModule(), report);
     if (report.getWarnings().isEmpty()) {
       save();
-    }
-    else {
-      new ValidationReportDialog(report,
-        new ValidationReportDialog.CallBack() {
-          @Override
-          public void ok() {
-            save();
-          }
+    } else {
+      new ValidationReportDialog(
+              report,
+              new ValidationReportDialog.CallBack() {
+                @Override
+                public void ok() {
+                  save();
+                }
 
-          @Override
-          public void cancel() {
-          }
-        }
-      ).setVisible(true);
+                @Override
+                public void cancel() {}
+              })
+          .setVisible(true);
     }
   }
 

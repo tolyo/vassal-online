@@ -20,9 +20,7 @@ package VASSAL.counters;
 import VASSAL.script.expression.AuditTrail;
 import VASSAL.script.expression.Auditable;
 
-/**
- * Boolean Or of two PieceFilters
- */
+/** Boolean Or of two PieceFilters */
 public class BooleanOrPieceFilter implements PieceFilter {
   private final PieceFilter filter1;
   private final PieceFilter filter2;
@@ -32,7 +30,9 @@ public class BooleanOrPieceFilter implements PieceFilter {
     this.filter2 = filter2;
   }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   @Deprecated(since = "2021-06-11")
   @Override
   public boolean accept(GamePiece piece) {
@@ -58,5 +58,4 @@ public class BooleanOrPieceFilter implements PieceFilter {
   public PieceFilter getFilter2() {
     return filter2;
   }
-
 }

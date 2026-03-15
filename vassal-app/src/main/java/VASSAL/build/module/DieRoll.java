@@ -17,16 +17,13 @@
  */
 package VASSAL.build.module;
 
-
 /**
  * @author Brent Easton
- *
- * Describes a single roll of one or more identical dice.
- * For use with internet dice rollers
+ *     <p>Describes a single roll of one or more identical dice. For use with internet dice rollers
  */
 public class DieRoll {
 
-  private String description = ""; //$NON-NLS-1$
+  private String description = ""; // $NON-NLS-1$
   private int numSides;
   private int plus;
   private boolean reportTotal;
@@ -40,7 +37,6 @@ public class DieRoll {
     setReportTotal(r);
     result = new int[dice];
   }
-
 
   public DieRoll(String d, int dice, int sides, int add) {
     this(d, dice, sides, add, false);

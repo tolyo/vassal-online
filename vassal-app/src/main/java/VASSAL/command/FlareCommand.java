@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2020 Vassalengine.org
  *
@@ -17,13 +16,10 @@
  */
 package VASSAL.command;
 
+import VASSAL.build.module.map.Flare;
 import java.awt.Point;
 
-import VASSAL.build.module.map.Flare;
-
-/**
- * A {@link Command} for sending {@link Flare} actions to other clients
- */
+/** A {@link Command} for sending {@link Flare} actions to other clients */
 public class FlareCommand extends Command {
   private final Flare flare;
   private final Point clickPoint;
@@ -36,9 +32,7 @@ public class FlareCommand extends Command {
     this.flare = flare;
   }
 
-  /**
-   * Executes the command (starts a Flare at the specified location)
-   */
+  /** Executes the command (starts a Flare at the specified location) */
   @Override
   protected void executeCommand() {
     flare.setClickPoint(clickPoint);

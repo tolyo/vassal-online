@@ -18,12 +18,12 @@
 
 package VASSAL.build.module.gamepieceimage;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
@@ -33,8 +33,6 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.table.TableCellRenderer;
-
-import VASSAL.tools.image.ImageUtils;
 
 public class SwatchComboBox extends JComboBox<String> {
   private static final long serialVersionUID = 1L;
@@ -50,7 +48,7 @@ public class SwatchComboBox extends JComboBox<String> {
     setRenderer(renderer);
 
     if (colorMap.isEmpty()) {
-      final String[] displayNames =  ColorManager.getColorManager().getColorDisplayNames();
+      final String[] displayNames = ColorManager.getColorManager().getColorDisplayNames();
       for (int i = 0; i < s.length; i++) {
         colorMap.put(s[i], displayNames[i]);
       }
@@ -82,7 +80,11 @@ public class SwatchComboBox extends JComboBox<String> {
      * value and returns the label, set up to display the text and image.
      */
     @Override
-    public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected,
+    public Component getListCellRendererComponent(
+        JList<? extends String> list,
+        String value,
+        int index,
+        boolean isSelected,
         boolean cellHasFocus) {
 
       final ColorSwatch swatch = ColorManager.getColorManager().getColorSwatch(value);
@@ -90,14 +92,13 @@ public class SwatchComboBox extends JComboBox<String> {
       if (isSelected) {
         setBackground(list.getSelectionBackground());
         setForeground(list.getSelectionForeground());
-      }
-      else {
+      } else {
         setBackground(list.getBackground());
         setForeground(list.getForeground());
       }
 
-      //Set the icon and text. If icon was null, say so.
-      //String name = (String) list.get
+      // Set the icon and text. If icon was null, say so.
+      // String name = (String) list.get
       final BufferedImage img = ImageUtils.createCompatibleImage(25, 12);
       final Graphics2D g = img.createGraphics();
       g.setColor(swatch.getColor());
@@ -114,7 +115,7 @@ public class SwatchComboBox extends JComboBox<String> {
     }
   }
 
-  public class SwatchTableRenderer extends JLabel implements TableCellRenderer  {
+  public class SwatchTableRenderer extends JLabel implements TableCellRenderer {
     private static final long serialVersionUID = 1L;
 
     public SwatchTableRenderer() {
@@ -129,23 +130,20 @@ public class SwatchComboBox extends JComboBox<String> {
      */
     @Override
     public Component getTableCellRendererComponent(
-        JTable table, Object value,
-        boolean isSelected, boolean hasFocus,
-        int row, int column) {
+        JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
       final ColorSwatch swatch = (ColorSwatch) value;
 
       if (isSelected) {
         setBackground(table.getSelectionBackground());
         setForeground(table.getSelectionForeground());
-      }
-      else {
+      } else {
         setBackground(table.getBackground());
         setForeground(table.getForeground());
       }
 
-      //Set the icon and text. If icon was null, say so.
-      //String name = (String) list.get
+      // Set the icon and text. If icon was null, say so.
+      // String name = (String) list.get
       final BufferedImage img = ImageUtils.createCompatibleImage(25, 12);
       final Graphics2D g = img.createGraphics();
       g.setColor(swatch.getColor());

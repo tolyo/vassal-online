@@ -17,24 +17,22 @@
  */
 package VASSAL.build.module.map;
 
+import VASSAL.counters.GamePiece;
 import java.util.ArrayList;
 import java.util.List;
 
-import VASSAL.counters.GamePiece;
-
 /**
- * A SimplePieceCollection is used within a {@link CompoundPieceCollection} to maintain an array of the
- * pieces/stacks/decks ({@link VASSAL.counters.GamePiece}) within a single visual layer. Even within a
- * single "layer", the individual pieces can be rearranged, which will change their relative draw order
- * within that layer.
+ * A SimplePieceCollection is used within a {@link CompoundPieceCollection} to maintain an array of
+ * the pieces/stacks/decks ({@link VASSAL.counters.GamePiece}) within a single visual layer. Even
+ * within a single "layer", the individual pieces can be rearranged, which will change their
+ * relative draw order within that layer.
  */
 public class SimplePieceCollection implements PieceCollection {
   private final List<GamePiece> pieces = new ArrayList<>();
 
   /**
-   * Returns the index of a piece.  When painting the map, pieces
-   * are drawn in order of index, so lowest index is drawn first and
-   * therefore appears at the "bottom", as later pieces are then
+   * Returns the index of a piece. When painting the map, pieces are drawn in order of index, so
+   * lowest index is drawn first and therefore appears at the "bottom", as later pieces are then
    * drawn "on top of" it.
    */
   @Override

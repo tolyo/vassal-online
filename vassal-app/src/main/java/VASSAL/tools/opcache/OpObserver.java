@@ -24,18 +24,16 @@ import java.util.concurrent.ExecutionException;
 /**
  * An <code>OpObserver</code> is notified when its {@link Op} completes..
  *
- * <p>Objects implementing <code>OpObserver</code> are intended to
- * be passed as an argument to {link Op.get(Key,OpObserver)} or
- * {link Op.getFuture(Key,OpObserver)} which which call back to
- * {link #imageOpChange} on completion.</p>
+ * <p>Objects implementing <code>OpObserver</code> are intended to be passed as an argument to {link
+ * Op.get(Key,OpObserver)} or {link Op.getFuture(Key,OpObserver)} which which call back to {link
+ * #imageOpChange} on completion.
  *
  * @author Joel Uckelman
  * @since 3.1.0
  */
 public interface OpObserver<V> {
   /**
-   * Callback which is run when the observed <code>Op</code> completes
-   * successfully.
+   * Callback which is run when the observed <code>Op</code> completes successfully.
    *
    * @param op the successfully completed <code>Op</code>
    * @param val the value of the <code>Op</code>
@@ -46,8 +44,7 @@ public interface OpObserver<V> {
    * Callback which is run when the observed <code>Op</code> is cancelled.
    *
    * @param op the cancelled <code>Op</code>
-   * @param e the <code>CancellationException</code> thrown when the
-   *  <code>Op</code> was cancelled
+   * @param e the <code>CancellationException</code> thrown when the <code>Op</code> was cancelled
    */
   void cancelled(Op<V> op, CancellationException e);
 
@@ -55,8 +52,7 @@ public interface OpObserver<V> {
    * Callback which is run when the observed <code>Op</code> is interrupted.
    *
    * @param op the interrupted <code>Op</code>
-   * @param e the <code>InterruptedException</code> thrown when the
-   *  <code>Op</code> was interrupted
+   * @param e the <code>InterruptedException</code> thrown when the <code>Op</code> was interrupted
    */
   void interrupted(Op<V> op, InterruptedException e);
 
@@ -64,8 +60,7 @@ public interface OpObserver<V> {
    * Callback which is run when the observed <code>Op</code> fails.
    *
    * @param op the failed <code>Op</code>
-   * @param e the <code>ExecutionException</code> thrown when the
-   *  <code>Op</code> failed
+   * @param e the <code>ExecutionException</code> thrown when the <code>Op</code> failed
    */
   void failed(Op<V> op, ExecutionException e);
 }

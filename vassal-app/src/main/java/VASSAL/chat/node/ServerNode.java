@@ -17,6 +17,8 @@
  */
 package VASSAL.chat.node;
 
+import VASSAL.tools.PropertiesEncoder;
+import VASSAL.tools.SequenceEncoder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +28,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
-
-import VASSAL.tools.PropertiesEncoder;
-import VASSAL.tools.SequenceEncoder;
 
 public class ServerNode extends Node {
   private static final Logger logger = Logger.getLogger(ServerNode.class.getName());
@@ -51,14 +50,13 @@ public class ServerNode extends Node {
     final SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(path, '/');
     while (st.hasMoreTokens()) {
       String childId = st.nextToken();
-      if ("*".equals(childId)) { //$NON-NLS-1$
+      if ("*".equals(childId)) { // $NON-NLS-1$
         final List<Node> l = new ArrayList<>();
         for (final Node node : target) {
           l.addAll(Arrays.asList(node.getChildren()));
         }
         target = l.toArray(new Node[0]);
-      }
-      else if (childId.startsWith("~")) { //$NON-NLS-1$
+      } else if (childId.startsWith("~")) { // $NON-NLS-1$
         childId = childId.substring(1);
         final List<Node> l = new ArrayList<>();
         for (final Node node : target) {
@@ -69,14 +67,13 @@ public class ServerNode extends Node {
           }
         }
         target = l.toArray(new Node[0]);
-      }
-      else {
+      } else {
         int i = 0;
         final int n = target.length;
         for (; i < n; ++i) {
           final Node child = target[i].getChild(childId);
           if (child != null) {
-            target = new Node[]{child};
+            target = new Node[] {child};
             break;
           }
         }
@@ -152,8 +149,8 @@ public class ServerNode extends Node {
   }
 
   /**
-   * One client has requested to kick another out of a room. Validate that - Both players are in the same room - Kicker
-   * is the owner of the room
+   * One client has requested to kick another out of a room. Validate that - Both players are in the
+   * same room - Kicker is the owner of the room
    *
    * @param kicker Id of Kicking player
    * @param kickeeId Id of Player to be kicked
@@ -163,9 +160,9 @@ public class ServerNode extends Node {
     final Node roomNode = kicker.getParent();
     final String roomOwnerId;
     try {
-      roomOwnerId = new PropertiesEncoder(roomNode.getInfo()).getProperties().getProperty(NodeRoom.OWNER);
-    }
-    catch (IOException e) {
+      roomOwnerId =
+          new PropertiesEncoder(roomNode.getInfo()).getProperties().getProperty(NodeRoom.OWNER);
+    } catch (IOException e) {
       e.printStackTrace();
       return;
     }
@@ -199,7 +196,7 @@ public class ServerNode extends Node {
         s.addAll(modules);
       }
       for (final Node module : s) {
-        logger.fine("Sending contents of " + module.getId()); //$NON-NLS-1$
+        logger.fine("Sending contents of " + module.getId()); // $NON-NLS-1$
         final Node[] players = module.getLeafDescendants();
         final Node[] rooms = module.getChildren();
         final String listCommand = Protocol.encodeListCommand(players);

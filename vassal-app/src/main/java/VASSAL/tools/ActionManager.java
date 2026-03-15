@@ -1,19 +1,16 @@
-
 package VASSAL.tools;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.Action;
-
 
 public class ActionManager {
   private final Map<Object, Action> map = new HashMap<>();
 
   private static final ActionManager instance = new ActionManager();
 
-  private ActionManager() { }
+  private ActionManager() {}
 
   public static ActionManager getInstance() {
     return instance;

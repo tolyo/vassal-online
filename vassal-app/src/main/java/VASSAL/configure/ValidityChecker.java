@@ -20,9 +20,7 @@ import VASSAL.build.Buildable;
  * at http://www.opensource.org.
  */
 
-/**
- * Performs validation checks on {@link VASSAL.build.Buildable} objects
- */
+/** Performs validation checks on {@link VASSAL.build.Buildable} objects */
 @FunctionalInterface
 public interface ValidityChecker {
   void validate(Buildable target, ValidationReport report);

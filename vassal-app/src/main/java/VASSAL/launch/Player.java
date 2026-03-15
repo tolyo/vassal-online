@@ -18,15 +18,6 @@
 
 package VASSAL.launch;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-
-import org.apache.commons.lang3.SystemUtils;
-
 import VASSAL.Info;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.ExtensionsLoader;
@@ -45,6 +36,12 @@ import VASSAL.tools.UsernameAndPasswordDialog;
 import VASSAL.tools.menu.MacOSXMenuManager;
 import VASSAL.tools.menu.MenuBarProxy;
 import VASSAL.tools.menu.MenuManager;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * @author Joel Uckelman
@@ -63,8 +60,7 @@ public class Player extends Launcher {
 
   @Override
   protected MenuManager createMenuManager() {
-    return SystemUtils.IS_OS_MAC ?
-      new MacOSXMenuManager() : new PlayerMenuManager();
+    return SystemUtils.IS_OS_MAC ? new MacOSXMenuManager() : new PlayerMenuManager();
   }
 
   @Override
@@ -81,8 +77,7 @@ public class Player extends Launcher {
       createExtensionsLoader().addTo(GameModule.getGameModule());
       Localization.getInstance().translate();
       showWizardOrPlayerWindow(GameModule.getGameModule());
-    }
-    else {
+    } else {
       GameModule.init(createModule(createDataArchive()));
       createExtensionsLoader().addTo(GameModule.getGameModule());
       Localization.getInstance().translate();
@@ -91,8 +86,7 @@ public class Player extends Launcher {
         m.getPlayerWindow().setVisible(true);
         m.setGameFile(lr.game.getName(), GameModule.GameFileMode.LOADED_GAME);
         m.getGameState().loadGameInBackground(lr.game);
-      }
-      else {
+      } else {
         showWizardOrPlayerWindow(m);
       }
     }
@@ -109,8 +103,7 @@ public class Player extends Launcher {
   protected DataArchive createDataArchive() throws IOException {
     if (lr.builtInModule) {
       return new JarArchive();
-    }
-    else {
+    } else {
       return new DataArchive(lr.module.getPath());
     }
   }
@@ -122,11 +115,11 @@ public class Player extends Launcher {
   private void showWizardOrPlayerWindow(GameModule module) {
     module.getPlayerWindow().setVisible(true);
 
-    final Boolean showWizard = (Boolean) Prefs.getGlobalPrefs().getValue(WizardSupport.WELCOME_WIZARD_KEY);
+    final Boolean showWizard =
+        (Boolean) Prefs.getGlobalPrefs().getValue(WizardSupport.WELCOME_WIZARD_KEY);
     if (Boolean.TRUE.equals(showWizard)) {
       module.getWizardSupport().showWelcomeWizard();
-    }
-    else {
+    } else {
       // prompt for username and password if wizard is off
       // but no username is set
       if (!module.isRealName()) {
@@ -139,17 +132,20 @@ public class Player extends Launcher {
     private static final long serialVersionUID = 1L;
 
     public LaunchAction(ModuleManagerWindow mm, File module) {
-      super(Resources.getString("Main.play_module_specific"), mm,
-        Player.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.LOAD, module)
-      );
+      super(
+          Resources.getString("Main.play_module_specific"),
+          mm,
+          Player.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.LOAD, module));
       setEnabled(!isEditing(module));
     }
 
     public LaunchAction(ModuleManagerWindow mm, File module, File saveGame) {
-      super(Resources.getString("General.open"), mm, Player.class.getName(),
-        new LaunchRequest(LaunchRequest.Mode.LOAD, module, saveGame)
-      );
+      super(
+          Resources.getString("General.open"),
+          mm,
+          Player.class.getName(),
+          new LaunchRequest(LaunchRequest.Mode.LOAD, module, saveGame));
       setEnabled(!isEditing(module));
     }
 
@@ -160,15 +156,14 @@ public class Player extends Launcher {
       // don't permit loading of VASL saved before 3.4
       final AbstractMetaData data = MetaDataFactory.buildMetaData(lr.module);
       if (data instanceof ModuleMetaData) {
-        if (!checkModuleLoadable((ModuleMetaData)data)) {
+        if (!checkModuleLoadable((ModuleMetaData) data)) {
           return;
         }
-      }
-      else {
+      } else {
         if (lr.module != null) {
           // A module in the MM should be a valid Module, but people can and do delete
           // or replace module files while the MM is running.
-          ErrorDialog.show("Error.invalid_vassal_module", lr.module.getAbsolutePath()); //NON-NLS
+          ErrorDialog.show("Error.invalid_vassal_module", lr.module.getAbsolutePath()); // NON-NLS
           lr.module = null;
         }
         return;
@@ -209,11 +204,10 @@ public class Player extends Launcher {
       final AbstractMetaData data = MetaDataFactory.buildMetaData(lr.module);
       if (data != null && Info.isModuleTooNew(data.getVassalVersion())) {
         ErrorDialog.show(
-          "Error.module_too_new", //NON-NLS
-          lr.module.getPath(),
-          data.getVassalVersion(),
-          Info.getVersion()
-        );
+            "Error.module_too_new", // NON-NLS
+            lr.module.getPath(),
+            data.getVassalVersion(),
+            Info.getVersion());
         return;
       }
 

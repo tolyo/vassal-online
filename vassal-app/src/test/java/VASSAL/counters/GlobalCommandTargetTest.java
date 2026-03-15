@@ -59,8 +59,5 @@ public class GlobalCommandTargetTest extends DecoratorTest {
     target2.decode(code);
 
     assertThat("Expression values", target, is(equalTo(target2)));
-
-
-
   }
 }

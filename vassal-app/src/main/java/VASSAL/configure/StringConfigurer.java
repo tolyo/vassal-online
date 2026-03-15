@@ -18,7 +18,12 @@
 package VASSAL.configure;
 
 import VASSAL.tools.swing.SwingUtils;
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.FocusListener;
 import javax.swing.JComponent;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
@@ -27,22 +32,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.LayerUI;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
-import java.awt.event.FocusListener;
 
-/**
- * A Configurer for String values
- */
+/** A Configurer for String values */
 public class StringConfigurer extends Configurer {
   protected JPanel p;
   protected JTextField nameField;
   protected int length;
   protected static final int DEFAULT_LENGTH = 16;
-  protected boolean updateInProgress; /* Used to co-ordinate external updates from List Confogurers using this Configurer */
+  protected boolean
+      updateInProgress; /* Used to co-ordinate external updates from List Confogurers using this Configurer */
 
   /** Use {@link #DEFAULT_LENGTH} instead. */
   @Deprecated(since = "2021-12-04", forRemoval = true)
@@ -68,7 +66,7 @@ public class StringConfigurer extends Configurer {
   }
 
   public StringConfigurer(String key, String name, int length) {
-    this (key, name, length, "", "");
+    this(key, name, length, "", "");
   }
 
   public StringConfigurer(String key, String name) {
@@ -76,7 +74,7 @@ public class StringConfigurer extends Configurer {
   }
 
   public StringConfigurer(String val) {
-    this (null, "", val);
+    this(null, "", val);
   }
 
   @Override
@@ -111,29 +109,29 @@ public class StringConfigurer extends Configurer {
       p = new ConfigurerPanel(getName(), "[fill,grow]0[0]", "[][fill,grow][]"); // NON-NLS
 
       nameField = buildTextField();
-      nameField.setMaximumSize(new Dimension(
-        nameField.getMaximumSize().width,
-        nameField.getPreferredSize().height
-      ));
+      nameField.setMaximumSize(
+          new Dimension(nameField.getMaximumSize().width, nameField.getPreferredSize().height));
       nameField.setText(getValueString());
 
       // Edit box selects all text when first focused
-      nameField.addFocusListener(new java.awt.event.FocusAdapter() {
-        @Override
-        public void focusGained(java.awt.event.FocusEvent evt) {
-          SwingUtilities.invokeLater(new Runnable() {
+      nameField.addFocusListener(
+          new java.awt.event.FocusAdapter() {
             @Override
-            public void run() {
-              // Ignore this event if gaining focus from self.
-              // This can happen when selecting another control within
-              // this component, such as FormattedStringConfigurer.
-              if (evt.getSource() != evt.getOppositeComponent()) {
-                nameField.selectAll();
-              }
+            public void focusGained(java.awt.event.FocusEvent evt) {
+              SwingUtilities.invokeLater(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      // Ignore this event if gaining focus from self.
+                      // This can happen when selecting another control within
+                      // this component, such as FormattedStringConfigurer.
+                      if (evt.getSource() != evt.getOppositeComponent()) {
+                        nameField.selectAll();
+                      }
+                    }
+                  });
             }
           });
-        }
-      });
 
       SwingUtils.allowUndo(nameField);
       if (!GraphicsEnvironment.isHeadless()) {
@@ -143,28 +141,31 @@ public class StringConfigurer extends Configurer {
       final LayerUI<JTextField> layerUI = new ConfigLayerUI(this);
       final JLayer<JTextField> layer = new JLayer<>(nameField, layerUI);
       p.add(layer, getGrowthConstraint()); // NON-NLS
-      nameField.getDocument().addDocumentListener(new DocumentListener() {
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-          update();
-        }
+      nameField
+          .getDocument()
+          .addDocumentListener(
+              new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                  update();
+                }
 
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-          update();
-        }
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                  update();
+                }
 
-        @Override
-        public void changedUpdate(DocumentEvent e) {}
+                @Override
+                public void changedUpdate(DocumentEvent e) {}
 
-        private void update() {
-          if (!updateInProgress) {
-            noUpdate = true;
-            setValue(nameField.getText());
-            noUpdate = false;
-          }
-        }
-      });
+                private void update() {
+                  if (!updateInProgress) {
+                    noUpdate = true;
+                    setValue(nameField.getText());
+                    noUpdate = false;
+                  }
+                }
+              });
     }
     return p;
   }
@@ -230,7 +231,8 @@ public class StringConfigurer extends Configurer {
 
   @Override
   public void setEnabled(boolean enabled) {
-    // The default disabled state of a textfield makes the text almost invisible. Just make the field non-editable instead.
+    // The default disabled state of a textfield makes the text almost invisible. Just make the
+    // field non-editable instead.
     nameField.setEditable(enabled);
   }
 }

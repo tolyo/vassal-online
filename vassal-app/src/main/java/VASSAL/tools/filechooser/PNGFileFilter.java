@@ -20,14 +20,13 @@ package VASSAL.tools.filechooser;
 import VASSAL.i18n.Resources;
 
 /**
- * A FileFilter for PNG images. Used by file choosers
- * to filter out files which aren't PNGs.
+ * A FileFilter for PNG images. Used by file choosers to filter out files which aren't PNGs.
  *
  * @author Joel Uckelman
  * @since 3.2.0
  */
 public class PNGFileFilter extends ExtensionFileFilter {
-  public static final String[] types = { ".png" }; //NON-NLS
+  public static final String[] types = {".png"}; // NON-NLS
 
   public PNGFileFilter() {
     super(Resources.getString("Editor.FileFilter.png"), types);

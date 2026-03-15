@@ -18,6 +18,7 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,10 +26,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import VASSAL.tools.image.ImageUtils;
 
 /**
  * An {@link ImageOp} which crops its source.
@@ -36,15 +34,14 @@ import VASSAL.tools.image.ImageUtils;
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class CropOpBitmapImpl extends AbstractTiledOpImpl
-                              implements CropOp {
+public class CropOpBitmapImpl extends AbstractTiledOpImpl implements CropOp {
   private final ImageOp sop;
   private final int x0, y0, x1, y1;
   private final int hash;
 
   /**
-   * Constructs an <code>ImageOp</code> which will crop the image
-   * produced by its source <code>ImageOp</code>.
+   * Constructs an <code>ImageOp</code> which will crop the image produced by its source <code>
+   * ImageOp</code>.
    *
    * @param sop the source operation
    * @param x0 the x coordinate of the upper-left corner
@@ -81,18 +78,13 @@ public class CropOpBitmapImpl extends AbstractTiledOpImpl
 
     size = new Dimension(x1 - x0, y1 - y0);
 
-    hash = new HashCodeBuilder().append(sop)
-                                .append(x0)
-                                .append(y0)
-                                .append(x1)
-                                .append(y1)
-                                .toHashCode();
+    hash =
+        new HashCodeBuilder().append(sop).append(x0).append(y0).append(x1).append(y1).toHashCode();
   }
 
   @Override
   public List<VASSAL.tools.opcache.Op<?>> getSources() {
-    final Point[] tiles =
-      sop.getTileIndices(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+    final Point[] tiles = sop.getTileIndices(new Rectangle(x0, y0, x1 - x0, y1 - y0));
 
     final List<VASSAL.tools.opcache.Op<?>> ops = new ArrayList<>(tiles.length);
 
@@ -105,20 +97,20 @@ public class CropOpBitmapImpl extends AbstractTiledOpImpl
    * {@inheritDoc}
    *
    * @throws Exception passed up from the source <code>ImageOp</code>.
-   * */
+   */
   @Override
   public BufferedImage eval() throws Exception {
     // cobble source from tiles
-    final Point[] tiles =
-      sop.getTileIndices(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+    final Point[] tiles = sop.getTileIndices(new Rectangle(x0, y0, x1 - x0, y1 - y0));
     final int tw = sop.getTileWidth();
     final int th = sop.getTileHeight();
 
     // match the transparency of the first tile
-    final BufferedImage dst = ImageUtils.createCompatibleImage(
-      size.width, size.height,
-      sop.getTile(tiles[0], null).getTransparency() != BufferedImage.OPAQUE
-    );
+    final BufferedImage dst =
+        ImageUtils.createCompatibleImage(
+            size.width,
+            size.height,
+            sop.getTile(tiles[0], null).getTransparency() != BufferedImage.OPAQUE);
 
     final Graphics2D g = dst.createGraphics();
 
@@ -136,11 +128,12 @@ public class CropOpBitmapImpl extends AbstractTiledOpImpl
 
   @Override
   protected ImageOp createTileOp(int tileX, int tileY) {
-    return new CropOpBitmapImpl(this,
-                         tileX * tileSize.width,
-                         tileY * tileSize.height,
-                         Math.min((tileX + 1) * tileSize.width, size.width),
-                         Math.min((tileY + 1) * tileSize.height, size.height));
+    return new CropOpBitmapImpl(
+        this,
+        tileX * tileSize.width,
+        tileY * tileSize.height,
+        Math.min((tileX + 1) * tileSize.width, size.width),
+        Math.min((tileY + 1) * tileSize.height, size.height));
   }
 
   /**
@@ -180,11 +173,11 @@ public class CropOpBitmapImpl extends AbstractTiledOpImpl
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final CropOpBitmapImpl op = (CropOpBitmapImpl) o;
-    return x0 == op.getX0() &&
-           y0 == op.getY0() &&
-           x1 == op.getX1() &&
-           y1 == op.getY1() &&
-           sop.equals(op.sop);
+    return x0 == op.getX0()
+        && y0 == op.getY0()
+        && x1 == op.getX1()
+        && y1 == op.getY1()
+        && sop.equals(op.sop);
   }
 
   /** {@inheritDoc} */

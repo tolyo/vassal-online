@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * An {@link InputStream} which concatenates other <code>InputStreams</code>.
- * As with {@link SequenceInputStream}, the first stream is read until EOF,
- * followed by the second, and so on, until all input streams are exhausted.
+ * An {@link InputStream} which concatenates other <code>InputStreams</code>. As with {@link
+ * SequenceInputStream}, the first stream is read until EOF, followed by the second, and so on,
+ * until all input streams are exhausted.
  *
- * Note: {@link SequenceInputStream#available()} returns only the number of
- * bytes available from the current stream in the sequence, which makes it
- * difficult to efficiently allocate a buffer into which to read the bytes.
+ * <p>Note: {@link SequenceInputStream#available()} returns only the number of bytes available from
+ * the current stream in the sequence, which makes it difficult to efficiently allocate a buffer
+ * into which to read the bytes.
  *
  * @author Joel Uckelman
  * @since 3.1.0
@@ -45,8 +45,8 @@ public class CompositeInputStream extends InputStream {
   protected InputStream in;
 
   /**
-   * Creates a <code>CompositeInputStream</code> from the given sequence
-   * of <code>InputStream</code>s.
+   * Creates a <code>CompositeInputStream</code> from the given sequence of <code>InputStream</code>
+   * s.
    *
    * @param streams the <code>InputStream</code>s to be concatenated
    */
@@ -56,8 +56,8 @@ public class CompositeInputStream extends InputStream {
   }
 
   /**
-   * Creates a <code>CompositeInputStream</code> from the given sequence
-   * of <code>InputStream</code>s.
+   * Creates a <code>CompositeInputStream</code> from the given sequence of <code>InputStream</code>
+   * s.
    *
    * @param streams the <code>InputStream</code>s to be concatenated
    */

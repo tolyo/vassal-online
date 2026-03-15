@@ -19,18 +19,13 @@ package VASSAL.tools;
 
 import VASSAL.script.expression.Auditable;
 
-/**
- * Utility class to detect and report Infinite Loops within
- * Vassal components
- *
- */
+/** Utility class to detect and report Infinite Loops within Vassal components */
 public class RecursionLimiter {
   protected static final int RECURSION_LIMIT = 50;
   protected static int recursionDepth = 0;
   protected static boolean reporting = false;
 
-  public static void startExecution(Loopable looper)
-                                              throws RecursionLimitException {
+  public static void startExecution(Loopable looper) throws RecursionLimitException {
     if (++recursionDepth > RECURSION_LIMIT) {
       throw new RecursionLimitException(looper);
     }
@@ -42,18 +37,18 @@ public class RecursionLimiter {
 
   /**
    * Report an Infinite Loop
+   *
    * @param e exception
    */
   public static void infiniteLoop(RecursionLimitException e) {
     reporting = true;
     ErrorDialog.showDetails(
-      e,
-      ThrowableUtils.getStackTrace(e),
-      "Error.infinite_loop", //NON-NLS
-      e.getComponentTypeName(),
-      e.getComponentName(),
-      e.getAdditionalErrorMessage()
-    );
+        e,
+        ThrowableUtils.getStackTrace(e),
+        "Error.infinite_loop", // NON-NLS
+        e.getComponentTypeName(),
+        e.getComponentName(),
+        e.getAdditionalErrorMessage());
     reporting = false;
   }
 
@@ -61,7 +56,5 @@ public class RecursionLimiter {
     return reporting;
   }
 
-  public interface Loopable extends Auditable {
-
-  }
+  public interface Loopable extends Auditable {}
 }

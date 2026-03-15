@@ -33,26 +33,25 @@ import VASSAL.tools.FormattedString;
 import VASSAL.tools.SequenceEncoder;
 import VASSAL.tools.TemporaryToolBar;
 import VASSAL.tools.ToolBarComponent;
-
-import javax.swing.JToolBar;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import javax.swing.JToolBar;
 
 /**
  * Adds a global property to a Map or Module
  *
  * @author rkinney
- *
  */
-public class GlobalProperty extends AbstractConfigurable implements ToolBarComponent, GameComponent, CommandEncoder, PropertySource, MutableProperty {
-  public static final String NAME = "name"; //NON-NLS
-  public static final String INITIAL_VALUE = "initialValue"; //NON-NLS
-  public static final String DESCRIPTION = "description"; //NON-NLS
-  public static final String NUMERIC = "isNumeric"; //NON-NLS
-  public static final String MIN_VALUE = "min"; //NON-NLS
-  public static final String MAX_VALUE = "max"; //NON-NLS
-  public static final String WRAP = "wrap"; //NON-NLS
-  protected static final String COMMAND_PREFIX = "GlobalProperty\t"; //NON-NLS
+public class GlobalProperty extends AbstractConfigurable
+    implements ToolBarComponent, GameComponent, CommandEncoder, PropertySource, MutableProperty {
+  public static final String NAME = "name"; // NON-NLS
+  public static final String INITIAL_VALUE = "initialValue"; // NON-NLS
+  public static final String DESCRIPTION = "description"; // NON-NLS
+  public static final String NUMERIC = "isNumeric"; // NON-NLS
+  public static final String MIN_VALUE = "min"; // NON-NLS
+  public static final String MAX_VALUE = "max"; // NON-NLS
+  public static final String WRAP = "wrap"; // NON-NLS
+  protected static final String COMMAND_PREFIX = "GlobalProperty\t"; // NON-NLS
   protected TemporaryToolBar tempToolbar = new TemporaryToolBar();
   protected String description = "";
   protected String initialValue = "";
@@ -82,7 +81,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   @Override
   public String[] getAttributeDescriptions() {
-    return new String[]{
+    return new String[] {
       Resources.getString("Editor.name_label"),
       Resources.getString("Editor.GlobalProperty.initial_value"),
       Resources.getString("Editor.description_label"),
@@ -95,7 +94,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[]{
+    return new Class<?>[] {
       String.class,
       String.class,
       String.class,
@@ -108,15 +107,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   @Override
   public String[] getAttributeNames() {
-    return new String[]{
-      NAME,
-      INITIAL_VALUE,
-      DESCRIPTION,
-      NUMERIC,
-      MIN_VALUE,
-      MAX_VALUE,
-      WRAP
-    };
+    return new String[] {NAME, INITIAL_VALUE, DESCRIPTION, NUMERIC, MIN_VALUE, MAX_VALUE, WRAP};
   }
 
   @Override
@@ -124,28 +115,22 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
     if (NAME.equals(key)) {
       setConfigureName((String) value);
       property.setPropertyName(getConfigureName());
-    }
-    else if (INITIAL_VALUE.equals(key)) {
+    } else if (INITIAL_VALUE.equals(key)) {
       initialValue = (String) value;
       if (initialValue == null) {
         initialValue = "";
       }
       property.setPropertyValue(initialValue);
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       description = (String) value;
-    }
-    else if (NUMERIC.equals(key)) {
-      numeric = Boolean.TRUE.equals(value) || "true".equals(value); //NON-NLS
-    }
-    else if (MIN_VALUE.equals(key)) {
+    } else if (NUMERIC.equals(key)) {
+      numeric = Boolean.TRUE.equals(value) || "true".equals(value); // NON-NLS
+    } else if (MIN_VALUE.equals(key)) {
       minValue = (String) value;
-    }
-    else if (MAX_VALUE.equals(key)) {
+    } else if (MAX_VALUE.equals(key)) {
       maxValue = (String) value;
-    }
-    else if (WRAP.equals(key)) {
-      wrap = Boolean.TRUE.equals(value) || "true".equals(value); //NON-NLS
+    } else if (WRAP.equals(key)) {
+      wrap = Boolean.TRUE.equals(value) || "true".equals(value); // NON-NLS
     }
   }
 
@@ -153,23 +138,17 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (INITIAL_VALUE.equals(key)) {
+    } else if (INITIAL_VALUE.equals(key)) {
       return initialValue;
-    }
-    else if (DESCRIPTION.equals(key)) {
+    } else if (DESCRIPTION.equals(key)) {
       return description;
-    }
-    else if (NUMERIC.equals(key)) {
+    } else if (NUMERIC.equals(key)) {
       return String.valueOf(numeric);
-    }
-    else if (MIN_VALUE.equals(key)) {
+    } else if (MIN_VALUE.equals(key)) {
       return String.valueOf(minValue);
-    }
-    else if (MAX_VALUE.equals(key)) {
+    } else if (MAX_VALUE.equals(key)) {
       return String.valueOf(maxValue);
-    }
-    else if (WRAP.equals(key)) {
+    } else if (WRAP.equals(key)) {
       return String.valueOf(wrap);
     }
     return null;
@@ -179,8 +158,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
   public VisibilityCondition getAttributeVisibility(String name) {
     if (List.of(MIN_VALUE, MAX_VALUE, WRAP).contains(name)) {
       return numericVisibility;
-    }
-    else {
+    } else {
       return super.getAttributeVisibility(name);
     }
   }
@@ -194,12 +172,12 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GlobalProperties.html"); //NON-NLS
+    return HelpFile.getReferenceManualPage("GlobalProperties.html"); // NON-NLS
   }
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return new Class<?>[]{ChangePropertyButton.class};
+    return new Class<?>[] {ChangePropertyButton.class};
   }
 
   @Override
@@ -216,7 +194,8 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
       propertySource = (PropertySource) parent;
     }
 
-    // For copy-pasting purposes this method may end up getting called twice on the same component. Only do this part once.
+    // For copy-pasting purposes this method may end up getting called twice on the same component.
+    // Only do this part once.
     final GameModule gm = GameModule.getGameModule();
     final GameState gs = gm.getGameState();
     if (!gs.getGameComponents().contains(this)) {
@@ -257,7 +236,8 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
     final String newValue = sd.nextToken("");
     final String containerId = sd.nextToken("");
-    if (containerId.length() != 0 && !containerId.equals(parentContainer.getMutablePropertiesContainerId())) {
+    if (containerId.length() != 0
+        && !containerId.equals(parentContainer.getMutablePropertiesContainerId())) {
       return null;
     }
 
@@ -266,6 +246,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   /**
    * A String that identifies this property in an encoded Command
+   *
    * @return propertyId
    */
   protected String getPropertyId() {
@@ -292,15 +273,11 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
     }
 
     final SequenceEncoder se = new SequenceEncoder(COMMAND_PREFIX, ';');
-    se
-      .append(getPropertyId())
-      .append(sgp.newValue)
-      .append(getContainerId());
+    se.append(getPropertyId()).append(sgp.newValue).append(getContainerId());
     return se.getValue();
   }
-  /**
-   * Command to pass a new Global property value to other players or into the logfile.
-   */
+
+  /** Command to pass a new Global property value to other players or into the logfile. */
   public static class SetGlobalProperty extends Command {
     protected String newValue;
     protected String oldValue;
@@ -316,8 +293,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
     public String getTargetName() {
       if (target == null) {
         return "";
-      }
-      else {
+      } else {
         final String targetName = target.getPropertyId();
         return targetName == null ? "" : targetName;
       }
@@ -344,8 +320,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
       format.setFormat(maxValue);
       try {
         max = Integer.parseInt(format.getText(this, this, "Editor.GlobalProperty.minimum_value"));
-      }
-      catch (final NumberFormatException e) {
+      } catch (final NumberFormatException e) {
         // Use default value if formatted string is not a number
       }
     }
@@ -358,8 +333,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
       format.setFormat(minValue);
       try {
         min = Integer.parseInt(format.getText(this, this, "Editor.GlobalProperty.maximum_value"));
-      }
-      catch (final NumberFormatException e) {
+      } catch (final NumberFormatException e) {
         // Use default value if not a number
       }
     }
@@ -423,6 +397,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of the Configurables string/expression fields if any (for search)
    */
   @Override
@@ -432,6 +407,7 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   /**
    * {@link VASSAL.search.SearchTarget}
+   *
    * @return a list of any Property Names referenced in the Configurable, if any (for search)
    */
   @Override
@@ -441,7 +417,9 @@ public class GlobalProperty extends AbstractConfigurable implements ToolBarCompo
 
   /**
    * {@link VASSAL.search.SearchTarget}
-   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any (for search)
+   *
+   * @return a list of any Menu/Button/Tooltip Text strings referenced in the Configurable, if any
+   *     (for search)
    */
   @Override
   public List<String> getMenuTextList() {

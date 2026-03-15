@@ -17,30 +17,29 @@
  */
 package VASSAL.chat;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import VASSAL.Info;
 import VASSAL.build.GameModule;
 import VASSAL.tools.SequenceEncoder;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
- * Immutable PlayerStatus class with flags indicating "looking for a game" and "away from keyboard" and a String profile
+ * Immutable PlayerStatus class with flags indicating "looking for a game" and "away from keyboard"
+ * and a String profile
  *
  * @author rkinney
- *
  */
 public class SimpleStatus implements PlayerStatus {
 
-  public static final String CRC = "crc"; //$NON-NLS-1$
-  public static final String COMBINED_CRC = "CombinedCrc"; //$NON-NLS-1$
-  public static final String MODULE_VERSION = "moduleVersion"; //$NON-NLS-1$
-  public static final String IP = "ip"; //$NON-NLS-1$
-  public static final String CLIENT = "client"; //$NON-NLS-1$
-  public static final String PROFILE = "profile"; //$NON-NLS-1$
-  public static final String AWAY = "away"; //$NON-NLS-1$
-  public static final String LOOKING = "looking"; //$NON-NLS-1$
-  public static final String NAME = "name"; //$NON-NLS-1$
+  public static final String CRC = "crc"; // $NON-NLS-1$
+  public static final String COMBINED_CRC = "CombinedCrc"; // $NON-NLS-1$
+  public static final String MODULE_VERSION = "moduleVersion"; // $NON-NLS-1$
+  public static final String IP = "ip"; // $NON-NLS-1$
+  public static final String CLIENT = "client"; // $NON-NLS-1$
+  public static final String PROFILE = "profile"; // $NON-NLS-1$
+  public static final String AWAY = "away"; // $NON-NLS-1$
+  public static final String LOOKING = "looking"; // $NON-NLS-1$
+  public static final String NAME = "name"; // $NON-NLS-1$
 
   private final boolean looking;
   private final boolean away;
@@ -52,22 +51,39 @@ public class SimpleStatus implements PlayerStatus {
   private String combinedCrc;
 
   public SimpleStatus() {
-    this(false, false, ""); //$NON-NLS-1$
+    this(false, false, ""); // $NON-NLS-1$
   }
 
   public SimpleStatus(boolean looking, boolean away) {
-    this(looking, away, ""); //$NON-NLS-1$
+    this(looking, away, ""); // $NON-NLS-1$
   }
 
   public SimpleStatus(boolean looking, boolean away, String profile) {
-    this(looking, away, profile, "", "", "", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    this(
+        looking, away, profile, "", "", "",
+        ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
   }
 
-  public SimpleStatus(boolean looking, boolean away, String profile, String client, String ip, String module, String crc) {
+  public SimpleStatus(
+      boolean looking,
+      boolean away,
+      String profile,
+      String client,
+      String ip,
+      String module,
+      String crc) {
     this(looking, away, profile, client, ip, module, crc, "");
   }
 
-  public SimpleStatus(boolean looking, boolean away, String profile, String client, String ip, String module, String crc, String combinedCrc) {
+  public SimpleStatus(
+      boolean looking,
+      boolean away,
+      String profile,
+      String client,
+      String ip,
+      String module,
+      String crc,
+      String combinedCrc) {
     this.looking = looking;
     this.away = away;
     this.profile = profile;
@@ -125,24 +141,29 @@ public class SimpleStatus implements PlayerStatus {
 
   public static SimpleStatus decode(String s) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(s, ',');
-    return new SimpleStatus(sd.nextBoolean(false), sd.nextBoolean(false), sd.nextToken(""), sd.nextToken(""),  //$NON-NLS-1$ //$NON-NLS-2$
-        sd.nextToken(""), sd.nextToken(""), sd.nextToken(""));         //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return new SimpleStatus(
+        sd.nextBoolean(false),
+        sd.nextBoolean(false),
+        sd.nextToken(""),
+        sd.nextToken(""), // $NON-NLS-1$ //$NON-NLS-2$
+        sd.nextToken(""),
+        sd.nextToken(""),
+        sd.nextToken("")); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
 
-  /**
-   * Update variable parts of status
-   */
+  /** Update variable parts of status */
   public void updateStatus() {
     final GameModule g = GameModule.getGameModule();
     profile = (String) g.getPrefs().getValue(GameModule.PERSONAL_INFO);
     client = Info.getVersion();
-    ip = ""; //$NON-NLS-1$
+    ip = ""; // $NON-NLS-1$
     try {
       ip = InetAddress.getLocalHost().getHostAddress();
+    } catch (final UnknownHostException e) {
     }
-    catch (final UnknownHostException e) {
-    }
-    moduleVersion = g.getGameVersion() + ((g.getArchiveWriter() == null) ? "" : " (Editing)");  //$NON-NLS-1$ //$NON-NLS-2$
+    moduleVersion =
+        g.getGameVersion()
+            + ((g.getArchiveWriter() == null) ? "" : " (Editing)"); // $NON-NLS-1$ //$NON-NLS-2$
     crc = Long.toHexString(g.getCrc());
     combinedCrc = Long.toHexString(g.getCombinedCrc());
   }

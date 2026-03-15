@@ -1,11 +1,10 @@
 package VASSAL.counters;
 
+import VASSAL.build.MockModuleTest;
 import java.lang.reflect.Constructor;
 
-import VASSAL.build.MockModuleTest;
-
 public abstract class SerializeTest<T extends Decorator> extends MockModuleTest {
-  public void serializeTest(Class<T>clazz, T trait) throws Exception {
+  public void serializeTest(Class<T> clazz, T trait) throws Exception {
     BasicPiece basicPiece = new BasicPiece();
     trait.setInner(basicPiece);
     String typeString = trait.myGetType();
@@ -16,8 +15,7 @@ public abstract class SerializeTest<T extends Decorator> extends MockModuleTest 
     try {
       constructor = clazz.getConstructor(String.class, GamePiece.class);
       deserialized = constructor.newInstance(typeString, null);
-    }
-    catch (NoSuchMethodException e) {
+    } catch (NoSuchMethodException e) {
       constructor = clazz.getConstructor(GamePiece.class, String.class);
       deserialized = constructor.newInstance(null, typeString);
     }

@@ -18,13 +18,16 @@
 package VASSAL.counters;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.junit.jupiter.api.Test;
 
 public class ImmobilizedTest extends DecoratorTest {
 
   @Test
-  public void serializeTests() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void serializeTests()
+      throws InvocationTargetException,
+          NoSuchMethodException,
+          InstantiationException,
+          IllegalAccessException {
 
     Immobilized trait = new Immobilized();
 
@@ -65,7 +68,7 @@ public class ImmobilizedTest extends DecoratorTest {
     trait.moveIfSelected = true;
     trait.neverBandSelect = false;
     trait.altToBandSelect = true;
-    trait.description = "Whee Happy Whee!"; //NON-NLS
+    trait.description = "Whee Happy Whee!"; // NON-NLS
     serializeTest("Test 3", trait); // NON-NLS
   }
 }

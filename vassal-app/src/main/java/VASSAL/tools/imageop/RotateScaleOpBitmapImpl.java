@@ -18,39 +18,36 @@
 
 package VASSAL.tools.imageop;
 
+import VASSAL.tools.image.ImageUtils;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import VASSAL.tools.image.ImageUtils;
-
 /**
- * An {@link ImageOp} which rotates and scales its source. Rotation
- * is about the center of the source image, and scaling ranges from
- * <code>(0,Double.MAX_VALUE)</code>. If a source is to be both rotated
- * and scaled, using one <code>RotateScaleOp</code> will produce better
- * results than doing the rotation and scaling separately with
- * one {@link RotateOp} and one {@link ScaleOp}.
+ * An {@link ImageOp} which rotates and scales its source. Rotation is about the center of the
+ * source image, and scaling ranges from <code>(0,Double.MAX_VALUE)</code>. If a source is to be
+ * both rotated and scaled, using one <code>RotateScaleOp</code> will produce better results than
+ * doing the rotation and scaling separately with one {@link RotateOp} and one {@link ScaleOp}.
  *
  * @since 3.1.0
  * @author Joel Uckelman
  */
-public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
-                                     implements RotateScaleOp {
+public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl implements RotateScaleOp {
   private final ImageOp sop;
   private final double scale;
   private final double angle;
+
   @SuppressWarnings("PMD.LooseCoupling")
   private final RenderingHints hints;
+
   private final int hash;
 
   /**
-   * Constructs an <code>ImageOp</code> which will rotate and scale
-   * the image produced by its source <code>ImageOp</code>.
+   * Constructs an <code>ImageOp</code> which will rotate and scale the image produced by its source
+   * <code>ImageOp</code>.
    *
    * @param sop the source operation
    * @param angle the angle of rotation, in degrees
@@ -61,8 +58,8 @@ public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
   }
 
   /**
-   * Constructs an <code>ImageOp</code> which will rotate and scale
-   * the image produced by its source <code>ImageOp</code>.
+   * Constructs an <code>ImageOp</code> which will rotate and scale the image produced by its source
+   * <code>ImageOp</code>.
    *
    * @param sop the source operation
    * @param angle the angle of rotation, in degrees
@@ -71,8 +68,7 @@ public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
    * @throws IllegalArgumentException if <code>sop == null</code>.
    */
   @SuppressWarnings("PMD.LooseCoupling")
-  public RotateScaleOpBitmapImpl(ImageOp sop, double angle, double scale,
-                                 RenderingHints hints) {
+  public RotateScaleOpBitmapImpl(ImageOp sop, double angle, double scale, RenderingHints hints) {
     if (sop == null) throw new IllegalArgumentException();
     if (scale <= 0) throw new IllegalArgumentException("scale = " + scale);
 
@@ -81,11 +77,7 @@ public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
     this.scale = scale;
     this.hints = hints;
 
-    hash = new HashCodeBuilder().append(sop)
-                                .append(scale)
-                                .append(angle)
-                                .append(hints)
-                                .toHashCode();
+    hash = new HashCodeBuilder().append(sop).append(scale).append(angle).append(hints).toHashCode();
   }
 
   @Override
@@ -107,8 +99,7 @@ public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
   @Override
   protected void fixSize() {
     if ((size = getSizeFromCache()) == null) {
-      size = ImageUtils.transform(
-        new Rectangle(sop.getSize()), scale, angle).getSize();
+      size = ImageUtils.transform(new Rectangle(sop.getSize()), scale, angle).getSize();
     }
   }
 
@@ -144,10 +135,10 @@ public class RotateScaleOpBitmapImpl extends AbstractTileOpImpl
     if (o == null || o.getClass() != this.getClass()) return false;
 
     final RotateScaleOpBitmapImpl op = (RotateScaleOpBitmapImpl) o;
-    return scale == op.getScale() &&
-           angle == op.getAngle() &&
-           hints.equals(op.getHints()) &&
-           sop.equals(op.sop);
+    return scale == op.getScale()
+        && angle == op.getAngle()
+        && hints.equals(op.getHints())
+        && sop.equals(op.sop);
   }
 
   /** {@inheritDoc} */

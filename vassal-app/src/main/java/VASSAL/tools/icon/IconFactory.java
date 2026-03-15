@@ -17,11 +17,18 @@
  */
 package VASSAL.tools.icon;
 
+import VASSAL.build.IllegalBuildException;
+import VASSAL.i18n.Resources;
+import VASSAL.tools.ApplicationIcons;
+import VASSAL.tools.DataArchive;
+import VASSAL.tools.ErrorDialog;
+import VASSAL.tools.JarArchive;
+import VASSAL.tools.ReadErrorDialog;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -33,29 +40,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.swing.Icon;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import VASSAL.build.IllegalBuildException;
-import VASSAL.i18n.Resources;
-import VASSAL.tools.ApplicationIcons;
-import VASSAL.tools.DataArchive;
-import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.JarArchive;
-import VASSAL.tools.ReadErrorDialog;
-
-/**
- * Manage and Provide Icons in standard sizes.
- *
- */
+/** Manage and Provide Icons in standard sizes. */
 public final class IconFactory {
   private static final Logger logger = LoggerFactory.getLogger(IconFactory.class);
 
-  static final String FILE = "file:"; //$NON-NLS-1$
-  static final String JAR = "jar:"; //$NON-NLS-1$
+  static final String FILE = "file:"; // $NON-NLS-1$
+  static final String JAR = "jar:"; // $NON-NLS-1$
 
   private static final JarArchive jar = new JarArchive();
 
@@ -66,41 +60,40 @@ public final class IconFactory {
 
   /**
    * Set the Singleton instance
+   *
    * @param i instance
    */
   static void setInstance(IconFactory i) {
     instance = i;
   }
 
-  /**
-   * Return the Singleton instance.
-   */
+  /** Return the Singleton instance. */
   static IconFactory getInstance() {
     if (instance == null) {
-      throw new IllegalStateException("No IconFactory instance"); //$NON-NLS-1$
+      throw new IllegalStateException("No IconFactory instance"); // $NON-NLS-1$
     }
     return instance;
   }
 
-  /**
-   * Create a new IconFactory.
-   */
+  /** Create a new IconFactory. */
   public IconFactory() {
 
-// FIXME: Maybe send this off to an executor?
-// FIXME: preloadThread is never set to null, cannot be gc'd
+    // FIXME: Maybe send this off to an executor?
+    // FIXME: preloadThread is never set to null, cannot be gc'd
     // Find all available Icon Families within Vassal.
     // May take a little while, so run it on a background thread
-    preloadThread = new Thread(() -> {
-      synchronized (preloadLock) {
-        try {
-          initVassalIconFamilys();
-        }
-        catch (IllegalBuildException e) {
-          ErrorDialog.bug(e);
-        }
-      }
-    }, "IconFactory-preload"); //$NON-NLS-1$
+    preloadThread =
+        new Thread(
+            () -> {
+              synchronized (preloadLock) {
+                try {
+                  initVassalIconFamilys();
+                } catch (IllegalBuildException e) {
+                  ErrorDialog.bug(e);
+                }
+              }
+            },
+            "IconFactory-preload"); //$NON-NLS-1$
     preloadThread.start();
   }
 
@@ -114,13 +107,16 @@ public final class IconFactory {
   public static Icon getIcon(String iconFamilyName, int size) {
     final IconFamily family = getInstance().getFamily(iconFamilyName);
     if (family == null) {
-      throw new IllegalStateException(Resources.getString("Error.not_found", IconFamily.getConfigureTypeName() + " " + iconFamilyName)); //$NON-NLS-1$
+      throw new IllegalStateException(
+          Resources.getString(
+              "Error.not_found",
+              IconFamily.getConfigureTypeName() + " " + iconFamilyName)); // $NON-NLS-1$
     }
     return family.getIcon(size);
   }
 
   /**
-    Return an Icon of the specified size as an Image. Standard sizes are defined in IconFamily
+   * Return an Icon of the specified size as an Image. Standard sizes are defined in IconFamily
    *
    * @param iconFamilyName Name of Icon family
    * @param size Size (See IconFamily)
@@ -129,7 +125,10 @@ public final class IconFactory {
   public static BufferedImage getImage(String iconFamilyName, int size) {
     final IconFamily family = getInstance().getFamily(iconFamilyName);
     if (family == null) {
-      throw new IllegalStateException(Resources.getString("Error.not_found", IconFamily.getConfigureTypeName() + " " + iconFamilyName)); //$NON-NLS-1$
+      throw new IllegalStateException(
+          Resources.getString(
+              "Error.not_found",
+              IconFamily.getConfigureTypeName() + " " + iconFamilyName)); // $NON-NLS-1$
     }
     return family.getImage(size);
   }
@@ -143,6 +142,7 @@ public final class IconFactory {
 
   /**
    * Add a new IconFamily
+   *
    * @param family Icon Family Name
    */
   public static void addIconFamily(IconFamily family) {
@@ -151,6 +151,7 @@ public final class IconFactory {
 
   /**
    * Remove an IconFamily
+   *
    * @param family Icon Family Name
    */
   public static void removeIconFamily(IconFamily family) {
@@ -176,8 +177,7 @@ public final class IconFactory {
   }
 
   /**
-   * Add an Icon Family. Don't overwrite an existing Icon Family
-   * of the same name.
+   * Add an Icon Family. Don't overwrite an existing Icon Family of the same name.
    *
    * @param family family to add
    */
@@ -186,8 +186,8 @@ public final class IconFactory {
   }
 
   /**
-   * Remove an Icon Family. Ensure that the family to be removed is
-   * the same as the one on the list.
+   * Remove an Icon Family. Ensure that the family to be removed is the same as the one on the list.
+   *
    * @param family family to remove
    */
   private void remove(IconFamily family) {
@@ -198,8 +198,7 @@ public final class IconFactory {
   }
 
   /**
-   * Rename an IconFamily. Does not affect existing families with the
-   * same name.
+   * Rename an IconFamily. Does not affect existing families with the same name.
    *
    * @param oldFamilyName old name
    * @param iconFamily new name
@@ -212,10 +211,8 @@ public final class IconFactory {
     add(iconFamily);
   }
 
-
   /**
-   * Return an individual named IconFamily.
-   * Ensure the Vassal icon prescan has completed first.
+   * Return an individual named IconFamily. Ensure the Vassal icon prescan has completed first.
    *
    * @param iconFamilyName name of family
    * @return Icon Family
@@ -223,19 +220,17 @@ public final class IconFactory {
   IconFamily getFamily(String iconFamilyName) {
     try {
 
-// FIXME: This is bad---we should wait on a Future instead.
+      // FIXME: This is bad---we should wait on a Future instead.
       // Ensure preload is complete
       if (preloadThread.isAlive()) {
         try {
           preloadThread.join();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         }
       }
 
       return iconFamilies.get(iconFamilyName);
-    }
-    catch (IllegalStateException e) {
+    } catch (IllegalStateException e) {
       ErrorDialog.bug(e);
     }
     return null;
@@ -255,27 +250,33 @@ public final class IconFactory {
     return names;
   }
 
-  /** -------------------------------------------------------------------
-   * Inspect the Jar file (for a standard installation) or the local file
-   * system (Vassal running under a debugger) and determine all available
-   * Icons of all sizes and collect them into named Icon Families.
+  /**
+   * ------------------------------------------------------------------- Inspect the Jar file (for a
+   * standard installation) or the local file system (Vassal running under a debugger) and determine
+   * all available Icons of all sizes and collect them into named Icon Families.
    *
-   * This is essentially a cross-reference of all available Icons to ensure
-   * fast processing of requests for Icons. No Icons are created at this
-   * stage.
+   * <p>This is essentially a cross-reference of all available Icons to ensure fast processing of
+   * requests for Icons. No Icons are created at this stage.
    */
   private void initVassalIconFamilys() {
     URL imageUrl = null;
     try {
-      //Build a URL to the Vassal images folder. It is guaranteed to exist
+      // Build a URL to the Vassal images folder. It is guaranteed to exist
       // in any version of Vassal
-      // Bug 9670 BUT there may also be an images folder in another Jar file in the Classloader path before the Vengine.jar
+      // Bug 9670 BUT there may also be an images folder in another Jar file in the Classloader path
+      // before the Vengine.jar
       // so look for an Icon we know must exist there.
       // imageUrl = jar.getURL(DataArchive.IMAGE_DIR
       imageUrl = jar.getURL(DataArchive.IMAGE_DIR + ApplicationIcons.VASSAL_ICON_LARGE);
-      imageUrl = new URL(imageUrl.toString().substring(0, imageUrl.toString().length() - ApplicationIcons.VASSAL_ICON_LARGE.length()));
+      imageUrl =
+          new URL(
+              imageUrl
+                  .toString()
+                  .substring(
+                      0,
+                      imageUrl.toString().length() - ApplicationIcons.VASSAL_ICON_LARGE.length()));
 
-      logger.debug("VASSAL images folder found at " + imageUrl); //NON-NLS
+      logger.debug("VASSAL images folder found at " + imageUrl); // NON-NLS
 
       // Determine if we are running locally under a debugger, or
       // from an installation package. If running an installed version
@@ -285,22 +286,20 @@ public final class IconFactory {
         for (int size = 0; size < IconFamily.SIZE_DIRS.length; size++) {
           findLocalSizedIcons(size);
         }
-      }
-      else if (imageUrl.toString().startsWith(JAR)) {
+      } else if (imageUrl.toString().startsWith(JAR)) {
         findJarIcons();
+      } else {
+        throw new IllegalBuildException(
+            "Unknown Vassal Image source type: " + imageUrl); // $NON-NLS-1$
       }
-      else {
-        throw new IllegalBuildException("Unknown Vassal Image source type: " + imageUrl); //$NON-NLS-1$
-      }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ReadErrorDialog.error(e, imageUrl.toString());
     }
   }
 
   /**
-   * Record all icons of the specified size found in the local file system
-   * NB. Vassal is not running from a bundled Jar file
+   * Record all icons of the specified size found in the local file system NB. Vassal is not running
+   * from a bundled Jar file
    *
    * @param size size to look for
    * @throws IOException oops
@@ -310,19 +309,19 @@ public final class IconFactory {
     final URL sizeURL = jar.getURL(path);
 
     try (InputStream in = sizeURL.openStream();
-         InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset());
-         BufferedReader br = new BufferedReader(isr)) {
-      String imageName = ""; //$NON-NLS-1$
+        InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset());
+        BufferedReader br = new BufferedReader(isr)) {
+      String imageName = ""; // $NON-NLS-1$
       while (imageName != null) {
         imageName = br.readLine();
         if (imageName != null) {
-          final String familyName = imageName.split("\\.")[0]; //$NON-NLS-1$
+          final String familyName = imageName.split("\\.")[0]; // $NON-NLS-1$
           IconFamily family = iconFamilies.get(familyName);
           if (family == null) {
             family = new IconFamily(familyName);
-            logger.debug("Icon family " + familyName + " created for " + imageName); //NON-NLS
+            logger.debug("Icon family " + familyName + " created for " + imageName); // NON-NLS
           }
-          family.setSizeIconPath(size, "/" + path + imageName); //$NON-NLS-1$ //$NON-NLS-2$
+          family.setSizeIconPath(size, "/" + path + imageName); // $NON-NLS-1$ //$NON-NLS-2$
           iconFamilies.put(familyName, family);
         }
       }
@@ -330,8 +329,8 @@ public final class IconFactory {
   }
 
   /**
-   * Record all scalable icons found on the local file system.
-   * NB. Vassal is not running from a bundled Jar file
+   * Record all scalable icons found on the local file system. NB. Vassal is not running from a
+   * bundled Jar file
    *
    * @throws IOException oops
    */
@@ -340,19 +339,19 @@ public final class IconFactory {
     final URL url = jar.getURL(scalablePath);
 
     try (InputStream in = url.openStream();
-         InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset());
-         BufferedReader br = new BufferedReader(isr)) {
-      String imageName = ""; //$NON-NLS-1$
+        InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset());
+        BufferedReader br = new BufferedReader(isr)) {
+      String imageName = ""; // $NON-NLS-1$
       while (imageName != null) {
         imageName = br.readLine();
         if (imageName != null) {
-          final String familyName = imageName.split("\\.")[0]; //$NON-NLS-1$
+          final String familyName = imageName.split("\\.")[0]; // $NON-NLS-1$
           IconFamily family = iconFamilies.get(familyName);
           if (family == null) {
             family = new IconFamily(familyName);
-            logger.debug("Icon family " + familyName + " created for " + imageName); //NON-NLS
+            logger.debug("Icon family " + familyName + " created for " + imageName); // NON-NLS
           }
-          family.setScalableIconPath("/" + scalablePath + imageName); //$NON-NLS-1$ //$NON-NLS-2$
+          family.setScalableIconPath("/" + scalablePath + imageName); // $NON-NLS-1$ //$NON-NLS-2$
           iconFamilies.put(familyName, family);
         }
       }
@@ -361,6 +360,7 @@ public final class IconFactory {
 
   /**
    * Process the installed Vassal JarFile to find contained Icons
+   *
    * @throws IOException oops
    */
   private void findJarIcons() throws IOException {
@@ -373,37 +373,38 @@ public final class IconFactory {
       sizePaths[size] = DataArchive.ICON_DIR + IconFamily.SIZE_DIRS[size];
     }
 
-    final JarURLConnection j = (JarURLConnection) jar.getURL(DataArchive.IMAGE_DIR).openConnection();
+    final JarURLConnection j =
+        (JarURLConnection) jar.getURL(DataArchive.IMAGE_DIR).openConnection();
     final JarFile vengine = j.getJarFile();
 
-    for (final Enumeration<JarEntry> e = vengine.entries(); e.hasMoreElements();) {
+    for (final Enumeration<JarEntry> e = vengine.entries(); e.hasMoreElements(); ) {
       final JarEntry entry = e.nextElement();
       final String entryName = entry.getName();
 
       if (entryName.startsWith(DataArchive.ICON_DIR)) {
-        if (entryName.startsWith(scalablePath) && ! entryName.equals(scalablePath)) {
+        if (entryName.startsWith(scalablePath) && !entryName.equals(scalablePath)) {
           final String imageName = entryName.substring(scalablePath.length());
-          final String familyName = imageName.split("\\.")[0]; //$NON-NLS-1$
+          final String familyName = imageName.split("\\.")[0]; // $NON-NLS-1$
           IconFamily family = iconFamilies.get(familyName);
           if (family == null) {
             family = new IconFamily(familyName);
-            logger.debug("Icon family " + familyName + " created for " + imageName); //NON-NLS
+            logger.debug("Icon family " + familyName + " created for " + imageName); // NON-NLS
           }
-          family.setScalableIconPath("/" + entryName); //$NON-NLS-1$
+          family.setScalableIconPath("/" + entryName); // $NON-NLS-1$
           iconFamilies.put(familyName, family);
           continue;
         }
 
         for (int size = 0; size < IconFamily.SIZE_COUNT; size++) {
-          if (entryName.startsWith(sizePaths[size]) && ! entryName.equals(sizePaths[size])) {
+          if (entryName.startsWith(sizePaths[size]) && !entryName.equals(sizePaths[size])) {
             final String imageName = entryName.substring(sizePaths[size].length());
-            final String familyName = imageName.split("\\.")[0]; //$NON-NLS-1$
+            final String familyName = imageName.split("\\.")[0]; // $NON-NLS-1$
             IconFamily family = iconFamilies.get(familyName);
             if (family == null) {
               family = new IconFamily(familyName);
-              logger.debug("Icon family " + familyName + " created for " + imageName); //NON-NLS
+              logger.debug("Icon family " + familyName + " created for " + imageName); // NON-NLS
             }
-            family.setSizeIconPath(size, "/" + entryName); //$NON-NLS-1$
+            family.setSizeIconPath(size, "/" + entryName); // $NON-NLS-1$
             iconFamilies.put(familyName, family);
             break;
           }

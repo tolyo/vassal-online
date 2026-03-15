@@ -26,10 +26,10 @@ import VASSAL.tools.SequenceEncoder;
 
 public class SymbolItemInstance extends ItemInstance {
 
-  public static final String SIZE = "size"; //$NON-NLS-1$
-  public static final String SIZE_COLOR = "sizeColor"; //$NON-NLS-1$
-  public static final String SYMBOL1 = "symbol1"; //$NON-NLS-1$
-  public static final String SYMBOL2 = "symbol2"; //$NON-NLS-1$
+  public static final String SIZE = "size"; // $NON-NLS-1$
+  public static final String SIZE_COLOR = "sizeColor"; // $NON-NLS-1$
+  public static final String SYMBOL1 = "symbol1"; // $NON-NLS-1$
+  public static final String SYMBOL2 = "symbol2"; // $NON-NLS-1$
 
   protected String size;
   protected String symbol1;
@@ -69,15 +69,15 @@ public class SymbolItemInstance extends ItemInstance {
 
   public void decode(String code) {
     final SequenceEncoder.Decoder sd = new SequenceEncoder.Decoder(code, ';');
-    setType(sd.nextToken("")); //$NON-NLS-1$
-    setName(sd.nextToken("")); //$NON-NLS-1$
-    setLocation(sd.nextToken("")); //$NON-NLS-1$
-    setFgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setBgColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
-    setSize(sd.nextToken("")); //$NON-NLS-1$
-    setSymbol1(sd.nextToken("")); //$NON-NLS-1$
-    setSymbol2(sd.nextToken("")); //$NON-NLS-1$
-    setSizeColor(new ColorSwatch(sd.nextToken(""))); //$NON-NLS-1$
+    setType(sd.nextToken("")); // $NON-NLS-1$
+    setName(sd.nextToken("")); // $NON-NLS-1$
+    setLocation(sd.nextToken("")); // $NON-NLS-1$
+    setFgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setBgColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
+    setSize(sd.nextToken("")); // $NON-NLS-1$
+    setSymbol1(sd.nextToken("")); // $NON-NLS-1$
+    setSymbol2(sd.nextToken("")); // $NON-NLS-1$
+    setSizeColor(new ColorSwatch(sd.nextToken(""))); // $NON-NLS-1$
   }
 
   public void setSize(String size) {
@@ -138,40 +138,28 @@ public class SymbolItemInstance extends ItemInstance {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] {
-      SIZE,
-      SYMBOL1,
-      SYMBOL2,
-      FG_COLOR,
-      BG_COLOR,
-      SIZE_COLOR
-    };
+    return new String[] {SIZE, SYMBOL1, SYMBOL2, FG_COLOR, BG_COLOR, SIZE_COLOR};
   }
 
   @Override
   public void setAttribute(String key, Object value) {
     if (SIZE.equals(key)) {
       size = (String) value;
-    }
-    else if (SYMBOL1.equals(key)) {
+    } else if (SYMBOL1.equals(key)) {
       symbol1 = (String) value;
-    }
-    else if (SYMBOL2.equals(key)) {
+    } else if (SYMBOL2.equals(key)) {
       symbol2 = (String) value;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       if (value instanceof String) {
         value = new ColorSwatch((String) value);
       }
       fgColor = (ColorSwatch) value;
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       if (value instanceof String) {
         value = new ColorSwatch((String) value);
       }
       bgColor = (ColorSwatch) value;
-    }
-    else if (SIZE_COLOR.equals(key)) {
+    } else if (SIZE_COLOR.equals(key)) {
       if (value instanceof String) {
         value = new ColorSwatch((String) value);
       }
@@ -186,24 +174,17 @@ public class SymbolItemInstance extends ItemInstance {
   public String getAttributeValueString(String key) {
     if (SIZE.equals(key)) {
       return size;
-    }
-    else if (SYMBOL1.equals(key)) {
+    } else if (SYMBOL1.equals(key)) {
       return symbol1;
-    }
-    else if (SYMBOL2.equals(key)) {
+    } else if (SYMBOL2.equals(key)) {
       return symbol2;
-    }
-    else if (FG_COLOR.equals(key)) {
+    } else if (FG_COLOR.equals(key)) {
       return fgColor.encode();
-    }
-    else if (BG_COLOR.equals(key)) {
+    } else if (BG_COLOR.equals(key)) {
       return bgColor.encode();
-    }
-    else if (SIZE_COLOR.equals(key)) {
+    } else if (SIZE_COLOR.equals(key)) {
       return sizeColor.encode();
-    }
-    else
-      return null;
+    } else return null;
   }
 
   public static class SizeConfig implements ConfigurerFactory {

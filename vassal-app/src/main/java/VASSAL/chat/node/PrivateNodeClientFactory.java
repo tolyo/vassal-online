@@ -16,13 +16,12 @@
  */
 package VASSAL.chat.node;
 
-import java.util.Properties;
-
 import VASSAL.build.GameModule;
 import VASSAL.chat.ChatServerConnection;
+import java.util.Properties;
 
 public class PrivateNodeClientFactory extends NodeClientFactory {
-  public static final String PRIVATE_TYPE = "private"; //$NON-NLS-1$
+  public static final String PRIVATE_TYPE = "private"; // $NON-NLS-1$
   public static final String PRIVATE_HOST = "localhost";
   public static final String PRIVATE_PORT = "5050";
 
@@ -32,19 +31,13 @@ public class PrivateNodeClientFactory extends NodeClientFactory {
     int port;
     try {
       port = Integer.parseInt(param.getProperty(NODE_PORT, PRIVATE_PORT));
-    }
-    catch (final NumberFormatException e) {
+    } catch (final NumberFormatException e) {
       port = Integer.parseInt(PRIVATE_PORT);
     }
 
     final GameModule g = GameModule.getGameModule();
 
     return new PrivateNodeClient(
-      g.getGameName(),
-      GameModule.getUserId() + "." + System.currentTimeMillis(),
-      g,
-      host,
-      port
-    );
+        g.getGameName(), GameModule.getUserId() + "." + System.currentTimeMillis(), g, host, port);
   }
 }

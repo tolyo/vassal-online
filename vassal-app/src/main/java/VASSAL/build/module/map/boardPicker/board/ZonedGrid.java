@@ -29,9 +29,6 @@ import VASSAL.build.module.map.boardPicker.board.mapgrid.ZoneHighlight;
 import VASSAL.build.module.map.boardPicker.board.mapgrid.ZonedGridHighlighter;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
-import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Element;
-
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -45,9 +42,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.Element;
 
 /**
- * Map Grid that contains any number of {@link VASSAL.build.module.map.boardPicker.board.mapgrid.Zone}s against a background {@link MapGrid}
+ * Map Grid that contains any number of {@link
+ * VASSAL.build.module.map.boardPicker.board.mapgrid.Zone}s against a background {@link MapGrid}
  */
 public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, GridContainer {
   protected List<Zone> zones = new ArrayList<>();
@@ -76,8 +76,7 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
   }
 
   @Override
-  public void setAttribute(String key, Object value) {
-  }
+  public void setAttribute(String key, Object value) {}
 
   @Override
   public Configurer getConfigurer() {
@@ -127,23 +126,18 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
 
   @Override
   public Class<?>[] getAllowableConfigureComponents() {
-    return background == null ?
-      new Class<?>[]{
-        Zone.class,
-        HexGrid.class,
-        SquareGrid.class,
-        RegionGrid.class
-      } :
-      new Class<?>[]{Zone.class};
+    return background == null
+        ? new Class<?>[] {Zone.class, HexGrid.class, SquareGrid.class, RegionGrid.class}
+        : new Class<?>[] {Zone.class};
   }
 
   public static String getConfigureTypeName() {
-    return Resources.getString("Editor.MultiZoneGrid.component_type"); //$NON-NLS-1$
+    return Resources.getString("Editor.MultiZoneGrid.component_type"); // $NON-NLS-1$
   }
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("ZonedGrid.html"); //$NON-NLS-1$
+    return HelpFile.getReferenceManualPage("ZonedGrid.html"); // $NON-NLS-1$
   }
 
   @Override
@@ -186,16 +180,16 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
   }
 
   @Override
-  public void draw(Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
+  public void draw(
+      Graphics g, Rectangle bounds, Rectangle visibleRect, double scale, boolean reversed) {
     // Draw the background grid if there is a visible one
     if (background != null && background.isVisible()) {
       // Clip out the area covered by Zones not using the background grid
       final Graphics2D g2d = (Graphics2D) g;
       final Shape oldClip = g2d.getClip();
       if (oldClip != null) {
-        final Area translatedZones = clipCache.computeIfAbsent(
-          Pair.of(bounds.getLocation(), scale), this::makeClipArea
-        );
+        final Area translatedZones =
+            clipCache.computeIfAbsent(Pair.of(bounds.getLocation(), scale), this::makeClipArea);
 
         if (translatedZones != null) {
           final Area clipArea = new Area(oldClip);
@@ -229,14 +223,11 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
         if (p != null && zone.contains(p)) {
           return p;
         }
-      }
-      catch (final BadCoords bc) {
+      } catch (final BadCoords bc) {
       }
     }
-    if (background != null)
-      return background.getLocation(location);
-    else
-      throw new BadCoords();
+    if (background != null) return background.getLocation(location);
+    else throw new BadCoords();
   }
 
   public Point getRegionLocation(String location) {
@@ -263,8 +254,7 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
         break;
       }
     }
-    if (name == null
-        && background != null) {
+    if (name == null && background != null) {
       name = background.locationName(p);
     }
     return name;
@@ -279,8 +269,7 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
         break;
       }
     }
-    if (name == null
-        && background != null) {
+    if (name == null && background != null) {
       name = background.localizedLocationName(p);
     }
     return name;
@@ -291,12 +280,10 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
     MapGrid grid = background;
     final Zone z1 = findZone(p1);
     final Zone z2 = findZone(p2);
-    if (z1 == z2
-      && z1 != null
-      && z1.getGrid() != null) {
+    if (z1 == z2 && z1 != null && z1.getGrid() != null) {
       grid = z1.getGrid();
     }
-    return grid != null ? grid.range(p1, p2) : (int)Math.round(p1.distance(p2));
+    return grid != null ? grid.range(p1, p2) : (int) Math.round(p1.distance(p2));
   }
 
   @Override
@@ -306,20 +293,20 @@ public class ZonedGrid extends AbstractConfigurable implements GeometricGrid, Gr
     if (z != null && z.getGrid() != null) {
       grid = z.getGrid();
     }
-    return grid != null ? grid.getMaxPixelsPerRangeUnit(p) : GeometricGrid.super.getMaxPixelsPerRangeUnit(p);
+    return grid != null
+        ? grid.getMaxPixelsPerRangeUnit(p)
+        : GeometricGrid.super.getMaxPixelsPerRangeUnit(p);
   }
 
   @Override
   public Area getGridShape(Point center, int range) {
     Area a = null;
     final Zone z = findZone(center);
-    if (z != null
-      && z.getGrid() instanceof GeometricGrid) {
-      a = ((GeometricGrid)z.getGrid()).getGridShape(center, range);
+    if (z != null && z.getGrid() instanceof GeometricGrid) {
+      a = ((GeometricGrid) z.getGrid()).getGridShape(center, range);
     }
-    if (a == null
-      && background instanceof GeometricGrid) {
-      a = ((GeometricGrid)background).getGridShape(center, range);
+    if (a == null && background instanceof GeometricGrid) {
+      a = ((GeometricGrid) background).getGridShape(center, range);
     }
     if (a == null) {
       a = new Area(new Ellipse2D.Double(center.x - range, center.y - range, range * 2, range * 2));

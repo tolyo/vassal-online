@@ -17,11 +17,9 @@
  */
 package VASSAL.command;
 
-
 public class NullCommand extends Command {
   @Override
-  protected void executeCommand() {
-  }
+  protected void executeCommand() {}
 
   @Override
   protected Command myUndoCommand() {

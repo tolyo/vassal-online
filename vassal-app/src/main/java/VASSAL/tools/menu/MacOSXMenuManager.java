@@ -20,7 +20,6 @@ package VASSAL.tools.menu;
 
 import java.awt.Desktop;
 import java.util.List;
-
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -57,21 +56,19 @@ public class MacOSXMenuManager extends MenuManager {
 
     if ("General.quit".equals(key)) {
       final Desktop app = Desktop.getDesktop();
-      app.setQuitHandler((e, resp) -> {
-        action.actionPerformed(null);
-        // the action handles exiting; if we're here, it was cancelled
-        resp.cancelQuit();
-      });
-    }
-    else if ("Prefs.edit_preferences".equals(key)) {
+      app.setQuitHandler(
+          (e, resp) -> {
+            action.actionPerformed(null);
+            // the action handles exiting; if we're here, it was cancelled
+            resp.cancelQuit();
+          });
+    } else if ("Prefs.edit_preferences".equals(key)) {
       final Desktop app = Desktop.getDesktop();
       app.setPreferencesHandler(e -> action.actionPerformed(null));
-    }
-    else if ("AboutScreen.about_vassal".equals(key)) {
+    } else if ("AboutScreen.about_vassal".equals(key)) {
       final Desktop app = Desktop.getDesktop();
       app.setAboutHandler(e -> action.actionPerformed(null));
-    }
-    else {
+    } else {
       // this is not one of the special actions
       super.addAction(key, action);
     }

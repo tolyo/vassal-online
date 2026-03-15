@@ -25,8 +25,7 @@ import java.util.Arrays;
  *
  * @since 3.1.0
  * @author Joel Uckelman
- * @deprecated Use {@link org.apache.commons.lang3.builder.HashCodeBuilder}
- * instead.
+ * @deprecated Use {@link org.apache.commons.lang3.builder.HashCodeBuilder} instead.
  */
 @Deprecated(since = "2021-12-01", forRemoval = true)
 public final class HashCode {
@@ -53,7 +52,7 @@ public final class HashCode {
   }
 
   public static int hash(final long value) {
-    return (int)(value ^ (value >>> 32));
+    return (int) (value ^ (value >>> 32));
   }
 
   public static int hash(final float value) {
@@ -62,7 +61,7 @@ public final class HashCode {
 
   public static int hash(final double value) {
     final long bits = Double.doubleToLongBits(value);
-    return (int)(bits ^ (bits >>> 32));
+    return (int) (bits ^ (bits >>> 32));
   }
 
   public static int hash(final Object value) {

@@ -23,11 +23,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Window;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
 
 public class Visualizer extends JPanel {
   private static final long serialVersionUID = 1L;
@@ -36,24 +34,23 @@ public class Visualizer extends JPanel {
   protected Visualizable observer;
   protected JPanel visPanel;
 
-  public Visualizer() {
-
-  }
+  public Visualizer() {}
 
   public Visualizer(Visualizable obs) {
 
     observer = obs;
     setBorder(BorderFactory.createLineBorder(Color.black));
 
-    visPanel = new JPanel() {
-      private static final long serialVersionUID = 1L;
+    visPanel =
+        new JPanel() {
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void paint(Graphics g) {
-        g.clearRect(0, 0, observer.getVisualizerWidth(), observer.getVisualizerHeight());
-        g.drawImage(observer.getVisualizerImage(), 0, 0, this);
-      }
-    };
+          @Override
+          public void paint(Graphics g) {
+            g.clearRect(0, 0, observer.getVisualizerWidth(), observer.getVisualizerHeight());
+            g.drawImage(observer.getVisualizerImage(), 0, 0, this);
+          }
+        };
 
     add(visPanel, BorderLayout.CENTER);
   }

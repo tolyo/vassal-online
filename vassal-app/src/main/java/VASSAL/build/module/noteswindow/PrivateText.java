@@ -18,9 +18,7 @@ package VASSAL.build.module.noteswindow;
  * at http://www.opensource.org.
  */
 
-/**
- * A text message with an owner
- */
+/** A text message with an owner */
 public class PrivateText {
   private final String owner;
   private final String text;
@@ -40,6 +38,7 @@ public class PrivateText {
 
   /**
    * Two PrivateTexts with the same owner are considered equal
+   *
    * @param o
    * @return
    */

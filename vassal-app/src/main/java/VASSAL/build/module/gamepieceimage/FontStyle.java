@@ -16,10 +16,7 @@
  * at http://www.opensource.org.
  */
 
-
 package VASSAL.build.module.gamepieceimage;
-
-import java.awt.Font;
 
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AutoConfigurable;
@@ -28,14 +25,13 @@ import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
 import VASSAL.i18n.Resources;
+import java.awt.Font;
 
-/**
- * Class that implements a names Font Swatch
- */
+/** Class that implements a names Font Swatch */
 public class FontStyle extends AbstractConfigurable {
 
-  protected static final String NAME = "name"; //$NON-NLS-1$
-  protected static final String STYLE = "style"; //$NON-NLS-1$
+  protected static final String NAME = "name"; // $NON-NLS-1$
+  protected static final String STYLE = "style"; // $NON-NLS-1$
 
   protected OutlineFont font;
 
@@ -69,10 +65,7 @@ public class FontStyle extends AbstractConfigurable {
 
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class<?>[] {
-      String.class,
-      FontStyleConfig.class
-    };
+    return new Class<?>[] {String.class, FontStyleConfig.class};
   }
 
   public static class FontStyleConfig implements ConfigurerFactory {
@@ -84,43 +77,37 @@ public class FontStyle extends AbstractConfigurable {
 
   @Override
   public String[] getAttributeNames() {
-    return new String[] { NAME, STYLE };
+    return new String[] {NAME, STYLE};
   }
 
   @Override
   public void setAttribute(String key, Object o) {
     if (NAME.equals(key)) {
       setConfigureName((String) o);
-    }
-    else if (STYLE.equals(key)) {
+    } else if (STYLE.equals(key)) {
       if (o instanceof String) {
         o = FontConfigurer.decode((String) o);
       }
       font = (OutlineFont) o;
     }
-
   }
 
   @Override
   public String getAttributeValueString(String key) {
     if (NAME.equals(key)) {
       return getConfigureName();
-    }
-    else if (STYLE.equals(key)) {
+    } else if (STYLE.equals(key)) {
       return FontConfigurer.encode(font);
-    }
-    else
-      return null;
+    } else return null;
   }
 
   @Override
-  public void removeFrom(Buildable parent) {
-
-  }
+  public void removeFrom(Buildable parent) {}
 
   @Override
   public HelpFile getHelpFile() {
-    return HelpFile.getReferenceManualPage("GamePieceImageDefinitions.html", "FontStyles"); //$NON-NLS-1$ //$NON-NLS-2$
+    return HelpFile.getReferenceManualPage(
+        "GamePieceImageDefinitions.html", "FontStyles"); // $NON-NLS-1$ //$NON-NLS-2$
   }
 
   @Override

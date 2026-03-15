@@ -18,21 +18,19 @@
 
 package VASSAL.tools.image;
 
+import static VASSAL.tools.image.AssertImage.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import VASSAL.tools.io.TemporaryFileFactory;
+import VASSAL.tools.lang.Reference;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
-import VASSAL.tools.io.TemporaryFileFactory;
-import VASSAL.tools.lang.Reference;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static VASSAL.tools.image.AssertImage.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class FallbackImageTypeConverterTest {
 
@@ -61,8 +59,7 @@ public class FallbackImageTypeConverterTest {
       assertEquals(BufferedImage.TYPE_INT_ARGB_PRE, dst.getType());
       assertImageContentEquals(src, dst);
       assertFalse(tmpFile.exists());
-    }
-    finally {
+    } finally {
       // cleanup
       tmpFile.delete();
     }
@@ -81,19 +78,16 @@ public class FallbackImageTypeConverterTest {
 
     BufferedImage dst;
     try {
-      final FallbackImageTypeConverter c = new FallbackImageTypeConverter(
-        tf, mock, new FileImageTypeConverter(tf)
-      );
+      final FallbackImageTypeConverter c =
+          new FallbackImageTypeConverter(tf, mock, new FileImageTypeConverter(tf));
       dst = c.convert(ref, BufferedImage.TYPE_INT_ARGB_PRE);
 
       assertEquals(BufferedImage.TYPE_INT_ARGB_PRE, dst.getType());
       assertImageContentEquals(src, dst);
       assertFalse(tmpFile.exists());
-    }
-    finally {
+    } finally {
       // cleanup
       tmpFile.delete();
     }
   }
-
 }

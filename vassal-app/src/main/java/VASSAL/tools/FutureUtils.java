@@ -22,7 +22,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/** @deprecated Moved to {@link VASSAL.tools.concurrent} package. */
+/**
+ * @deprecated Moved to {@link VASSAL.tools.concurrent} package.
+ */
 @Deprecated(since = "2021-12-01", forRemoval = true)
 public class FutureUtils {
   private FutureUtils() {}
@@ -35,11 +37,9 @@ public class FutureUtils {
   public static void wait(Future<?> future) {
     try {
       future.get();
-    }
-    catch (CancellationException | InterruptedException e) {
+    } catch (CancellationException | InterruptedException e) {
       e.printStackTrace();
-    }
-    catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       ErrorDialog.bug(e);
     }
   }

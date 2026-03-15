@@ -22,8 +22,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 /**
- * Paints an image at arbitrary scale. Uses the ImageOp interfaces to
- * lazily fetch and cache images.
+ * Paints an image at arbitrary scale. Uses the ImageOp interfaces to lazily fetch and cache images.
  *
  * @author rodneykinney
  * @since 3.1.0
@@ -46,8 +45,7 @@ public class ScaledImagePainter {
     final BufferedImage img;
     if (scale == 1.0) {
       img = srcOp.getImage();
-    }
-    else {
+    } else {
       if (scaleOp == null || scaleOp.getScale() != scale) {
         scaleOp = Op.scale(srcOp, scale);
       }

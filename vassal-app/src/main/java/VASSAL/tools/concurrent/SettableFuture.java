@@ -29,10 +29,9 @@ import java.util.concurrent.Future;
  */
 public interface SettableFuture<V> extends Future<V> {
   /**
-   * Sets the exception to be wrapped in an {@link ExecutionException} and
-   * thrown by {@link #get}.
+   * Sets the exception to be wrapped in an {@link ExecutionException} and thrown by {@link #get}.
    *
-   * <b>May be called only from the thread executing the computation.</b>
+   * <p><b>May be called only from the thread executing the computation.</b>
    *
    * @param t the exception
    */
@@ -41,7 +40,7 @@ public interface SettableFuture<V> extends Future<V> {
   /**
    * Sets the result to be returned by {@link #get}.
    *
-   * <b>May be called only from the thread executing the computation.</b>
+   * <p><b>May be called only from the thread executing the computation.</b>
    *
    * @param r the result
    */
