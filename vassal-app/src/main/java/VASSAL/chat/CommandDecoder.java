@@ -18,6 +18,7 @@ package VASSAL.chat;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import VASSAL.build.GameModule;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 
@@ -35,9 +36,20 @@ public class CommandDecoder implements PropertyChangeListener {
   private final CommandEncoder commandDecoder;
   private final Consumer<Command> commandExecutor;
 
+  /**
+   * Retained for binary compatibility with external code compiled against older VASSAL releases.
+   */
+  public CommandDecoder() {
+    this(requireGameModule(), requireGameModule()::executeIncomingCommand);
+  }
+
   public CommandDecoder(CommandEncoder commandDecoder, Consumer<Command> commandExecutor) {
     this.commandDecoder = Objects.requireNonNull(commandDecoder);
     this.commandExecutor = Objects.requireNonNull(commandExecutor);
+  }
+
+  private static GameModule requireGameModule() {
+    return Objects.requireNonNull(GameModule.getGameModule(), "GameModule not initialized");
   }
 
   @Override

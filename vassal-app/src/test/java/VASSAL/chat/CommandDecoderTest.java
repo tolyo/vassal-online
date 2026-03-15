@@ -5,6 +5,7 @@ import VASSAL.command.CommandEncoder;
 import org.junit.jupiter.api.Test;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,6 +13,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 class CommandDecoderTest {
+  @Test
+  void retainsPublicNoArgConstructorForBinaryCompatibility() throws NoSuchMethodException {
+    assertThat(Modifier.isPublic(CommandDecoder.class.getConstructor().getModifiers()), is(true));
+  }
+
   @Test
   void forwardsDecodedCommandsToExecutor() {
     final AtomicReference<Command> executed = new AtomicReference<>();

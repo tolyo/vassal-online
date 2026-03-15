@@ -231,10 +231,16 @@ The project's public maven repository can be found at https://vassalengine.org/m
 === make
 
 .List of available make targets:
-[source,makefile]
-----
-include::{rootdir}Makefile[lines=258]
-----
+* `make` or `make jar`
+* `make compile`
+* `make test`
+* `make javadoc`
+* `make release-announcements`
+* `make clean`
+* `make clean-javadoc`
+* `make clean-release`
+* `make version-set`
+* `make version-print`
 
 == Release checklist
 
@@ -247,7 +253,6 @@ include::{rootdir}Makefile[lines=258]
 * [ ] Commit the changes.
 * [ ] `git tag -s -m 'The x.y.z release.' x.y.z`
 * [ ] `git push --tags`
-* [ ] `make release`
 * [ ] `make release-announcements`
 * [ ] Add a new release at GitHub. Upload the release pacakges. Paste in the change log.
 * [ ] Update `util/current-release` and `util/current-beta` with release version number and add release packages to `releases/` in `site` repo and push to GitHub.
