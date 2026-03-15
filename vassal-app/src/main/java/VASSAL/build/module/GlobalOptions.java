@@ -315,11 +315,6 @@ public class GlobalOptions extends AbstractConfigurable implements ComponentDesc
       Boolean.FALSE);
     macLegacyConf.addPropertyChangeListener(evt -> setPrefMacLegacy(macLegacyConf.getValueBoolean()));
 
-    if (!FORCE_MAC_LEGACY && SystemUtils.IS_OS_MAC) {
-      // Only need to *display* this preference if we're running on a Mac.
-      prefs.addOption(Resources.getString("Prefs.compatibility_tab"), macLegacyConf);
-    }
-
     final BooleanConfigurer oldContinuationConf = new BooleanConfigurer(
       OLD_CONTINUATION,
       Resources.getString("GlobalOptions.old_continuation"),

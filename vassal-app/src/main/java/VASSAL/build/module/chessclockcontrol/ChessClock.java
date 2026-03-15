@@ -711,7 +711,7 @@ public class ChessClock extends AbstractConfigurable implements CommandEncoder, 
    */
   @Override
   public Class<?>[] getAttributeTypes() {
-    return new Class[] { String.class, PlayerSidesConfig.class, String.class, IconConfig.class, NamedKeyStroke.class, NamedKeyStroke.class, ColorConfig.class, ColorConfig2.class, ColorConfig3.class, String.class };
+    return new Class<?>[] { String.class, PlayerSidesConfig.class, String.class, IconConfig.class, NamedKeyStroke.class, NamedKeyStroke.class, ColorConfig.class, ColorConfig2.class, ColorConfig3.class, String.class };
   }
 
   /**
@@ -824,10 +824,9 @@ public class ChessClock extends AbstractConfigurable implements CommandEncoder, 
   /**
    * @return Array of subcomponent types that can be added to this component
    */
-  @SuppressWarnings("rawtypes")
   @Override
-  public Class[] getAllowableConfigureComponents() {
-    return new Class[0];
+  public Class<?>[] getAllowableConfigureComponents() {
+    return new Class<?>[0];
   }
 
 

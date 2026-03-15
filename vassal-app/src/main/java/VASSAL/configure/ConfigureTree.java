@@ -616,7 +616,7 @@ public class ConfigureTree extends JTree implements PropertyChangeListener, Mous
       }
 
       boolean allowed = false;
-      for (final Class c : target.getAllowableConfigureComponents()) {
+      for (final Class<?> c : target.getAllowableConfigureComponents()) {
         if (c.isInstance(b)) {
           allowed = true;
           break;
@@ -1106,17 +1106,17 @@ public class ConfigureTree extends JTree implements PropertyChangeListener, Mous
 
           if (peerInserts != null) {
             final Configurable parent = ((Configurable)parentNode.getUserObject());
-            for (final Class<? extends Buildable> newConfig : parent.getAllowableConfigureComponents()) {
-              peerInserts.add(buildAddAction(parent, newConfig, "Editor.ConfigureTree.add_peer", parentNode.getIndex(targetNode), null));
+            for (final Class<?> newConfig : parent.getAllowableConfigureComponents()) {
+              peerInserts.add(buildAddAction(parent, newConfig.asSubclass(Buildable.class), "Editor.ConfigureTree.add_peer", parentNode.getIndex(targetNode), null));
             }
           }
         }
       }
     }
 
-    for (final Class<? extends Buildable> newConfig :
+    for (final Class<?> newConfig :
       target.getAllowableConfigureComponents()) {
-      l.add(buildAddAction(target, newConfig));
+      l.add(buildAddAction(target, newConfig.asSubclass(Buildable.class)));
     }
 
     for (final AdditionalComponent add : additionalComponents) {
