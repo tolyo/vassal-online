@@ -44,7 +44,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.basedir>${project.basedir}</main.basedir>
-        <version.java.release>21</version.java.release>
+        <version.java.release>25</version.java.release>
+        <version.java.build>25</version.java.build>
 
         <!-- this is a default that will be overridden on the command line with -DgitVersion= -->
         <gitVersion>${project.version}</gitVersion>
@@ -71,7 +72,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.15.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>

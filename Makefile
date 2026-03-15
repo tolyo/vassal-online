@@ -3,14 +3,20 @@
 
 SHELL:=/bin/bash
 
-# Prefer an installed JDK 21 from SDKMAN when the current Java is too old; the build targets release 21.
-SDKMAN_JAVA_21 := $(lastword $(sort $(wildcard $(HOME)/.sdkman/candidates/java/21*)))
+# Prefer an installed JDK 25 from SDKMAN or ~/.jdk when the current Java is too old; the build targets release 25.
+SDKMAN_JAVA_25 := $(lastword $(sort $(wildcard $(HOME)/.sdkman/candidates/java/25*)))
+JDK_JAVA_25 := $(lastword $(sort $(wildcard $(HOME)/.jdk/jdk-25*)))
 JAVA_MAJOR := $(shell if [ -n "$$JAVA_HOME" ] && [ -x "$$JAVA_HOME/bin/java" ]; then "$$JAVA_HOME/bin/java" -version 2>&1; else java -version 2>&1; fi | sed -n 's/.*version "\\([0-9][0-9]*\\).*/\\1/p' | head -n1)
 
 ifneq ($(origin JAVA_HOME), command line)
-ifneq ($(SDKMAN_JAVA_21),)
-ifeq ($(shell [ -n "$(JAVA_MAJOR)" ] && [ "$(JAVA_MAJOR)" -ge 21 ] && echo yes),)
-export JAVA_HOME := $(SDKMAN_JAVA_21)
+ifneq ($(SDKMAN_JAVA_25),)
+ifeq ($(shell [ -n "$(JAVA_MAJOR)" ] && [ "$(JAVA_MAJOR)" -ge 25 ] && echo yes),)
+export JAVA_HOME := $(SDKMAN_JAVA_25)
+export PATH := $(JAVA_HOME)/bin:$(PATH)
+endif
+else ifneq ($(JDK_JAVA_25),)
+ifeq ($(shell [ -n "$(JAVA_MAJOR)" ] && [ "$(JAVA_MAJOR)" -ge 25 ] && echo yes),)
+export JAVA_HOME := $(JDK_JAVA_25)
 export PATH := $(JAVA_HOME)/bin:$(PATH)
 endif
 endif
