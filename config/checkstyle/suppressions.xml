@@ -3,11 +3,11 @@
     "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
-    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]bsh[/\\].*" checks=".*"/>
-    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]org[/\\]litesoft[/\\].*" checks=".*"/>
-    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]org[/\\]netbeans[/\\].*" checks=".*"/>
-    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]map[/\\]LOS_Thread\.java" checks="TypeName"/>
-    <suppress files="[/\\]vassal-app[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]properties[/\\]ListScenarioProperty\.java" checks="TypeName"/>
+    <suppress files=".*[/\\]src[/\\]main[/\\]java[/\\]bsh[/\\].*" checks=".*"/>
+    <suppress files=".*[/\\]src[/\\]main[/\\]java[/\\]org[/\\]litesoft[/\\].*" checks=".*"/>
+    <suppress files=".*[/\\]src[/\\]main[/\\]java[/\\]org[/\\]netbeans[/\\].*" checks=".*"/>
+    <suppress files=".*[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]map[/\\]LOS_Thread\.java" checks="TypeName"/>
+    <suppress files=".*[/\\]src[/\\]main[/\\]java[/\\]VASSAL[/\\]build[/\\]module[/\\]properties[/\\]ListScenarioProperty\.java" checks="TypeName"/>
     <suppress files=".*" checks="LineLength"/>
     <suppress files=".*" checks="PackageName"/>
     <suppress files=".*" checks="NeedBraces"/>

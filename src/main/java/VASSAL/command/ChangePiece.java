@@ -18,12 +18,9 @@
 package VASSAL.command;
 
 import VASSAL.build.GameModule;
-import VASSAL.build.module.GlobalOptions;
 import VASSAL.counters.BoundsTracker;
 import VASSAL.counters.GamePiece;
-import VASSAL.counters.Properties;
 import VASSAL.counters.StateMergeable;
-import VASSAL.tools.ProblemDialog;
 import java.util.NoSuchElementException;
 
 /**
@@ -58,7 +55,7 @@ public class ChangePiece extends Command {
           try {
             ((StateMergeable) target).mergeState(newState, oldState);
           } catch (NoSuchElementException e) {
-            ProblemDialog.showOutdatedModule("Piece: " + target.getName()); // NON-NLS
+            GameModule.getGameModule().showOutdatedModule("Piece: " + target.getName()); // NON-NLS
           }
         } else {
           target.setState(newState);
@@ -68,12 +65,7 @@ public class ChangePiece extends Command {
         target.setState(newState);
       }
       bounds.addPiece(target);
-      bounds.repaint();
-      if (target.getMap() != null
-          && GlobalOptions.getInstance().centerOnOpponentsMove()
-          && !Boolean.TRUE.equals(target.getProperty(Properties.INVISIBLE_TO_ME))) {
-        target.getMap().ensureVisible(target.getMap().selectionBoundsOf(target));
-      }
+      GameModule.getGameModule().afterPieceStateChange(target, bounds);
     }
   }
 

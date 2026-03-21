@@ -19,7 +19,6 @@ package VASSAL.command;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
-import VASSAL.build.module.map.HighlightLastMoved;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.KeyBuffer;
 import VASSAL.counters.Stack;
@@ -56,9 +55,6 @@ public class RemovePiece extends Command {
     final Map m = target.getMap();
     final Stack parent = target.getParent();
 
-    // Highlight the stack the piece was removed from - Ben
-    HighlightLastMoved.setLastMoved(target);
-
     if (m != null) {
       r = parent == null ? m.boundingBoxOf(target) : m.boundingBoxOf(parent);
       m.removePiece(target);
@@ -72,9 +68,7 @@ public class RemovePiece extends Command {
       target.setParent(null);
     }
 
-    if (m != null) {
-      m.repaint(r);
-    }
+    GameModule.getGameModule().afterPieceRemoved(target, m, r);
 
     GameModule.getGameModule().getGameState().removePiece(target);
     KeyBuffer.getBuffer().remove(target);

@@ -1,9 +1,7 @@
 package VASSAL.command;
 
 import VASSAL.build.GameModule;
-import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
-import VASSAL.build.module.map.HighlightLastMoved;
 import VASSAL.counters.BoundsTracker;
 import VASSAL.counters.Deck;
 import VASSAL.counters.DeckVisitor;
@@ -164,16 +162,7 @@ public class MovePiece extends Command {
         }
       }
       bounds.addPiece(piece);
-
-      // Highlight the stack the piece was moved to
-      HighlightLastMoved.setLastMoved(piece);
-
-      bounds.repaint();
-      if (piece.getMap() != null
-          && GlobalOptions.getInstance().centerOnOpponentsMove()
-          && !Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME))) {
-        piece.getMap().ensureVisible(piece.getMap().selectionBoundsOf(piece));
-      }
+      GameModule.getGameModule().afterPieceMove(piece, bounds);
     }
   }
 

@@ -19,12 +19,7 @@ package VASSAL.command;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameState;
-import VASSAL.build.module.GlobalOptions;
-import VASSAL.build.module.map.HighlightLastMoved;
 import VASSAL.counters.GamePiece;
-import VASSAL.counters.PieceIterator;
-import VASSAL.counters.Properties;
-import VASSAL.counters.Stack;
 
 /** This Command adds a {@link GamePiece} to a game. Its undo Command is {@link RemovePiece}. */
 public class AddPiece extends Command {
@@ -47,21 +42,7 @@ public class AddPiece extends Command {
     if (target != null) {
       GameModule.getGameModule().getGameState().addPiece(target);
       target.setState(state);
-      if (target.getMap() != null) {
-        HighlightLastMoved.setLastMoved(target);
-        if (GlobalOptions.getInstance().centerOnOpponentsMove()
-            && !Boolean.TRUE.equals(target.getProperty(Properties.INVISIBLE_TO_ME))) {
-
-          // Do not centre on a Stack unless it has at least one visible piece
-          if (target instanceof Stack
-              && !((Stack) target).asList().stream().anyMatch(PieceIterator.VISIBLE)) {
-            return;
-          }
-
-          target.getMap().ensureVisible(target.getMap().selectionBoundsOf(target));
-          target.getMap().repaint();
-        }
-      }
+      GameModule.getGameModule().afterPieceAdded(target);
     }
   }
 

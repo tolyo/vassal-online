@@ -60,6 +60,8 @@ import VASSAL.build.module.folder.ModuleSubFolder;
 import VASSAL.build.module.gamepieceimage.GamePieceImageDefinitions;
 import VASSAL.build.module.index.IndexManager;
 import VASSAL.build.module.map.CounterDetailViewer;
+import VASSAL.build.module.map.Flare;
+import VASSAL.build.module.map.HighlightLastMoved;
 import VASSAL.build.module.metadata.AbstractMetaData;
 import VASSAL.build.module.metadata.MetaDataFactory;
 import VASSAL.build.module.metadata.ModuleMetaData;
@@ -97,9 +99,13 @@ import VASSAL.configure.StringConfigurer;
 import VASSAL.configure.TextConfigurer;
 import VASSAL.configure.ValidationReport;
 import VASSAL.configure.password.ToggleablePasswordConfigurer;
+import VASSAL.counters.BoundsTracker;
 import VASSAL.counters.DeckManager;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.KeyCommand;
+import VASSAL.counters.PieceIterator;
+import VASSAL.counters.Properties;
+import VASSAL.counters.Stack;
 import VASSAL.i18n.ComponentI18nData;
 import VASSAL.i18n.I18nResourcePathFinder;
 import VASSAL.i18n.Language;
@@ -116,6 +122,7 @@ import VASSAL.tools.DebugControls;
 import VASSAL.tools.KeyStrokeListener;
 import VASSAL.tools.KeyStrokeSource;
 import VASSAL.tools.NamedKeyStroke;
+import VASSAL.tools.ProblemDialog;
 import VASSAL.tools.QuickColors;
 import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.ReflectionUtils;
@@ -131,6 +138,7 @@ import VASSAL.tools.menu.MenuManager;
 import VASSAL.tools.swing.SwingUtils;
 import VASSAL.tools.version.VersionUtils;
 import java.awt.Container;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -267,6 +275,69 @@ public class GameModule extends AbstractConfigurable
       return prettyName;
     }
   }
+
+  @FunctionalInterface
+  public interface PostMoveHandler {
+    void afterMove(GamePiece piece, BoundsTracker boundsTracker);
+  }
+
+  @FunctionalInterface
+  public interface PostAddHandler {
+    void afterAdd(GamePiece piece);
+  }
+
+  @FunctionalInterface
+  public interface PostChangeHandler {
+    void afterChange(GamePiece piece, BoundsTracker boundsTracker);
+  }
+
+  @FunctionalInterface
+  public interface PostRemoveHandler {
+    void afterRemove(GamePiece piece, Map removedFromMap, Rectangle repaintArea);
+  }
+
+  @FunctionalInterface
+  public interface AlertHandler {
+    void showAlert(String message);
+  }
+
+  @FunctionalInterface
+  public interface AudioClipHandler {
+    void playClip(String clipName);
+  }
+
+  @FunctionalInterface
+  public interface FlareHandler {
+    void startFlare(Flare flare, Point clickPoint);
+  }
+
+  @FunctionalInterface
+  public interface OutdatedModuleHandler {
+    void showOutdatedModule(String usage);
+  }
+
+  @FunctionalInterface
+  public interface WarningHandler {
+    void showWarning(String messageKey, Object... args);
+  }
+
+  @FunctionalInterface
+  public interface SaveModuleConfirmationHandler {
+    int confirmSaveModule();
+  }
+
+  public static final PostMoveHandler NO_OP_POST_MOVE_HANDLER = (piece, boundsTracker) -> {};
+  public static final PostAddHandler NO_OP_POST_ADD_HANDLER = piece -> {};
+  public static final PostChangeHandler NO_OP_POST_CHANGE_HANDLER = (piece, boundsTracker) -> {};
+  public static final PostRemoveHandler NO_OP_POST_REMOVE_HANDLER =
+      (piece, removedFromMap, repaintArea) -> {};
+  public static final AlertHandler NO_OP_ALERT_HANDLER = message -> {};
+  public static final AudioClipHandler NO_OP_AUDIO_CLIP_HANDLER = clipName -> {};
+  public static final FlareHandler NO_OP_FLARE_HANDLER = (flare, clickPoint) -> {};
+  public static final OutdatedModuleHandler NO_OP_OUTDATED_MODULE_HANDLER = usage -> {};
+  public static final WarningHandler NO_OP_WARNING_HANDLER = (messageKey, args) -> {};
+  public static final SaveModuleConfirmationHandler NO_OP_SAVE_MODULE_CONFIRMATION_HANDLER =
+      () -> JOptionPane.CLOSED_OPTION;
 
   private static String userId = null;
 
@@ -462,6 +533,17 @@ public class GameModule extends AbstractConfigurable
   private final CommandCodec commandCodec = new CommandCodec(COMMAND_SEPARATOR);
   private final List<String> deferredChat = new ArrayList<>();
   private Consumer<Runnable> incomingCommandScheduler = SwingUtilities::invokeLater;
+  private PostMoveHandler postMoveHandler = this::handleDesktopPostMove;
+  private PostAddHandler postAddHandler = this::handleDesktopPostAdd;
+  private PostChangeHandler postChangeHandler = this::handleDesktopPostChange;
+  private PostRemoveHandler postRemoveHandler = this::handleDesktopPostRemove;
+  private AlertHandler alertHandler = this::handleDesktopAlert;
+  private AudioClipHandler audioClipHandler = this::handleDesktopAudioClip;
+  private FlareHandler flareHandler = this::handleDesktopFlare;
+  private OutdatedModuleHandler outdatedModuleHandler = this::handleDesktopOutdatedModule;
+  private WarningHandler warningHandler = this::handleDesktopWarning;
+  private SaveModuleConfirmationHandler saveModuleConfirmationHandler =
+      this::handleDesktopSaveModuleConfirmation;
 
   private boolean loggingPaused = false;
   private final Object loggingLock = new Object();
@@ -897,8 +979,7 @@ public class GameModule extends AbstractConfigurable
     serverControls.addTo(this);
 
     server.addPropertyChangeListener(
-        DynamicClient.CONNECTION_LOST,
-        e -> WarningDialog.show("GameModule.disconnect_warning") // NON-NLS
+        DynamicClient.CONNECTION_LOST, e -> showWarning("GameModule.disconnect_warning") // NON-NLS
         );
   }
 
@@ -1052,7 +1133,7 @@ public class GameModule extends AbstractConfigurable
       vassalVersionCreated = (String) value;
       final String runningVersion = Info.getVersion();
       if (VersionUtils.compareVersions(vassalVersionCreated, runningVersion) > 0) {
-        WarningDialog.show(
+        showWarning(
             "GameModule.version_warning", // NON-NLS
             vassalVersionCreated,
             runningVersion);
@@ -1570,6 +1651,190 @@ public class GameModule extends AbstractConfigurable
     this.incomingCommandScheduler = Objects.requireNonNull(incomingCommandScheduler);
   }
 
+  /** Applies any post-move presentation work after the command has finished mutating game state. */
+  public void afterPieceMove(GamePiece piece, BoundsTracker boundsTracker) {
+    postMoveHandler.afterMove(piece, boundsTracker);
+  }
+
+  /** Allows desktop post-move presentation work to be replaced in headless environments. */
+  public void setPostMoveHandler(PostMoveHandler postMoveHandler) {
+    this.postMoveHandler = Objects.requireNonNull(postMoveHandler);
+  }
+
+  /** Applies any post-add presentation work after the command has finished mutating game state. */
+  public void afterPieceAdded(GamePiece piece) {
+    postAddHandler.afterAdd(piece);
+  }
+
+  /** Allows desktop post-add presentation work to be replaced in headless environments. */
+  public void setPostAddHandler(PostAddHandler postAddHandler) {
+    this.postAddHandler = Objects.requireNonNull(postAddHandler);
+  }
+
+  /**
+   * Applies any post-change presentation work after the command has finished mutating game state.
+   */
+  public void afterPieceStateChange(GamePiece piece, BoundsTracker boundsTracker) {
+    postChangeHandler.afterChange(piece, boundsTracker);
+  }
+
+  /** Allows desktop post-change presentation work to be replaced in headless environments. */
+  public void setPostChangeHandler(PostChangeHandler postChangeHandler) {
+    this.postChangeHandler = Objects.requireNonNull(postChangeHandler);
+  }
+
+  /**
+   * Applies any post-remove presentation work after the command has finished mutating game state.
+   */
+  public void afterPieceRemoved(GamePiece piece, Map removedFromMap, Rectangle repaintArea) {
+    postRemoveHandler.afterRemove(piece, removedFromMap, repaintArea);
+  }
+
+  /** Allows desktop post-remove presentation work to be replaced in headless environments. */
+  public void setPostRemoveHandler(PostRemoveHandler postRemoveHandler) {
+    this.postRemoveHandler = Objects.requireNonNull(postRemoveHandler);
+  }
+
+  /** Routes alert presentation through a replaceable client-side handler. */
+  public void showAlert(String message) {
+    alertHandler.showAlert(message);
+  }
+
+  /** Allows desktop alert presentation work to be replaced in headless environments. */
+  public void setAlertHandler(AlertHandler alertHandler) {
+    this.alertHandler = Objects.requireNonNull(alertHandler);
+  }
+
+  /** Routes audio playback through a replaceable client-side handler. */
+  public void playAudioClip(String clipName) {
+    audioClipHandler.playClip(clipName);
+  }
+
+  /** Allows desktop audio playback to be replaced in headless environments. */
+  public void setAudioClipHandler(AudioClipHandler audioClipHandler) {
+    this.audioClipHandler = Objects.requireNonNull(audioClipHandler);
+  }
+
+  /** Routes flare animation through a replaceable client-side handler. */
+  public void startFlare(Flare flare, Point clickPoint) {
+    flareHandler.startFlare(flare, clickPoint);
+  }
+
+  /** Allows desktop flare animation to be replaced in headless environments. */
+  public void setFlareHandler(FlareHandler flareHandler) {
+    this.flareHandler = Objects.requireNonNull(flareHandler);
+  }
+
+  /** Routes outdated-module notifications through a replaceable client-side handler. */
+  public void showOutdatedModule(String usage) {
+    outdatedModuleHandler.showOutdatedModule(usage);
+  }
+
+  /** Allows desktop outdated-module notifications to be replaced in headless environments. */
+  public void setOutdatedModuleHandler(OutdatedModuleHandler outdatedModuleHandler) {
+    this.outdatedModuleHandler = Objects.requireNonNull(outdatedModuleHandler);
+  }
+
+  /** Routes warning dialogs through a replaceable client-side handler. */
+  public void showWarning(String messageKey, Object... args) {
+    warningHandler.showWarning(messageKey, args);
+  }
+
+  /** Allows desktop warning dialogs to be replaced in headless environments. */
+  public void setWarningHandler(WarningHandler warningHandler) {
+    this.warningHandler = Objects.requireNonNull(warningHandler);
+  }
+
+  /** Routes the edited-module shutdown confirmation through a replaceable handler. */
+  public int confirmSaveEditedModule() {
+    return saveModuleConfirmationHandler.confirmSaveModule();
+  }
+
+  /** Allows desktop save confirmation to be replaced in headless environments. */
+  public void setSaveModuleConfirmationHandler(
+      SaveModuleConfirmationHandler saveModuleConfirmationHandler) {
+    this.saveModuleConfirmationHandler = Objects.requireNonNull(saveModuleConfirmationHandler);
+  }
+
+  private void handleDesktopPostMove(GamePiece piece, BoundsTracker boundsTracker) {
+    HighlightLastMoved.setLastMoved(piece);
+    boundsTracker.repaint();
+    if (piece.getMap() != null
+        && GlobalOptions.getInstance().centerOnOpponentsMove()
+        && !Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME))) {
+      piece.getMap().ensureVisible(piece.getMap().selectionBoundsOf(piece));
+    }
+  }
+
+  private void handleDesktopPostAdd(GamePiece piece) {
+    if (piece.getMap() == null) {
+      return;
+    }
+
+    HighlightLastMoved.setLastMoved(piece);
+    if (GlobalOptions.getInstance().centerOnOpponentsMove()
+        && !Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME))) {
+      if (piece instanceof Stack
+          && !((Stack) piece).asList().stream().anyMatch(PieceIterator.VISIBLE)) {
+        return;
+      }
+
+      piece.getMap().ensureVisible(piece.getMap().selectionBoundsOf(piece));
+      piece.getMap().repaint();
+    }
+  }
+
+  private void handleDesktopPostChange(GamePiece piece, BoundsTracker boundsTracker) {
+    boundsTracker.repaint();
+    if (piece.getMap() != null
+        && GlobalOptions.getInstance().centerOnOpponentsMove()
+        && !Boolean.TRUE.equals(piece.getProperty(Properties.INVISIBLE_TO_ME))) {
+      piece.getMap().ensureVisible(piece.getMap().selectionBoundsOf(piece));
+    }
+  }
+
+  private void handleDesktopPostRemove(GamePiece piece, Map removedFromMap, Rectangle repaintArea) {
+    HighlightLastMoved.setLastMoved(piece);
+    if (removedFromMap != null) {
+      removedFromMap.repaint(repaintArea);
+    }
+  }
+
+  private void handleDesktopAlert(String message) {
+    SwingUtilities.invokeLater(
+        () ->
+            JOptionPane.showMessageDialog(
+                GameModule.getGameModule() == null ? null : getPlayerWindow(), message));
+  }
+
+  private void handleDesktopAudioClip(String clipName) {
+    try {
+      if (!GlobalOptions.getInstance().isSoundGlobalMute() && !getGameState().isFastForwarding()) {
+        getDataArchive().getCachedAudioClip(clipName).play();
+      }
+    } catch (IOException e) {
+      ReadErrorDialog.error(e, clipName);
+    }
+  }
+
+  private void handleDesktopFlare(Flare flare, Point clickPoint) {
+    flare.setClickPoint(clickPoint);
+    flare.startAnimation(false);
+  }
+
+  private void handleDesktopOutdatedModule(String usage) {
+    ProblemDialog.showOutdatedModule(usage);
+  }
+
+  private void handleDesktopWarning(String messageKey, Object... args) {
+    WarningDialog.show(messageKey, args);
+  }
+
+  private int handleDesktopSaveModuleConfirmation() {
+    return JOptionPane.showConfirmDialog(
+        frame, Resources.getString("GameModule.save_module"), "", JOptionPane.YES_NO_CANCEL_OPTION);
+  }
+
   /**
    * @return a common FileChooser so that recent file locations can be remembered
    */
@@ -1756,11 +2021,7 @@ public class GameModule extends AbstractConfigurable
     if (!cancelled) {
       if (getDataArchive() instanceof ArchiveWriter
           && (!buildString().equals(lastSavedConfiguration) || iFeelDirty)) {
-        switch (JOptionPane.showConfirmDialog(
-            frame,
-            Resources.getString("GameModule.save_module"), // $NON-NLS-1$
-            "",
-            JOptionPane.YES_NO_CANCEL_OPTION)) { // $NON-NLS-1$
+        switch (confirmSaveEditedModule()) {
           case JOptionPane.YES_OPTION:
             save();
             break;

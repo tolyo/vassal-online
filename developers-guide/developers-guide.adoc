@@ -20,8 +20,6 @@ Reference: link:https://maven.apache.org/ref/3.6.3/maven-core/lifecycles.html[]
 . *clean*: deletes everything in `/target`
 . *validate*
 * checkstyle
-. *generate-resources*
-* asciidoctor
 . *compile*: compiles code and copies resources to `/target/classes`
 . *test*: runs unit tests
 * spotbugs
@@ -47,9 +45,9 @@ Runs goal link:https://maven.apache.org/plugins/maven-checkstyle-plugin/check-mo
 ====
 
 * Maven plugin version and checkstyle version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-app/pom.xml[]
-* Checkstyle configuration in link:{rootdir}vassal-app/src/test/resources/checkstyle-checks.xml[]
-* Exceptions from checks in link:{rootdir}vassal-app/src/test/resources/checkstyle-suppressions.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
+* Checkstyle configuration in link:{rootdir}src/test/resources/checkstyle-checks.xml[]
+* Exceptions from checks in link:{rootdir}config/checkstyle/suppressions.xml[]
 
 ===== PMD
 
@@ -59,7 +57,7 @@ Runs goal link:https://maven.apache.org/plugins/maven-pmd-plugin/check-mojo.html
 ====
 
 * Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-app/pom.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
 
 ===== Source
 
@@ -76,7 +74,7 @@ Runs goal link:https://maven.apache.org/plugins/maven-javadoc-plugin/jar-mojo.ht
 ====
 
 * Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-app/pom.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
 
 ===== Spotbugs
 
@@ -86,8 +84,8 @@ Runs goal link:https://spotbugs.github.io/spotbugs-maven-plugin/check-mojo.html[
 ====
 
 * Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-app/pom.xml[]
-* Spotbugs include filter configuration in link:{rootdir}vassal-app/src/test/resources/spotbugs-include-filter.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
+* Spotbugs include filter configuration in link:{rootdir}src/test/resources/spotbugs-include-filter.xml[]
 
 ===== Clirr
 
@@ -97,30 +95,12 @@ Runs goal link:https://www.mojohaus.org/clirr-maven-plugin/check-no-fork-mojo.ht
 ====
 
 * Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-app/pom.xml[]
-* Configuration of ignores in link:{rootdir}vassal-app/src/test/resources/clirr-ignored-differences.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
+* Configuration of ignores in link:{rootdir}src/test/resources/clirr-ignored-differences.xml[]
 
-===== Asciidoc
+===== Documentation References
 
-[NOTE]
-====
-Runs goal link:https://asciidoctor.org/docs/asciidoctor-maven-plugin/[asciidoctor:process-asciidoc] in *generate-resources* phase
-====
-
-Asciidoc documentation:
-
-* https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
-* https://asciidoctor.org/docs/user-manual/
-
-The asciidoctor plugin runs once for each of the following:
-
-. convert Reference Manual files to HTML
-. convert Userguide to PDF
-. convert Designer's Guide to PDF
-
-[]
-* Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}vassal-doc/pom.xml[]
+The AsciiDoc sources under link:{rootdir}vassal-doc/[] are kept in the repository as reference material, but they are no longer part of the Maven reactor or release build.
 
 ===== License Maven Plugin
 
@@ -130,7 +110,7 @@ Runs goal link:https://www.mojohaus.org/license-maven-plugin/aggregate-download-
 ====
 
 * Maven plugin version in link:{rootdir}pom.xml[]
-* Maven plugin configuration in link:{rootdir}release-prepare/pom.xml[]
+* Maven plugin configuration in link:{rootdir}pom.xml[]
 
 ==== Build parameters
 
@@ -162,9 +142,6 @@ Each build step can be skipped by passing certain parameters.
 |Javadoc
 |`-Dmaven.javadoc.skip=true`
 
-|Asciidoctor
-|`-Dasciidoctor.skip=true`
-
 |Clirr
 |`-Dclirr.skip=true`
 
@@ -174,16 +151,10 @@ Each build step can be skipped by passing certain parameters.
 |===
 
 ====== Examples
-* Compile only, build jar in `vassal-app/target`, skip tests, checkstyle, spotbugs, javadoc, asciidoctor, clirr:
+* Compile only, build jar in `target`, skip tests, checkstyle, spotbugs, javadoc, clirr:
 [source]
 ----
-mvn clean package -DskipTests=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Dasciidoctor.skip=true -Dclirr.skip=true
-----
-
-* Run AsciiDoctor only:
-[source]
-----
-mvn clean compile -Dmaven.main.skip=true -DskipTests=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Dclirr.skip=true
+mvn clean package -DskipTests=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Dclirr.skip=true
 ----
 
 ==== Regular TODOs

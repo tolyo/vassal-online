@@ -22,7 +22,7 @@ endif
 endif
 endif
 
-LIBDIR:=release-prepare/target/lib
+LIBDIR:=target/lib
 TMPDIR:=tmp
 DISTDIR:=dist
 JDOCDIR:=jdoc
@@ -64,7 +64,6 @@ endif
 
 SKIPS:=
 
-# -Dasciidoctor.skip=true
 # -Dspotbugs.skip=true
 # -Dlicense.skipDownloadLicenses
 # -Dclirr.skip=true
@@ -72,7 +71,7 @@ SKIPS:=
 # -Dpmd.skip=true
 # -Dmaven.test.skip=true
 
-jar: SKIPS:=-Dasciidoctor.skip=true -Dspotbugs.skip=true -Dlicense.skipDownloadLicenses
+jar: SKIPS:=-Dspotbugs.skip=true -Dlicense.skipDownloadLicenses
 jar: $(LIBDIR)/Vengine.jar
 
 compile:
@@ -98,8 +97,9 @@ $(TMPDIR) $(JDOCDIR):
 	mkdir -p $@
 
 $(LIBDIR)/Vengine.jar: version-set
-	$(MVN) deploy -DgitVersion=$(VERSION) -Dasciidoctor.attributes=optimize $(SKIPS)
-	mv $(LIBDIR)/$(JARNAME).jar $@
+	mkdir -p $(LIBDIR)
+	$(MVN) deploy -DgitVersion=$(VERSION) $(SKIPS)
+	cp target/$(JARNAME).jar $@
 
 $(TMPDIR)/notes.json: $(DISTDIR)/notes/data.json | $(TMPDIR)
 	jinja2 --strict -Dversion=$(VERSION) -Dversion_feature=$(V_MAJ_MIN) -o $@ $^
@@ -114,10 +114,10 @@ clean-release:
 
 post-release: version-set
 
-vassal-app/target/$(JARNAME)-javadoc.jar: $(LIBDIR)/Vengine.jar
+target/$(JARNAME)-javadoc.jar: $(LIBDIR)/Vengine.jar
 
-javadoc: vassal-app/target/$(JARNAME)-javadoc.jar | $(JDOCDIR)
-	pushd $(JDOCDIR) ; unzip ../vassal-app/target/$(JARNAME)-javadoc.jar ; popd
+javadoc: target/$(JARNAME)-javadoc.jar | $(JDOCDIR)
+	pushd $(JDOCDIR) ; unzip ../target/$(JARNAME)-javadoc.jar ; popd
 
 version-print:
 	@echo $(VERSION)

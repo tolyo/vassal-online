@@ -1,4 +1,4 @@
-<img src="vassal-app/src/main/resources/icons/scalable/VASSAL.svg" width="100px" align="right"  alt="Vassal Icon"/>
+<img src="src/main/resources/icons/scalable/VASSAL.svg" width="100px" align="right"  alt="Vassal Icon"/>
 
 # VASSAL
 > The open-source boardgame engine

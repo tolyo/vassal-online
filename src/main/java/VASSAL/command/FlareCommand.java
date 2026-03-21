@@ -16,6 +16,7 @@
  */
 package VASSAL.command;
 
+import VASSAL.build.GameModule;
 import VASSAL.build.module.map.Flare;
 import java.awt.Point;
 
@@ -35,8 +36,7 @@ public class FlareCommand extends Command {
   /** Executes the command (starts a Flare at the specified location) */
   @Override
   protected void executeCommand() {
-    flare.setClickPoint(clickPoint);
-    flare.startAnimation(false);
+    GameModule.getGameModule().startFlare(flare, clickPoint);
   }
 
   /**
