@@ -216,7 +216,7 @@ public class DieManager extends AbstractConfigurable {
 
     final RollSet rollSet;
 
-    String desc = GameModule.getGameModule().getChatter().getInputField().getText();
+    String desc = GameModule.getGameModule().getChatInputText();
     if (desc != null && desc.length() > 0) {
       mroll.setDescription(desc);
     }
@@ -241,33 +241,33 @@ public class DieManager extends AbstractConfigurable {
     }
 
     final Command chatCommand =
-        new Chatter.DisplayText(
-            GameModule.getGameModule().getChatter(), " - Roll sent to " + server.getDescription());
+        GameModule.getGameModule()
+            .createChatDisplayCommand(" - Roll sent to " + server.getDescription());
 
     if (desc == null || desc.length() == 0) {
-      desc = GameModule.getGameModule().getChatter().getInputField().getText();
+      desc = GameModule.getGameModule().getChatInputText();
     }
     if (server.getUseEmail()) {
       if (desc == null || desc.length() == 0) {
         chatCommand.append(
-            new Chatter.DisplayText(
-                GameModule.getGameModule().getChatter(),
-                " - Emailing " + server.getSecondaryEmail() + " (no subject line)"));
+            GameModule.getGameModule()
+                .createChatDisplayCommand(
+                    " - Emailing " + server.getSecondaryEmail() + " (no subject line)"));
         chatCommand.append(
-            new Chatter.DisplayText(
-                GameModule.getGameModule().getChatter(),
-                " - Leave text in the chat input area to provide a subject line"));
+            GameModule.getGameModule()
+                .createChatDisplayCommand(
+                    " - Leave text in the chat input area to provide a subject line"));
       } else {
         chatCommand.append(
-            new Chatter.DisplayText(
-                GameModule.getGameModule().getChatter(),
-                " - Emailing " + server.getSecondaryEmail() + " (Subject:  " + desc + ")"));
+            GameModule.getGameModule()
+                .createChatDisplayCommand(
+                    " - Emailing " + server.getSecondaryEmail() + " (Subject:  " + desc + ")"));
       }
     }
     chatCommand.execute();
     GameModule.getGameModule().sendAndLog(chatCommand);
 
-    GameModule.getGameModule().getChatter().getInputField().setText("");
+    GameModule.getGameModule().clearChatInputText();
     rollSet.setDescription(desc);
 
     server.roll(rollSet, format);

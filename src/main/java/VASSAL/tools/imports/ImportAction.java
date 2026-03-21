@@ -181,7 +181,7 @@ public final class ImportAction extends EditModuleAction {
       ErrorDialog.bug(e);
     }
 
-    module.getPlayerWindow().setVisible(true);
+    module.setMainWindowVisible(true);
     new ModuleEditorWindow(module).setVisible(true);
   }
 

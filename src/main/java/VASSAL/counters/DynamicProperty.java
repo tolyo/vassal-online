@@ -190,7 +190,7 @@ public class DynamicProperty extends Decorator
   public Component getComponent() {
     return getMap() != null
         ? getMap().getView().getTopLevelAncestor()
-        : GameModule.getGameModule().getPlayerWindow();
+        : GameModule.getGameModule().getDialogOwner();
   }
 
   @Override

@@ -83,7 +83,7 @@ public class ErrorDialog {
       logger.error("", thrown);
 
       final Frame frame =
-          GameModule.getGameModule() == null ? null : GameModule.getGameModule().getPlayerWindow();
+          GameModule.getGameModule() == null ? null : GameModule.getGameModule().getDialogOwner();
 
       final String message = thrown.getMessage();
       if ((message != null) && message.contains("ran out of memory")) { // NON-NLS

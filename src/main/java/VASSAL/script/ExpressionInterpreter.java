@@ -2058,7 +2058,7 @@ public class ExpressionInterpreter extends AbstractInterpreter implements Loopab
   public Object sleep(Object ms, PropertySource ps) {
 
     final int milliSeconds = IntPropValue(ms);
-    final JDialog dialog = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+    final JDialog dialog = new JDialog(GameModule.getGameModule().getDialogOwner(), true);
     dialog.setLocation(
         -5000,
         -5000); // but, note! OS can't be relied on to put the window "off-screen". e.g. MacOS does

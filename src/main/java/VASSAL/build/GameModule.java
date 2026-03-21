@@ -17,10 +17,6 @@
  */
 package VASSAL.build;
 
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_HEIGHT;
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_REMEMBER;
-import static VASSAL.preferences.Prefs.MAIN_WINDOW_WIDTH;
-
 import VASSAL.Info;
 import VASSAL.build.module.BasicCommandEncoder;
 import VASSAL.build.module.BasicLogger;
@@ -51,6 +47,7 @@ import VASSAL.build.module.PrivateMap;
 import VASSAL.build.module.PrototypesContainer;
 import VASSAL.build.module.RandomTextButton;
 import VASSAL.build.module.ServerConnection;
+import VASSAL.build.module.SessionConnection;
 import VASSAL.build.module.SpecialDiceButton;
 import VASSAL.build.module.StartupGlobalKeyCommand;
 import VASSAL.build.module.ToolbarMenu;
@@ -75,14 +72,7 @@ import VASSAL.build.module.properties.TranslatableString;
 import VASSAL.build.module.properties.TranslatableStringContainer;
 import VASSAL.build.module.turn.TurnTracker;
 import VASSAL.build.widget.PieceSlot;
-import VASSAL.chat.AddressBookServerConfigurer;
-import VASSAL.chat.ChatServerFactory;
-import VASSAL.chat.DynamicClient;
-import VASSAL.chat.HybridClient;
-import VASSAL.chat.node.NodeClientFactory;
-import VASSAL.chat.node.OfficialNodeClientFactory;
-import VASSAL.chat.node.PrivateNodeClientFactory;
-import VASSAL.chat.peer2peer.P2PClientFactory;
+import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.ui.ChatServerControls;
 import VASSAL.command.Command;
 import VASSAL.command.CommandCodec;
@@ -112,7 +102,6 @@ import VASSAL.i18n.Language;
 import VASSAL.i18n.Localization;
 import VASSAL.i18n.Resources;
 import VASSAL.launch.PlayerWindow;
-import VASSAL.preferences.PositionOption;
 import VASSAL.preferences.Prefs;
 import VASSAL.script.expression.Expression;
 import VASSAL.tools.ArchiveWriter;
@@ -122,28 +111,23 @@ import VASSAL.tools.DebugControls;
 import VASSAL.tools.KeyStrokeListener;
 import VASSAL.tools.KeyStrokeSource;
 import VASSAL.tools.NamedKeyStroke;
-import VASSAL.tools.ProblemDialog;
 import VASSAL.tools.QuickColors;
-import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.ReflectionUtils;
 import VASSAL.tools.ResourcePathFinder;
 import VASSAL.tools.ToolBarComponent;
-import VASSAL.tools.WarningDialog;
-import VASSAL.tools.WriteErrorDialog;
 import VASSAL.tools.filechooser.FileChooser;
 import VASSAL.tools.image.ImageTileSource;
 import VASSAL.tools.image.tilecache.ImageTileDiskCache;
 import VASSAL.tools.menu.MenuItemProxy;
 import VASSAL.tools.menu.MenuManager;
-import VASSAL.tools.swing.SwingUtils;
 import VASSAL.tools.version.VersionUtils;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedInputStream;
@@ -166,6 +150,7 @@ import java.util.function.Consumer;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -326,6 +311,106 @@ public class GameModule extends AbstractConfigurable
     int confirmSaveModule();
   }
 
+  @FunctionalInterface
+  public interface ReadErrorHandler {
+    void showReadError(IOException error, String target);
+  }
+
+  @FunctionalInterface
+  public interface WriteErrorHandler {
+    void showWriteError(IOException error, String target);
+  }
+
+  @FunctionalInterface
+  public interface FileWriteErrorHandler {
+    void showWriteError(IOException error, File file, String messageKey);
+  }
+
+  @FunctionalInterface
+  public interface MutableButtonLabelUpdateHandler {
+    void updateButtonLabels(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface PrefsDialogInitializer {
+    void initialize(Prefs prefs, Frame dialogOwner);
+  }
+
+  @FunctionalInterface
+  public interface FileChooserHandler {
+    FileChooser getFileChooser(GameModule gameModule, FileChooser existingChooser);
+  }
+
+  @FunctionalInterface
+  public interface FrameSetupHandler {
+    void initializeFrame(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface WindowLayoutHandler {
+    void layoutWindow(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface ControlPanelProvider {
+    JComponent getControlPanel(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface ToolBarProvider {
+    JToolBar getToolBar(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface WindowTitleHandler {
+    void updateTitle(GameModule gameModule, String title);
+  }
+
+  @FunctionalInterface
+  public interface DialogOwnerProvider {
+    Frame getDialogOwner(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowVisibilityHandler {
+    void setVisible(GameModule gameModule, boolean visible);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowCursorHandler {
+    void setCursor(GameModule gameModule, Cursor cursor);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowLocationProvider {
+    Point getLocation(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowBoundsProvider {
+    Rectangle getBounds(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowScreenBoundsProvider {
+    Rectangle getScreenBounds(GameModule gameModule);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowResizeHandler {
+    void setSize(GameModule gameModule, int width, int height);
+  }
+
+  @FunctionalInterface
+  public interface MainWindowChatterHandler {
+    void attachChatter(GameModule gameModule, Chatter chatter);
+  }
+
+  @FunctionalInterface
+  public interface MainMenuBarProvider {
+    JMenuBar getMenuBar(GameModule gameModule);
+  }
+
   public static final PostMoveHandler NO_OP_POST_MOVE_HANDLER = (piece, boundsTracker) -> {};
   public static final PostAddHandler NO_OP_POST_ADD_HANDLER = piece -> {};
   public static final PostChangeHandler NO_OP_POST_CHANGE_HANDLER = (piece, boundsTracker) -> {};
@@ -338,6 +423,38 @@ public class GameModule extends AbstractConfigurable
   public static final WarningHandler NO_OP_WARNING_HANDLER = (messageKey, args) -> {};
   public static final SaveModuleConfirmationHandler NO_OP_SAVE_MODULE_CONFIRMATION_HANDLER =
       () -> JOptionPane.CLOSED_OPTION;
+  public static final ReadErrorHandler NO_OP_READ_ERROR_HANDLER = (error, target) -> {};
+  public static final WriteErrorHandler NO_OP_WRITE_ERROR_HANDLER = (error, target) -> {};
+  public static final FileWriteErrorHandler NO_OP_FILE_WRITE_ERROR_HANDLER =
+      (error, file, messageKey) -> {};
+  public static final MutableButtonLabelUpdateHandler NO_OP_MUTABLE_BUTTON_LABEL_UPDATE_HANDLER =
+      GameModule::clearMutableButtonLabelUpdateScheduled;
+  public static final PrefsDialogInitializer NO_OP_PREFS_DIALOG_INITIALIZER =
+      (prefs, playerWindow) -> {};
+  public static final FileChooserHandler NO_OP_FILE_CHOOSER_HANDLER =
+      (gameModule, existingChooser) -> existingChooser;
+  public static final FrameSetupHandler NO_OP_FRAME_SETUP_HANDLER = gameModule -> {};
+  public static final WindowLayoutHandler NO_OP_WINDOW_LAYOUT_HANDLER = gameModule -> {};
+  public static final ControlPanelProvider NO_OP_CONTROL_PANEL_PROVIDER =
+      gameModule -> new JPanel();
+  public static final ToolBarProvider NO_OP_TOOL_BAR_PROVIDER = gameModule -> new JToolBar();
+  public static final WindowTitleHandler NO_OP_WINDOW_TITLE_HANDLER = (gameModule, title) -> {};
+  public static final DialogOwnerProvider NO_OP_DIALOG_OWNER_PROVIDER = gameModule -> null;
+  public static final MainWindowVisibilityHandler NO_OP_MAIN_WINDOW_VISIBILITY_HANDLER =
+      (gameModule, visible) -> {};
+  public static final MainWindowCursorHandler NO_OP_MAIN_WINDOW_CURSOR_HANDLER =
+      (gameModule, cursor) -> {};
+  public static final MainWindowLocationProvider NO_OP_MAIN_WINDOW_LOCATION_PROVIDER =
+      gameModule -> new Point();
+  public static final MainWindowBoundsProvider NO_OP_MAIN_WINDOW_BOUNDS_PROVIDER =
+      gameModule -> new Rectangle();
+  public static final MainWindowScreenBoundsProvider NO_OP_MAIN_WINDOW_SCREEN_BOUNDS_PROVIDER =
+      gameModule -> new Rectangle();
+  public static final MainWindowResizeHandler NO_OP_MAIN_WINDOW_RESIZE_HANDLER =
+      (gameModule, width, height) -> {};
+  public static final MainWindowChatterHandler NO_OP_MAIN_WINDOW_CHATTER_HANDLER =
+      (gameModule, chatter) -> {};
+  public static final MainMenuBarProvider NO_OP_MAIN_MENU_BAR_PROVIDER = gameModule -> null;
 
   private static String userId = null;
 
@@ -478,6 +595,9 @@ public class GameModule extends AbstractConfigurable
       };
 
   private final PlayerWindow frame = new PlayerWindow();
+  private final GameModuleDesktopWindowHost desktopWindowHost =
+      new GameModuleDesktopWindowHost(frame);
+  private final GameModuleDesktopUiSupport desktopUiSupport = new GameModuleDesktopUiSupport(this);
 
   /** Reads/writes full game state; starts/stops gameplay. */
   private GameState theState;
@@ -509,11 +629,8 @@ public class GameModule extends AbstractConfigurable
   /** Random number generator */
   private final Random RNG = new SecureRandom();
 
-  /** Server object for online games */
-  private ServerConnection server;
-
-  /** Chat server controls */
-  private ChatServerControls serverControls;
+  /** Multiplayer session host */
+  private final GameModuleSessionHost sessionHost = new GameModuleSessionHost(this);
 
   /** Debug window controls */
   private DebugControls debugControls;
@@ -537,13 +654,40 @@ public class GameModule extends AbstractConfigurable
   private PostAddHandler postAddHandler = this::handleDesktopPostAdd;
   private PostChangeHandler postChangeHandler = this::handleDesktopPostChange;
   private PostRemoveHandler postRemoveHandler = this::handleDesktopPostRemove;
-  private AlertHandler alertHandler = this::handleDesktopAlert;
-  private AudioClipHandler audioClipHandler = this::handleDesktopAudioClip;
-  private FlareHandler flareHandler = this::handleDesktopFlare;
-  private OutdatedModuleHandler outdatedModuleHandler = this::handleDesktopOutdatedModule;
-  private WarningHandler warningHandler = this::handleDesktopWarning;
+  private AlertHandler alertHandler = desktopUiSupport::showAlert;
+  private AudioClipHandler audioClipHandler = desktopUiSupport::playAudioClip;
+  private FlareHandler flareHandler = desktopUiSupport::startFlare;
+  private OutdatedModuleHandler outdatedModuleHandler = desktopUiSupport::showOutdatedModule;
+  private WarningHandler warningHandler = desktopUiSupport::showWarning;
   private SaveModuleConfirmationHandler saveModuleConfirmationHandler =
-      this::handleDesktopSaveModuleConfirmation;
+      desktopUiSupport::confirmSaveModule;
+  private ReadErrorHandler readErrorHandler = desktopUiSupport::showReadError;
+  private WriteErrorHandler writeErrorHandler = desktopUiSupport::showWriteError;
+  private FileWriteErrorHandler fileWriteErrorHandler = desktopUiSupport::showWriteError;
+  private MutableButtonLabelUpdateHandler mutableButtonLabelUpdateHandler =
+      desktopUiSupport::updateButtonLabels;
+  private PrefsDialogInitializer prefsDialogInitializer = desktopUiSupport::initializePrefsDialog;
+  private FileChooserHandler savedGameFileChooserHandler =
+      desktopUiSupport::getSavedGameFileChooser;
+  private FileChooserHandler editorImageFileChooserHandler =
+      desktopUiSupport::getEditorImageFileChooser;
+  private FileChooserHandler editorSoundFileChooserHandler =
+      desktopUiSupport::getEditorSoundFileChooser;
+  private FrameSetupHandler frameSetupHandler = desktopWindowHost::initializeFrame;
+  private WindowLayoutHandler windowLayoutHandler = desktopWindowHost::layoutWindow;
+  private ControlPanelProvider controlPanelProvider = desktopWindowHost::getControlPanel;
+  private ToolBarProvider toolBarProvider = desktopWindowHost::getToolBar;
+  private WindowTitleHandler windowTitleHandler = desktopWindowHost::updateTitle;
+  private DialogOwnerProvider dialogOwnerProvider = desktopWindowHost::getDialogOwner;
+  private MainWindowVisibilityHandler mainWindowVisibilityHandler = desktopWindowHost::setVisible;
+  private MainWindowCursorHandler mainWindowCursorHandler = desktopWindowHost::setCursor;
+  private MainWindowLocationProvider mainWindowLocationProvider = desktopWindowHost::getLocation;
+  private MainWindowBoundsProvider mainWindowBoundsProvider = desktopWindowHost::getBounds;
+  private MainWindowScreenBoundsProvider mainWindowScreenBoundsProvider =
+      desktopWindowHost::getScreenBounds;
+  private MainWindowResizeHandler mainWindowResizeHandler = desktopWindowHost::setSize;
+  private MainWindowChatterHandler mainWindowChatterHandler = desktopWindowHost::attachChatter;
+  private MainMenuBarProvider mainMenuBarProvider = desktopWindowHost::getMenuBar;
 
   private boolean loggingPaused = false;
   private final Object loggingLock = new Object();
@@ -669,9 +813,54 @@ public class GameModule extends AbstractConfigurable
     return frame;
   }
 
+  /** Returns the current dialog owner for desktop-backed callers. */
+  public Frame getDialogOwner() {
+    return dialogOwnerProvider.getDialogOwner(this);
+  }
+
+  /** Shows or hides the main module window through a replaceable handler. */
+  public void setMainWindowVisible(boolean visible) {
+    mainWindowVisibilityHandler.setVisible(this, visible);
+  }
+
+  /** Updates the main module window cursor through a replaceable handler. */
+  public void setMainWindowCursor(Cursor cursor) {
+    mainWindowCursorHandler.setCursor(this, cursor);
+  }
+
+  /** Returns the current main module window location through a replaceable handler. */
+  public Point getMainWindowLocation() {
+    return mainWindowLocationProvider.getLocation(this);
+  }
+
+  /** Returns the current main module window bounds through a replaceable handler. */
+  public Rectangle getMainWindowBounds() {
+    return mainWindowBoundsProvider.getBounds(this);
+  }
+
+  /** Returns the current main module screen bounds through a replaceable handler. */
+  public Rectangle getMainWindowScreenBounds() {
+    return mainWindowScreenBoundsProvider.getScreenBounds(this);
+  }
+
+  /** Resizes the main module window through a replaceable handler. */
+  public void setMainWindowSize(int width, int height) {
+    mainWindowResizeHandler.setSize(this, width, height);
+  }
+
+  /** Attaches chatter UI to the main module window through a replaceable handler. */
+  public void attachChatter(Chatter chatter) {
+    mainWindowChatterHandler.attachChatter(this, chatter);
+  }
+
+  /** Returns the main module menu bar through a replaceable handler. */
+  public JMenuBar getMainMenuBar() {
+    return mainMenuBarProvider.getMenuBar(this);
+  }
+
   /** Sets the proper name for module window's title bar */
   public void initFrameTitle() {
-    frame.setTitle(getTitleString());
+    windowTitleHandler.updateTitle(this, getTitleString());
   }
 
   /**
@@ -688,7 +877,14 @@ public class GameModule extends AbstractConfigurable
    * @return our ChatServerControls.
    */
   public ChatServerControls getServerControls() {
-    return serverControls;
+    return sessionHost.getServerControls();
+  }
+
+  /**
+   * @return the chat-specific multiplayer connection, if available
+   */
+  public ChatServerConnection getChatServerConnection() {
+    return sessionHost.getChatServerConnection();
   }
 
   /**
@@ -742,16 +938,7 @@ public class GameModule extends AbstractConfigurable
     resourceFinder =
         new I18nResourcePathFinder(archive, isEditing ? "en" : Resources.getLocale().getLanguage());
 
-    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    frame.addWindowListener(
-        new WindowAdapter() {
-          @Override
-          public void windowClosing(WindowEvent e) {
-            quit();
-          }
-        });
-
-    addKeyStrokeSource(new KeyStrokeSource(frame.getRootPane(), JComponent.WHEN_IN_FOCUSED_WINDOW));
+    frameSetupHandler.initializeFrame(this);
 
     validator =
         new CompoundValidityChecker(
@@ -957,30 +1144,9 @@ public class GameModule extends AbstractConfigurable
     }
   }
 
-  /** Initialize and register our multiplayer server controls */
+  /** Initialize and register our multiplayer session controls. */
   private void initServer() {
-    final OfficialNodeClientFactory oncf = new OfficialNodeClientFactory();
-
-    ChatServerFactory.register(OfficialNodeClientFactory.OFFICIAL_TYPE, oncf);
-    ChatServerFactory.register(
-        PrivateNodeClientFactory.PRIVATE_TYPE, new PrivateNodeClientFactory());
-    ChatServerFactory.register(P2PClientFactory.P2P_TYPE, new P2PClientFactory());
-
-    // legacy server used to be stored as node type
-    ChatServerFactory.register(NodeClientFactory.NODE_TYPE, oncf);
-    // redirect removed jabber type to official server
-    ChatServerFactory.register("jabber", oncf); // NON-NLS
-
-    server = new DynamicClient();
-    final AddressBookServerConfigurer config =
-        new AddressBookServerConfigurer("ServerSelected", "", (HybridClient) server); // NON-NLS
-    Prefs.getGlobalPrefs().addOption(Resources.getString("Chat.server"), config); // $NON-NLS-1$
-    serverControls = new ChatServerControls();
-    serverControls.addTo(this);
-
-    server.addPropertyChangeListener(
-        DynamicClient.CONNECTION_LOST, e -> showWarning("GameModule.disconnect_warning") // NON-NLS
-        );
+    sessionHost.initialize();
   }
 
   /** Initialize and register our debug controls */
@@ -1031,34 +1197,7 @@ public class GameModule extends AbstractConfigurable
    * version number to the chat log, to be displayed there once a Chatter is registered.
    */
   private void initFrame() {
-    final Rectangle screen = SwingUtils.getScreenBounds(frame);
-
-    if (GlobalOptions.getInstance().isUseSingleWindow()) {
-      frame.setLocation(screen.getLocation());
-
-      final Prefs p = Prefs.getGlobalPrefs();
-
-      // If not "remembering" window size, nuke the pref
-      if (Boolean.FALSE.equals(p.getOption(MAIN_WINDOW_REMEMBER).getValue())) {
-        p.getOption(MAIN_WINDOW_WIDTH).setValue(-1);
-        p.getOption(MAIN_WINDOW_HEIGHT).setValue(-1);
-      }
-
-      // Read window size prefs
-      final int ph = (Integer) p.getOption(MAIN_WINDOW_HEIGHT).getValue();
-      final int pw = (Integer) p.getOption(MAIN_WINDOW_WIDTH).getValue();
-
-      // Use pref if valid, otherwise screen dimensions
-      final int h = (ph > 0) ? ph : screen.height;
-      final int w = (pw > 0) ? pw : screen.width;
-
-      // Before we have a map, we use 1/3 of height
-      frame.setSize(w, h / 3);
-    } else {
-      final String key = "BoundsOfGameModule"; // $NON-NLS-1$
-      final Rectangle r = new Rectangle(0, 0, screen.width, screen.height / 4);
-      getPrefs().addOption(new PositionOption(key, frame, r));
-    }
+    windowLayoutHandler.layoutWindow(this);
 
     final String mess =
         Resources.getString(
@@ -1573,7 +1712,7 @@ public class GameModule extends AbstractConfigurable
   }
 
   public JComponent getControlPanel() {
-    return frame.getControlPanel();
+    return controlPanelProvider.getControlPanel(this);
   }
 
   /**
@@ -1581,6 +1720,37 @@ public class GameModule extends AbstractConfigurable
    */
   public Chatter getChatter() {
     return chat;
+  }
+
+  /** Creates a command that displays text in the current chat view. */
+  public Command createChatDisplayCommand(String message) {
+    return new Chatter.DisplayText(chat, message);
+  }
+
+  /** Sends a line of text through the current chat view if it is available. */
+  public void sendChatMessage(String message) {
+    if (chat != null) {
+      chat.send(message);
+    }
+  }
+
+  /** Shows a line of text in the current chat view if it is available. */
+  public void showChatMessage(String message) {
+    if (chat != null) {
+      chat.show(message);
+    }
+  }
+
+  /** Returns the current chat input text if the chat view is available. */
+  public String getChatInputText() {
+    return chat == null ? "" : chat.getInputField().getText();
+  }
+
+  /** Clears the current chat input field if the chat view is available. */
+  public void clearChatInputText() {
+    if (chat != null) {
+      chat.getInputField().setText("");
+    }
   }
 
   /**
@@ -1601,7 +1771,7 @@ public class GameModule extends AbstractConfigurable
 
   public void setPrefs(Prefs p) {
     preferences = p;
-    preferences.getEditor().initDialog(getPlayerWindow());
+    prefsDialogInitializer.initialize(preferences, getDialogOwner());
   }
 
   /**
@@ -1756,6 +1926,134 @@ public class GameModule extends AbstractConfigurable
     this.saveModuleConfirmationHandler = Objects.requireNonNull(saveModuleConfirmationHandler);
   }
 
+  /** Routes read-error reporting through a replaceable client-side handler. */
+  public void showReadError(IOException error, String target) {
+    readErrorHandler.showReadError(error, target);
+  }
+
+  /** Allows desktop read-error reporting to be replaced in headless environments. */
+  public void setReadErrorHandler(ReadErrorHandler readErrorHandler) {
+    this.readErrorHandler = Objects.requireNonNull(readErrorHandler);
+  }
+
+  /** Routes write-error reporting through a replaceable client-side handler. */
+  public void showWriteError(IOException error, String target) {
+    writeErrorHandler.showWriteError(error, target);
+  }
+
+  /** Allows desktop write-error reporting to be replaced in headless environments. */
+  public void setWriteErrorHandler(WriteErrorHandler writeErrorHandler) {
+    this.writeErrorHandler = Objects.requireNonNull(writeErrorHandler);
+  }
+
+  /** Routes file-write error reporting through a replaceable client-side handler. */
+  public void showFileWriteError(IOException error, File file, String messageKey) {
+    fileWriteErrorHandler.showWriteError(error, file, messageKey);
+  }
+
+  /** Allows desktop file-write error reporting to be replaced in headless environments. */
+  public void setFileWriteErrorHandler(FileWriteErrorHandler fileWriteErrorHandler) {
+    this.fileWriteErrorHandler = Objects.requireNonNull(fileWriteErrorHandler);
+  }
+
+  /** Allows mutable-button label updates to be replaced in headless environments. */
+  public void setMutableButtonLabelUpdateHandler(
+      MutableButtonLabelUpdateHandler mutableButtonLabelUpdateHandler) {
+    this.mutableButtonLabelUpdateHandler = Objects.requireNonNull(mutableButtonLabelUpdateHandler);
+  }
+
+  /** Allows preference-editor dialog setup to be replaced in headless environments. */
+  public void setPrefsDialogInitializer(PrefsDialogInitializer prefsDialogInitializer) {
+    this.prefsDialogInitializer = Objects.requireNonNull(prefsDialogInitializer);
+  }
+
+  /** Allows the shared saved-game file chooser to be replaced in headless environments. */
+  public void setSavedGameFileChooserHandler(FileChooserHandler savedGameFileChooserHandler) {
+    this.savedGameFileChooserHandler = Objects.requireNonNull(savedGameFileChooserHandler);
+  }
+
+  /** Allows the shared editor-image file chooser to be replaced in headless environments. */
+  public void setEditorImageFileChooserHandler(FileChooserHandler editorImageFileChooserHandler) {
+    this.editorImageFileChooserHandler = Objects.requireNonNull(editorImageFileChooserHandler);
+  }
+
+  /** Allows the shared editor-sound file chooser to be replaced in headless environments. */
+  public void setEditorSoundFileChooserHandler(FileChooserHandler editorSoundFileChooserHandler) {
+    this.editorSoundFileChooserHandler = Objects.requireNonNull(editorSoundFileChooserHandler);
+  }
+
+  /** Allows frame setup to be replaced in headless environments. */
+  public void setFrameSetupHandler(FrameSetupHandler frameSetupHandler) {
+    this.frameSetupHandler = Objects.requireNonNull(frameSetupHandler);
+  }
+
+  /** Allows window layout to be replaced in headless environments. */
+  public void setWindowLayoutHandler(WindowLayoutHandler windowLayoutHandler) {
+    this.windowLayoutHandler = Objects.requireNonNull(windowLayoutHandler);
+  }
+
+  /** Allows control-panel access to be replaced in headless environments. */
+  public void setControlPanelProvider(ControlPanelProvider controlPanelProvider) {
+    this.controlPanelProvider = Objects.requireNonNull(controlPanelProvider);
+  }
+
+  /** Allows toolbar access to be replaced in headless environments. */
+  public void setToolBarProvider(ToolBarProvider toolBarProvider) {
+    this.toolBarProvider = Objects.requireNonNull(toolBarProvider);
+  }
+
+  /** Allows title updates to be replaced in headless environments. */
+  public void setWindowTitleHandler(WindowTitleHandler windowTitleHandler) {
+    this.windowTitleHandler = Objects.requireNonNull(windowTitleHandler);
+  }
+
+  /** Allows dialog owner resolution to be replaced in headless environments. */
+  public void setDialogOwnerProvider(DialogOwnerProvider dialogOwnerProvider) {
+    this.dialogOwnerProvider = Objects.requireNonNull(dialogOwnerProvider);
+  }
+
+  /** Allows main-window visibility changes to be replaced in headless environments. */
+  public void setMainWindowVisibilityHandler(
+      MainWindowVisibilityHandler mainWindowVisibilityHandler) {
+    this.mainWindowVisibilityHandler = Objects.requireNonNull(mainWindowVisibilityHandler);
+  }
+
+  /** Allows main-window cursor changes to be replaced in headless environments. */
+  public void setMainWindowCursorHandler(MainWindowCursorHandler mainWindowCursorHandler) {
+    this.mainWindowCursorHandler = Objects.requireNonNull(mainWindowCursorHandler);
+  }
+
+  /** Allows main-window location lookup to be replaced in headless environments. */
+  public void setMainWindowLocationProvider(MainWindowLocationProvider mainWindowLocationProvider) {
+    this.mainWindowLocationProvider = Objects.requireNonNull(mainWindowLocationProvider);
+  }
+
+  /** Allows main-window bounds lookup to be replaced in headless environments. */
+  public void setMainWindowBoundsProvider(MainWindowBoundsProvider mainWindowBoundsProvider) {
+    this.mainWindowBoundsProvider = Objects.requireNonNull(mainWindowBoundsProvider);
+  }
+
+  /** Allows main-window screen bounds lookup to be replaced in headless environments. */
+  public void setMainWindowScreenBoundsProvider(
+      MainWindowScreenBoundsProvider mainWindowScreenBoundsProvider) {
+    this.mainWindowScreenBoundsProvider = Objects.requireNonNull(mainWindowScreenBoundsProvider);
+  }
+
+  /** Allows main-window resizing to be replaced in headless environments. */
+  public void setMainWindowResizeHandler(MainWindowResizeHandler mainWindowResizeHandler) {
+    this.mainWindowResizeHandler = Objects.requireNonNull(mainWindowResizeHandler);
+  }
+
+  /** Allows main-window chatter attachment to be replaced in headless environments. */
+  public void setMainWindowChatterHandler(MainWindowChatterHandler mainWindowChatterHandler) {
+    this.mainWindowChatterHandler = Objects.requireNonNull(mainWindowChatterHandler);
+  }
+
+  /** Allows main menu-bar lookup to be replaced in headless environments. */
+  public void setMainMenuBarProvider(MainMenuBarProvider mainMenuBarProvider) {
+    this.mainMenuBarProvider = Objects.requireNonNull(mainMenuBarProvider);
+  }
+
   private void handleDesktopPostMove(GamePiece piece, BoundsTracker boundsTracker) {
     HighlightLastMoved.setLastMoved(piece);
     boundsTracker.repaint();
@@ -1800,54 +2098,11 @@ public class GameModule extends AbstractConfigurable
     }
   }
 
-  private void handleDesktopAlert(String message) {
-    SwingUtilities.invokeLater(
-        () ->
-            JOptionPane.showMessageDialog(
-                GameModule.getGameModule() == null ? null : getPlayerWindow(), message));
-  }
-
-  private void handleDesktopAudioClip(String clipName) {
-    try {
-      if (!GlobalOptions.getInstance().isSoundGlobalMute() && !getGameState().isFastForwarding()) {
-        getDataArchive().getCachedAudioClip(clipName).play();
-      }
-    } catch (IOException e) {
-      ReadErrorDialog.error(e, clipName);
-    }
-  }
-
-  private void handleDesktopFlare(Flare flare, Point clickPoint) {
-    flare.setClickPoint(clickPoint);
-    flare.startAnimation(false);
-  }
-
-  private void handleDesktopOutdatedModule(String usage) {
-    ProblemDialog.showOutdatedModule(usage);
-  }
-
-  private void handleDesktopWarning(String messageKey, Object... args) {
-    WarningDialog.show(messageKey, args);
-  }
-
-  private int handleDesktopSaveModuleConfirmation() {
-    return JOptionPane.showConfirmDialog(
-        frame, Resources.getString("GameModule.save_module"), "", JOptionPane.YES_NO_CANCEL_OPTION);
-  }
-
   /**
    * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getFileChooser() {
-    if (fileChooser == null) {
-      fileChooser =
-          FileChooser.createFileChooser(
-              getPlayerWindow(), getGameState().getSavedGameDirectoryPreference());
-    } else {
-      fileChooser.resetChoosableFileFilters();
-      fileChooser.rescanCurrentDirectory();
-    }
-
+    fileChooser = savedGameFileChooserHandler.getFileChooser(this, fileChooser);
     return fileChooser;
   }
 
@@ -1855,15 +2110,8 @@ public class GameModule extends AbstractConfigurable
    * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getEditorImageChooser() {
-    if (fileChooserEditorImage == null) {
-      fileChooserEditorImage =
-          FileChooser.createFileChooser(
-              getPlayerWindow(), getGameState().getEditorImageDirectoryPreference());
-    } else {
-      fileChooserEditorImage.resetChoosableFileFilters();
-      fileChooserEditorImage.rescanCurrentDirectory();
-    }
-
+    fileChooserEditorImage =
+        editorImageFileChooserHandler.getFileChooser(this, fileChooserEditorImage);
     return fileChooserEditorImage;
   }
 
@@ -1871,15 +2119,8 @@ public class GameModule extends AbstractConfigurable
    * @return a common FileChooser so that recent file locations can be remembered
    */
   public FileChooser getEditorSoundChooser() {
-    if (fileChooserEditorSound == null) {
-      fileChooserEditorSound =
-          FileChooser.createFileChooser(
-              getPlayerWindow(), getGameState().getEditorImageDirectoryPreference());
-    } else {
-      fileChooserEditorSound.resetChoosableFileFilters();
-      fileChooserEditorSound.rescanCurrentDirectory();
-    }
-
+    fileChooserEditorSound =
+        editorSoundFileChooserHandler.getFileChooser(this, fileChooserEditorSound);
     return fileChooserEditorSound;
   }
 
@@ -1890,7 +2131,7 @@ public class GameModule extends AbstractConfigurable
    */
   @Override
   public JToolBar getToolBar() {
-    return frame.getToolBar();
+    return toolBarProvider.getToolBar(this);
   }
 
   /**
@@ -1936,7 +2177,7 @@ public class GameModule extends AbstractConfigurable
 
   /** Updates the title bar of the main module window, and all map windows */
   public void updateTitleBar() {
-    frame.setTitle(getTitleString());
+    windowTitleHandler.updateTitle(this, getTitleString());
 
     for (final Map m : getComponentsOf(Map.class)) {
       m.updateTitleBar();
@@ -2043,7 +2284,7 @@ public class GameModule extends AbstractConfigurable
         p = getPrefs();
         p.save();
       } catch (IOException e) {
-        WriteErrorDialog.error(e, p.getFile());
+        showWriteError(e, p.getFile().getPath());
       } finally {
         if (p != null) {
           try {
@@ -2058,7 +2299,7 @@ public class GameModule extends AbstractConfigurable
       try {
         archive.close();
       } catch (IOException e) {
-        ReadErrorDialog.error(e, archive.getName());
+        showReadError(e, archive.getName());
       }
 
       log.info("Exiting"); // NON-NLS
@@ -2174,10 +2415,17 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
+   * @return the object responsible for sending messages to the live multiplayer session
+   */
+  public SessionConnection getSessionConnection() {
+    return sessionHost.getSessionConnection();
+  }
+
+  /**
    * @return the object responsible for sending messages to the server
    */
   public ServerConnection getServer() {
-    return server;
+    return sessionHost.getServerConnection();
   }
 
   /**
@@ -2193,11 +2441,25 @@ public class GameModule extends AbstractConfigurable
   }
 
   /**
+   * @return true if the live multiplayer session is currently connected
+   */
+  public boolean isSessionConnected() {
+    final SessionConnection connection = getSessionConnection();
+    return (connection != null) && connection.isConnected();
+  }
+
+  /**
+   * @return true if the current user owns the live session, or if ownership does not apply
+   */
+  public boolean isCurrentUserSessionOwner() {
+    return sessionHost.isCurrentUserSessionOwner();
+  }
+
+  /**
    * @return true if the game is currently online
    */
   public boolean isMultiplayerConnected() {
-    final ServerConnection sv = getServer();
-    return (sv != null) && sv.isConnected();
+    return isSessionConnected();
   }
 
   /**
@@ -2420,7 +2682,7 @@ public class GameModule extends AbstractConfigurable
     try {
       (new ModuleMetaData(this)).save(writer);
     } catch (IOException e) {
-      WriteErrorDialog.error(e, writer.getName());
+      showWriteError(e, writer.getName());
     }
 
     try {
@@ -2440,9 +2702,7 @@ public class GameModule extends AbstractConfigurable
                 "Editor.GameModule.saved", writer.getArchive().getFile().getName()));
       }
     } catch (IOException e) {
-      WriteErrorDialog.showError(
-          getPlayerWindow(), e, writer.getArchive().getFile(), "Error.file_write_error" // NON-NLS
-          );
+      showFileWriteError(e, writer.getArchive().getFile(), "Error.file_write_error"); // NON-NLS
     }
   }
 
@@ -2637,17 +2897,21 @@ public class GameModule extends AbstractConfigurable
     if (!isMutableButtonLabelSupport() || buttonLabelUpdateScheduled) return;
 
     buttonLabelUpdateScheduled = true;
+    mutableButtonLabelUpdateHandler.updateButtonLabels(this);
+  }
 
-    SwingUtilities.invokeLater(
-        () -> {
-          buttonLabelUpdateScheduled = false;
+  private void clearMutableButtonLabelUpdateScheduled() {
+    buttonLabelUpdateScheduled = false;
+  }
 
-          updateToolbarButtons();
+  void finishMutableButtonLabelUpdate() {
+    buttonLabelUpdateScheduled = false;
 
-          for (final Map map : Map.getMapList()) {
-            map.updateToolbarButtons();
-          }
-        });
+    updateToolbarButtons();
+
+    for (final Map map : Map.getMapList()) {
+      map.updateToolbarButtons();
+    }
   }
 
   /**

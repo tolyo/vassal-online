@@ -119,7 +119,7 @@ public class PieceWindow extends Widget implements UniqueIdManager.Identifyable 
 
   private Window initFrame() {
     if (GlobalOptions.getInstance().isUseSingleWindow()) {
-      final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow());
+      final JDialog d = new JDialog(GameModule.getGameModule().getDialogOwner());
       d.add(root);
       d.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
       d.setTitle(getConfigureName());

@@ -593,7 +593,7 @@ public class Chatter extends JPanel implements CommandEncoder, Buildable, DropTa
 
     chatFont.addPropertyChangeListener(evt -> setFont((Font) evt.getNewValue()));
 
-    mod.getPlayerWindow().addChatter(this);
+    mod.attachChatter(this);
 
     chatFont.fireUpdate();
     mod.getPrefs().addOption(Resources.getString("Chatter.chat_window"), chatFont); // $NON-NLS-1$

@@ -5,7 +5,6 @@ import VASSAL.build.AbstractFolder;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
 import VASSAL.configure.Configurer;
@@ -130,8 +129,7 @@ public class TurnGlobalHotkey extends AbstractConfigurable {
       }
       final String reportText = format.getLocalizedText(this, "Editor.report_format");
       if (reportText.length() > 0) {
-        final Command c =
-            new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+        final Command c = GameModule.getGameModule().createChatDisplayCommand("* " + reportText);
         c.execute();
         GameModule.getGameModule().sendAndLog(c);
       }

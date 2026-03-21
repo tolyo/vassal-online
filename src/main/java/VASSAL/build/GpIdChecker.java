@@ -17,7 +17,6 @@
 
 package VASSAL.build;
 
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameRefresher;
 import VASSAL.build.module.PrototypeDefinition;
 import VASSAL.build.widget.PieceSlot;
@@ -51,7 +50,6 @@ public class GpIdChecker {
   protected boolean extensionsLoaded = false;
   final Map<String, SlotElement> goodSlots = new HashMap<>();
   final List<SlotElement> errorSlots = new ArrayList<>();
-  private Chatter chatter;
   private final Set<String> refresherOptions = new HashSet<>();
 
   public GpIdChecker() {
@@ -204,11 +202,7 @@ public class GpIdChecker {
   }
 
   private void chat(String text) {
-    if (chatter == null) {
-      chatter = GameModule.getGameModule().getChatter();
-    }
-    final Chatter.DisplayText mess = new Chatter.DisplayText(chatter, "- " + text); // NON-NLS
-    mess.execute();
+    GameModule.getGameModule().showChatMessage("- " + text); // NON-NLS
   }
 
   /**

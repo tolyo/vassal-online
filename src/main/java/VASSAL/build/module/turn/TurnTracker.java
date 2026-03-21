@@ -21,7 +21,6 @@ package VASSAL.build.module.turn;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.module.properties.MutablePropertiesContainer;
@@ -656,7 +655,7 @@ public class TurnTracker extends TurnComponent
                 report,
                 new String[] {"\\n", "\\t"},
                 new String[] {" - ", " "}); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + s);
+        c = GameModule.getGameModule().createChatDisplayCommand("* " + s);
         c.execute();
         c.append(c2);
       } else {
@@ -926,7 +925,7 @@ public class TurnTracker extends TurnComponent
     protected TurnWidget widget;
 
     protected TurnWindow() {
-      super(GameModule.getGameModule().getPlayerWindow());
+      super(GameModule.getGameModule().getDialogOwner());
       setTitle(getConfigureName());
       pack();
       setLocation(100, 100);
@@ -1187,7 +1186,7 @@ public class TurnTracker extends TurnComponent
     protected JDialog me;
 
     protected SetDialog() {
-      super(GameModule.getGameModule().getPlayerWindow());
+      super(GameModule.getGameModule().getDialogOwner());
       initComponents();
       setLocation(100, 100);
       me = this;

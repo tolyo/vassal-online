@@ -107,7 +107,7 @@ public class SoundEncoder implements CommandEncoder {
           if (sendCount++ >= TOO_MANY) {
             if (JOptionPane.YES_OPTION
                 == JOptionPane.showConfirmDialog(
-                    GameModule.getGameModule().getPlayerWindow(),
+                    GameModule.getGameModule().getDialogOwner(),
                     Resources.getString("Chat.ignore_wakeups", sender.getName()), // $NON-NLS-1$
                     null,
                     JOptionPane.YES_NO_OPTION)) {

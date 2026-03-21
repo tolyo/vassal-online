@@ -170,7 +170,7 @@ public class WizardSupport {
       final Object action = m.get(ACTION_KEY);
       if (PLAY_ONLINE_ACTION.equals(action)) {
         final ChatServerControls controls = g.getServerControls();
-        g.getPlayerWindow().setVisible(true);
+        g.setMainWindowVisible(true);
         controls.toggleVisible();
 
         new SwingWorker<Void, Void>() {
@@ -182,7 +182,7 @@ public class WizardSupport {
         }.execute();
       } else {
         g.getGameState().setup(true);
-        g.getPlayerWindow().setVisible(true);
+        g.setMainWindowVisible(true);
       }
     } else {
       final Boolean showWizard = (Boolean) Prefs.getGlobalPrefs().getValue(WELCOME_WIZARD_KEY);
@@ -190,7 +190,7 @@ public class WizardSupport {
         System.exit(0);
       }
       g.setGameFileMode(GameModule.GameFileMode.NEW_GAME); // reset gameFile and title
-      g.getPlayerWindow().setVisible(true);
+      g.setMainWindowVisible(true);
     }
   }
 
@@ -837,7 +837,7 @@ public class WizardSupport {
       Command c =
           msg == null
               ? new NullCommand()
-              : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), msg);
+              : GameModule.getGameModule().createChatDisplayCommand(msg);
       c = c.append(super.loadSavedGame());
       return c;
     }

@@ -287,8 +287,7 @@ public class PlayerRoster extends AbstractToolbarItem
             GameModule.getActiveUserId(), GlobalOptions.getInstance().getPlayerId(), newSide);
 
     Command c =
-        new Chatter.DisplayText(
-            gm.getChatter(),
+        gm.createChatDisplayCommand(
             Resources.getString(
                 GlobalOptions.getInstance().chatterHTMLSupport()
                     ? "PlayerRoster.changed_sides_2"
@@ -504,8 +503,7 @@ public class PlayerRoster extends AbstractToolbarItem
     if (newSide != null) {
       if (gm.isMultiplayerConnected()) {
         final Command c =
-            new Chatter.DisplayText(
-                gm.getChatter(),
+            gm.createChatDisplayCommand(
                 Resources.getString(
                     GlobalOptions.getInstance().chatterHTMLSupport()
                         ? "PlayerRoster.joined_side_2"
@@ -836,7 +834,7 @@ public class PlayerRoster extends AbstractToolbarItem
     final String choice =
         (String)
             JOptionPane.showInputDialog(
-                g.getPlayerWindow(),
+                g.getDialogOwner(),
                 Resources.getString("PlayerRoster.pick_an_occupied_side"),
                 Resources.getString("PlayerRoster.choose_side"),
                 JOptionPane.QUESTION_MESSAGE,
@@ -948,7 +946,7 @@ public class PlayerRoster extends AbstractToolbarItem
       newSide =
           (String)
               JOptionPane.showInputDialog(
-                  g.getPlayerWindow(),
+                  g.getDialogOwner(),
                   newSide.isEmpty()
                       ? Resources.getString("PlayerRoster.switch_sides", getMyLocalizedSide())
                       : Resources.getString(

@@ -20,11 +20,10 @@ package VASSAL.launch;
 import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ArchiveWriter;
-import VASSAL.tools.swing.SwingUtils;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import javax.swing.JFrame;
 
 public class CreateModuleAction extends GameModuleAction {
   private static final long serialVersionUID = 1L;
@@ -36,11 +35,13 @@ public class CreateModuleAction extends GameModuleAction {
   @Override
   public void performAction(ActionEvent e) throws IOException {
     GameModule.init(new GameModule(new ArchiveWriter((String) null, ".vmod"))); // NON-NLS
-    final JFrame frame = GameModule.getGameModule().getPlayerWindow();
-    frame.setVisible(true);
+    final GameModule gameModule = GameModule.getGameModule();
+    gameModule.setMainWindowVisible(true);
     final ModuleEditorWindow w = new ModuleEditorWindow(GameModule.getGameModule());
-    w.setLocation(0, frame.getY() + frame.getHeight());
-    w.setSize(SwingUtils.getScreenBounds(frame).width / 2, w.getHeight());
+    final Rectangle frameBounds = gameModule.getMainWindowBounds();
+    final Rectangle screenBounds = gameModule.getMainWindowScreenBounds();
+    w.setLocation(0, frameBounds.y + frameBounds.height);
+    w.setSize(screenBounds.width / 2, w.getHeight());
     w.setVisible(true);
   }
 }

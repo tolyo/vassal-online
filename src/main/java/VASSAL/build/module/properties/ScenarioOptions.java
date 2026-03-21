@@ -140,7 +140,7 @@ public class ScenarioOptions implements GameComponent {
    */
   public JDialog getDialog() {
     if (dialog == null) {
-      dialog = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+      dialog = new JDialog(GameModule.getGameModule().getDialogOwner(), true);
       dialog.setTitle(Resources.getString("ScenarioOptions.window_title")); // $NON-NLS-1$
       dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       dialog.addWindowListener(

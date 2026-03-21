@@ -20,10 +20,9 @@ import VASSAL.build.GameModule;
 import VASSAL.build.module.ModuleExtension;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ArchiveWriter;
-import VASSAL.tools.swing.SwingUtils;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import javax.swing.JFrame;
 
 /**
  * Creates a new module extension and opens an extension edit window
@@ -42,10 +41,12 @@ public class NewExtensionAction extends GameModuleAction {
     final ModuleExtension ext =
         new ModuleExtension(new ArchiveWriter((String) null, ".vmdx")); // NON-NLS
     ext.build();
-    final JFrame frame = GameModule.getGameModule().getPlayerWindow();
-    final ExtensionEditorWindow w = new ExtensionEditorWindow(GameModule.getGameModule(), ext);
-    w.setLocation(0, frame.getY() + frame.getHeight());
-    w.setSize(SwingUtils.getScreenBounds(frame).width / 2, w.getHeight());
+    final GameModule gameModule = GameModule.getGameModule();
+    final ExtensionEditorWindow w = new ExtensionEditorWindow(gameModule, ext);
+    final Rectangle frameBounds = gameModule.getMainWindowBounds();
+    final Rectangle screenBounds = gameModule.getMainWindowScreenBounds();
+    w.setLocation(0, frameBounds.y + frameBounds.height);
+    w.setSize(screenBounds.width / 2, w.getHeight());
     w.setVisible(true);
   }
 }

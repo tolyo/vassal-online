@@ -61,7 +61,7 @@ public class JoinRoomAction extends AbstractAction {
         }
         sb.append('\n').append(Resources.getString("Chat.are_you_sure"));
         Dialogs.showMessageDialog(
-            GameModule.getGameModule().getPlayerWindow(),
+            GameModule.getGameModule().getDialogOwner(),
             Resources.getString("Chat.vassal_configuration_error"),
             Resources.getString("Chat.vassal_configuration_error"),
             sb.toString(),

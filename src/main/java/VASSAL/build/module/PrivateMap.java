@@ -137,7 +137,7 @@ public class PrivateMap extends Map {
   protected Window createParentFrame() {
     if (GlobalOptions.getInstance().isUseSingleWindow()) {
       final JDialog d =
-          new JDialog(GameModule.getGameModule().getPlayerWindow()) {
+          new JDialog(GameModule.getGameModule().getDialogOwner()) {
             private static final long serialVersionUID = 1L;
 
             @Override

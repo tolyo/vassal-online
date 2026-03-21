@@ -132,7 +132,7 @@ public class PrefsEditor {
   public void addOption(String category, Configurer c, String prompt) {
     if (prompt != null) {
       if (setupDialog == null) {
-        setupDialog = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+        setupDialog = new JDialog(GameModule.getGameModule().getDialogOwner(), true);
         setupDialog.setTitle(Resources.getString("Prefs.initial_setup")); // $NON-NLS-1$
         setupDialog.setLayout(new BoxLayout(setupDialog.getContentPane(), BoxLayout.Y_AXIS));
         setupDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

@@ -183,7 +183,7 @@ public class NotesWindow extends AbstractToolbarItem
     private static final long serialVersionUID = 1L;
 
     protected NotesDialog() {
-      super(GameModule.getGameModule().getPlayerWindow());
+      super(GameModule.getGameModule().getDialogOwner());
       initComponents();
       setLocationRelativeTo(getOwner());
     }

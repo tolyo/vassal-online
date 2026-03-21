@@ -779,7 +779,7 @@ public class Zone extends AbstractConfigurable
       editor.setMyConfigurer(this);
 
       frame =
-          new JDialog(GameModule.getGameModule().getPlayerWindow(), zone.getConfigureName(), true);
+          new JDialog(GameModule.getGameModule().getDialogOwner(), zone.getConfigureName(), true);
       frame.setFocusTraversalKeysEnabled(false);
 
       frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));

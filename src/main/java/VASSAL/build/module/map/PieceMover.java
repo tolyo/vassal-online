@@ -23,7 +23,6 @@ import static VASSAL.build.module.Map.MAP_NAME;
 import VASSAL.build.AbstractBuildable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
@@ -683,8 +682,7 @@ public class PieceMover extends AbstractBuildable
 
                 if (!reportText.isEmpty()) {
                   final Command display =
-                      new Chatter.DisplayText(
-                          GameModule.getGameModule().getChatter(), "* " + reportText);
+                      GameModule.getGameModule().createChatDisplayCommand("* " + reportText);
                   display.execute();
                   c.append(display);
                 }

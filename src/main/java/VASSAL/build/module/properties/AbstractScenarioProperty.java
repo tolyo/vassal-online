@@ -19,7 +19,6 @@ package VASSAL.build.module.properties;
 import VASSAL.build.AbstractFolder;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameState;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
@@ -163,7 +162,7 @@ public abstract class AbstractScenarioProperty extends GlobalProperty {
         final String report =
             reportFormat.getLocalizedText(this, "Editor.ScenarioOption.report_format");
         if (!report.isEmpty()) {
-          c = c.append(new Chatter.DisplayText(gm.getChatter(), "* " + report));
+          c = c.append(gm.createChatDisplayCommand("* " + report));
         }
       }
 

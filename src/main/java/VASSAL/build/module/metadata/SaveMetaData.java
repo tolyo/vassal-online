@@ -71,7 +71,7 @@ public class SaveMetaData extends AbstractMetaData {
           new JDialog(
               (Frame)
                   SwingUtilities.getAncestorOfClass(
-                      Frame.class, GameModule.getGameModule().getPlayerWindow()),
+                      Frame.class, GameModule.getGameModule().getDialogOwner()),
               true);
       d.setTitle(Resources.getString("BasicLogger.log_file_comments"));
 

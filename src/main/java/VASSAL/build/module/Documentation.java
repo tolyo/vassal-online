@@ -29,7 +29,6 @@ import VASSAL.build.module.documentation.Tutorial;
 import VASSAL.configure.Configurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.menu.MenuManager;
 import java.io.File;
 import java.net.MalformedURLException;
 import javax.swing.JMenu;
@@ -43,8 +42,7 @@ public class Documentation extends AbstractConfigurable {
   public static final String INTRO_FILENAME = "Intro.html"; // NON-NLS
 
   public JMenu getHelpMenu() {
-    final JMenuBar mb =
-        MenuManager.getInstance().getMenuBarFor(GameModule.getGameModule().getPlayerWindow());
+    final JMenuBar mb = GameModule.getGameModule().getMainMenuBar();
 
     return mb.getMenu(mb.getMenuCount() - 1);
   }

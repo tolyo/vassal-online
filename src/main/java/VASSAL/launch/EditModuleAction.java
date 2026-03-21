@@ -22,11 +22,10 @@ import VASSAL.build.GameModule;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ArchiveWriter;
 import VASSAL.tools.io.ZipArchive;
-import VASSAL.tools.swing.SwingUtils;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JFrame;
 
 public class EditModuleAction extends LoadModuleAction {
   private static final long serialVersionUID = 1L;
@@ -47,15 +46,17 @@ public class EditModuleAction extends LoadModuleAction {
 
     // FIXME: really hide the MM?
     //    ModuleManagerWindow.getInstance().setVisible(false);
-    final JFrame frame = GameModule.getGameModule().getPlayerWindow();
-    frame.setVisible(true);
+    final GameModule gameModule = GameModule.getGameModule();
+    gameModule.setMainWindowVisible(true);
 
     // GameModule only produces a final buildString() once its frame displays
-    GameModule.getGameModule().updateLastSave();
+    gameModule.updateLastSave();
 
-    final ModuleEditorWindow w = new ModuleEditorWindow(GameModule.getGameModule());
-    w.setLocation(0, frame.getY() + frame.getHeight());
-    w.setSize(SwingUtils.getScreenBounds(frame).width / 2, w.getHeight());
+    final ModuleEditorWindow w = new ModuleEditorWindow(gameModule);
+    final Rectangle frameBounds = gameModule.getMainWindowBounds();
+    final Rectangle screenBounds = gameModule.getMainWindowScreenBounds();
+    w.setLocation(0, frameBounds.y + frameBounds.height);
+    w.setSize(screenBounds.width / 2, w.getHeight());
     w.setVisible(true);
   }
 }

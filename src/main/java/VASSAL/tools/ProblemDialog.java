@@ -337,7 +337,7 @@ public class ProblemDialog {
   }
 
   private static Frame getFrame() {
-    return GameModule.getGameModule() == null ? null : GameModule.getGameModule().getPlayerWindow();
+    return GameModule.getGameModule() == null ? null : GameModule.getGameModule().getDialogOwner();
   }
 
   public static Future<?> showOutdatedUsage(String usage) {

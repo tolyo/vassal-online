@@ -78,8 +78,8 @@ import org.netbeans.spi.wizard.WizardPanel;
  * @author Rodney Kinney
  *
  * NOTE:
- * This class now references back to Vassal to find a default Dialog owner (GameModule.getPlayerWindow() in case the Wizard
- * code can't find a suitable one. 
+ * This class now references back to Vassal to find a default dialog owner (GameModule.getDialogOwner()) in case the wizard
+ * code can't find a suitable one.
  */
 public class WizardDisplayerImpl extends WizardDisplayer
 {
@@ -283,7 +283,7 @@ public class WizardDisplayerImpl extends WizardDisplayer
         }
         else
         {
-            dlg = new JDialog(GameModule.getGameModule().getPlayerWindow());
+            dlg = new JDialog(GameModule.getGameModule().getDialogOwner());
         }
         return dlg;
     }

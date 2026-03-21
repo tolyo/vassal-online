@@ -21,7 +21,6 @@ import VASSAL.build.AbstractFolder;
 import VASSAL.build.AbstractToolbarItem;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.properties.PropertySource;
 import VASSAL.command.Command;
@@ -311,7 +310,7 @@ public class DeckGlobalKeyCommand extends MassKeyCommand implements RecursionLim
           reportFormat.getText(source, (Auditable) this, "Editor.report_format");
       Command c;
       if (reportText.length() > 0) {
-        c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+        c = GameModule.getGameModule().createChatDisplayCommand("* " + reportText);
         c.execute();
       } else {
         c = new NullCommand();

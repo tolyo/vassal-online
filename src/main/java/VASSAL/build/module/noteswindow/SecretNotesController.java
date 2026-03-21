@@ -19,7 +19,6 @@ package VASSAL.build.module.noteswindow;
 
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.command.Command;
@@ -244,7 +243,7 @@ public class SecretNotesController
                       secretNote.getName())
                   + " *"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-        c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), msg);
+        c = GameModule.getGameModule().createChatDisplayCommand(msg);
         c.execute();
         comm.append(c);
       }

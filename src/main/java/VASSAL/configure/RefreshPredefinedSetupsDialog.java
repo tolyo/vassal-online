@@ -554,7 +554,7 @@ public class RefreshPredefinedSetupsDialog extends JDialog {
               hifile));
 
       this.setCursor(oldCursor);
-      mod.getPlayerWindow().setCursor(oldCursor);
+      mod.setMainWindowCursor(oldCursor);
     }
 
     // Exit - close window or reset for adjustments

@@ -188,7 +188,7 @@ public class RandomTextButton extends DiceButton {
     final Command c =
         report.isEmpty()
             ? new NullCommand()
-            : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), report);
+            : GameModule.getGameModule().createChatDisplayCommand(report);
     c.execute();
     c.append(property.setPropertyValue(result.toString()))
         .append(totalProp.setPropertyValue(String.valueOf(total)))

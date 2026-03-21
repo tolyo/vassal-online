@@ -19,7 +19,6 @@ package VASSAL.counters;
 
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.PlayerRoster;
 import VASSAL.build.module.map.DeckGlobalKeyCommand;
@@ -1715,7 +1714,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     final String rep = reportFormat.getLocalizedText(this, commandName);
     Command c = null;
     if (rep.length() > 0) {
-      c = new Chatter.DisplayText(gameModule.getChatter(), "* " + rep); // $NON-NLS-1$
+      c = gameModule.createChatDisplayCommand("* " + rep); // $NON-NLS-1$
       c.execute();
     }
 
@@ -1726,7 +1725,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
     while (true) {
       final String s =
           JOptionPane.showInputDialog(
-              GameModule.getGameModule().getPlayerWindow(),
+              GameModule.getGameModule().getDialogOwner(),
               Resources.getString("Deck.enter_the_number")); // $NON-NLS-1$
       if (s != null) {
         try {
@@ -2035,7 +2034,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
         && shouldConfirmOverwrite()
         && JOptionPane.NO_OPTION
             == JOptionPane.showConfirmDialog(
-                gameModule.getPlayerWindow(),
+                gameModule.getDialogOwner(),
                 Resources.getString("Deck.overwrite", outputFile.getName()),
                 Resources.getString("Deck.file_exists"), // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 JOptionPane.YES_NO_OPTION)) {
@@ -2105,7 +2104,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       ReadErrorDialog.error(e, loadFile);
     } catch (NoSuchElementException e) {
       JOptionPane.showMessageDialog(
-          GameModule.getGameModule().getPlayerWindow(),
+          GameModule.getGameModule().getDialogOwner(),
           Resources.getString("Deck.load_failed_title"),
           Resources.getString(
               "Deck.load_failed_text", (loadFile != null) ? loadFile.getName() : ""),
@@ -2167,7 +2166,7 @@ public class Deck extends Stack implements PlayerRoster.SideChangeListener {
       ReadErrorDialog.error(e, loadFile);
     } catch (NoSuchElementException e) {
       JOptionPane.showMessageDialog(
-          GameModule.getGameModule().getPlayerWindow(),
+          GameModule.getGameModule().getDialogOwner(),
           Resources.getString("Deck.import_failed_title"),
           Resources.getString(
               "Deck.import_failed_text", (loadFile != null) ? loadFile.getName() : ""),

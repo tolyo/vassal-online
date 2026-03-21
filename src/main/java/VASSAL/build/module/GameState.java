@@ -23,9 +23,6 @@ import VASSAL.build.GameModule;
 import VASSAL.build.module.metadata.AbstractMetaData;
 import VASSAL.build.module.metadata.MetaDataFactory;
 import VASSAL.build.module.metadata.SaveMetaData;
-import VASSAL.chat.ChatServerConnection;
-import VASSAL.chat.HybridClient;
-import VASSAL.chat.node.NodeClient;
 import VASSAL.command.AddPiece;
 import VASSAL.command.AlertCommand;
 import VASSAL.command.Command;
@@ -92,7 +89,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -509,7 +505,7 @@ public class GameState implements CommandEncoder {
 
     final int result =
         JOptionPane.showConfirmDialog(
-            GameModule.getGameModule().getPlayerWindow(),
+            GameModule.getGameModule().getDialogOwner(),
             Resources.getString("GameState.save_game_query"), // $NON-NLS-1$
             Resources.getString("GameState.game_modified"), // $NON-NLS-1$
             JOptionPane.YES_NO_CANCEL_OPTION);
@@ -636,29 +632,15 @@ public class GameState implements CommandEncoder {
    */
   public boolean isNewGameAllowed() {
     final GameModule g = GameModule.getGameModule();
-    final ServerConnection server = g.getServer();
-    if (server.isConnected()) {
-      ChatServerConnection connection = null;
-      if (server instanceof HybridClient) {
-        connection = ((HybridClient) server).getDelegate();
-      } else if (server instanceof ChatServerConnection) {
-        connection = (ChatServerConnection) server;
-      }
-      if (connection != null) {
-        if (connection instanceof NodeClient) {
-          final NodeClient client = (NodeClient) connection;
-          if (!client.isOwner()) {
-            ProblemDialog.show(
-                JOptionPane.INFORMATION_MESSAGE,
-                GameModule.getGameModule().getPlayerWindow(),
-                null,
-                Resources.getString("GameState.new_game_not_allowed_title"),
-                Resources.getString("GameState.new_game_not_allowed_heading"),
-                Resources.getString("GameState.new_game_not_allowed_warning"));
-            return false;
-          }
-        }
-      }
+    if (g.isSessionConnected() && !g.isCurrentUserSessionOwner()) {
+      ProblemDialog.show(
+          JOptionPane.INFORMATION_MESSAGE,
+          g.getDialogOwner(),
+          null,
+          Resources.getString("GameState.new_game_not_allowed_title"),
+          Resources.getString("GameState.new_game_not_allowed_heading"),
+          Resources.getString("GameState.new_game_not_allowed_warning"));
+      return false;
     }
     return true;
   }
@@ -793,7 +775,7 @@ public class GameState implements CommandEncoder {
 
         final int result =
             JOptionPane.showOptionDialog(
-                g.getPlayerWindow(),
+                g.getDialogOwner(),
                 Resources.getString("GameState.old_continuation_warning"),
                 "",
                 JOptionPane.YES_NO_CANCEL_OPTION,
@@ -1060,7 +1042,7 @@ public class GameState implements CommandEncoder {
       if (md instanceof SaveMetaData) {
         if (Info.hasOldFormat(md.getVassalVersion())) {
           return Dialogs.showConfirmDialog(
-                  GameModule.getGameModule().getPlayerWindow(),
+                  GameModule.getGameModule().getDialogOwner(),
                   Resources.getString("Warning.save_will_be_updated_title"),
                   Resources.getString("Warning.save_will_be_updated_heading"),
                   Resources.getString(
@@ -1504,8 +1486,8 @@ public class GameState implements CommandEncoder {
     GameModule.getGameModule()
         .warn(Resources.getString("GameState.loading", shortName)); // $NON-NLS-1$
 
-    final JFrame frame = GameModule.getGameModule().getPlayerWindow();
-    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    final GameModule gameModule = GameModule.getGameModule();
+    gameModule.setMainWindowCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     setLoadingInBackground(true);
 
@@ -1580,7 +1562,7 @@ public class GameState implements CommandEncoder {
 
           g.warn(msg);
         } finally {
-          frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+          gameModule.setMainWindowCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
           setLoadingInBackground(false);
         }
       }

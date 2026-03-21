@@ -44,7 +44,7 @@ public class ConfigurerWindow extends JDialog {
   }
 
   public ConfigurerWindow(final Configurer c, boolean modal) {
-    super(GameModule.getGameModule().getPlayerWindow(), modal);
+    super(GameModule.getGameModule().getDialogOwner(), modal);
 
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     addWindowListener(

@@ -369,7 +369,7 @@ public class ListTurnLevel extends TurnLevel implements ActionListener {
 
     public ConfigDialog() {
       super(
-          GameModule.getGameModule().getPlayerWindow(),
+          GameModule.getGameModule().getDialogOwner(),
           Resources.getString("TurnTracker.configure2", getConfigureName())); // $NON-NLS-1$
       setLayout(new MigLayout("wrap 2", "[center]rel[left]"));
 

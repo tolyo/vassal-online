@@ -356,7 +356,7 @@ public class BasicLogger implements Logger, Buildable, GameComponent, CommandEnc
       // When ending/closing a game
       if (endLogAction.isEnabled() && (beginningState != null)) {
         if (JOptionPane.showConfirmDialog(
-                GameModule.getGameModule().getPlayerWindow(),
+                GameModule.getGameModule().getDialogOwner(),
                 Resources.getString("BasicLogger.save_log"), // $NON-NLS-1$
                 Resources.getString("BasicLogger.unsaved_log"), // $NON-NLS-1$
                 JOptionPane.YES_NO_OPTION)
@@ -502,7 +502,7 @@ public class BasicLogger implements Logger, Buildable, GameComponent, CommandEnc
 
       final int result =
           JOptionPane.showOptionDialog(
-              g.getPlayerWindow(),
+              g.getDialogOwner(),
               Resources.getString("BasicLogger.start_new_log_file", prompt), // $NON-NLS-1$
               "", //$NON-NLS-1$
               JOptionPane.YES_NO_CANCEL_OPTION,
@@ -581,7 +581,7 @@ public class BasicLogger implements Logger, Buildable, GameComponent, CommandEnc
 
           final int result =
               Dialogs.showConfirmDialog(
-                  g.getPlayerWindow(),
+                  g.getDialogOwner(),
                   Resources.getString("Warning.log_will_be_updated_title"),
                   Resources.getString("Warning.log_will_be_updated_heading"),
                   Resources.getString(
@@ -665,7 +665,7 @@ public class BasicLogger implements Logger, Buildable, GameComponent, CommandEnc
     final Command undo =
         new UndoCommand(true).append(lastOutput.getUndoCommand()).append(new UndoCommand(false));
     undo.execute();
-    GameModule.getGameModule().getServer().sendToOthers(undo);
+    GameModule.getGameModule().getSessionConnection().sendToOthers(undo);
     logOutput.add(undo);
     GameModule.getGameModule().refreshVisibleMaps();
   }

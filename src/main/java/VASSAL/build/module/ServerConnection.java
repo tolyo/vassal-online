@@ -1,7 +1,5 @@
 package VASSAL.build.module;
 
-import VASSAL.command.Command;
-
 /*
  *
  * Copyright (c) 2000-2003 by Rodney Kinney
@@ -20,25 +18,10 @@ import VASSAL.command.Command;
  * at http://www.opensource.org.
  */
 /** Represents the connection to a live server */
-public interface ServerConnection {
-  /**
-   * Name of the property fired when the connection is opened/closed. Value is Boolean.TRUE or
-   * Boolean.FALSE
-   */
-  String CONNECTED = "Connected"; // $NON-NLS-1$
+public interface ServerConnection extends SessionConnection {
+  /** Compatibility alias for the session connection status property. */
+  String CONNECTED = SessionConnection.CONNECTED;
 
-  String CONNECTION_LOST = "Connection Lost"; // $NON-NLS-1$
-
-  /** Send a command to other players on the server */
-  void sendToOthers(Command c);
-
-  void setConnected(boolean connect);
-
-  boolean isConnected();
-
-  /**
-   * Register a PropertyChangeListener. Changes to connection status triggers a PropertyChangeEvent,
-   * and concrete implementations may define other properties
-   */
-  void addPropertyChangeListener(String propertyName, java.beans.PropertyChangeListener l);
+  /** Compatibility alias for the connection lost property. */
+  String CONNECTION_LOST = SessionConnection.CONNECTION_LOST;
 }

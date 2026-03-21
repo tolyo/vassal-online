@@ -176,7 +176,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
     }
 
     if (frame == null) {
-      frame = new JDialog(GameModule.getGameModule().getPlayerWindow(), false);
+      frame = new JDialog(GameModule.getGameModule().getDialogOwner(), false);
       table = new JTable(nRows, nCols);
       setValues(values);
       table.setTableHeader(null);
@@ -184,7 +184,7 @@ public class TableInfo extends Decorator implements TranslatablePiece {
       scroll.getViewport().setPreferredSize(table.getPreferredSize());
       frame.add(scroll);
 
-      Point p = GameModule.getGameModule().getPlayerWindow().getLocation();
+      Point p = GameModule.getGameModule().getMainWindowLocation();
       final Map map = getMap();
       if (map != null) {
         final JComponent view = map.getView();

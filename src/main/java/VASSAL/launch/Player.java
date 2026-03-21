@@ -83,7 +83,7 @@ public class Player extends Launcher {
       Localization.getInstance().translate();
       final GameModule m = GameModule.getGameModule();
       if (lr.game != null) {
-        m.getPlayerWindow().setVisible(true);
+        m.setMainWindowVisible(true);
         m.setGameFile(lr.game.getName(), GameModule.GameFileMode.LOADED_GAME);
         m.getGameState().loadGameInBackground(lr.game);
       } else {
@@ -113,7 +113,7 @@ public class Player extends Launcher {
   }
 
   private void showWizardOrPlayerWindow(GameModule module) {
-    module.getPlayerWindow().setVisible(true);
+    module.setMainWindowVisible(true);
 
     final Boolean showWizard =
         (Boolean) Prefs.getGlobalPrefs().getValue(WizardSupport.WELCOME_WIZARD_KEY);
@@ -123,7 +123,7 @@ public class Player extends Launcher {
       // prompt for username and password if wizard is off
       // but no username is set
       if (!module.isRealName()) {
-        new UsernameAndPasswordDialog(module.getPlayerWindow()).setVisible(true);
+        new UsernameAndPasswordDialog(module.getDialogOwner()).setVisible(true);
       }
     }
   }

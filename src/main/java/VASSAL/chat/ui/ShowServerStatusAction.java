@@ -18,7 +18,6 @@
 package VASSAL.chat.ui;
 
 import VASSAL.build.GameModule;
-import VASSAL.chat.ChatServerConnection;
 import VASSAL.chat.HttpMessageServer;
 import VASSAL.chat.ServerStatus;
 import VASSAL.chat.messageboard.MessageBoard;
@@ -119,7 +118,8 @@ public class ShowServerStatusAction extends AbstractAction {
 
                   @Override
                   public String getUserName() {
-                    return ((ChatServerConnection) GameModule.getGameModule().getServer())
+                    return GameModule.getGameModule()
+                        .getChatServerConnection()
                         .getUserInfo()
                         .getName();
                   }

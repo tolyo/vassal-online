@@ -24,7 +24,6 @@ import VASSAL.build.AutoConfigurable;
 import VASSAL.build.BadDataReport;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
@@ -649,7 +648,7 @@ public class Flare extends AbstractConfigurable
             "Editor.report_format"); // Map and global properties also available (e.g. PlayerName,
     // PlayerSide)
     if (!reportText.isBlank()) {
-      c = new Chatter.DisplayText(mod.getChatter(), "* " + reportText);
+      c = mod.createChatDisplayCommand("* " + reportText);
       c.execute();
     }
 

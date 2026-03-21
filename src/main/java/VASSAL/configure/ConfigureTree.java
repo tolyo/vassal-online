@@ -576,7 +576,7 @@ public class ConfigureTree extends JTree
   protected boolean exportTreeBranch(AbstractBuildable target) {
     final FileChooser fc =
         FileChooser.createFileChooser(
-            GameModule.getGameModule().getPlayerWindow(),
+            GameModule.getGameModule().getDialogOwner(),
             (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
     if (fc.showSaveDialog() != FileChooser.APPROVE_OPTION) {
       return false;
@@ -588,7 +588,7 @@ public class ConfigureTree extends JTree
       if (new File(filename).exists()
           && JOptionPane.NO_OPTION
               == JOptionPane.showConfirmDialog(
-                  GameModule.getGameModule().getPlayerWindow(),
+                  GameModule.getGameModule().getDialogOwner(),
                   Resources.getString("Editor.ConfigureTree.export_overwrite", filename),
                   Resources.getString("Editor.ConfigureTree.export_exists"),
                   JOptionPane.YES_NO_OPTION)) {

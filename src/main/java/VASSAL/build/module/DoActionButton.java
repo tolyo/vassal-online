@@ -623,7 +623,7 @@ public class DoActionButton extends AbstractToolbarItem implements RecursionLimi
       if (doReport) {
         final String report = reportFormat.getLocalizedText(ps, this, "Editor.report_format");
         if (!report.isEmpty()) {
-          final Command c = new Chatter.DisplayText(mod.getChatter(), "* " + report);
+          final Command c = mod.createChatDisplayCommand("* " + report);
           c.execute();
           mod.sendAndLog(c);
         }

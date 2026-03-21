@@ -267,7 +267,7 @@ public class ModuleExtension extends AbstractBuildable
     boolean confirm = true;
     if (archive instanceof ArchiveWriter && !buildString().equals(lastSave)) {
       switch (JOptionPane.showConfirmDialog(
-          GameModule.getGameModule().getPlayerWindow(),
+          GameModule.getGameModule().getDialogOwner(),
           Resources.getString("ModuleExtension.save_extension"), // $NON-NLS-1$
           "",
           JOptionPane.YES_NO_CANCEL_OPTION)) { // $NON-NLS-1$
@@ -470,7 +470,7 @@ public class ModuleExtension extends AbstractBuildable
             final String s =
                 (String)
                     JOptionPane.showInputDialog(
-                        GameModule.getGameModule().getPlayerWindow(),
+                        GameModule.getGameModule().getDialogOwner(),
                         Resources.getString("Editor.ExtensionEditor.change_warning"),
                         "", // NON-NLS
                         JOptionPane.WARNING_MESSAGE,

@@ -369,7 +369,7 @@ public class DiceButton extends AbstractToolbarItem {
     Command c =
         report.isEmpty()
             ? new NullCommand()
-            : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), report);
+            : GameModule.getGameModule().createChatDisplayCommand(report);
     c.execute();
     c =
         c.append(property.setPropertyValue(val.toString()))

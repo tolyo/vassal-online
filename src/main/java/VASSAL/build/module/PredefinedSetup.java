@@ -296,7 +296,7 @@ public class PredefinedSetup extends AbstractConfigurable
     // Resolve any Pending Attachments
     gs.getAttachmentManager().resolvePendingAttachments();
 
-    mod.getPlayerWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    mod.setMainWindowCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     // call the gameRefresher
     gameRefresher.execute(refresherOptions, null);
@@ -313,7 +313,7 @@ public class PredefinedSetup extends AbstractConfigurable
     aw.addFile(tmpZip.getFile().getPath(), fileName);
     gs.closeGame();
 
-    mod.getPlayerWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    mod.setMainWindowCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     // return number of refresh anomaly warnings reported
     return gameRefresher.warnings();

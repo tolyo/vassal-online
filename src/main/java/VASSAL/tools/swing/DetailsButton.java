@@ -195,7 +195,7 @@ public class DetailsButton extends JButton {
           contents.add(db, "cell 0 1"); // NON-NLS
           contents.add(sp2, "cell 0 2, grow, push"); // NON-NLS
 
-          final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow());
+          final JDialog d = new JDialog(GameModule.getGameModule().getDialogOwner());
           d.add(contents);
           d.setResizable(true);
           d.setLocationRelativeTo(null);

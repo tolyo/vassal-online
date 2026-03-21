@@ -21,7 +21,6 @@ import VASSAL.build.AbstractFolder;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.PlayerRoster;
 import VASSAL.build.module.documentation.HelpFile;
@@ -464,8 +463,7 @@ public class ScenarioPropertiesOptionTab extends AbstractConfigurable
       c = new LockScenarioOptionsTab(this, user, pw, lockDt);
       c =
           c.append(
-              new Chatter.DisplayText(
-                  gm.getChatter(),
+              gm.createChatDisplayCommand(
                   "*"
                       + deHtml(
                           Resources.getString(
@@ -474,8 +472,7 @@ public class ScenarioPropertiesOptionTab extends AbstractConfigurable
       c = new LockScenarioOptionsTab(this, "", "", "");
       c =
           c.append(
-              new Chatter.DisplayText(
-                  gm.getChatter(),
+              gm.createChatDisplayCommand(
                   "*"
                       + deHtml(
                           Resources.getString(

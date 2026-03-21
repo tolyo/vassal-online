@@ -62,7 +62,7 @@ public class InviteCommand extends Command {
     if (client instanceof NodeClient) {
       final int i =
           Dialogs.showConfirmDialog(
-              GameModule.getGameModule().getPlayerWindow(),
+              GameModule.getGameModule().getDialogOwner(),
               Resources.getString("Chat.invite_heading"), // $NON-NLS-1$
               Resources.getString("Chat.invite_heading"), // $NON-NLS-1$
               Resources.getString("Chat.invitation", player, room), // $NON-NLS-1$

@@ -19,7 +19,6 @@ package VASSAL.counters;
 
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.map.DrawPile;
@@ -322,9 +321,7 @@ public class GlobalCommand implements Auditable {
       final String reportText =
           reportFormat.getLocalizedText(source, owner, "Editor.report_format");
       if (reportText.length() > 0) {
-        command =
-            new Chatter.DisplayText(
-                GameModule.getGameModule().getChatter(), "* " + reportText); // NON-NLS
+        command = GameModule.getGameModule().createChatDisplayCommand("* " + reportText); // NON-NLS
         command.execute();
       }
 

@@ -124,12 +124,12 @@ public abstract class AbstractInterpreter extends Interpreter {
       ms = 0;
     }
 
-    final JDialog dialog = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+    final JDialog dialog = new JDialog(GameModule.getGameModule().getDialogOwner(), true);
     final JOptionPane pane = new JOptionPane(message.toString(), JOptionPane.INFORMATION_MESSAGE);
     dialog.setContentPane(pane);
     dialog.setTitle("Alert Message");
     dialog.pack();
-    dialog.setLocationRelativeTo(GameModule.getGameModule().getPlayerWindow());
+    dialog.setLocationRelativeTo(GameModule.getGameModule().getDialogOwner());
     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     pane.addPropertyChangeListener(e -> dialog.setVisible(false));
     if (ms > 0) {

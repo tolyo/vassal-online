@@ -89,12 +89,12 @@ public class LoadModuleAction extends GameModuleAction {
     if (Boolean.TRUE.equals(showWizard)) {
       module.getWizardSupport().showWelcomeWizard();
     } else {
-      module.getPlayerWindow().setVisible(true);
+      module.setMainWindowVisible(true);
 
       // prompt for username and password if wizard is off
       // but no username is set, or password is blank
       if (!module.isRealName() || !module.isNonBlankPassword()) {
-        new UsernameAndPasswordDialog(module.getPlayerWindow()).setVisible(true);
+        new UsernameAndPasswordDialog(module.getDialogOwner()).setVisible(true);
       }
     }
   }

@@ -435,7 +435,7 @@ public class ServerAddressBook {
     final AddressBookEntry e = addressBook.get(index);
     final int i =
         JOptionPane.showConfirmDialog(
-            GameModule.getGameModule().getPlayerWindow(),
+            GameModule.getGameModule().getDialogOwner(),
             Resources.getString(
                 "ServerAddressBook.remove_server", e.getDescription()) // $NON-NLS-1$
             );

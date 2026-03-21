@@ -19,7 +19,6 @@ package VASSAL.counters;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.BasicCommandEncoder;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameState;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
@@ -820,8 +819,7 @@ public class BasicPiece extends AbstractImageFinder
           } else {
             s = Resources.getString("BasicPiece.clone_report_2", name);
           }
-          final Command report =
-              new Chatter.DisplayText(GameModule.getGameModule().getChatter(), s);
+          final Command report = GameModule.getGameModule().createChatDisplayCommand(s);
           report.execute();
           comm = comm.append(report);
         }
@@ -840,7 +838,7 @@ public class BasicPiece extends AbstractImageFinder
         } else {
           s = Resources.getString("BasicPiece.delete_report_2", name);
         }
-        final Command report = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), s);
+        final Command report = GameModule.getGameModule().createChatDisplayCommand(s);
         comm = comm.append(report);
       }
       comm.execute();

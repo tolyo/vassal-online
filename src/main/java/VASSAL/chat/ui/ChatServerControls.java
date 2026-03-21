@@ -189,7 +189,7 @@ public class ChatServerControls extends AbstractBuildable {
   @Override
   public void addTo(Buildable b) {
     final GameModule gm = GameModule.getGameModule();
-    setClient((ChatServerConnection) gm.getServer());
+    setClient(gm.getChatServerConnection());
     launch = new JButton(Resources.getString("Chat.server")); // $NON-NLS-1$
     launch.setFocusable(false);
     launch.setAlignmentY(0.0F);

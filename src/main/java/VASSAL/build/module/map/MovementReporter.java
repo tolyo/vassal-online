@@ -18,7 +18,6 @@
 package VASSAL.build.module.map;
 
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GlobalOptions;
 import VASSAL.build.module.Map;
 import VASSAL.command.AddPiece;
@@ -211,9 +210,7 @@ public class MovementReporter {
       final String moveText = format.getLocalizedText(toMap, sourceFieldKey);
 
       if (moveText.length() > 0) {
-        c =
-            c.append(
-                new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + moveText));
+        c = c.append(GameModule.getGameModule().createChatDisplayCommand("* " + moveText));
       }
     }
     PieceAccess.GlobalAccess.revertAll();

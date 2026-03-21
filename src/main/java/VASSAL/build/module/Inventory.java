@@ -264,7 +264,7 @@ public class Inventory extends AbstractToolbarItem
     GameModule.getGameModule().addSideChangeListenerToPlayerRoster(this);
     getLaunchButton().setAlignmentY(0.0F);
     GameModule.getGameModule().getGameState().addGameComponent(this);
-    frame = new JDialog(GameModule.getGameModule().getPlayerWindow());
+    frame = new JDialog(GameModule.getGameModule().getDialogOwner());
     frame.setTitle(getConfigureName());
     final String key = "Inventory." + getConfigureName(); // $NON-NLS-1$
     GameModule.getGameModule().getPrefs().addOption(new PositionOption(key, frame));
@@ -537,10 +537,10 @@ public class Inventory extends AbstractToolbarItem
       p.print(output);
 
       final Command c =
-          new Chatter.DisplayText(
-              GameModule.getGameModule().getChatter(),
-              Resources.getString("Inventory.wrote", file) // $NON-NLS-1$
-              );
+          GameModule.getGameModule()
+              .createChatDisplayCommand(
+                  Resources.getString("Inventory.wrote", file) // $NON-NLS-1$
+                  );
       c.execute();
     } catch (IOException e) {
       WriteErrorDialog.error(e, file);

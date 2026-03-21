@@ -101,7 +101,7 @@ public class MultiRoll extends JDialog implements ActionListener {
   protected boolean singleRoll;
 
   protected MultiRoll() {
-    super(GameModule.getGameModule().getPlayerWindow());
+    super(GameModule.getGameModule().getDialogOwner());
     addWindowListener(
         new WindowAdapter() {
           @Override
@@ -193,7 +193,7 @@ public class MultiRoll extends JDialog implements ActionListener {
     descPanel = new JPanel();
     final JLabel descLabel = new JLabel("Roll Description");
     descText = new JTextField(20);
-    descText.setText(GameModule.getGameModule().getChatter().getInputField().getText());
+    descText.setText(GameModule.getGameModule().getChatInputText());
     descText.addKeyListener(
         new java.awt.event.KeyAdapter() {
           @Override

@@ -790,7 +790,7 @@ public final class GameRefresher implements CommandEncoder, GameComponent {
     JButton runButton;
 
     RefreshDialog(GameRefresher refresher) {
-      super(GameModule.getGameModule().getPlayerWindow());
+      super(GameModule.getGameModule().getDialogOwner());
       this.refresher = refresher;
       setTitle(Resources.getString("GameRefresher.refresh_counters"));
       setModal(true);
@@ -973,8 +973,7 @@ public final class GameRefresher implements CommandEncoder, GameComponent {
       } else {
         // Test refresh does not need to be in the log.
         final Command msg =
-            new Chatter.DisplayText(
-                g.getChatter(),
+            g.createChatDisplayCommand(
                 Resources.getString(
                     "GameRefresher.run_refresh_counters_v2", player, g.getGameVersion()));
         msg.execute();

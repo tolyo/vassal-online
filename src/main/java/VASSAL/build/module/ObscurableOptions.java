@@ -83,7 +83,9 @@ public class ObscurableOptions implements CommandEncoder, GameComponent {
               getInstance().disallow(side);
             }
           }
-          GameModule.getGameModule().getServer().sendToOthers(new SetAllowed(instance.allowed));
+          GameModule.getGameModule()
+              .getSessionConnection()
+              .sendToOthers(new SetAllowed(instance.allowed));
         });
     if (Boolean.TRUE.equals(c.getValue())) {
       allow(GameModule.getActiveUserId());

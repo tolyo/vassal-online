@@ -115,7 +115,6 @@ import VASSAL.counters.ReportState;
 import VASSAL.counters.Stack;
 import VASSAL.i18n.Resources;
 import VASSAL.i18n.TranslatableConfigurerFactory;
-import VASSAL.launch.PlayerWindow;
 import VASSAL.preferences.GlobalPrefs;
 import VASSAL.preferences.PositionOption;
 import VASSAL.preferences.Prefs;
@@ -2926,7 +2925,7 @@ public class Map extends AbstractToolbarItem
    */
   protected Window createParentFrame() {
     if (GlobalOptions.getInstance().isUseSingleWindow()) {
-      final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow());
+      final JDialog d = new JDialog(GameModule.getGameModule().getDialogOwner());
       d.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       d.setTitle(getDefaultWindowTitle());
       return d;
@@ -3004,15 +3003,15 @@ public class Map extends AbstractToolbarItem
             // If we're docked to the main window, check the various player preferences w/r/t
             // remembering desired window height.
             // The window *width* has already been established, so we don't touch it here.
-            final PlayerWindow window = g.getPlayerWindow();
-            final Rectangle screen = SwingUtils.getScreenBounds(window);
+            final Rectangle windowBounds = g.getMainWindowBounds();
+            final Rectangle screen = g.getMainWindowScreenBounds();
             final Prefs p = Prefs.getGlobalPrefs();
 
             final boolean remember =
                 Boolean.TRUE.equals(p.getOption(MAIN_WINDOW_REMEMBER).getValue());
             final int h = remember ? ((Integer) p.getOption(MAIN_WINDOW_HEIGHT).getValue()) : -1;
 
-            window.setSize(window.getWidth(), (h > 0) ? h : screen.height);
+            g.setMainWindowSize(windowBounds.width, (h > 0) ? h : screen.height);
 
             splitPane.showBottom();
 
@@ -3086,20 +3085,19 @@ public class Map extends AbstractToolbarItem
             // If this is a docked-to-main-window map, AND it's presently visible, save our window
             // size preferences
             if (splitPane.isBottomVisible()) {
-              final Dimension d = g.getPlayerWindow().getSize();
+              final Rectangle windowBounds = g.getMainWindowBounds();
               final GlobalPrefs p = (GlobalPrefs) Prefs.getGlobalPrefs();
-              final PlayerWindow window = g.getPlayerWindow();
-              final Rectangle screen = SwingUtils.getScreenBounds(window);
-              final int w = window.getWidth();
+              final Rectangle screen = g.getMainWindowScreenBounds();
+              final int w = windowBounds.width;
               final int h;
               if (Boolean.TRUE.equals(p.getOption(MAIN_WINDOW_REMEMBER).getValue())) {
                 p.setDisableAutoWrite(true);
-                p.getOption(MAIN_WINDOW_HEIGHT).setValue(d.height);
-                p.getOption(MAIN_WINDOW_WIDTH).setValue(d.width);
+                p.getOption(MAIN_WINDOW_HEIGHT).setValue(windowBounds.height);
+                p.getOption(MAIN_WINDOW_WIDTH).setValue(windowBounds.width);
                 p.saveGlobal();
                 p.setDisableAutoWrite(false);
 
-                h = d.height;
+                h = windowBounds.height;
               } else {
                 h = screen.height;
               }
@@ -3108,7 +3106,7 @@ public class Map extends AbstractToolbarItem
               splitPane.hideBottom();
 
               // Now we restore the main window to its "map is offline" state.
-              window.setSize(w, h / 3);
+              g.setMainWindowSize(w, h / 3);
             }
           }
         } else if (theMap.getTopLevelAncestor() != null) {

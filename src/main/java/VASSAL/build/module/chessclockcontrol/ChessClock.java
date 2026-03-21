@@ -22,7 +22,6 @@ import VASSAL.build.AutoConfigurable;
 import VASSAL.build.BadDataReport;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.ChessClockControl;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GlobalOptions;
@@ -348,7 +347,7 @@ public class ChessClock extends AbstractConfigurable
         startTime = -1; // If restoring saved game, clear out millisecond timer
       }
       startTimer();
-      if (GameModule.getGameModule().getServer().isConnected()) {
+      if (GameModule.getGameModule().getSessionConnection().isConnected()) {
         final ChessClockControl ccc = ChessClockControl.getInstance();
         if (ccc != null) ccc.setOnline(true);
       }
@@ -1120,14 +1119,14 @@ public class ChessClock extends AbstractConfigurable
 
         c =
             c.append(
-                new Chatter.DisplayText(
-                    GameModule.getGameModule().getChatter(),
-                    Resources.getString(
-                        GlobalOptions.getInstance().chatterHTMLSupport()
-                            ? "ChessClock.reset_clock_2"
-                            : "ChessClock.reset_clock",
-                        me.playerName,
-                        side)));
+                GameModule.getGameModule()
+                    .createChatDisplayCommand(
+                        Resources.getString(
+                            GlobalOptions.getInstance().chatterHTMLSupport()
+                                ? "ChessClock.reset_clock_2"
+                                : "ChessClock.reset_clock",
+                            me.playerName,
+                            side)));
       }
       c.execute();
       GameModule.getGameModule().sendAndLog(c);

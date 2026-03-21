@@ -164,7 +164,7 @@ public abstract class DieServer implements Auditable {
                   + // NON-NLS
                   mroll.getDescription()
                   + " failed."; // NON-NLS
-          GameModule.getGameModule().getChatter().send(s);
+          GameModule.getGameModule().sendChatMessage(s);
         }
       }
     }.execute();

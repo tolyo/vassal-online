@@ -770,7 +770,7 @@ public class ChessClockControl extends AbstractConfigurable
   @Override
   public void setup(final boolean gameStarting) {
     if (gameStarting) {
-      setOnline(GameModule.getGameModule().getServer().isConnected());
+      setOnline(GameModule.getGameModule().getSessionConnection().isConnected());
     } else {
       stopAllClocks();
     }
@@ -889,7 +889,7 @@ public class ChessClockControl extends AbstractConfigurable
           hideClocks();
         }
       }
-      if (GameModule.getGameModule().getServer().isConnected()) {
+      if (GameModule.getGameModule().getSessionConnection().isConnected()) {
         onlineGame = true;
       } else {
         if (!onlineGame) {

@@ -21,7 +21,6 @@ import VASSAL.build.AbstractToolbarItem;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
 import VASSAL.configure.Configurer;
@@ -98,8 +97,8 @@ public class ChangePropertyButton extends AbstractToolbarItem
         final String reportText = report.getLocalizedText(this, "Editor.report_format");
 
         if (!reportText.isEmpty()) {
-          final Chatter.DisplayText chatCommand =
-              new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+          final Command chatCommand =
+              GameModule.getGameModule().createChatDisplayCommand("* " + reportText);
           chatCommand.execute();
           c.append(chatCommand);
         }

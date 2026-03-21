@@ -358,7 +358,7 @@ public class ActionButton extends Decorator implements EditablePiece, Loopable {
 
       frame =
           new JDialog(
-              GameModule.getGameModule().getPlayerWindow(),
+              GameModule.getGameModule().getDialogOwner(),
               Resources.getString("Editor.ActionButton.define_hotspot"),
               true);
       frame.setFocusTraversalKeysEnabled(false);

@@ -28,7 +28,6 @@ import VASSAL.build.Configurable;
 import VASSAL.build.GameModule;
 import VASSAL.build.GpIdSupport;
 import VASSAL.build.module.BasicCommandEncoder;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.widget.CardSlot;
@@ -393,9 +392,9 @@ public class PlaceMarker extends Decorator implements TranslatablePiece, Recursi
         final String location = m.locationName(getPosition());
         if (location != null) {
           final Command display =
-              new Chatter.DisplayText(
-                  GameModule.getGameModule().getChatter(),
-                  " * " + location + ":  " + outer.getName() + " " + markerText + " * ");
+              GameModule.getGameModule()
+                  .createChatDisplayCommand(
+                      " * " + location + ":  " + outer.getName() + " " + markerText + " * ");
           display.execute();
           c = c == null ? display : c.append(display);
         }

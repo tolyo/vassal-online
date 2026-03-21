@@ -134,7 +134,7 @@ public class DirectPeerPool implements PeerPool, ChatControlsInitializer {
 
     Frame owner = null;
     if (GameModule.getGameModule() != null) {
-      owner = GameModule.getGameModule().getPlayerWindow();
+      owner = GameModule.getGameModule().getDialogOwner();
     }
     frame = new JDialog(owner, Resources.getString("Peer2Peer.direct_connection")); // $NON-NLS-1$
     frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);

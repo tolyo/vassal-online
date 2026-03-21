@@ -36,7 +36,7 @@ public class ValidationReportDialog extends JDialog {
   private final CallBack callback;
 
   public ValidationReportDialog(ValidationReport report, CallBack cb) {
-    super(GameModule.getGameModule().getPlayerWindow(), false);
+    super(GameModule.getGameModule().getDialogOwner(), false);
 
     final JButton okButton;
     final JButton cancelButton;

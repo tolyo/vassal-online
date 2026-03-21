@@ -391,7 +391,7 @@ public class BoardPicker extends AbstractBuildable
 
   protected void selectBoards(Component c) {
     reset();
-    final JDialog d = new JDialog(GameModule.getGameModule().getPlayerWindow(), true);
+    final JDialog d = new JDialog(GameModule.getGameModule().getDialogOwner(), true);
     d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     final Box b = Box.createVerticalBox();
     final Box buttons = Box.createHorizontalBox();

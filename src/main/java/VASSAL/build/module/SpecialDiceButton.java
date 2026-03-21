@@ -133,7 +133,7 @@ public class SpecialDiceButton extends DoActionButton
   public SpecialDiceButton() {
     super(false); // Make a DoActionButton, but don't call its normal constructor
 
-    dialog = new JDialog(GameModule.getGameModule().getPlayerWindow());
+    dialog = new JDialog(GameModule.getGameModule().getDialogOwner());
     dialog.setLayout(new MigLayout("ins 0")); // NON-NLS
     dialogLabel = new JLabel();
     dialogLabel.setIcon(resultsIcon);
@@ -222,7 +222,7 @@ public class SpecialDiceButton extends DoActionButton
     final Command c =
         msg.length() == 0
             ? new NullCommand()
-            : new Chatter.DisplayText(GameModule.getGameModule().getChatter(), msg);
+            : GameModule.getGameModule().createChatDisplayCommand(msg);
     c.execute();
     c.append(property.setPropertyValue(String.valueOf(total)));
     return c;

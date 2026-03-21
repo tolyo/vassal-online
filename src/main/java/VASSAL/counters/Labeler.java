@@ -739,7 +739,7 @@ public class Labeler extends Decorator implements TranslatablePiece, Loopable {
           (String)
               JOptionPane.showInputDialog(
                   getMap() == null
-                      ? GameModule.getGameModule().getPlayerWindow()
+                      ? GameModule.getGameModule().getDialogOwner()
                       : getMap().getView().getTopLevelAncestor(),
                   menuKeyCommand.getName(),
                   null,

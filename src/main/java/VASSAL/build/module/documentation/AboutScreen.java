@@ -104,7 +104,7 @@ public class AboutScreen extends AbstractConfigurable {
                 Info.getVersion()))
         .append("</center></html>"); // NON-NLS
 
-    final AboutWindow w = new AboutWindow(g.getPlayerWindow(), op.getImage(), sb.toString());
+    final AboutWindow w = new AboutWindow(g.getDialogOwner(), op.getImage(), sb.toString());
     w.setVisible(true);
     w.toFront();
   }

@@ -299,7 +299,7 @@ public class ArchiveWriter extends DataArchive {
   public boolean saveAsButVerify(boolean notifyModuleManager) throws IOException {
     final FileChooser fc =
         FileChooser.createFileChooser(
-            GameModule.getGameModule().getPlayerWindow(),
+            GameModule.getGameModule().getDialogOwner(),
             (DirectoryConfigurer) Prefs.getGlobalPrefs().getOption(Prefs.MODULES_DIR_KEY));
     if (fc.showSaveDialog() != FileChooser.APPROVE_OPTION) return false;
     String filename = fc.getSelectedFile().getPath();
@@ -309,7 +309,7 @@ public class ArchiveWriter extends DataArchive {
       if (new File(filename).exists()
           && JOptionPane.NO_OPTION
               == JOptionPane.showConfirmDialog(
-                  GameModule.getGameModule().getPlayerWindow(),
+                  GameModule.getGameModule().getDialogOwner(),
                   Resources.getString("Editor.ArchiveWriter.overwrite", filename),
                   Resources.getString("Editor.ArchiveWriter.file_exists"),
                   JOptionPane.YES_NO_OPTION)) {

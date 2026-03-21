@@ -93,16 +93,14 @@ public class SavedGameUpdater {
           // FIXME: review error message
           catch (ComponentPathBuilder.PathFormatException ex) {
             GameModule.getGameModule()
-                .getChatter()
-                .show(
+                .showChatMessage(
                     Resources.getString(
                         "Editor.SavedGameUpdater.unable", p.getName(), ex.getMessage()));
           }
         } else {
           GameModule.getGameModule()
-              .getChatter()
-              .show(Resources.getString("Editor.SavedGameUpdater.no_slot", p.getName()));
-          GameModule.getGameModule().getChatter().show(p.getType());
+              .showChatMessage(Resources.getString("Editor.SavedGameUpdater.no_slot", p.getName()));
+          GameModule.getGameModule().showChatMessage(p.getType());
         }
       }
     }

@@ -45,7 +45,7 @@ public class ImageConfigurer extends FileConfigurer {
       gm.getPrefs().addOption(null, resourceDirPref);
     }
 
-    final FileChooser fc = FileChooser.createFileChooser(gm.getPlayerWindow(), resourceDirPref);
+    final FileChooser fc = FileChooser.createFileChooser(gm.getDialogOwner(), resourceDirPref);
     fc.setFileFilter(new ImageFileFilter());
     return fc;
   }

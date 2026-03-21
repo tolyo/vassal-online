@@ -18,7 +18,6 @@
 package VASSAL.counters;
 
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.Map;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.build.module.properties.PropertySource;
@@ -229,7 +228,7 @@ public class ReportState extends Decorator implements TranslatablePiece {
 
           if (reportText.length() > 0) {
             final Command display =
-                new Chatter.DisplayText(GameModule.getGameModule().getChatter(), "* " + reportText);
+                GameModule.getGameModule().createChatDisplayCommand("* " + reportText);
             display.execute();
             c = display;
           }
